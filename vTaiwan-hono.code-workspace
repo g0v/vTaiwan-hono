@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../vue.vTaiwan-neo"
+		},
+		{
+			"path": "../vtaiwan-design-system"
+		}
+	],
+	"settings": {}
+}
