@@ -47,13 +47,13 @@ const steps = [
         </p>
 
         <div class="flex flex-wrap gap-3">
-          <RouterLink to="/topics" class="vt-btn vt-btn-primary">
+          <RouterLink to="/topics" class="vt-btn vt-btn-outline">
             瀏覽議題
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14M13 5l7 7-7 7" />
             </svg>
           </RouterLink>
-          <RouterLink to="/intro" class="vt-btn vt-btn-outline">了解更多</RouterLink>
+          <RouterLink to="/intro" class="vt-btn vt-btn-primary">了解更多</RouterLink>
         </div>
       </div>
     </section>
@@ -100,8 +100,8 @@ const steps = [
           無論您是公民、專家、政府人員或是關心公共事務的任何人，都歡迎加入 vTaiwan 平台，貢獻您的想法。
         </p>
         <div class="flex flex-wrap justify-center gap-3">
-          <RouterLink to="/topics" class="vt-btn vt-btn-primary">瀏覽議題</RouterLink>
-          <RouterLink to="/intro" class="vt-btn vt-btn-outline">了解更多</RouterLink>
+          <RouterLink to="/topics" class="vt-btn vt-btn-outline">瀏覽議題</RouterLink>
+          <RouterLink to="/intro" class="vt-btn vt-btn-primary">了解更多</RouterLink>
         </div>
       </div>
     </section>
