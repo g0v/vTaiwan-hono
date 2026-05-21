@@ -26,6 +26,8 @@ const placeholderPaths = [
   '/mastodon',
   '/faq',
   '/contributors',
+  '/privacy',
+  '/terms',
 ]
 
 export const routes: RouteRecordRaw[] = [
