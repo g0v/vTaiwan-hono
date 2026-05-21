@@ -1,4 +1,10 @@
-# hono-vue-ssr-template
+# vTaiwan-hono
+
+
+視覺設計來自：
+https://github.com/Tofuswang/vtaiwan-design-system
+
+技術使用以下模板：
 
 **EN:** Minimal Cloudflare Workers template using **Hono** for routing and **Vue 3 SSR** for rendering. No D1 / R2 / KV / AI bindings — just a worker that server-renders Vue components and serves a few static assets.
 
