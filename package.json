@@ -11,7 +11,7 @@
     "watch:css": "tailwindcss -i ./src/styles/app.css -o ./public/styles.css --watch",
     "build": "npm run build:css && vite build && vite build -c vite.client.config.mts",
     "preview": "vite preview",
-    "deploy": "npm run build:css && vite build && wrangler deploy",
+    "deploy": "npm run build && wrangler deploy",
     "typecheck": "tsc --noEmit",
     "cf-typegen": "wrangler types"
   },

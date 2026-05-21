@@ -7,3 +7,8 @@ dist
 *.log
 .DS_Store
 worker-configuration.d.ts
+
+# Build outputs (see README — Generated assets)
+/public/styles.css
+/public/js/app.js
+/public/js/app.css

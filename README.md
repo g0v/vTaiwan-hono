@@ -65,10 +65,34 @@ src/
     └── app.css          # Tailwind v4 source — @theme tokens + 樣式來源 / 樣式來源
 vite.client.config.mts   # second Vite build: emits client bundle only / 第二段建置：僅輸出 hydration bundle
 public/                  # static assets, served via ASSETS binding / 靜態資源，經 ASSETS 提供
-├── styles.css           # generated from src/styles/app.css — do not edit / 由 app.css 編譯產生，勿手改
+├── styles.css           # generated — gitignored / 自動產生，不納入版控
+├── js/app.js            # generated — gitignored / 自動產生，不納入版控
+├── js/app.css           # generated — gitignored / 自動產生，不納入版控
 ├── assets/              # vTaiwan logo SVGs / vTaiwan logo 圖檔
-├── js/app.js            # created by `npm run build` (vite.client.config.mts) / 由建置產生
 └── favicon.svg
+```
+
+## Generated assets / 自動產生的靜態檔
+
+下列檔案**不納入 Git**（見 `.gitignore`），clone 後需自行建置：
+
+| File | Command / 產生方式 |
+| ---- | ------------------ |
+| `public/styles.css` | `npm run build:css` — Tailwind CLI，來源 `src/styles/app.css` |
+| `public/js/app.js` | `vite build -c vite.client.config.mts`（含在 `npm run build`）— 瀏覽器 hydration bundle |
+| `public/js/app.css` | 同上 client build 一併輸出 |
+
+**EN:** After `git clone`, run `npm install` then either `npm run build` (all three) or `npm run dev` (which runs `predev` → `build:css` only; production hydration still needs a full `npm run build` before deploy). `npm run deploy` runs the full `npm run build` then `wrangler deploy`.
+
+**中文：**`git clone` 後請先 `npm install`，再執行 `npm run build`（一次產生上述三個檔案），或 `npm run dev`（僅透過 `predev` 編譯 `styles.css`；正式環境的 hydration 仍須在部署前跑完整 `npm run build`）。`npm run deploy` 會先執行完整 `npm run build` 再部署。
+
+```bash
+npm install
+npm run build          # styles.css + Worker bundle + public/js/app.js + app.css
+# 或只編譯樣式：
+npm run build:css
+# 或只編譯 client hydration：
+vite build -c vite.client.config.mts
 ```
 
 ## Develop / 開發
@@ -139,7 +163,7 @@ npm run deploy       # vite build (+ client bundle) + wrangler deploy
 - `src/styles/app.css` — `@import "tailwindcss"`, an `@theme` block exposing the vTaiwan design tokens (civic colors `democratic-red` / `jade-green` / `wheat-yellow`, Noto Serif / Sans TC), plus a few `@layer components` effects and the legacy `.container` / `.hundred-*` styles.
 - `npm run build:css` — compile + minify to `public/styles.css`.
 - `npm run watch:css` — rebuild on `.vue` changes during development.
-- `public/styles.css` is **generated** — don't edit it by hand; `build` / `deploy` / `predev` all run `build:css` first.
+- `public/styles.css`, `public/js/app.js`, and `public/js/app.css` are **generated** and **gitignored** — don't edit them by hand; see [Generated assets](#generated-assets--自動產生的靜態檔). `build` / `deploy` / `predev` run the appropriate compile steps.
 
 The homepage (`src/views/Home.vue`), `NavBar.vue` and `Footer.vue` follow the [vTaiwan Design System](https://github.com/Tofuswang/vtaiwan-design-system) — dark hero, three civic colors, glass header, dark footer.
 
@@ -148,7 +172,7 @@ The homepage (`src/views/Home.vue`), `NavBar.vue` and `Footer.vue` follow the [v
 - `src/styles/app.css` — `@import "tailwindcss"`、`@theme` 定義 vTaiwan 設計代幣（民主紅 `democratic-red`、青玉綠 `jade-green`、麥穗黃 `wheat-yellow`，Noto Serif / Sans TC），另含少數 `@layer components` 效果與既有的 `.container` / `.hundred-*` 樣式。
 - `npm run build:css` — 編譯並壓縮輸出到 `public/styles.css`。
 - `npm run watch:css` — 開發時監看 `.vue` 變更並即時重編。
-- `public/styles.css` 為**自動產生**，請勿手動修改；`build` / `deploy` / `predev` 皆會先執行 `build:css`。
+- `public/styles.css`、`public/js/app.js`、`public/js/app.css` 為**自動產生**且**不納入版控**，請勿手動修改；詳見 [自動產生的靜態檔](#generated-assets--自動產生的靜態檔)。`build` / `deploy` / `predev` 會依腳本執行對應編譯步驟。
 
 首頁（`src/views/Home.vue`）、`NavBar.vue` 與 `Footer.vue` 依循 [vTaiwan Design System](https://github.com/Tofuswang/vtaiwan-design-system) 風格 — 黑底 Hero、三種公民色、毛玻璃導覽列、深色頁尾。
 
