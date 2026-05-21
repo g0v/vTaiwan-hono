@@ -29,7 +29,7 @@ const routes = [
   { tag: 'SSR', label: '/about', title: '關於本範本', desc: 'Hono 路由 + Vue 3 伺服端渲染的說明頁。', href: '/about', dot: 'bg-jade-green' },
   { tag: '動態路由', label: '/word/:w', title: '字詞示範', desc: '網址參數帶入 Vue 元件，並組出對應的 og:image。', href: '/word/%E8%90%8C', dot: 'bg-wheat-yellow' },
   { tag: 'Hydration', label: '/hundred', title: '百數表互動', desc: 'SSR 後由瀏覽器接管：v-model、v-for、:style 著色。', href: '/hundred', dot: 'bg-democratic-red' },
-  { tag: 'API', label: '/api/hello', title: 'JSON API', desc: '純文字 / JSON 回應，不經過 SSR 直接回傳。', href: '/api/hello', dot: 'bg-vt-gray-400' },
+  { tag: 'API', label: '/api/hello', title: 'JSON API', desc: '純文字 / JSON 回應，不經過 SSR 直接回傳。', href: '/api/hello', dot: 'bg-vt-gray-400', external: true },
 ]
 </script>
 
@@ -55,13 +55,13 @@ const routes = [
         </p>
 
         <div class="flex flex-wrap gap-3">
-          <a href="#explore" class="vt-btn vt-btn-primary">
+          <RouterLink to="/#explore" class="vt-btn vt-btn-primary">
             瀏覽範例
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M5 12h14M13 5l7 7-7 7" />
             </svg>
-          </a>
-          <a href="/about" class="vt-btn vt-btn-outline">了解更多</a>
+          </RouterLink>
+          <RouterLink to="/about" class="vt-btn vt-btn-outline">了解更多</RouterLink>
         </div>
       </div>
     </section>
@@ -111,28 +111,53 @@ const routes = [
         </p>
 
         <div class="grid gap-6 sm:grid-cols-2">
-          <a
+          <template
             v-for="r in routes"
             :key="r.href"
-            :href="r.href"
-            class="group flex flex-col rounded-2xl border border-vt-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-democratic-red/30 hover:shadow-lg"
           >
-            <div class="mb-3 flex items-center justify-between">
-              <span class="inline-flex items-center gap-2 font-sans text-xs text-vt-gray-700">
-                <span class="h-2 w-2 rounded-full" :class="r.dot" />
-                {{ r.tag }}
+            <a
+              v-if="r.external"
+              :href="r.href"
+              class="group flex flex-col rounded-2xl border border-vt-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-democratic-red/30 hover:shadow-lg"
+            >
+              <div class="mb-3 flex items-center justify-between">
+                <span class="inline-flex items-center gap-2 font-sans text-xs text-vt-gray-700">
+                  <span class="h-2 w-2 rounded-full" :class="r.dot" />
+                  {{ r.tag }}
+                </span>
+                <code class="rounded bg-vt-gray-100 px-2 py-0.5 font-sans text-xs text-vt-gray-700">{{ r.label }}</code>
+              </div>
+              <h3 class="mb-1.5 text-lg font-bold">{{ r.title }}</h3>
+              <p class="mb-4 text-sm leading-relaxed text-vt-gray-700">{{ r.desc }}</p>
+              <span class="mt-auto inline-flex items-center gap-1 font-sans text-sm font-medium text-democratic-red">
+                前往
+                <svg class="transition-transform duration-200 group-hover:translate-x-1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 7h10v10M7 17 17 7" />
+                </svg>
               </span>
-              <code class="rounded bg-vt-gray-100 px-2 py-0.5 font-sans text-xs text-vt-gray-700">{{ r.label }}</code>
-            </div>
-            <h3 class="mb-1.5 text-lg font-bold">{{ r.title }}</h3>
-            <p class="mb-4 text-sm leading-relaxed text-vt-gray-700">{{ r.desc }}</p>
-            <span class="mt-auto inline-flex items-center gap-1 font-sans text-sm font-medium text-democratic-red">
-              前往
-              <svg class="transition-transform duration-200 group-hover:translate-x-1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M7 7h10v10M7 17 17 7" />
-              </svg>
-            </span>
-          </a>
+            </a>
+            <RouterLink
+              v-else
+              :to="r.href"
+              class="group flex flex-col rounded-2xl border border-vt-gray-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:border-democratic-red/30 hover:shadow-lg"
+            >
+              <div class="mb-3 flex items-center justify-between">
+                <span class="inline-flex items-center gap-2 font-sans text-xs text-vt-gray-700">
+                  <span class="h-2 w-2 rounded-full" :class="r.dot" />
+                  {{ r.tag }}
+                </span>
+                <code class="rounded bg-vt-gray-100 px-2 py-0.5 font-sans text-xs text-vt-gray-700">{{ r.label }}</code>
+              </div>
+              <h3 class="mb-1.5 text-lg font-bold">{{ r.title }}</h3>
+              <p class="mb-4 text-sm leading-relaxed text-vt-gray-700">{{ r.desc }}</p>
+              <span class="mt-auto inline-flex items-center gap-1 font-sans text-sm font-medium text-democratic-red">
+                前往
+                <svg class="transition-transform duration-200 group-hover:translate-x-1" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M7 7h10v10M7 17 17 7" />
+                </svg>
+              </span>
+            </RouterLink>
+          </template>
         </div>
       </div>
     </section>
@@ -145,8 +170,8 @@ const routes = [
           無論您是公民、專家、政府人員或是關心公共事務的任何人，都歡迎加入 vTaiwan 平台，貢獻您的想法。
         </p>
         <div class="flex flex-wrap justify-center gap-3">
-          <a href="#explore" class="vt-btn vt-btn-primary">瀏覽範例</a>
-          <a href="/about" class="vt-btn vt-btn-outline">了解更多</a>
+          <RouterLink to="/#explore" class="vt-btn vt-btn-primary">瀏覽範例</RouterLink>
+          <RouterLink to="/about" class="vt-btn vt-btn-outline">了解更多</RouterLink>
         </div>
       </div>
     </section>

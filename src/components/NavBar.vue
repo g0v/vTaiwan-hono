@@ -1,5 +1,10 @@
 <script setup lang="ts">
-defineProps<{ current?: string }>()
+import { computed, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
+const props = defineProps<{ current?: string }>()
+const route = useRoute()
+const mobileOpen = ref(false)
 
 // 導覽連結對齊至 vue.vTaiwan-neo 專案項目
 const links = [
@@ -14,33 +19,38 @@ const links = [
   { key: 'contributors', label: '貢獻者', href: '/contributors' },
 ]
 
+const activeKey = computed(() => props.current ?? '')
+
+watch(
+  () => route.fullPath,
+  () => {
+    mobileOpen.value = false
+  },
+)
 </script>
 
 <template>
   <header class="sticky top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-4 font-sans">
-    <!-- CSS-only 行動選單開關（無需 client JS / hydration） -->
-    <input id="vt-nav-toggle" type="checkbox" class="peer sr-only" />
-
     <div class="vt-glass mx-auto flex h-[72px] max-w-6xl items-center justify-between rounded-2xl pl-6 pr-3">
-      <a href="/" class="flex shrink-0 items-center" aria-label="vTaiwan 首頁">
+      <RouterLink to="/" class="flex shrink-0 items-center" aria-label="vTaiwan 首頁">
         <img :src="'/assets/vtaiwan-logo.svg'" alt="vTaiwan" class="h-7 w-auto" />
-      </a>
+      </RouterLink>
 
       <!-- 桌面導覽 -->
       <nav class="hidden items-center gap-0.5 text-sm lg:flex">
-        <a
+        <RouterLink
           v-for="l in links"
           :key="l.key"
-          :href="l.href"
+          :to="l.href"
           class="relative whitespace-nowrap rounded-full px-3.5 py-2 transition-colors hover:bg-black/5"
-          :class="current === l.key ? 'text-democratic-red' : 'text-[#2a2a30]'"
+          :class="activeKey === l.key ? 'text-democratic-red' : 'text-[#2a2a30]'"
         >
           {{ l.label }}
           <span
-            v-if="current === l.key"
+            v-if="activeKey === l.key"
             class="absolute -bottom-px left-1/2 h-[5px] w-[5px] -translate-x-1/2 rounded-full bg-democratic-red"
           />
-        </a>
+        </RouterLink>
       </nav>
 
       <div class="flex items-center gap-2.5 text-[13px]">
@@ -57,35 +67,38 @@ const links = [
         </a>
 
         <!-- 行動裝置漢堡按鈕 -->
-        <label
-          for="vt-nav-toggle"
+        <button
+          type="button"
           class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-ink transition-colors hover:bg-black/5 lg:hidden"
+          :aria-expanded="mobileOpen"
           aria-label="開啟選單"
+          @click="mobileOpen = !mobileOpen"
         >
-          <svg class="peer-checked:hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <svg v-if="!mobileOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M4 7h16M4 12h16M4 17h16" />
           </svg>
-          <svg class="hidden peer-checked:block" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
-        </label>
+        </button>
       </div>
     </div>
 
     <!-- 行動選單面板 -->
-    <div class="vt-glass mx-auto mt-2 hidden max-w-6xl rounded-2xl p-2.5 peer-checked:block lg:hidden">
-      <a
+    <div v-if="mobileOpen" class="vt-glass mx-auto mt-2 max-w-6xl rounded-2xl p-2.5 lg:hidden">
+      <RouterLink
         v-for="l in links"
         :key="l.key"
-        :href="l.href"
+        :to="l.href"
         class="flex items-center justify-between rounded-xl px-3.5 py-3 transition-colors hover:bg-black/5"
-        :class="current === l.key ? 'text-democratic-red' : 'text-[#2a2a30]'"
+        :class="activeKey === l.key ? 'text-democratic-red' : 'text-[#2a2a30]'"
+        @click="mobileOpen = false"
       >
         {{ l.label }}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40">
           <path d="m9 18 6-6-6-6" />
         </svg>
-      </a>
+      </RouterLink>
       <div class="my-1.5 h-px bg-black/10" />
       <div class="flex gap-2 px-1.5 pb-1.5 pt-2">
         <span class="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-3 text-[#4a4a52]">

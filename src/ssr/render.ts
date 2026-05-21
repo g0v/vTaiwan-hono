@@ -1,41 +1,45 @@
-import { createSSRApp, type Component } from 'vue'
 import { renderToString } from '@vue/server-renderer'
+import type { ContentfulStatusCode } from 'hono/utils/http-status'
+import { createVueApp } from '../app'
+import { headForRoute, statusForRoute } from '../router/routes'
 import { renderHeadTags, type HeadConfig } from './heads'
 
-/** 可選：在 </body> 前注入 hydration 用的 ES module（開發 / 正式路徑分開） */
-export interface RenderPageOptions {
-  hydrate?: {
-    devSrc: string
-    prodSrc: string
-  }
+export interface RenderPageResult {
+  html: string
+  status: ContentfulStatusCode
 }
 
-// 把 Vue 元件 + props + head 組成完整 HTML 字串
-// 流程：createSSRApp(元件, props) → renderToString(產出 body) → 套上 head 模板
-export async function renderPage(
-  component: Component,
-  props: Record<string, unknown>,
-  head: HeadConfig,
-  options?: RenderPageOptions,
-): Promise<string> {
-  const app = createSSRApp(component, props)
+const clientEntry = import.meta.env.PROD
+  ? '/js/app.js'
+  : '/src/client/app-entry.ts'
+const clientStyle = import.meta.env.PROD
+  ? '    <link rel="stylesheet" href="/js/app.css" />\n'
+  : ''
+
+// 用 vue-router 比對目前 URL，SSR 第一個畫面，再讓瀏覽器端 hydration 接管後續路由。
+export async function renderPage(url: string, origin: string): Promise<RenderPageResult> {
+  const { app, router } = createVueApp(url)
+  await router.isReady()
+  const route = router.currentRoute.value
+  const head: HeadConfig = headForRoute(route, origin)
+  const status = statusForRoute(route) as ContentfulStatusCode
   const bodyHtml = await renderToString(app)
   const headTags = renderHeadTags(head)
-  const hydrateSrc =
-    options?.hydrate &&
-    (import.meta.env.PROD ? options.hydrate.prodSrc : options.hydrate.devSrc)
-  const hydrateScript = hydrateSrc
-    ? `\n    <script type="module" src="${hydrateSrc}"></script>`
-    : ''
-  return `<!doctype html>
+
+  return {
+    status,
+    html: `<!doctype html>
 <html lang="zh-Hant">
   <head>
     ${headTags}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/styles.css" />
+${clientStyle}
   </head>
   <body>
-    <div id="app">${bodyHtml}</div>${hydrateScript}
+    <div id="app">${bodyHtml}</div>
+    <script type="module" src="${clientEntry}"></script>
   </body>
-</html>`
+</html>`,
+  }
 }

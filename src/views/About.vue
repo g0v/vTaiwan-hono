@@ -14,6 +14,6 @@ import NavBar from '../components/NavBar.vue'
       Each route injects its own &lt;title&gt; and Open Graph meta tags
       via <code>src/ssr/heads.ts</code>.
     </p>
-    <p><a href="/">Back home</a></p>
+    <p><RouterLink to="/">Back home</RouterLink></p>
   </main>
 </template>

@@ -24,6 +24,6 @@ defineProps<{
       />
       <figcaption>Stroke order of {{ word }}</figcaption>
     </figure>
-    <p><a href="/">Back home</a></p>
+    <p><RouterLink to="/">Back home</RouterLink></p>
   </main>
 </template>

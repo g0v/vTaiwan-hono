@@ -112,15 +112,15 @@ import Footer from '../components/Footer.vue'
 
         <!-- Navigation Buttons -->
         <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto font-sans">
-          <a href="/" class="vt-btn vt-btn-primary justify-center">
+          <RouterLink to="/" class="vt-btn vt-btn-primary justify-center">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
             返回首頁
-          </a>
-          <a href="/#explore" class="vt-btn vt-btn-outline border-vt-gray-400 hover:border-ink hover:text-ink text-vt-gray-700 justify-center">
+          </RouterLink>
+          <RouterLink to="/#explore" class="vt-btn vt-btn-outline border-vt-gray-400 hover:border-ink hover:text-ink text-vt-gray-700 justify-center">
             瀏覽已開放的範例
-          </a>
+          </RouterLink>
         </div>
       </div>
     </main>
