@@ -1,0 +1,254 @@
+/* ==========================================================================
+   app.css — Tailwind v4 source
+   Built to public/styles.css via `npm run build:css` (CLI, see package.json).
+   Design tokens follow Tofuswang/vtaiwan-design-system (colors_and_type.css).
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;700;900&display=swap');
+
+@import 'tailwindcss';
+
+/* Scan the SSR Vue components + worker entry for class names. */
+@source '../**/*.vue';
+@source '../**/*.ts';
+
+/* --------------------------------------------------------------------------
+   Theme tokens — exposed as Tailwind utilities
+   (e.g. text-democratic-red, bg-jade-green/10, font-serif)
+   -------------------------------------------------------------------------- */
+@theme {
+  --color-democratic-red: #d80000;
+  --color-jade-green: #008888;
+  --color-wheat-yellow: #db7700;
+  --color-ink: #0b0b0c;
+
+  --color-vt-gray-100: #f8f8f8;
+  --color-vt-gray-200: #e0e0e0;
+  --color-vt-gray-400: #a0a0a0;
+  --color-vt-gray-700: #505050;
+
+  --font-serif: 'Noto Serif TC', 'Source Han Serif TC', 'Songti TC', serif;
+  --font-sans: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+@layer base {
+  body {
+    margin: 0;
+    font-family: var(--font-serif);
+    color: var(--color-ink);
+    background: #fff;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Design-system components — the few effects that are awkward as utilities
+   -------------------------------------------------------------------------- */
+@layer components {
+  /* Signature red underline on section headings */
+  .vt-title-underline {
+    position: relative;
+    display: inline-block;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--color-democratic-red);
+  }
+
+  /* Hero — three soft civic-color fields + hairline horizon lines */
+  .vt-hero-bg {
+    position: relative;
+    overflow: hidden;
+    background: #0a0a0b;
+  }
+  .vt-hero-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(600px 400px at 18% 28%, rgba(216, 0, 0, 0.18), transparent 65%),
+      radial-gradient(520px 380px at 82% 72%, rgba(0, 136, 136, 0.14), transparent 65%),
+      radial-gradient(480px 340px at 50% 110%, rgba(219, 119, 0, 0.1), transparent 65%);
+  }
+  .vt-hero-bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 100% 96px;
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 30%, black 70%, transparent 100%);
+    mask-image: linear-gradient(to bottom, transparent 0, black 30%, black 70%, transparent 100%);
+  }
+
+  /* Footer — quiet civic glow */
+  .vt-footer-bg {
+    background:
+      radial-gradient(80% 120% at 0% 0%, rgba(216, 0, 0, 0.1) 0%, rgba(216, 0, 0, 0) 55%),
+      radial-gradient(70% 120% at 100% 100%, rgba(0, 136, 136, 0.08) 0%, rgba(0, 136, 136, 0) 60%),
+      linear-gradient(180deg, #14141a 0%, #0b0b10 100%);
+  }
+  .vt-hairline {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.08) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+  }
+
+  /* Frosted-glass header bar */
+  .vt-glass {
+    background: rgba(255, 255, 255, 0.72);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.9),
+      0 1px 2px rgba(16, 24, 40, 0.04),
+      0 10px 30px -16px rgba(16, 24, 40, 0.12);
+  }
+
+  /* Buttons — sans, pill */
+  .vt-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1;
+    padding: 13px 24px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition:
+      transform 0.18s ease,
+      background 0.18s ease,
+      border-color 0.18s ease;
+  }
+  .vt-btn:hover {
+    transform: translateY(-1px);
+  }
+  .vt-btn-primary {
+    background: var(--color-democratic-red);
+    color: #fff;
+    border: 1px solid transparent;
+    box-shadow: 0 10px 24px -10px rgba(216, 0, 0, 0.7);
+  }
+  .vt-btn-primary:hover {
+    background: #ee1f1f;
+  }
+  .vt-btn-outline {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+  }
+  .vt-btn-outline:hover {
+    border-color: rgba(255, 255, 255, 0.6);
+  }
+}
+
+/* ==========================================================================
+   Legacy page styles — kept so /about, /word/:w and /hundred still render
+   (these pages use the .container layout, not Tailwind utilities)
+   ========================================================================== */
+.container {
+  max-width: 720px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+.container h1 {
+  margin-top: 0;
+}
+
+.container a {
+  color: var(--color-democratic-red);
+}
+
+code {
+  background: #eef2f6;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+}
+
+figure {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  border: 1px solid var(--color-vt-gray-200);
+  border-radius: 8px;
+  background: #fff;
+  text-align: center;
+}
+
+figure img {
+  max-width: 100%;
+  height: auto;
+}
+
+figcaption {
+  margin-top: 0.5rem;
+  color: var(--color-vt-gray-700);
+  font-size: 0.9rem;
+}
+
+/* /hundred — 百數表 hydration 頁 */
+.hundred-main {
+  max-width: 640px;
+}
+
+.hundred-main .lead {
+  color: var(--color-vt-gray-700);
+  margin-bottom: 1.5rem;
+}
+
+.hundred-controls {
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--color-vt-gray-200);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.hundred-controls .control-label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.factor-input {
+  width: 100%;
+  max-width: 12rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1px solid var(--color-vt-gray-200);
+  border-radius: 6px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.hundred-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  background: #fff;
+  border: 1px solid var(--color-vt-gray-200);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.hundred-cell {
+  width: 10%;
+  padding: 0.55rem 0.35rem;
+  text-align: center;
+  border: 1px solid var(--color-vt-gray-200);
+  transition: background-color 0.15s ease;
+}
