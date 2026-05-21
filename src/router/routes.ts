@@ -4,11 +4,15 @@ import AboutView from '../views/About.vue'
 import WordView from '../views/Word.vue'
 import HundredChartView from '../views/HundredChart.vue'
 import NotFoundView from '../views/NotFound.vue'
+import PrivacyView from '../views/Privacy.vue'
+import TermsView from '../views/Terms.vue'
 import {
   headForAbout,
   headForHome,
   headForHundredChart,
   headForNotFound,
+  headForPrivacy,
+  headForTerms,
   headForWord,
   type HeadConfig,
 } from '../ssr/heads'
@@ -22,6 +26,8 @@ const placeholderPaths = [
   '/mastodon',
   '/faq',
   '/contributors',
+  '/privacy',
+  '/terms',
 ]
 
 export const routes: RouteRecordRaw[] = [
@@ -56,6 +62,18 @@ export const routes: RouteRecordRaw[] = [
     component: HundredChartView,
     meta: { status: 200 },
   },
+  {
+    path: '/privacy',
+    name: 'privacy',
+    component: PrivacyView,
+    meta: { status: 200 },
+  },
+  {
+    path: '/terms',
+    name: 'terms',
+    component: TermsView,
+    meta: { status: 200 },
+  },
   ...placeholderPaths.map((path) => ({
     path,
     name: `placeholder-${path.slice(1)}`,
@@ -88,6 +106,10 @@ export function headForRoute(
       return headForWord(String(route.params.w ?? ''), origin)
     case 'hundred':
       return headForHundredChart(origin)
+    case 'privacy':
+      return headForPrivacy(origin)
+    case 'terms':
+      return headForTerms(origin)
     default:
       return headForNotFound(origin)
   }

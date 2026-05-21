@@ -81,6 +81,28 @@ export function headForHundredChart(origin: string): HeadConfig {
   }
 }
 
+export function headForPrivacy(origin: string): HeadConfig {
+  const title = `隱私政策 — vTaiwan`
+  const description =
+    'vTaiwan 隱私政策 - 我們承諾保護您的個人資料，不會將您的個人資料傳遞給第三方'
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/privacy`),
+  }
+}
+
+export function headForTerms(origin: string): HeadConfig {
+  const title = `使用條款 — vTaiwan`
+  const description =
+    'vTaiwan 使用條款 - 使用我們的視訊和轉錄服務需要註冊帳號並同意 CC-BY-SA 授權'
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/terms`),
+  }
+}
+
 export function headForNotFound(origin: string): HeadConfig {
   const title = `404 施工中 — vTaiwan`
   const description = `此頁面目前正在施工中，敬請期待更完善的 vTaiwan 數位民主平台。`
