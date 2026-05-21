@@ -108,11 +108,11 @@ import Footer from '../components/Footer.vue'
               <p>
                 <strong>GitHub：</strong>
                 <a
-                  href="https://github.com/g0v/vue.vTaiwan-neo"
+                  href="https://github.com/g0v/vTaiwan-hono"
                   class="text-blue-600 underline hover:text-blue-800"
                   target="_blank"
                   rel="noopener noreferrer"
-                >https://github.com/g0v/vue.vTaiwan-neo</a>
+                >https://github.com/g0v/vTaiwan-hono</a>
               </p>
             </div>
           </section>
