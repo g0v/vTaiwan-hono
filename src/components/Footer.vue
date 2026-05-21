@@ -8,7 +8,7 @@ const connect = [
   { label: 'X (Twitter)', href: 'https://x.com/v_taiwan' },
   { label: 'Instagram', href: 'https://www.instagram.com/vtaiwan.tw/' },
   { label: 'LinkedIn', href: 'https://www.linkedin.com/company/vtaiwan/' },
-  { label: 'HackMD', href: 'https://g0v.hackmd.io/@tmonk/rJHYWR9S4/%2Ff9c4pS_TQjClh0g6wCJ8iw?type=book' },
+  { label: 'HackMD Workspace', href: 'https://g0v.hackmd.io/@tmonk/rJHYWR9S4/%2Ff9c4pS_TQjClh0g6wCJ8iw?type=book' },
 ]
 
 // 聯絡 — info@vtaiwan.tw 對齊原 Footer；其餘為原 Footer 沒有、手動設置的站內連結
