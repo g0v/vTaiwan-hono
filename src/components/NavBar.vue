@@ -23,7 +23,7 @@ const links = [
 
     <div class="vt-glass mx-auto flex h-[72px] max-w-6xl items-center justify-between rounded-2xl pl-6 pr-3">
       <a href="/" class="flex shrink-0 items-center" aria-label="vTaiwan 首頁">
-        <img :src="'/assets/vtaiwan-logo.svg'" alt="vTaiwan" class="h-6 w-auto" />
+        <img :src="'/assets/vtaiwan-logo.svg'" alt="vTaiwan" class="h-7 w-auto" />
       </a>
 
       <!-- 桌面導覽 -->
@@ -44,10 +44,11 @@ const links = [
       </nav>
 
       <div class="flex items-center gap-2.5 text-[13px]">
-        <span class="hidden cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[#4a4a52] transition-colors hover:bg-black/5 lg:inline-flex">
+        <span class="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[#4a4a52] transition-colors hover:bg-black/5">
+          <svg class="opacity-70" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>
           中文
         </span>
-        <span class="hidden h-5 w-px bg-black/10 lg:block" />
+        <span class="hidden h-5 w-px bg-black/10 sm:block" />
         <a
           href="#"
           class="hidden whitespace-nowrap rounded-full bg-ink px-4 py-2 font-medium text-white transition-colors hover:bg-democratic-red sm:inline-flex"
@@ -86,9 +87,15 @@ const links = [
         </svg>
       </a>
       <div class="my-1.5 h-px bg-black/10" />
-      <a href="#" class="block rounded-xl bg-ink px-3.5 py-3 text-center font-medium text-white">
-        註冊 / 登入
-      </a>
+      <div class="flex gap-2 px-1.5 pb-1.5 pt-2">
+        <span class="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-3 text-[#4a4a52]">
+          <svg class="opacity-70" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>
+          中文
+        </span>
+        <a href="#" class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-4 py-3 font-medium text-white transition-colors hover:bg-democratic-red">
+          註冊 / 登入
+        </a>
+      </div>
     </div>
   </header>
 </template>
