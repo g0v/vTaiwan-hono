@@ -18,7 +18,7 @@ const contact = [
       <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
         <!-- 品牌 -->
         <div>
-          <img src="/assets/vtaiwan-logo-dark.svg" alt="vTaiwan" class="mb-3 h-6 w-auto opacity-95" />
+          <img :src="'/assets/vtaiwan-logo-dark.svg'" alt="vTaiwan" class="mb-3 h-6 w-auto opacity-95" />
           <p class="max-w-[280px] text-[13px] leading-relaxed text-[#9c9ca4]">
             公共政策的開放協作平台，讓每個人都能參與台灣的未來。
           </p>
