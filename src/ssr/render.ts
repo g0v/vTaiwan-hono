@@ -32,7 +32,7 @@ export async function renderPage(url: string, origin: string): Promise<RenderPag
 <html lang="zh-Hant">
   <head>
     ${headTags}
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
     <link rel="stylesheet" href="/styles.css" />
 ${clientStyle}
   </head>

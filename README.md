@@ -69,7 +69,7 @@ public/                  # static assets, served via ASSETS binding / 靜態資�
 ├── js/app.js            # generated — gitignored / 自動產生，不納入版控
 ├── js/app.css           # generated — gitignored / 自動產生，不納入版控
 ├── assets/              # vTaiwan logo SVGs / vTaiwan logo 圖檔
-└── favicon.svg
+└── favicon.ico
 ```
 
 ## Generated assets / 自動產生的靜態檔
