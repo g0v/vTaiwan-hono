@@ -1,13 +1,10 @@
 <script setup lang="ts">
-import NavBar from '../components/NavBar.vue'
-
 defineProps<{
   word: string
 }>()
 </script>
 
 <template>
-  <NavBar current="word" />
   <main class="container">
     <h1>Word: {{ word }}</h1>
     <p>

@@ -1,15 +1,7 @@
-<script setup lang="ts">
-import NavBar from '../components/NavBar.vue'
-import Footer from '../components/Footer.vue'
-</script>
-
 <template>
-  <div class="font-serif min-h-screen flex flex-col bg-vt-gray-100">
-    <NavBar />
-
-    <main class="flex-grow">
-      <div class="mx-auto max-w-4xl px-4 py-8 sm:py-12">
-        <div class="policy-body rounded-lg bg-white p-6 shadow-md sm:p-8">
+  <main>
+    <div class="mx-auto max-w-4xl px-4 py-8 sm:py-12">
+      <div class="policy-body rounded-lg bg-white p-6 shadow-md sm:p-8">
           <h1 class="mb-8 text-center text-3xl font-bold">使用條款</h1>
 
           <section class="mb-8">
@@ -126,12 +118,9 @@ import Footer from '../components/Footer.vue'
           <div class="mt-8 text-center">
             <RouterLink to="/" class="vt-btn vt-btn-primary !text-white">返回首頁</RouterLink>
           </div>
-        </div>
       </div>
-    </main>
-
-    <Footer />
-  </div>
+    </div>
+  </main>
 </template>
 
 <style scoped>

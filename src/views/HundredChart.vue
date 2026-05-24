@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import NavBar from '../components/NavBar.vue'
 
 /** v-model 綁定的原始字串；SSR 與首次 hydrate 皆為空字串，避免 mismatch */
 const factorRaw = ref('')
@@ -27,7 +26,6 @@ const rows = computed(() =>
 
 <template>
   <div class="hundred-root">
-    <NavBar current="hundred" />
     <main class="container hundred-main">
       <h1>百數表 · Hydration 示範</h1>
       <p class="lead">

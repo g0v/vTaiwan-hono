@@ -1,9 +1,4 @@
-<script setup lang="ts">
-import NavBar from '../components/NavBar.vue'
-</script>
-
 <template>
-  <NavBar current="about" />
   <main class="container">
     <h1>About</h1>
     <p>

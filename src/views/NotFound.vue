@@ -1,15 +1,7 @@
-<script setup lang="ts">
-import NavBar from '../components/NavBar.vue'
-import Footer from '../components/Footer.vue'
-</script>
-
 <template>
-  <div class="font-serif min-h-screen flex flex-col bg-vt-gray-100">
-    <NavBar current="notfound" />
-
-    <!-- Main Content Container -->
-    <main class="flex-grow flex items-center justify-center py-16 px-6">
-      <div class="vt-glass max-w-2xl w-full rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center">
+  <!-- Main Content Container -->
+  <main class="flex items-center justify-center px-6 py-16">
+    <div class="vt-glass max-w-2xl w-full rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center">
         
         <!-- Premium Deliberation/Construction SVG Illustration -->
         <div class="relative w-full max-w-[320px] mb-8 select-none">
@@ -122,11 +114,8 @@ import Footer from '../components/Footer.vue'
             瀏覽已開放的範例
           </RouterLink>
         </div>
-      </div>
-    </main>
-
-    <Footer />
-  </div>
+    </div>
+  </main>
 </template>
 
 <style scoped>
