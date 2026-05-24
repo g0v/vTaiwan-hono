@@ -12,3 +12,6 @@ worker-configuration.d.ts
 /public/styles.css
 /public/js/app.js
 /public/js/app.css
+
+# Antigravity CLI workspace state
+.antigravitycli/
