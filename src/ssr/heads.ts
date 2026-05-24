@@ -13,7 +13,7 @@ export interface HeadConfig {
 const SITE_NAME = 'Hono Vue SSR Template'
 
 // 預設的 OG 圖片是 "模板" 的字圖，來自 moedict.tw
-const DEFAULT_OG_IMAGE = `https://www.moedict.tw/${encodeURIComponent('模板')}.png`
+const DEFAULT_OG_IMAGE = `https://vtaiwan-hono.audreyt.workers.dev/img/og-image.png`
 
 // 統一產 OG / Twitter Card meta，避免每條路由都自己寫一次
 function buildOg(
