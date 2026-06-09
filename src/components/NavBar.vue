@@ -24,6 +24,11 @@ const links = [
 
 const activeKey = computed(() => props.current ?? '')
 
+const { locale } = useI18n()
+const isJapanese = computed(() => locale.value === 'ja')
+const isChinese = computed(() => locale.value.includes('zh'))
+const isEnglish = computed(() => locale.value.includes('en'))
+
 watch(
   () => route.fullPath,
   () => {
@@ -34,13 +39,13 @@ watch(
 
 <template>
   <header class="sticky top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-4 font-sans">
-    <div class="vt-glass mx-auto flex h-[72px] max-w-6xl items-center justify-between rounded-2xl pl-6 pr-3">
+    <div class="vt-glass mx-auto flex h-[72px] max-w-6xl items-center justify-between rounded-2xl pl-6 pr-3" :class="{'max-w-7xl': !isChinese}">
       <RouterLink to="/" class="flex shrink-0 items-center" :aria-label="t('header.home')">
         <img :src="'/assets/vtaiwan-logo.svg'" alt="vTaiwan" class="h-7 w-auto" />
       </RouterLink>
 
       <!-- 桌面導覽 -->
-      <nav class="hidden items-center gap-0.5 text-sm lg:flex">
+      <nav class="hidden items-center gap-0.5 xl:flex" :class="{'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish}">
         <RouterLink
           v-for="l in links"
           :key="l.key"
@@ -69,7 +74,7 @@ watch(
         <!-- 行動裝置漢堡按鈕 -->
         <button
           type="button"
-          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-ink transition-colors hover:bg-black/5 lg:hidden"
+          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-ink transition-colors hover:bg-black/5 xl:hidden"
           :aria-expanded="mobileOpen"
           :aria-label="t('header.openMenu')"
           @click="mobileOpen = !mobileOpen"
@@ -85,12 +90,12 @@ watch(
     </div>
 
     <!-- 行動選單面板 -->
-    <div v-if="mobileOpen" class="vt-glass mx-auto mt-2 max-w-6xl rounded-2xl p-2.5 lg:hidden">
+    <div v-if="mobileOpen" class="vt-glass mx-auto mt-2 max-w-6xl rounded-2xl p-2.5 xl:hidden">
       <RouterLink
         v-for="l in links"
         :key="l.key"
         :to="l.href"
-        class="flex items-center justify-between rounded-xl px-3.5 py-3 transition-colors hover:bg-black/5"
+        class="flex items-center justify-between rounded-xl px-3.5 py-1.5 transition-colors hover:bg-black/5"
         :class="activeKey === l.key ? 'text-democratic-red' : 'text-[#2a2a30]'"
         @click="mobileOpen = false"
       >
@@ -102,7 +107,8 @@ watch(
       <div class="my-1.5 h-px bg-black/10" />
       <div class="flex gap-2 px-1.5 pb-1.5 pt-2">
         <LanguageSwitcher block class="flex-1" />
-        <a href="#" class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-4 py-3 font-medium text-white transition-colors hover:bg-democratic-red">
+        <a href="#" class="inline-flex flex-1 
+          items-center justify-center rounded-full bg-ink px-3 py-3 text-white transition-colors hover:bg-democratic-red" :class="{'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish}">
           {{ t('common.registerLogin') }}
         </a>
       </div>
