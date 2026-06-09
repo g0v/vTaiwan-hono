@@ -1,0 +1,801 @@
+{
+  "common": {
+    "login": "登入",
+    "logout": "登出",
+    "cancel": "取消",
+    "confirm": "確認",
+    "save": "儲存",
+    "edit": "編輯",
+    "delete": "刪除",
+    "search": "搜尋",
+    "loading": "載入中...",
+    "error": "錯誤",
+    "success": "成功",
+    "warning": "警告",
+    "info": "資訊",
+    "profile": "個人資料"
+  },
+  "underConstruction": {
+    "title": "施工中",
+    "message": "歡迎來到 vTaiwan，目前施工中，功能建議與錯誤回報請在Github Issues上提出",
+    "messageEn": "Welcome to vTaiwan, currently we are under construction. Please submit feature suggestions and bug reports on GitHub Issues.",
+    "githubIssues": "GitHub Issues"
+  },
+  "header": {
+    "home": "首頁",
+    "about": "關於",
+    "contact": "聯絡我們",
+    "profile": "個人資料",
+    "projects": "專案",
+    "topics": "議題",
+    "meetups": "會議",
+    "blogs": "部落格",
+    "newsletters": "電子報",
+    "mastodon": "社群貼文",
+    "transcriptions": "逐字稿管理",
+    "faq": "常見問題",
+    "contributors": "貢獻者"
+  },
+  "about": {
+    "title": "關於我們",
+    "mission": {
+      "title": "vTaiwan 的使命",
+      "description": "vTaiwan 是台灣的公共政策開放協作平台，致力於促進政府與公民之間的對話，讓每個人都能參與公共政策的形成過程。我們相信，透過開放、協作、共創的方式，可以為台灣的未來找到更好的解決方案。"
+    },
+    "values": {
+      "title": "我們的價值",
+      "open": {
+        "title": "開放",
+        "description": "資訊透明，過程公開"
+      },
+      "collaborate": {
+        "title": "協作",
+        "description": "多方參與，共同討論"
+      },
+      "coCreate": {
+        "title": "共創",
+        "description": "創新思維，解決問題"
+      }
+    },
+    "newsletter": {
+      "title": "電子報",
+      "description": "歡迎大家瀏覽 vTaiwan 電子報，掌握社群動態、活動與政策討論。",
+      "button": "瀏覽電子報"
+    },
+    "contact": {
+      "title": "聯絡我們",
+      "description": "如果您有任何問題或建議，歡迎與我們聯繫：",
+      "contactUs": "聯絡我們",
+      "facebook": "Facebook"
+    }
+  },
+  "auth": {
+    "loginTitle": "登入",
+    "loginWithGoogle": "使用 Google 登入",
+    "loggingIn": "登入中...",
+    "loginFailed": "登入失敗，請重試",
+    "logoutConfirm": "確定要登出嗎？",
+    "loginError": "登入時發生錯誤，請稍後再試",
+    "logoutError": "登出時發生錯誤，請稍後再試",
+    "inAppBrowserNotSupported": "本系統不支援Facebook, Line等app內部瀏覽，請用一般瀏覽器開啟，方可登入，謝謝"
+  },
+  "footer": {
+    "description": "公共政策的開放協作平台",
+    "community": "社群",
+    "contact": "聯絡我們",
+    "copyright": "© {year} vTaiwan. 採CC-BY-SA創用授權釋出",
+    "sourceCode": "原始碼",
+    "privacyPolicy": "隱私政策",
+    "termsOfService": "使用條款"
+  },
+  "home": {
+    "title": "vTaiwan - 公共政策開放協作",
+    "welcome": "歡迎來到 vTaiwan",
+    "description": "台灣數位治理的創新平台",
+    "hero": {
+      "title": {
+        "open": "開放",
+        "collaborate": "協作",
+        "coCreate": "共創",
+        "taiwanFuture": "台灣的未來"
+      },
+      "subtitle": "vTaiwan 是一個促進政府與公民對話的開放協作平台，讓每個人都能參與公共政策的形成過程。",
+      "buttons": {
+        "browseTopics": "瀏覽議題",
+        "learnMore": "了解更多"
+      }
+    },
+    "features": {
+      "title": "如何運作",
+      "items": {
+        "propose": {
+          "title": "提出議題",
+          "description": "任何人都可以提出值得討論的公共政策議題，經過初步審核後進入討論階段。"
+        },
+        "discuss": {
+          "title": "開放討論",
+          "description": "透過線上討論與實體會議，收集各方意見，形成具體的政策建議。"
+        },
+        "policy": {
+          "title": "政策形成",
+          "description": "將公民共識轉化為具體政策建議，提交給相關政府部門參考與執行。"
+        }
+      }
+    },
+    "cta": {
+      "title": "加入我們，共同參與台灣的未來",
+      "description": "無論您是公民、專家、政府人員或是關心公共事務的任何人，都歡迎加入 vTaiwan 平台，貢獻您的想法。",
+      "buttons": {
+        "browseProjects": "瀏覽專案",
+        "browseTopics": "瀏覽議題",
+        "learnMore": "了解更多"
+      }
+    }
+  },
+  "profile": {
+    "title": "個人資料",
+    "name": "姓名",
+    "email": "電子郵件",
+    "role": "角色",
+    "createdAt": "建立時間",
+    "lastLogin": "最後登入",
+    "loginRequired": "請先登入以查看和編輯個人資料"
+  },
+  "contributors": {
+    "title": "貢獻者",
+    "coreTeam": "核心團隊",
+    "communityContributors": "社群貢獻者",
+    "joinUs": "加入我們",
+    "joinUsDescription": "無論您是公民、專家、政府人員或是關心公共事務的任何人，都歡迎加入 vTaiwan 平台。",
+    "learnMore": "了解更多",
+    "roles": {
+      "projectManager": "專案負責人",
+      "techDirector": "技術總監",
+      "designer": "設計師",
+      "processDesigner": "流程設計師"
+    },
+    "descriptions": {
+      "projectManager": "負責整體專案規劃與協調",
+      "techDirector": "負責技術架構與平台開發",
+      "designer": "負責 vTaiwan 網站設計與體驗設計",
+      "processDesigner": "負責 vTaiwan 流程與系統設計"
+    },
+    "contributions": {
+      "policyResearch": "政策研究",
+      "uiuxDesign": "UI/UX 設計",
+      "frontendDev": "前端開發",
+      "contentEditor": "內容編輯",
+      "dataAnalysis": "資料分析",
+      "translationSupport": "翻譯支援",
+      "backendDev": "後端開發",
+      "eventPlanning": "活動策劃",
+      "contentManager": "內容管理員",
+      "processDesign": "流程設計",
+      "participation": "參與者"
+    }
+  },
+  "blog": {
+    "loading": "載入中...",
+    "notFound": "找不到這篇文章",
+    "backToList": "返回部落格列表",
+    "editArticle": "編輯文章",
+    "deleteArticle": "刪除文章",
+    "saving": "儲存中...",
+    "save": "儲存",
+    "cancel": "取消",
+    "title": "標題",
+    "author": "作者",
+    "publishDate": "發布日期",
+    "tags": "標籤（用逗號分隔）",
+    "tagsPlaceholder": "例如：vTaiwan, 數位民主, 開放政府",
+    "summary": "大綱",
+    "content": "內容 (Markdown)",
+    "contentPlaceholder": "在此輸入 Markdown 格式的內容...",
+    "preview": "預覽",
+    "deleteConfirmTitle": "確認刪除",
+    "deleteConfirmMessage": "您確定要刪除這篇文章嗎？此操作無法復原。",
+    "deleting": "刪除中...",
+    "confirmDelete": "確認刪除",
+    "saveError": "儲存時發生錯誤，請稍後再試",
+    "deleteError": "刪除時發生錯誤，請稍後再試",
+    "loginRequired": "請先登入才能發布文章",
+    "postNewArticle": "發布新文章",
+    "publisher": "發布者",
+    "posting": "發布中...",
+    "postArticle": "發布文章",
+    "postError": "發布文章時發生錯誤，請稍後再試",
+    "language": "語言",
+    "languageAll": "所有語言",
+    "languageZhTW": "正體中文",
+    "languageEn": "英文",
+    "languageJa": "日文",
+    "languageSelect": "選擇顯示語言",
+    "isPrototype": "這是樣稿",
+    "prototype": "樣稿",
+    "fetchError": "取得貼文時發生錯誤，請稍後再試",
+    "noPosts": "目前沒有符合當前語言的貼文",
+    "viewOriginal": "查看原始貼文",
+    "allLanguages": "所有語言",
+    "currentLanguage": "當前語言",
+    "sourceDescription": "文章來源：g0v.social平台中，vTaiwan標籤下的貼文，僅顯示摘要。"
+  },
+  "medium": {
+    "title": "Medium 文章",
+    "sourceDescription": "文章來源：",
+    "configTitle": "配置 Medium 用戶",
+    "usernameLabel": "Medium 用戶名或 URL",
+    "usernamePlaceholder": "例如：vtaiwan 或 https://medium.com/@vtaiwan",
+    "usernameHint": "可以直接輸入用戶名，或貼上完整的 Medium URL",
+    "usernameRequired": "請輸入 Medium 用戶名",
+    "invalidUsername": "無法從輸入中提取用戶名，請確認格式正確",
+    "loadArticles": "載入文章",
+    "loading": "載入中...",
+    "retry": "重試",
+    "readMore": "閱讀全文",
+    "noArticles": "目前沒有文章",
+    "noArticlesFound": "找不到文章，請確認用戶名是否正確",
+    "fetchError": "取得文章時發生錯誤，請稍後再試",
+    "corsError": "無法連接到 Medium RSS feed，可能是 CORS 限制。請檢查瀏覽器控制台獲取詳細信息。",
+    "userNotFound": "找不到該用戶名的 Medium RSS feed，請確認用戶名是否正確。",
+    "configHint": "請在上方輸入 Medium 用戶名並點擊「載入文章」按鈕",
+    "howToFind": "如何找到您的 Medium 用戶名？",
+    "step1": "前往您的 Medium 個人資料頁面（例如：https://medium.com/@您的用戶名）",
+    "step2": "或者查看您已發布文章的 URL，通常格式為 https://medium.com/@用戶名/文章標題",
+    "step3": "用戶名就是 @ 符號後面的部分（不需要包含 @ 符號）"
+  },
+  "newsletter": {
+    "title": "電子報",
+    "description": "瀏覽 vTaiwan 在 Substack 發佈的電子報，快速掌握社群近況、活動與討論脈絡。",
+    "loading": "載入電子報中...",
+    "retry": "重新載入",
+    "readMore": "閱讀全文",
+    "backToList": "← 返回電子報列表",
+    "viewOriginal": "到 Substack 查看原文",
+    "visitSubstack": "前往 Substack",
+    "fetchError": "取得電子報時發生錯誤，請稍後再試",
+    "empty": "目前沒有可顯示的電子報",
+    "notFound": "找不到這篇電子報"
+  },
+  "topicDetail": {
+    "discussion": "討論區",
+    "admin": "管理員",
+    "moderator": "版主",
+    "showAllPosts": "顯示全部 {count} 則留言",
+    "showLess": "顯示較少"
+  },
+  "transcript": {
+    "title": "即時逐字稿",
+    "subtitle": "會議內容即時轉錄與校對",
+    "selectDate": "選擇日期",
+    "toggleTranscript": "切換逐字稿",
+    "hideTranscript": "隱藏逐字稿",
+    "showTranscript": "顯示逐字稿",
+    "noContent": "尚無逐字稿內容",
+    "connecting": "連接中...",
+    "disconnected": "連接已中斷",
+    "edit": "編輯",
+    "save": "儲存",
+    "cancel": "取消",
+    "editing": "編輯模式",
+    "timestamp": "時間戳記",
+    "speaker": "發言者",
+    "content": "內容",
+    "addEntry": "新增條目",
+    "deleteEntry": "刪除條目",
+    "exportTranscript": "匯出逐字稿",
+    "clearAll": "清除全部",
+    "confirmClear": "確定要清除該筆逐字稿嗎？",
+    "autoScroll": "自動捲動",
+    "fontSize": "字體大小",
+    "fontSizeSmall": "小",
+    "fontSizeMedium": "中",
+    "fontSizeLarge": "大",
+    "iAmRecorder": "我是記錄者",
+    "manualTranscript": "手動逐字稿",
+    "addManualTranscript": "新增手動逐字稿",
+    "audioSettings": "音訊設定",
+    "selectAudioSource": "選擇音訊來源",
+    "selectTranscriptionLanguage": "選擇轉錄語言",
+    "loadingAudioDevices": "載入音訊設備中...",
+    "unknownDevice": "未知設備",
+    "testAudioDevice": "測試音訊設備",
+    "testingAudio": "測試中...",
+    "audioLevel": "音訊音量",
+    "speakToTest": "請對著麥克風說話來測試音量",
+    "stopTest": "停止測試",
+    "editEntry": "編輯逐字稿",
+    "close": "關閉",
+    "speakerPlaceholder": "請輸入發言者姓名",
+    "contentPlaceholder": "請輸入逐字稿內容..."
+  },
+  "projects": {
+    "title": "專案列表",
+    "description": "vTaiwan 平台上的所有公共政策協作專案。每個專案都經過提案、討論、形成共識與政策建議的過程。",
+    "filters": {
+      "status": "狀態",
+      "category": "分類",
+      "search": "搜尋",
+      "searchPlaceholder": "搜尋專案..."
+    },
+    "status": {
+      "all": "全部",
+      "active": "進行中",
+      "completed": "已完成"
+    },
+    "categories": {
+      "all": "全部分類"
+    },
+    "participants": "人參與",
+    "created": "建立於",
+    "cta": {
+      "title": "想要提出新的專案？",
+      "description": "如果您有值得討論的公共政策議題，歡迎提出專案建議。",
+      "button": "提出專案"
+    }
+  },
+  "projectDetail": {
+    "objectives": "專案目標",
+    "howToParticipate": "參與方式",
+    "discuss": "參與討論",
+    "discussDesc": "在專案討論區分享您的想法和建議，與其他參與者交流意見。",
+    "contribute": "貢獻內容",
+    "contributeDesc": "提供專業知識、研究資料或實作經驗，協助專案發展。",
+    "share": "分享資訊",
+    "shareDesc": "將專案資訊分享給更多關心此議題的朋友，擴大影響力。",
+    "join": "加入團隊",
+    "joinDesc": "成為專案核心團隊成員，參與決策和執行工作。",
+    "relatedLinks": "相關連結",
+    "githubRepo": "GitHub 儲存庫",
+    "documentation": "專案文件",
+    "discussion": "討論區",
+    "backToProjects": "返回專案列表",
+    "joinProject": "加入專案",
+    "notFound": "找不到專案",
+    "notFoundDesc": "您要查看的專案不存在或已被移除。"
+  },
+  "meetups": {
+    "title": "會議",
+    "description": "vTaiwan 定期舉辦線上與實體會議，討論各專案的進展與公共政策議題。歡迎所有人參與！",
+    "search": {
+      "placeholder": "搜尋會議或議題...",
+      "noResults": "找不到符合「{query}」的會議",
+      "resultsFor": "搜尋結果：「{query}」",
+      "clearSearch": "清除搜尋"
+    },
+    "upcoming": {
+      "title": "即將舉行的會議",
+      "empty": "目前沒有即將舉行的會議"
+    },
+    "past": {
+      "title": "過去的會議",
+      "empty": "目前沒有過去的會議記錄"
+    },
+    "calendar": {
+      "title": "會議行事曆",
+      "description": "訂閱我們的會議行事曆，不錯過任何重要會議。",
+      "googleCalendar": "Google Calendar",
+      "icalFile": "iCal 檔案"
+    },
+    "relatedProject": "相關專案",
+    "register": "立即報名",
+    "details": "詳細資訊",
+    "watchRecording": "觀看錄影",
+    "meetingRecord": "會議紀錄",
+    "viewMorePast": "查看更多過去的會議",
+    "host": {
+      "title": "想要舉辦會議？",
+      "description": "如果您想針對某個專案或公共政策議題舉辦討論會，歡迎與我們聯繫。",
+      "contactUs": "聯絡我們"
+    },
+    "jitsi": "即時會議",
+    "transcriptions": "逐字稿管理"
+  },
+  "meetupDetail": {
+    "upcoming": "即將舉行",
+    "past": "已結束",
+    "details": "會議詳情",
+    "date": "日期",
+    "time": "時間",
+    "location": "地點",
+    "relatedProject": "相關專案",
+    "tags": "標籤",
+    "relatedLinks": "相關連結",
+    "registration": "報名連結",
+    "recording": "錄影連結",
+    "summary": "會議紀錄",
+    "hackmd": "HackMD 共筆",
+    "kktix": "KKTIX 報名",
+    "googleForm": "Google 表單",
+    "backToMeetups": "返回會議列表",
+    "register": "立即報名",
+    "notFound": "找不到會議",
+    "notFoundDesc": "您要查看的會議不存在或已被移除。",
+    "share": {
+      "title": "分享此議題",
+      "facebook": "分享到 Facebook",
+      "line": "分享到 Line",
+      "twitter": "分享到 X (Twitter)"
+    }
+  },
+  "polis": {
+    "title": "提案討論",
+    "subtitle": "用 Polis 一起決定下一個 Polis 該討論什麼",
+    "intro": {
+      "p1": "歡迎來到 MetaPolis 🌀",
+      "p2": "這是 vTaiwan 可能一個有點後設 (meta) 的意見徵集：",
+      "p3": "我們想用 Polis，來問大家下一個 Polis 應該討論什麼。（笑）",
+      "p4": "畢竟其實台灣有很多很多議題在持續進行著，vTaiwan 還是希望有個機制把開議題的 agency 交給公眾。開議題的決定，不應該只是來自於 vTaiwan 社群內部的討論！"
+    },
+    "reportLabel": "報告頁面："
+  },
+  "topics": {
+    "title": "議題",
+    "description": "vTaiwan 的議題討論區，參與政策制定過程。",
+    "tryPolisLink": "按此立即體驗",
+    "list": {
+      "title": "議題列表",
+      "empty": "目前沒有議題",
+      "loading": "載入中...",
+      "found": "找到 {count} 個議題",
+      "lastUpdated": "最後更新"
+    },
+    "search": {
+      "placeholder": "搜尋議題...",
+      "results": "找到 {count} 個結果「{query}」",
+      "noResults": "找不到符合的議題",
+      "clearSearch": "清除搜尋"
+    },
+    "sort": {
+      "latest": "最新",
+      "participants": "參與人數",
+      "views": "瀏覽數"
+    },
+    "metrics": {
+      "participants": "參與者",
+      "posts": "貼文",
+      "views": "瀏覽",
+      "lastActivity": "最後活動"
+    },
+    "actions": {
+      "share": "分享議題",
+      "bookmark": "加入書籤"
+    },
+    "bookmarks": {
+      "myBookmarks": "書籤"
+    },
+    "detail": {
+      "title": "議題詳情",
+      "discussion": "討論",
+      "timeline": "時間軸",
+      "introduction": "簡介",
+      "notFound": "找不到議題",
+      "comments": "留言",
+      "participate": "參與討論",
+      "noSlide": "暫無簡介資料",
+      "noInfo": "暫無詳細資訊",
+      "enterDiscussion": "進入討論",
+      "backToList": "← 返回議題列表",
+      "noDiscussion": "目前沒有討論內容",
+      "noTimeline": "目前沒有時間軸資料",
+      "loading": "載入中..."
+    },
+    "status": {
+      "preparing": "準備中",
+      "discussion": "討論中",
+      "voting": "投票中",
+      "completed": "已完成",
+      "draft": "草案研擬",
+      "collection": "意見徵集"
+    },
+    "recentTitle": "近三個月的議題",
+    "recentDesc": "以下是近三個月內有更新的議題，適合新來的朋友了解目前 vTaiwan 正在關注的政策議題",
+    "steps": {
+      "all": "全部",
+      "即將開始": "即將開始",
+      "意見徵集": "意見徵集",
+      "研擬草案": "研擬草案",
+      "送交院會": "送交院會",
+      "歷史案件": "歷史案件"
+    },
+    "noRecent": "暫無近期議題"
+  },
+  "contact": {
+    "title": "聯絡我們",
+    "subtitle": "加入 vTaiwan 社群，與我們一起推動數位民主",
+    "workingGroup": {
+      "title": "vTaiwan 工作組",
+      "description": "vTaiwan 工作組是推動數位民主的重要平台，我們在這裡討論政策、分享想法，並協作各種專案。",
+      "button": "查看工作組 Book"
+    },
+    "slack": {
+      "title": "g0v Slack 頻道",
+      "description": "加入 g0v 的 Slack 工作空間，在 #vtaiwan 頻道與社群成員即時交流，參與討論和協作。",
+      "channel": "#vtaiwan",
+      "channelDesc": "主要討論頻道，用於政策討論、專案協作和社群交流",
+      "button": "加入 g0v Slack"
+    },
+    "otherMethods": {
+      "title": "其他聯絡方式",
+      "github": {
+        "title": "GitHub",
+        "description": "查看我們的開源專案",
+        "link": "前往 GitHub →"
+      },
+      "email": {
+        "title": "電子郵件",
+        "description": "透過郵件與我們聯繫",
+        "link": "發送郵件 →"
+      },
+      "meetups": {
+        "title": "實體聚會",
+        "description": "參加我們的定期聚會",
+        "link": "查看聚會 →"
+      }
+    },
+    "cta": {
+      "title": "準備好加入我們了嗎？",
+      "description": "無論你是開發者、設計師、政策專家，還是對數位民主有興趣的朋友，都歡迎加入 vTaiwan 社群！",
+      "workingGroup": "查看工作組",
+      "slack": "加入 Slack"
+    }
+  },
+  "transcriptions": {
+    "title": "逐字稿管理",
+    "description": "管理會議逐字稿，包含查詢、下載和上傳功能",
+    "upload": {
+      "title": "上傳逐字稿",
+      "description": "上傳即代表您同意以CC-BY-SA創用授權釋出，並同意由AI整理大綱，大綱以CC0釋出",
+      "selectFile": "選擇檔案 (.txt)",
+      "uploading": "上傳中...由AI整理摘要，需等待約60秒",
+      "uploadButton": "上傳逐字稿",
+      "loginRequired": "請先登入才能上傳逐字稿檔案"
+    },
+    "list": {
+      "title": "逐字稿列表",
+      "meetingId": "會議 ID",
+      "fileName": "檔案名稱",
+      "viewOutline": "查看大綱",
+      "viewDetail": "查看詳情",
+      "download": "下載全文",
+      "empty": "目前沒有逐字稿資料",
+      "copyLink": "複製逐字稿連結",
+      "copyLinkSuccess": "逐字稿連結已複製到剪貼簿",
+      "copyLinkError": "複製逐字稿連結失敗，請稍後再試"
+    },
+
+    "outline": {
+      "title": "會議大綱",
+      "close": "關閉",
+      "copy": "複製大綱",
+      "edit": "編輯大綱",
+      "saveAndEndEdit": "儲存並結束編輯",
+      "cancel": "取消編輯",
+      "copySuccess": "大綱已複製到剪貼簿",
+      "copyError": "複製失敗，請稍後再試",
+      "editRequireAdmin": "需要管理員權限才能編輯大綱"
+    },
+    "messages": {
+      "selectFileFirst": "請選擇檔案",
+      "invalidFileName": "檔案名稱格式不正確，請使用 transcript-YYYY-MM-DD.txt 格式",
+      "existsRequireAdmin": "此會議逐字稿已存在，需要管理員權限才能更新",
+      "confirmUpdate": "會議 {meetingId} 的逐字稿已存在，確定要更新嗎？",
+      "uploadSuccess": "逐字稿上傳成功！",
+      "uploadError": "上傳失敗，請稍後再試",
+      "loadError": "載入逐字稿列表失敗，請稍後再試"
+    }
+  },
+  "transcriptionDetail": {
+    "title": "逐字稿詳情",
+    "description": "查看完整的會議逐字稿內容",
+    "backToList": "返回列表",
+    "speaker": "發言者",
+    "noContent": "沒有逐字稿內容",
+    "loadError": "載入逐字稿失敗，請稍後再試",
+    "photoAlt": "用戶頭像",
+    "loading": "載入中...",
+    "error": "載入失敗"
+  },
+  "faq": {
+    "title": "常見問答 (FAQ)",
+    "description": "以下是關於 vTaiwan 平台的常見問題與解答。如果您有其他問題，歡迎聯繫我們。",
+    "contact": {
+      "title": "還有其他問題？",
+      "description": "如果您有其他問題或需要協助，歡迎透過以下方式聯繫我們：",
+      "email": {
+        "title": "電子郵件"
+      },
+      "social": {
+        "title": "社群媒體"
+      }
+    }
+  },
+  "propose": {
+    "title": "提出專案提案",
+    "description": "如果您有值得討論的公共政策議題，歡迎提出專案建議。在提出提案前，請先了解參與要求。",
+    "requirements": {
+      "title": "參與要求",
+      "meeting": {
+        "title": "參與 vTaiwan 線上會議",
+        "description": "在提出提案前，您需要先參與 vTaiwan 的線上會議，了解社群的運作方式和討論氛圍。",
+        "bullet1": "參與至少一次 vTaiwan 線上會議",
+        "bullet2": "了解會議討論的議題和流程",
+        "bullet3": "與社群成員建立聯繫"
+      },
+      "admin": {
+        "title": "認領內容管理員",
+        "description": "提案需要有人負責管理和推動，您需要認領成為該提案的內容管理員。",
+        "bullet1": "負責提案的內容管理和更新",
+        "bullet2": "協調討論和收集意見",
+        "bullet3": "推動提案的進展和執行"
+      }
+    },
+    "process": {
+      "title": "提案流程",
+      "step1": {
+        "title": "參與會議",
+        "description": "參與 vTaiwan 線上會議，了解社群運作方式"
+      },
+      "step2": {
+        "title": "提出提案",
+        "description": "在會議中提出您的提案想法，獲得社群支持"
+      },
+      "step3": {
+        "title": "認領管理",
+        "description": "認領成為內容管理員，負責提案的推動"
+      }
+    },
+    "contact": {
+      "title": "開始參與",
+      "description": "準備好提出您的提案了嗎？請先參與我們的會議或聯繫社群。",
+      "meeting": {
+        "title": "參與線上會議",
+        "description": "加入我們的線上會議，了解 vTaiwan 的運作方式，並與社群成員交流。",
+        "button": "加入會議"
+      },
+      "community": {
+        "title": "聯繫社群",
+        "description": "如果您有任何問題或需要協助，歡迎透過各種管道聯繫 vTaiwan 社群。",
+        "button": "聯絡我們"
+      }
+    }
+  },
+  "privacy": {
+    "title": "隱私政策",
+    "metaDescription": "vTaiwan 隱私政策 - 我們承諾保護您的個人資料，不會將您的個人資料傳遞給第三方",
+    "introduction": {
+      "title": "引言",
+      "content": "vTaiwan 致力於保護用戶的隱私權。本隱私政策說明我們如何收集、使用、儲存和保護您的個人資料。"
+    },
+    "dataCollection": {
+      "title": "資料收集",
+      "content": "我們可能收集以下類型的資料：",
+      "item1": "帳戶資訊：當您註冊帳戶時提供的姓名、電子郵件地址等",
+      "item2": "使用資料：您使用我們服務時的活動記錄和偏好設定",
+      "item3": "技術資料：IP 地址、瀏覽器類型、作業系統等技術資訊"
+    },
+    "dataUsage": {
+      "title": "資料使用",
+      "content": "我們使用收集的資料用於以下目的：",
+      "item1": "提供和改善我們的服務",
+      "item2": "與您溝通並提供客戶支援",
+      "item3": "確保平台安全和防止濫用"
+    },
+    "dataSharing": {
+      "title": "資料分享",
+      "content": "除了必要的分析記錄用途之外，我們承諾不會將您的瀏覽記錄與個人資料出售、出租或分享給第三方。",
+      "highlight": "重要：我們不會將您的個人資料傳遞給第三方"
+    },
+    "dataSecurity": {
+      "title": "資料安全",
+      "content": "我們採取適當的技術和組織措施來保護您的個人資料，防止未經授權的存取、使用或洩露。"
+    },
+    "userRights": {
+      "title": "用戶權利",
+      "content": "您對自己的個人資料享有以下權利：",
+      "item1": "存取權：要求查看我們持有的您的個人資料",
+      "item2": "更正權：要求更正不準確的個人資料",
+      "item3": "刪除權：要求刪除您的個人資料"
+    },
+    "contact": {
+      "title": "聯絡我們",
+      "content": "如果您對本隱私政策有任何疑問，或希望行使您的權利，請透過以下方式聯絡我們：",
+      "email": "電子郵件",
+      "github": "GitHub"
+    },
+    "updates": {
+      "title": "政策更新",
+      "content": "我們可能會不時更新本隱私政策。任何重大變更都會在網站上公佈。",
+      "lastUpdated": "最後更新：2025年9月"
+    },
+    "backToHome": "返回首頁"
+  },
+  "terms": {
+    "title": "使用條款",
+    "metaDescription": "vTaiwan 使用條款 - 使用我們的視訊和轉錄服務需要註冊帳號並同意 CC-BY-SA 授權",
+    "introduction": {
+      "title": "引言",
+      "content": "歡迎使用 vTaiwan 平台。本使用條款規範您對我們服務的使用。"
+    },
+    "acceptance": {
+      "title": "接受條款",
+      "content": "透過使用我們的服務，您表示同意遵守本使用條款。如果您不同意這些條款，請勿使用我們的服務。"
+    },
+    "account": {
+      "title": "帳戶要求",
+      "content": "使用某些功能需要註冊帳戶：",
+      "highlight": "重要：使用視訊及轉錄服務需要先註冊帳號",
+      "item1": "您必須提供真實、準確的資訊",
+      "item2": "您有責任保護您的帳戶安全",
+      "item3": "您必須年滿 18 歲或獲得監護人同意"
+    },
+    "videoService": {
+      "title": "視訊服務",
+      "content": "我們的視訊會議服務允許用戶進行線上討論和協作。",
+      "highlight": "使用視訊服務需要註冊帳號並同意相關條款"
+    },
+    "transcriptionService": {
+      "title": "轉錄服務",
+      "content": "我們提供會議轉錄服務，幫助記錄和整理討論內容。使用此服務需要：",
+      "highlight": "轉錄內容將以 CC-BY-SA 授權釋出",
+      "item1": "註冊帳戶並登入",
+      "item2": "同意轉錄內容的授權條款",
+      "item3": "遵守社群規範和討論禮儀"
+    },
+    "contentLicense": {
+      "title": "內容授權",
+      "content": "當您使用我們的轉錄服務時，您同意：",
+      "highlight": "所有轉錄內容將以 CC-BY-SA 創用授權釋出",
+      "details": "CC-BY-SA 授權允許他人自由使用、修改和分享您的內容，但必須標明原作者並以相同授權釋出衍生作品。"
+    },
+    "userConduct": {
+      "title": "用戶行為",
+      "content": "使用我們的服務時，您同意：",
+      "item1": "尊重其他用戶，進行建設性的討論",
+      "item2": "不發布違法、有害或攻擊性的內容",
+      "item3": "不濫用系統或進行惡意行為",
+      "item4": "遵守所有適用的法律法規"
+    },
+    "disclaimer": {
+      "title": "免責聲明",
+      "content": "我們的服務按「現狀」提供，不提供任何明示或暗示的保證。我們不承擔因使用服務而產生的任何直接或間接損失。"
+    },
+    "modifications": {
+      "title": "條款修改",
+      "content": "我們保留隨時修改本使用條款的權利。修改後的條款將在網站上公佈，繼續使用服務即表示接受修改後的條款。"
+    },
+    "contact": {
+      "title": "聯絡我們",
+      "content": "如果您對本使用條款有任何疑問，請透過以下方式聯絡我們：",
+      "email": "電子郵件",
+      "github": "GitHub"
+    },
+    "effectiveDate": {
+      "title": "生效日期",
+      "content": "本使用條款自公佈之日起生效。",
+      "lastUpdated": "最後更新：2025年9月"
+    },
+    "backToHome": "返回首頁"
+  },
+  "jitsi": {
+    "tipBanner": {
+      "message": "若要啟用麥克風/鏡頭，請先在黑色空白處點一下，再按左下角的麥克風/鏡頭圖示。",
+      "dismiss": "知道了"
+    }
+  },
+  "notFound": {
+    "title": "頁面不存在",
+    "description": "抱歉，您要訪問的頁面不存在或已被移除。",
+    "suggestion": "請檢查網址是否正確，或使用下方的導航按鈕返回網站。",
+    "buttons": {
+      "backToHome": "返回首頁",
+      "browseTopics": "瀏覽議題",
+      "contactUs": "聯絡我們"
+    },
+    "help": {
+      "title": "需要協助嗎？",
+      "checkUrl": "• 請檢查網址是否正確",
+      "useNavigation": "• 使用上方導航選單瀏覽網站",
+      "contactSupport": "• 如有問題請聯絡我們"
+    }
+  }
+}

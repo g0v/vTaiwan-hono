@@ -10,6 +10,14 @@ const root = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   root,
   publicDir: false,
+  // 對齊 vite.config.mts 的 vue-i18n feature flag（JIT、非 legacy）
+  define: {
+    __VUE_I18N_FULL_INSTALL__: true,
+    __VUE_I18N_LEGACY_API__: false,
+    __INTLIFY_JIT_COMPILATION__: true,
+    __INTLIFY_DROP_MESSAGE_COMPILER__: false,
+    __INTLIFY_PROD_DEVTOOLS__: false,
+  },
   plugins: [vue({ compiler: vueCompiler })],
   build: {
     outDir: 'public',

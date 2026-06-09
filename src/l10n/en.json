@@ -1,0 +1,806 @@
+{
+  "即將開始": "Upcoming",
+  "意見徵集": "Collecting Opinions",
+  "研擬草案": "Drafting",
+  "送交院會": "To Legislature",
+  "歷史案件": "Archived",
+  "common": {
+    "login": "Login",
+    "logout": "Logout",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "warning": "Warning",
+    "info": "Info",
+    "profile": "Profile"
+  },
+  "underConstruction": {
+    "title": "Under Construction",
+    "message": "Welcome to vTaiwan, currently we are under construction. Please submit feature suggestions and bug reports on GitHub Issues.",
+    "messageEn": "歡迎來到 vTaiwan，目前施工中，功能建議與錯誤回報請在Github Issues上提出",
+    "githubIssues": "GitHub Issues"
+  },
+  "header": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "profile": "Profile",
+    "projects": "Projects",
+    "topics": "Topics",
+    "meetups": "Meetups",
+    "blogs": "Blogs",
+    "newsletters": "Newsletters",
+    "mastodon": "Posts",
+    "transcriptions": "Transcriptions",
+    "faq": "FAQ",
+    "contributors": "Contributors"
+  },
+  "about": {
+    "title": "About Us",
+    "mission": {
+      "title": "vTaiwan's Mission",
+      "description": "vTaiwan is Taiwan's open collaboration platform for public policy, dedicated to promoting dialogue between government and citizens, enabling everyone to participate in the public policy formation process. We believe that through open, collaborative, and co-creative approaches, we can find better solutions for Taiwan's future."
+    },
+    "values": {
+      "title": "Our Values",
+      "open": {
+        "title": "Open",
+        "description": "Transparent information, open process"
+      },
+      "collaborate": {
+        "title": "Collaborate",
+        "description": "Multi-party participation, collective discussion"
+      },
+      "coCreate": {
+        "title": "Co-create",
+        "description": "Innovative thinking, problem solving"
+      }
+    },
+    "newsletter": {
+      "title": "Newsletters",
+      "description": "You're welcome to browse vTaiwan newsletters for community updates, events, and public policy discussions.",
+      "button": "Browse newsletters"
+    },
+    "contact": {
+      "title": "Contact Us",
+      "description": "If you have any questions or suggestions, please feel free to contact us:",
+      "contactUs": "Contact Us",
+      "facebook": "Facebook"
+    }
+  },
+  "auth": {
+    "loginTitle": "Login",
+    "loginWithGoogle": "Login with Google",
+    "loggingIn": "Logging in...",
+    "loginFailed": "Login failed, please try again",
+    "logoutConfirm": "Are you sure you want to logout?",
+    "loginError": "An error occurred during login, please try again later",
+    "logoutError": "An error occurred during logout, please try again later",
+    "inAppBrowserNotSupported": "This system does not support in-app browsers like Facebook or Line. Please open with a regular browser to login. Thank you."
+  },
+  "footer": {
+    "description": "Open collaboration platform for public policy",
+    "community": "Community",
+    "contact": "Contact Us",
+    "copyright": "© {year} vTaiwan. Released under CC-BY-SA Creative Commons License",
+    "sourceCode": "Source Code",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service"
+  },
+  "home": {
+    "title": "vTaiwan - Open Collaboration for Public Policy",
+    "welcome": "Welcome to vTaiwan",
+    "description": "Innovative platform for Taiwan's digital governance",
+    "hero": {
+      "title": {
+        "open": "Open",
+        "collaborate": "Collaborate",
+        "coCreate": "Co-create",
+        "taiwanFuture": "Taiwan's Future"
+      },
+      "subtitle": "vTaiwan is an open collaboration platform that promotes dialogue between government and citizens, enabling everyone to participate in the public policy formation process.",
+      "buttons": {
+        "browseTopics": "Browse Topics",
+        "learnMore": "Learn More"
+      }
+    },
+    "features": {
+      "title": "How It Works",
+      "items": {
+        "propose": {
+          "title": "Propose Issues",
+          "description": "Anyone can propose public policy issues worth discussing, which enter the discussion phase after initial review."
+        },
+        "discuss": {
+          "title": "Open Discussion",
+          "description": "Through online discussions and physical meetings, collect opinions from all parties to form concrete policy recommendations."
+        },
+        "policy": {
+          "title": "Policy Formation",
+          "description": "Transform citizen consensus into concrete policy recommendations and submit them to relevant government departments for reference and implementation."
+        }
+      }
+    },
+    "cta": {
+      "title": "Join us in shaping Taiwan's future together",
+      "description": "Whether you are a citizen, expert, government official, or anyone concerned about public affairs, you are welcome to join the vTaiwan platform and contribute your ideas.",
+      "buttons": {
+        "browseProjects": "Browse Projects",
+        "browseTopics": "Browse Topics",
+        "learnMore": "Learn More"
+      }
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "createdAt": "Created At",
+    "lastLogin": "Last Login",
+    "loginRequired": "Please login to view and edit your profile"
+  },
+  "contributors": {
+    "title": "Contributors",
+    "coreTeam": "Core Team",
+    "communityContributors": "Community Contributors",
+    "joinUs": "Join Us",
+    "joinUsDescription": "Whether you are a citizen, expert, government official, or anyone concerned about public affairs, you are welcome to join the vTaiwan platform.",
+    "learnMore": "Learn More",
+    "roles": {
+      "projectManager": "Project Manager",
+      "techDirector": "Technical Director",
+      "designer": "Designer",
+      "processDesigner": "Process Designer"
+    },
+    "descriptions": {
+      "projectManager": "Responsible for overall project planning and coordination",
+      "techDirector": "Responsible for technical architecture and platform development",
+      "designer": "Responsible for vTaiwan website design and experience design",
+      "processDesigner": "Responsible for vTaiwan process and system design"
+    },
+    "contributions": {
+      "policyResearch": "Policy Research",
+      "uiuxDesign": "UI/UX Design",
+      "frontendDev": "Frontend Development",
+      "contentEditor": "Content Editing",
+      "dataAnalysis": "Data Analysis",
+      "translationSupport": "Translation Support",
+      "backendDev": "Backend Development",
+      "eventPlanning": "Event Planning",
+      "contentManager": "Content Manager",
+      "processDesign": "Process Design",
+      "participation": "Participant"
+    }
+  },
+  "blog": {
+    "loading": "Loading...",
+    "notFound": "Article not found",
+    "backToList": "Back to blog list",
+    "editArticle": "Edit Article",
+    "deleteArticle": "Delete Article",
+    "saving": "Saving...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "title": "Title",
+    "author": "Author",
+    "publishDate": "Publish Date",
+    "tags": "Tags (comma separated)",
+    "tagsPlaceholder": "e.g., vTaiwan, Digital Democracy, Open Government",
+    "summary": "Summary",
+    "content": "Content (Markdown)",
+    "contentPlaceholder": "Enter Markdown content here...",
+    "preview": "Preview",
+    "deleteConfirmTitle": "Confirm Delete",
+    "deleteConfirmMessage": "Are you sure you want to delete this article? This action cannot be undone.",
+    "deleting": "Deleting...",
+    "confirmDelete": "Confirm Delete",
+    "saveError": "An error occurred while saving, please try again later",
+    "deleteError": "An error occurred while deleting, please try again later",
+    "loginRequired": "Please login to post an article",
+    "postNewArticle": "Post New Article",
+    "publisher": "Publisher",
+    "posting": "Posting...",
+    "postArticle": "Post Article",
+    "postError": "An error occurred while posting the article, please try again later",
+    "language": "Language",
+    "languageAll": "All Languages",
+    "languageZhTW": "Traditional Chinese",
+    "languageEn": "English",
+    "languageJa": "Japanese",
+    "languageSelect": "Select display language",
+    "isPrototype": "This is a prototype",
+    "prototype": "Prototype",
+    "fetchError": "An error occurred while fetching posts, please try again later",
+    "noPosts": "No posts available in the current language",
+    "viewOriginal": "View Original Post",
+    "allLanguages": "All Languages",
+    "currentLanguage": "Current Language",
+    "sourceDescription": "Article source: Posts under the vTaiwan tag on g0v.social platform, showing summaries only."
+  },
+  "medium": {
+    "title": "Medium Articles",
+    "sourceDescription": "Article source: ",
+    "configTitle": "Configure Medium User",
+    "usernameLabel": "Medium Username or URL",
+    "usernamePlaceholder": "e.g., vtaiwan or https://medium.com/@vtaiwan",
+    "usernameHint": "You can enter the username directly, or paste the full Medium URL",
+    "usernameRequired": "Please enter a Medium username",
+    "invalidUsername": "Unable to extract username from input, please verify the format is correct",
+    "loadArticles": "Load Articles",
+    "loading": "Loading...",
+    "retry": "Retry",
+    "readMore": "Read More",
+    "noArticles": "No articles available",
+    "noArticlesFound": "No articles found. Please verify the username is correct",
+    "fetchError": "An error occurred while fetching articles, please try again later",
+    "corsError": "Unable to connect to Medium RSS feed, possibly due to CORS restrictions. Please check the browser console for details.",
+    "userNotFound": "Medium RSS feed not found for this username, please verify the username is correct.",
+    "configHint": "Please enter a Medium username above and click the \"Load Articles\" button",
+    "howToFind": "How to find your Medium username?",
+    "step1": "Go to your Medium profile page (e.g., https://medium.com/@your-username)",
+    "step2": "Or check the URL of your published articles, usually in the format https://medium.com/@username/article-title",
+    "step3": "The username is the part after the @ symbol (don't include the @ symbol)"
+  },
+  "newsletter": {
+    "title": "Newsletters",
+    "description": "Browse vTaiwan newsletters published on Substack to follow community updates, events, and ongoing discussions.",
+    "loading": "Loading newsletters...",
+    "retry": "Retry",
+    "readMore": "Read More",
+    "backToList": "← Back to Newsletter List",
+    "viewOriginal": "View Original on Substack",
+    "visitSubstack": "Visit Substack",
+    "fetchError": "An error occurred while fetching newsletters, please try again later",
+    "empty": "No newsletters available right now",
+    "notFound": "Newsletter not found"
+  },
+  "transcript": {
+    "title": "Live Transcript",
+    "subtitle": "Real-time meeting transcription and proofreading",
+    "selectDate": "Select Date",
+    "toggleTranscript": "Toggle Transcript",
+    "hideTranscript": "Hide Transcript",
+    "showTranscript": "Show Transcript",
+    "noContent": "No transcript content yet",
+    "connecting": "Connecting...",
+    "disconnected": "Connection lost",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "editing": "Edit Mode",
+    "timestamp": "Timestamp",
+    "speaker": "Speaker",
+    "content": "Content",
+    "addEntry": "Add Entry",
+    "deleteEntry": "Delete Entry",
+    "exportTranscript": "Export Transcript",
+    "clearAll": "Clear All",
+    "confirmClear": "Are you sure you want to clear this transcript?",
+    "autoScroll": "Auto Scroll",
+    "fontSize": "Font Size",
+    "fontSizeSmall": "Small",
+    "fontSizeMedium": "Medium",
+    "fontSizeLarge": "Large",
+    "iAmRecorder": "I am Recorder",
+    "manualTranscript": "Manual Transcript",
+    "addManualTranscript": "Add Manual Transcript",
+    "audioSettings": "Audio Settings",
+    "selectAudioSource": "Select Audio Source",
+    "selectTranscriptionLanguage": "Select Transcription Language",
+    "loadingAudioDevices": "Loading audio devices...",
+    "unknownDevice": "Unknown Device",
+    "testAudioDevice": "Test Audio Device",
+    "testingAudio": "Testing...",
+    "audioLevel": "Audio Level",
+    "speakToTest": "Please speak into the microphone to test volume",
+    "stopTest": "Stop Test",
+    "editEntry": "Edit Transcript Entry",
+    "close": "Close",
+    "speakerPlaceholder": "Enter speaker name",
+    "contentPlaceholder": "Enter transcript content..."
+  },
+  "projects": {
+    "title": "Project List",
+    "description": "All public policy collaboration projects on the vTaiwan platform. Each project goes through the process of proposal, discussion, consensus building, and policy recommendations.",
+    "filters": {
+      "status": "Status",
+      "category": "Category",
+      "search": "Search",
+      "searchPlaceholder": "Search projects..."
+    },
+    "status": {
+      "all": "All",
+      "active": "Active",
+      "completed": "Completed"
+    },
+    "categories": {
+      "all": "All Categories"
+    },
+    "participants": "participants",
+    "created": "Created in",
+    "cta": {
+      "title": "Want to propose a new project?",
+      "description": "If you have public policy issues worth discussing, you are welcome to propose project suggestions.",
+      "button": "Propose Project"
+    }
+  },
+  "projectDetail": {
+    "objectives": "Project Objectives",
+    "howToParticipate": "How to Participate",
+    "discuss": "Join Discussion",
+    "discussDesc": "Share your ideas and suggestions in the project discussion area and exchange opinions with other participants.",
+    "contribute": "Contribute Content",
+    "contributeDesc": "Provide professional knowledge, research data, or implementation experience to help project development.",
+    "share": "Share Information",
+    "shareDesc": "Share project information with more friends who care about this issue to expand influence.",
+    "join": "Join Team",
+    "joinDesc": "Become a core team member of the project and participate in decision-making and execution work.",
+    "relatedLinks": "Related Links",
+    "githubRepo": "GitHub Repository",
+    "documentation": "Project Documentation",
+    "discussion": "Discussion Forum",
+    "backToProjects": "Back to Project List",
+    "joinProject": "Join Project",
+    "notFound": "Project Not Found",
+    "notFoundDesc": "The project you are looking for does not exist or has been removed."
+  },
+  "meetups": {
+    "title": "Meetups",
+    "description": "vTaiwan regularly hosts online and physical meetings to discuss project progress and public policy issues. Everyone is welcome to participate!",
+    "search": {
+      "placeholder": "Search meetups or topics...",
+      "noResults": "No meetups found for \"{query}\"",
+      "resultsFor": "Search results for: \"{query}\"",
+      "clearSearch": "Clear search"
+    },
+    "upcoming": {
+      "title": "Upcoming Meetups",
+      "empty": "No upcoming meetups at the moment"
+    },
+    "past": {
+      "title": "Past Meetups",
+      "empty": "No past meetup records at the moment"
+    },
+    "calendar": {
+      "title": "Meetup Calendar",
+      "description": "Subscribe to our meetup calendar to never miss any important meetings.",
+      "googleCalendar": "Google Calendar",
+      "icalFile": "iCal File"
+    },
+    "relatedProject": "Related Project",
+    "register": "Register Now",
+    "details": "Details",
+    "watchRecording": "Watch Recording",
+    "meetingRecord": "Meeting Record",
+    "viewMorePast": "View More Past Meetups",
+    "host": {
+      "title": "Want to host a meetup?",
+      "description": "If you want to host a discussion on a specific project or public policy issue, please contact us.",
+      "contactUs": "Contact Us"
+    },
+    "jitsi": "Jitsi Meet",
+    "transcriptions": "Transcriptions"
+  },
+  "meetupDetail": {
+    "upcoming": "Upcoming",
+    "past": "Past",
+    "details": "Meetup Details",
+    "date": "Date",
+    "time": "Time",
+    "location": "Location",
+    "relatedProject": "Related Project",
+    "tags": "Tags",
+    "relatedLinks": "Related Links",
+    "registration": "Registration Link",
+    "recording": "Recording Link",
+    "summary": "Meeting Summary",
+    "hackmd": "HackMD Notes",
+    "kktix": "KKTIX Registration",
+    "googleForm": "Google Form",
+    "backToMeetups": "Back to Meetups",
+    "register": "Register Now",
+    "notFound": "Meetup Not Found",
+    "notFoundDesc": "The meetup you are looking for does not exist or has been removed.",
+    "share": {
+      "title": "Share This Topic",
+      "facebook": "Share on Facebook",
+      "line": "Share on Line",
+      "twitter": "Share on X (Twitter)"
+    }
+  },
+  "polis": {
+    "title": "Proposal Discussion",
+    "subtitle": "Use Polis to decide what the next Polis should discuss",
+    "intro": {
+      "p1": "Welcome to MetaPolis 🌀",
+      "p2": "This is a perhaps slightly meta opinion gathering from vTaiwan:",
+      "p3": "We want to use Polis to ask everyone what the next Polis should discuss. (lol)",
+      "p4": "After all, Taiwan has many, many ongoing issues, and vTaiwan still hopes to have a mechanism that gives the public agency to open up new topics. The decision of which topics to raise shouldn't only come from discussions inside the vTaiwan community!"
+    },
+    "reportLabel": "Report page:"
+  },
+  "topics": {
+    "title": "Topics",
+    "description": "vTaiwan's topic discussion forum, participate in the policy-making process.",
+    "tryPolisLink": "Click here to try it now",
+    "list": {
+      "title": "Topic List",
+      "empty": "No topics available",
+      "loading": "Loading...",
+      "found": "Found {count} topics",
+      "lastUpdated": "Last Updated"
+    },
+    "search": {
+      "placeholder": "Search topics...",
+      "results": "Found {count} results for \"{query}\"",
+      "noResults": "No matching topics found",
+      "clearSearch": "Clear Search"
+    },
+    "sort": {
+      "latest": "Latest",
+      "participants": "Participants",
+      "views": "Views"
+    },
+    "metrics": {
+      "participants": "Participants",
+      "posts": "Posts",
+      "views": "Views",
+      "lastActivity": "Last Activity"
+    },
+    "actions": {
+      "share": "Share Topic",
+      "bookmark": "Add Bookmark"
+    },
+    "bookmarks": {
+      "myBookmarks": "Bookmarks"
+    },
+    "detail": {
+      "title": "Topic Details",
+      "discussion": "Discussion",
+      "timeline": "Timeline",
+      "introduction": "Introduction",
+      "notFound": "Topic not found",
+      "comments": "Comments",
+      "participate": "Participate in Discussion",
+      "noSlide": "No introduction material available",
+      "noInfo": "No detailed information available",
+      "enterDiscussion": "Enter Discussion",
+      "backToList": "← Back to Topic List",
+      "noDiscussion": "No discussion content available",
+      "noTimeline": "No timeline data available",
+      "loading": "Loading..."
+    },
+    "status": {
+      "preparing": "Preparing",
+      "discussion": "In Discussion",
+      "voting": "Voting",
+      "completed": "Completed",
+      "draft": "Draft Development",
+      "collection": "Opinion Collection"
+    },
+    "recentTitle": "Recent Topics (Last 3 Months)",
+    "recentDesc": "Below are topics updated in the last 3 months, suitable for newcomers to see what vTaiwan is focusing on.",
+    "steps": {
+      "all": "All",
+      "即將開始": "Upcoming",
+      "意見徵集": "Collecting Opinions",
+      "研擬草案": "Drafting",
+      "送交院會": "To Legislature",
+      "歷史案件": "Archived"
+    },
+    "noRecent": "There are currently no recent topics."
+  },
+  "topicDetail": {
+    "discussion": "Discussion",
+    "admin": "Admin",
+    "moderator": "Moderator",
+    "showAllPosts": "Show All {count} Posts",
+    "showLess": "Show Less"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Join the vTaiwan community and help us promote digital democracy",
+    "workingGroup": {
+      "title": "vTaiwan Working Group",
+      "description": "The vTaiwan Working Group is an important platform for promoting digital democracy. We discuss policies, share ideas, and collaborate on various projects here.",
+      "button": "View Working Group Book"
+    },
+    "slack": {
+      "title": "g0v Slack Channel",
+      "description": "Join the g0v Slack workspace and engage in real-time communication with community members in the #vtaiwan channel, participate in discussions and collaborations.",
+      "channel": "#vtaiwan",
+      "channelDesc": "Main discussion channel for policy discussions, project collaborations, and community exchanges",
+      "button": "Join g0v Slack"
+    },
+    "otherMethods": {
+      "title": "Other Contact Methods",
+      "github": {
+        "title": "GitHub",
+        "description": "View our open source projects",
+        "link": "Go to GitHub →"
+      },
+      "email": {
+        "title": "Email",
+        "description": "Contact us via email",
+        "link": "Send Email →"
+      },
+      "meetups": {
+        "title": "Physical Meetups",
+        "description": "Attend our regular meetups",
+        "link": "View Meetups →"
+      }
+    },
+    "cta": {
+      "title": "Ready to join us?",
+      "description": "Whether you are a developer, designer, policy expert, or anyone interested in digital democracy, you are welcome to join the vTaiwan community!",
+      "workingGroup": "View Working Group",
+      "slack": "Join Slack"
+    }
+  },
+  "transcriptions": {
+    "title": "Transcription Management",
+    "description": "Manage meeting transcriptions, including query, download, and upload functions",
+    "upload": {
+      "title": "Upload Transcription",
+      "description": "By uploading, you agree to release under CC-BY-SA Creative Commons license and consent to AI-generated outlines, with outlines released under CC0",
+      "selectFile": "Select File (.txt)",
+      "uploading": "Uploading...AI will summarize the transcription, please wait for about 60 seconds",
+      "uploadButton": "Upload Transcription",
+      "loginRequired": "Please login first to upload transcription files"
+    },
+    "list": {
+      "title": "Transcription List",
+      "meetingId": "Meeting ID",
+      "fileName": "File Name",
+      "viewOutline": "View Outline",
+      "viewDetail": "View Detail",
+      "download": "Download Full Text",
+      "empty": "No transcription data available",
+      "copyLink": "Copy Transcription Link",
+      "copyLinkSuccess": "Transcription link copied to clipboard",
+      "copyLinkError": "Copy failed, please try again later"
+    },
+
+    "outline": {
+      "title": "Meeting Outline",
+      "close": "Close",
+      "copy": "Copy Outline",
+      "edit": "Edit Outline",
+      "saveAndEndEdit": "Save and End Editing",
+      "cancel": "Cancel Editing",
+      "copySuccess": "Outline copied to clipboard",
+      "copyError": "Copy failed, please try again later",
+      "editRequireAdmin": "Admin permission required to edit outline"
+    },
+    "messages": {
+      "selectFileFirst": "Please select a file",
+      "invalidFileName": "Invalid file name format, please use transcript-YYYY-MM-DD.txt format",
+      "existsRequireAdmin": "This meeting transcription already exists, admin permission required to update",
+      "confirmUpdate": "Transcription for meeting {meetingId} already exists, are you sure you want to update?",
+      "uploadSuccess": "Transcription uploaded successfully!",
+      "uploadError": "Upload failed, please try again later",
+      "loadError": "Failed to load transcription list, please try again later"
+    }
+  },
+  "transcriptionDetail": {
+    "title": "Transcription Detail",
+    "description": "View complete meeting transcription content",
+    "backToList": "Back to List",
+    "speaker": "Speaker",
+    "noContent": "No transcription content available",
+    "loadError": "Failed to load transcription, please try again later",
+    "photoAlt": "User Photo",
+    "loading": "Loading...",
+    "error": "Load Failed"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions (FAQ)",
+    "description": "Below are common questions and answers about the vTaiwan platform. If you have other questions, please feel free to contact us.",
+    "contact": {
+      "title": "Have other questions?",
+      "description": "If you have other questions or need assistance, please feel free to contact us through the following methods:",
+      "email": {
+        "title": "Email"
+      },
+      "social": {
+        "title": "Social Media"
+      }
+    }
+  },
+  "propose": {
+    "title": "Propose a Project",
+    "description": "If you have public policy issues worth discussing, you are welcome to propose project suggestions. Before proposing, please understand the participation requirements.",
+    "requirements": {
+      "title": "Participation Requirements",
+      "meeting": {
+        "title": "Participate in vTaiwan Online Meetings",
+        "description": "Before proposing, you need to participate in vTaiwan's online meetings to understand the community's operation methods and discussion atmosphere.",
+        "bullet1": "Participate in at least one vTaiwan online meeting",
+        "bullet2": "Understand the issues and processes discussed in meetings",
+        "bullet3": "Build connections with community members"
+      },
+      "admin": {
+        "title": "Claim Content Administrator Role",
+        "description": "Proposals need someone to manage and promote them. You need to claim the role of content administrator for the proposal.",
+        "bullet1": "Responsible for content management and updates of the proposal",
+        "bullet2": "Coordinate discussions and collect opinions",
+        "bullet3": "Promote the progress and execution of the proposal"
+      }
+    },
+    "process": {
+      "title": "Proposal Process",
+      "step1": {
+        "title": "Participate in Meetings",
+        "description": "Participate in vTaiwan online meetings to understand community operations"
+      },
+      "step2": {
+        "title": "Propose Ideas",
+        "description": "Present your proposal ideas in meetings to gain community support"
+      },
+      "step3": {
+        "title": "Claim Management",
+        "description": "Claim the role of content administrator to be responsible for proposal promotion"
+      }
+    },
+    "contact": {
+      "title": "Start Participating",
+      "description": "Ready to propose your project? Please first participate in our meetings or contact the community.",
+      "meeting": {
+        "title": "Join Online Meetings",
+        "description": "Join our online meetings to understand how vTaiwan operates and interact with community members.",
+        "button": "Join Meeting"
+      },
+      "community": {
+        "title": "Contact Community",
+        "description": "If you have any questions or need assistance, please feel free to contact the vTaiwan community through various channels.",
+        "button": "Contact Us"
+      }
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "metaDescription": "vTaiwan Privacy Policy - We are committed to protecting your personal data and will not share your personal information with third parties",
+    "introduction": {
+      "title": "Introduction",
+      "content": "vTaiwan is committed to protecting user privacy. This privacy policy explains how we collect, use, store, and protect your personal data."
+    },
+    "dataCollection": {
+      "title": "Data Collection",
+      "content": "We may collect the following types of data:",
+      "item1": "Account information: Name, email address, etc. provided when you register an account",
+      "item2": "Usage data: Activity records and preferences when you use our services",
+      "item3": "Technical data: IP address, browser type, operating system, and other technical information"
+    },
+    "dataUsage": {
+      "title": "Data Usage",
+      "content": "We use collected data for the following purposes:",
+      "item1": "Providing and improving our services",
+      "item2": "Communicating with you and providing customer support",
+      "item3": "Ensuring platform security and preventing abuse"
+    },
+    "dataSharing": {
+      "title": "Data Sharing",
+      "content": "Except for necessary analytical and recording purposes, we promise not to sell, rent, or share your browsing history and personal data with third parties.",
+      "highlight": "Important: We will not share your personal data with third parties"
+    },
+    "dataSecurity": {
+      "title": "Data Security",
+      "content": "We take appropriate technical and organizational measures to protect your personal data from unauthorized access, use, or disclosure."
+    },
+    "userRights": {
+      "title": "User Rights",
+      "content": "You have the following rights regarding your personal data:",
+      "item1": "Access right: Request to view personal data we hold about you",
+      "item2": "Correction right: Request to correct inaccurate personal data",
+      "item3": "Deletion right: Request to delete your personal data"
+    },
+    "contact": {
+      "title": "Contact Us",
+      "content": "If you have any questions about this privacy policy or wish to exercise your rights, please contact us through:",
+      "email": "Email",
+      "github": "GitHub"
+    },
+    "updates": {
+      "title": "Policy Updates",
+      "content": "We may update this privacy policy from time to time. Any significant changes will be announced on the website.",
+      "lastUpdated": "Last updated: September 2025"
+    },
+    "backToHome": "Back to Home"
+  },
+  "terms": {
+    "title": "Terms of Service",
+    "metaDescription": "vTaiwan Terms of Service - Using our video and transcription services requires account registration and agreement to CC-BY-SA license",
+    "introduction": {
+      "title": "Introduction",
+      "content": "Welcome to the vTaiwan platform. These terms of service govern your use of our services."
+    },
+    "acceptance": {
+      "title": "Acceptance of Terms",
+      "content": "By using our services, you agree to comply with these terms of service. If you do not agree to these terms, please do not use our services."
+    },
+    "account": {
+      "title": "Account Requirements",
+      "content": "Using certain features requires account registration:",
+      "highlight": "Important: Using video and transcription services requires account registration",
+      "item1": "You must provide true and accurate information",
+      "item2": "You are responsible for protecting your account security",
+      "item3": "You must be 18 years old or have guardian consent"
+    },
+    "videoService": {
+      "title": "Video Service",
+      "content": "Our video conferencing service allows users to conduct online discussions and collaboration.",
+      "highlight": "Using video services requires account registration and agreement to relevant terms"
+    },
+    "transcriptionService": {
+      "title": "Transcription Service",
+      "content": "We provide meeting transcription services to help record and organize discussion content. Using this service requires:",
+      "highlight": "Transcription content will be released under CC-BY-SA license",
+      "item1": "Register an account and log in",
+      "item2": "Agree to the licensing terms for transcription content",
+      "item3": "Comply with community standards and discussion etiquette"
+    },
+    "contentLicense": {
+      "title": "Content License",
+      "content": "When you use our transcription service, you agree that:",
+      "highlight": "All transcription content will be released under CC-BY-SA Creative Commons license",
+      "details": "CC-BY-SA license allows others to freely use, modify, and share your content, but must credit the original author and release derivative works under the same license."
+    },
+    "userConduct": {
+      "title": "User Conduct",
+      "content": "When using our services, you agree to:",
+      "item1": "Respect other users and engage in constructive discussions",
+      "item2": "Not post illegal, harmful, or offensive content",
+      "item3": "Not abuse the system or engage in malicious behavior",
+      "item4": "Comply with all applicable laws and regulations"
+    },
+    "disclaimer": {
+      "title": "Disclaimer",
+      "content": "Our services are provided 'as is' without any express or implied warranties. We do not assume any direct or indirect losses arising from the use of services."
+    },
+    "modifications": {
+      "title": "Terms Modifications",
+      "content": "We reserve the right to modify these terms of service at any time. Modified terms will be published on the website, and continued use of services indicates acceptance of the modified terms."
+    },
+    "contact": {
+      "title": "Contact Us",
+      "content": "If you have any questions about these terms of service, please contact us through:",
+      "email": "Email",
+      "github": "GitHub"
+    },
+    "effectiveDate": {
+      "title": "Effective Date",
+      "content": "These terms of service are effective from the date of publication.",
+      "lastUpdated": "Last updated: September 2025"
+    },
+    "backToHome": "Back to Home"
+  },
+  "jitsi": {
+    "tipBanner": {
+      "message": "To enable mic/camera, click once on the black area, then press the mic/camera icons at the bottom-left.",
+      "dismiss": "Got it"
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "Sorry, the page you are looking for does not exist or has been removed.",
+    "suggestion": "Please check if the URL is correct, or use the navigation buttons below to return to the website.",
+    "buttons": {
+      "backToHome": "Back to Home",
+      "browseTopics": "Browse Topics",
+      "contactUs": "Contact Us"
+    },
+    "help": {
+      "title": "Need Help?",
+      "checkUrl": "• Please check if the URL is correct",
+      "useNavigation": "• Use the navigation menu above to browse the website",
+      "contactSupport": "• Contact us if you have any questions"
+    }
+  }
+}

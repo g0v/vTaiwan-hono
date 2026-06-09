@@ -1,10 +1,18 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, inject, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { localeKey, supportedLocales } from '../i18n'
 
 const props = defineProps<{ current?: string }>()
 const route = useRoute()
 const mobileOpen = ref(false)
+
+// 注入 App.vue 提供的偏好語言變數，顯示目前語言名稱
+const localeCtx = inject(localeKey)
+const currentLanguageName = computed(() => {
+  const code = localeCtx?.locale.value
+  return supportedLocales.find((l) => l.code === code)?.name ?? '繁體中文'
+})
 
 // 導覽連結對齊至 vue.vTaiwan-neo 專案項目
 const links = [
@@ -56,7 +64,7 @@ watch(
       <div class="flex items-center gap-2.5 text-[13px]">
         <span class="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[#4a4a52] transition-colors hover:bg-black/5">
           <svg class="opacity-70" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>
-          中文
+          {{ currentLanguageName }}
         </span>
         <span class="hidden h-5 w-px bg-black/10 sm:block" />
         <a
@@ -103,7 +111,7 @@ watch(
       <div class="flex gap-2 px-1.5 pb-1.5 pt-2">
         <span class="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-3 text-[#4a4a52]">
           <svg class="opacity-70" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>
-          中文
+          {{ currentLanguageName }}
         </span>
         <a href="#" class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-4 py-3 font-medium text-white transition-colors hover:bg-democratic-red">
           註冊 / 登入
