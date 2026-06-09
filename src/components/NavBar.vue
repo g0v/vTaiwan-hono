@@ -1,30 +1,25 @@
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { localeKey, supportedLocales } from '../i18n'
+import { useI18n } from 'vue-i18n'
+import LanguageSwitcher from './LanguageSwitcher.vue'
 
 const props = defineProps<{ current?: string }>()
 const route = useRoute()
+const { t } = useI18n()
 const mobileOpen = ref(false)
 
-// 注入 App.vue 提供的偏好語言變數，顯示目前語言名稱
-const localeCtx = inject(localeKey)
-const currentLanguageName = computed(() => {
-  const code = localeCtx?.locale.value
-  return supportedLocales.find((l) => l.code === code)?.name ?? '繁體中文'
-})
-
-// 導覽連結對齊至 vue.vTaiwan-neo 專案項目
+// 導覽連結對齊至 vue.vTaiwan-neo 專案項目；label 由 i18n 提供
 const links = [
-  { key: 'home', label: '首頁', href: '/' },
-  { key: 'topics', label: '議題', href: '/topics' },
-  { key: 'meetups', label: '會議', href: '/meetups' },
-  { key: 'blogs', label: '部落格', href: '/blogs' },
-  { key: 'newsletters', label: '電子報', href: '/newsletters' },
-  { key: 'mastodon', label: '社群貼文', href: '/mastodon' },
-  { key: 'faq', label: '常見問題', href: '/faq' },
-  { key: 'about', label: '關於', href: '/intro' },
-  { key: 'contributors', label: '貢獻者', href: '/contributors' },
+  { key: 'home', labelKey: 'header.home', href: '/' },
+  { key: 'topics', labelKey: 'header.topics', href: '/topics' },
+  { key: 'meetups', labelKey: 'header.meetups', href: '/meetups' },
+  { key: 'blogs', labelKey: 'header.blogs', href: '/blogs' },
+  { key: 'newsletters', labelKey: 'header.newsletters', href: '/newsletters' },
+  { key: 'mastodon', labelKey: 'header.mastodon', href: '/mastodon' },
+  { key: 'faq', labelKey: 'header.faq', href: '/faq' },
+  { key: 'about', labelKey: 'header.about', href: '/intro' },
+  { key: 'contributors', labelKey: 'header.contributors', href: '/contributors' },
 ]
 
 const activeKey = computed(() => props.current ?? '')
@@ -40,7 +35,7 @@ watch(
 <template>
   <header class="sticky top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-4 font-sans">
     <div class="vt-glass mx-auto flex h-[72px] max-w-6xl items-center justify-between rounded-2xl pl-6 pr-3">
-      <RouterLink to="/" class="flex shrink-0 items-center" aria-label="vTaiwan 首頁">
+      <RouterLink to="/" class="flex shrink-0 items-center" :aria-label="t('header.home')">
         <img :src="'/assets/vtaiwan-logo.svg'" alt="vTaiwan" class="h-7 w-auto" />
       </RouterLink>
 
@@ -53,7 +48,7 @@ watch(
           class="relative whitespace-nowrap rounded-full px-3.5 py-2 transition-colors hover:bg-black/5"
           :class="activeKey === l.key ? 'text-democratic-red' : 'text-[#2a2a30]'"
         >
-          {{ l.label }}
+          {{ t(l.labelKey) }}
           <span
             v-if="activeKey === l.key"
             class="absolute -bottom-px left-1/2 h-[5px] w-[5px] -translate-x-1/2 rounded-full bg-democratic-red"
@@ -62,16 +57,13 @@ watch(
       </nav>
 
       <div class="flex items-center gap-2.5 text-[13px]">
-        <span class="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[#4a4a52] transition-colors hover:bg-black/5">
-          <svg class="opacity-70" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>
-          {{ currentLanguageName }}
-        </span>
+        <LanguageSwitcher />
         <span class="hidden h-5 w-px bg-black/10 sm:block" />
         <a
           href="#"
           class="hidden whitespace-nowrap rounded-full bg-ink px-4 py-2 font-medium text-white transition-colors hover:bg-democratic-red sm:inline-flex"
         >
-          註冊 / 登入
+          {{ t('common.registerLogin') }}
         </a>
 
         <!-- 行動裝置漢堡按鈕 -->
@@ -79,7 +71,7 @@ watch(
           type="button"
           class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-ink transition-colors hover:bg-black/5 lg:hidden"
           :aria-expanded="mobileOpen"
-          aria-label="開啟選單"
+          :aria-label="t('header.openMenu')"
           @click="mobileOpen = !mobileOpen"
         >
           <svg v-if="!mobileOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -102,19 +94,16 @@ watch(
         :class="activeKey === l.key ? 'text-democratic-red' : 'text-[#2a2a30]'"
         @click="mobileOpen = false"
       >
-        {{ l.label }}
+        {{ t(l.labelKey) }}
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40">
           <path d="m9 18 6-6-6-6" />
         </svg>
       </RouterLink>
       <div class="my-1.5 h-px bg-black/10" />
       <div class="flex gap-2 px-1.5 pb-1.5 pt-2">
-        <span class="inline-flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-full bg-black/[0.04] px-3 py-3 text-[#4a4a52]">
-          <svg class="opacity-70" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>
-          {{ currentLanguageName }}
-        </span>
+        <LanguageSwitcher block class="flex-1" />
         <a href="#" class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-4 py-3 font-medium text-white transition-colors hover:bg-democratic-red">
-          註冊 / 登入
+          {{ t('common.registerLogin') }}
         </a>
       </div>
     </div>

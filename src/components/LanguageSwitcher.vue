@@ -1,0 +1,92 @@
+<script setup lang="ts">
+import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
+import { localeKey, supportedLocales, type SupportedLocale } from '../i18n'
+
+// 是否為區塊（整寬）樣式，用於行動選單
+const props = defineProps<{ block?: boolean }>()
+
+// 注入 App.vue 提供的偏好語言情境
+const localeCtx = inject(localeKey)
+
+const isOpen = ref(false)
+
+const currentCode = computed(() => localeCtx?.locale.value)
+const current = computed(
+  () => supportedLocales.find((l) => l.code === currentCode.value) ?? supportedLocales[0],
+)
+
+const choose = (code: SupportedLocale) => {
+  localeCtx?.setLocale(code)
+  isOpen.value = false
+}
+
+// 點擊外部關閉下拉選單（僅瀏覽器端）
+const handleClickOutside = (event: Event) => {
+  const target = event.target as HTMLElement
+  if (!target.closest('[data-lang-switcher]')) isOpen.value = false
+}
+
+onMounted(() => document.addEventListener('click', handleClickOutside))
+onUnmounted(() => document.removeEventListener('click', handleClickOutside))
+</script>
+
+<template>
+  <div data-lang-switcher class="relative" :class="block ? 'w-full' : ''">
+    <button
+      type="button"
+      :aria-expanded="isOpen"
+      class="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[#4a4a52] transition-colors hover:bg-black/5"
+      :class="block ? 'w-full justify-center py-3 bg-black/[0.04]' : ''"
+      @click="isOpen = !isOpen"
+    >
+      <svg class="opacity-70" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>
+      <span>{{ current.name }}</span>
+      <svg
+        class="opacity-50 transition-transform"
+        :class="{ 'rotate-180': isOpen }"
+        width="12"
+        height="12"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M6 9l6 6 6-6" />
+      </svg>
+    </button>
+
+    <div
+      v-if="isOpen"
+      class="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-lg"
+      :class="block ? 'left-0' : ''"
+    >
+      <button
+        v-for="locale in supportedLocales"
+        :key="locale.code"
+        type="button"
+        class="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors hover:bg-black/5"
+        :class="currentCode === locale.code ? 'font-semibold text-democratic-red' : 'text-[#2a2a30]'"
+        @click="choose(locale.code)"
+      >
+        <span class="text-base">{{ locale.flag }}</span>
+        <span>{{ locale.name }}</span>
+        <svg
+          v-if="currentCode === locale.code"
+          class="ml-auto"
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+      </button>
+    </div>
+  </div>
+</template>

@@ -13,7 +13,8 @@
     "success": "成功",
     "warning": "警告",
     "info": "資訊",
-    "profile": "個人資料"
+    "profile": "個人資料",
+    "registerLogin": "註冊 / 登入"
   },
   "underConstruction": {
     "title": "施工中",
@@ -34,7 +35,8 @@
     "mastodon": "社群貼文",
     "transcriptions": "逐字稿管理",
     "faq": "常見問題",
-    "contributors": "貢獻者"
+    "contributors": "貢獻者",
+    "openMenu": "開啟選單"
   },
   "about": {
     "title": "關於我們",
@@ -86,7 +88,12 @@
     "copyright": "© {year} vTaiwan. 採CC-BY-SA創用授權釋出",
     "sourceCode": "原始碼",
     "privacyPolicy": "隱私政策",
-    "termsOfService": "使用條款"
+    "termsOfService": "使用條款",
+    "brandDescription": "公共政策的開放協作平台，讓每個人都能參與台灣的未來。",
+    "connectTitle": "社群連結",
+    "contactTitle": "聯絡",
+    "joinNextMeeting": "加入下次會議",
+    "proposeTopic": "提案新議題"
   },
   "home": {
     "title": "vTaiwan - 公共政策開放協作",
@@ -103,7 +110,8 @@
       "buttons": {
         "browseTopics": "瀏覽議題",
         "learnMore": "了解更多"
-      }
+      },
+      "eyebrow": "公共政策開放協作平台"
     },
     "features": {
       "title": "如何運作",
@@ -562,7 +570,6 @@
       "copyLinkSuccess": "逐字稿連結已複製到剪貼簿",
       "copyLinkError": "複製逐字稿連結失敗，請稍後再試"
     },
-
     "outline": {
       "title": "會議大綱",
       "close": "關閉",

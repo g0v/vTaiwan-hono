@@ -1,7 +1,18 @@
 <script setup lang="ts">
-// 連結對齊原專案 vue.vTaiwan-neo 的 Footer；原 Footer 沒有的項目則手動設置。
+// 連結對齊原專案 vue.vTaiwan-neo 的 Footer；文字接上 i18n，原版沒有的鍵已補入多語言。
+import { computed, inject } from 'vue'
+import { useI18n } from 'vue-i18n'
+import { localeKey, supportedLocales, type SupportedLocale } from '../i18n'
 
-// 社群連結 — 對齊原 Footer 的「社群」區塊
+const { t } = useI18n()
+const currentYear = computed(() => new Date().getFullYear())
+
+// 偏好語言情境 — 提供頁尾右下角語言切換按鈕使用
+const localeCtx = inject(localeKey)
+const currentCode = computed(() => localeCtx?.locale.value)
+const switchLocale = (code: SupportedLocale) => localeCtx?.setLocale(code)
+
+// 社群連結 — 對齊原 Footer 的「社群」區塊（品牌名稱不翻譯）
 const connect = [
   { label: 'Mastodon', href: 'https://g0v.social/' },
   { label: 'Facebook', href: 'https://www.facebook.com/vtaiwan.tw/' },
@@ -11,18 +22,18 @@ const connect = [
   { label: 'HackMD Workspace', href: 'https://g0v.hackmd.io/@tmonk/rJHYWR9S4/%2Ff9c4pS_TQjClh0g6wCJ8iw?type=book' },
 ]
 
-// 聯絡 — info@vtaiwan.tw 對齊原 Footer；其餘為原 Footer 沒有、手動設置的站內連結
+// 聯絡 — info@vtaiwan.tw 對齊原 Footer（email 不翻譯）；其餘為站內連結
 const contact = [
   { label: 'info@vtaiwan.tw', href: 'mailto:info@vtaiwan.tw' },
-  { label: '加入下次會議', to: '/meetups' },
-  { label: '提案新議題', to: '/topics' },
+  { labelKey: 'footer.joinNextMeeting', to: '/meetups' },
+  { labelKey: 'footer.proposeTopic', to: '/topics' },
 ]
 
 // 頁尾法務連結 — 對齊原 Footer 底部（原始碼指向本專案 repo）
 const legal = [
-  { label: '原始碼', href: 'https://github.com/g0v/vTaiwan-hono' },
-  { label: '隱私政策', to: '/privacy' },
-  { label: '使用條款', to: '/terms' },
+  { labelKey: 'footer.sourceCode', href: 'https://github.com/g0v/vTaiwan-hono' },
+  { labelKey: 'footer.privacyPolicy', to: '/privacy' },
+  { labelKey: 'footer.termsOfService', to: '/terms' },
 ]
 </script>
 
@@ -35,7 +46,7 @@ const legal = [
         <div>
           <img :src="'/assets/vtaiwan-logo-dark.svg'" alt="vTaiwan" class="mb-3 h-6 w-auto opacity-95" />
           <p class="max-w-[280px] text-[13px] leading-relaxed text-[#9c9ca4]">
-            公共政策的開放協作平台，讓每個人都能參與台灣的未來。
+            {{ t('footer.brandDescription') }}
           </p>
         </div>
 
@@ -43,8 +54,7 @@ const legal = [
         <div>
           <div class="mb-2.5 flex h-7 items-center gap-2 font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-[#e4e4ea]">
             <span class="h-[5px] w-[5px] rounded-full bg-democratic-red shadow-[0_0_6px_rgba(216,0,0,0.55)]" />
-            Connect
-            <span class="ml-0.5 font-serif font-normal normal-case tracking-[0.06em] text-[#9c9ca4]">社群連結</span>
+            {{ t('footer.connectTitle') }}
           </div>
           <ul class="flex flex-col gap-0.5">
             <li v-for="item in connect" :key="item.label">
@@ -64,24 +74,23 @@ const legal = [
         <div>
           <div class="mb-2.5 flex h-7 items-center gap-2 font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-[#e4e4ea]">
             <span class="h-[5px] w-[5px] rounded-full bg-democratic-red shadow-[0_0_6px_rgba(216,0,0,0.55)]" />
-            Contact
-            <span class="ml-0.5 font-serif font-normal normal-case tracking-[0.06em] text-[#9c9ca4]">聯絡</span>
+            {{ t('footer.contactTitle') }}
           </div>
           <ul class="flex flex-col gap-0.5">
-            <li v-for="item in contact" :key="item.label">
+            <li v-for="item in contact" :key="item.to ?? item.href">
               <RouterLink
                 v-if="item.to"
                 :to="item.to"
                 class="-mx-2.5 flex items-center rounded-[10px] px-2.5 py-2 text-[13px] text-[#c0c0c8] transition-colors hover:bg-white/5 hover:text-white"
               >
-                {{ item.label }}
+                {{ item.labelKey ? t(item.labelKey) : item.label }}
               </RouterLink>
               <a
                 v-else
                 :href="item.href"
                 class="-mx-2.5 flex items-center rounded-[10px] px-2.5 py-2 text-[13px] text-[#c0c0c8] transition-colors hover:bg-white/5 hover:text-white"
               >
-                {{ item.label }}
+                {{ item.labelKey ? t(item.labelKey) : item.label }}
               </a>
             </li>
           </ul>
@@ -97,17 +106,17 @@ const legal = [
             rel="noopener noreferrer"
             class="transition-colors hover:text-white"
           >
-            © 2026 vTaiwan · 採 CC-BY-SA 4.0 創用授權釋出
+            {{ t('footer.copyright', { year: currentYear }) }}
           </a>
           <span class="opacity-30">·</span>
           <div>
-            <template v-for="(item, i) in legal" :key="item.label">
+            <template v-for="(item, i) in legal" :key="item.labelKey">
               <RouterLink
                 v-if="item.to"
                 :to="item.to"
                 class="text-[#b6b6be] transition-colors hover:text-white"
               >
-                {{ item.label }}
+                {{ t(item.labelKey) }}
               </RouterLink>
               <a
                 v-else
@@ -116,18 +125,25 @@ const legal = [
                 rel="noopener noreferrer"
                 class="text-[#b6b6be] transition-colors hover:text-white"
               >
-                {{ item.label }}
+                {{ t(item.labelKey) }}
               </a>
               <span v-if="i < legal.length - 1" class="opacity-30">·</span>
             </template>
           </div>
         </div>
         <span class="inline-flex items-center gap-2.5">
-          <a href="#" class="text-[#b6b6be] transition-colors hover:text-white">中文</a>          
-          <span class="opacity-30">·</span>
-          <a href="#" class="text-[#b6b6be] transition-colors hover:text-white">English</a>
-          <span class="opacity-30">·</span>
-          <a href="#" class="text-[#b6b6be] transition-colors hover:text-white">日本語</a>
+          <template v-for="(loc, i) in supportedLocales" :key="loc.code">
+            <button
+              type="button"
+              class="cursor-pointer transition-colors hover:text-white"
+              :class="currentCode === loc.code ? 'font-medium text-white' : 'text-[#b6b6be]'"
+              :aria-pressed="currentCode === loc.code"
+              @click="switchLocale(loc.code)"
+            >
+              {{ loc.name }}
+            </button>
+            <span v-if="i < supportedLocales.length - 1" class="opacity-30">·</span>
+          </template>
         </span>
       </div>
     </div>

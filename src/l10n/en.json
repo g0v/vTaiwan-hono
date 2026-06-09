@@ -18,7 +18,8 @@
     "success": "Success",
     "warning": "Warning",
     "info": "Info",
-    "profile": "Profile"
+    "profile": "Profile",
+    "registerLogin": "Sign up / Log in"
   },
   "underConstruction": {
     "title": "Under Construction",
@@ -39,7 +40,8 @@
     "mastodon": "Posts",
     "transcriptions": "Transcriptions",
     "faq": "FAQ",
-    "contributors": "Contributors"
+    "contributors": "Contributors",
+    "openMenu": "Open menu"
   },
   "about": {
     "title": "About Us",
@@ -91,7 +93,12 @@
     "copyright": "© {year} vTaiwan. Released under CC-BY-SA Creative Commons License",
     "sourceCode": "Source Code",
     "privacyPolicy": "Privacy Policy",
-    "termsOfService": "Terms of Service"
+    "termsOfService": "Terms of Service",
+    "brandDescription": "An open collaboration platform for public policy — letting everyone take part in Taiwan's future.",
+    "connectTitle": "Connect",
+    "contactTitle": "Contact",
+    "joinNextMeeting": "Join the next meeting",
+    "proposeTopic": "Propose a new topic"
   },
   "home": {
     "title": "vTaiwan - Open Collaboration for Public Policy",
@@ -108,7 +115,8 @@
       "buttons": {
         "browseTopics": "Browse Topics",
         "learnMore": "Learn More"
-      }
+      },
+      "eyebrow": "Open Collaboration Platform for Public Policy"
     },
     "features": {
       "title": "How It Works",
@@ -567,7 +575,6 @@
       "copyLinkSuccess": "Transcription link copied to clipboard",
       "copyLinkError": "Copy failed, please try again later"
     },
-
     "outline": {
       "title": "Meeting Outline",
       "close": "Close",

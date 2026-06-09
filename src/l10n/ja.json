@@ -18,7 +18,8 @@
     "success": "成功",
     "warning": "警告",
     "info": "情報",
-    "profile": "プロフィール"
+    "profile": "プロフィール",
+    "registerLogin": "登録 / ログイン"
   },
   "underConstruction": {
     "title": "工事中",
@@ -39,7 +40,8 @@
     "mastodon": "ソーシャルメディア",
     "transcriptions": "書き起こし管理",
     "faq": "よくある質問",
-    "contributors": "貢献者"
+    "contributors": "貢献者",
+    "openMenu": "メニューを開く"
   },
   "about": {
     "title": "私たちについて",
@@ -91,7 +93,12 @@
     "copyright": "© {year} vTaiwan. CC-BY-SAクリエイティブ・コモンズライセンスで公開",
     "sourceCode": "ソースコード",
     "privacyPolicy": "プライバシーポリシー",
-    "termsOfService": "利用規約"
+    "termsOfService": "利用規約",
+    "brandDescription": "公共政策のためのオープンな協働プラットフォーム。誰もが台湾の未来に参加できます。",
+    "connectTitle": "ソーシャル",
+    "contactTitle": "お問い合わせ",
+    "joinNextMeeting": "次回のミーティングに参加",
+    "proposeTopic": "新しいトピックを提案"
   },
   "home": {
     "title": "vTaiwan - 公共政策オープンコラボレーション",
@@ -108,7 +115,8 @@
       "buttons": {
         "browseTopics": "トピックを見る",
         "learnMore": "もっと知る"
-      }
+      },
+      "eyebrow": "公共政策のためのオープン協働プラットフォーム"
     },
     "features": {
       "title": "仕組み",
