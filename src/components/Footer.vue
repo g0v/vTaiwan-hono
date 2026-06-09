@@ -30,7 +30,7 @@ const legal = [
   <footer class="vt-footer-bg relative font-serif text-[#d8d8de]">
     <span class="vt-hairline absolute inset-x-0 top-0 h-px" />
     <div class="mx-auto max-w-6xl px-6 pb-6 pt-10">
-      <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr]">
+      <div class="grid grid-cols-1 gap-8 sm:grid-cols-[1.4fr_1fr_1fr]">
         <!-- 品牌 -->
         <div>
           <img :src="'/assets/vtaiwan-logo-dark.svg'" alt="vTaiwan" class="mb-3 h-6 w-auto opacity-95" />
@@ -88,9 +88,9 @@ const legal = [
         </div>
       </div>
 
-      <div class="relative mt-7 flex flex-wrap items-center justify-between gap-x-5 gap-y-3 pt-4 font-sans text-xs text-[#76767e]">
+      <div class="relative mt-7 flex flex-col md:flex-row items-center justify-between gap-x-5 gap-y-3 pt-4 font-sans text-xs text-[#76767e]">
         <span class="vt-hairline absolute inset-x-0 top-0 h-px" />
-        <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+        <div class="flex flex-col sm:flex-row items-center gap-x-3 gap-y-1.5">
           <a
             href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh-hant"
             target="_blank"
@@ -100,30 +100,34 @@ const legal = [
             © 2026 vTaiwan · 採 CC-BY-SA 4.0 創用授權釋出
           </a>
           <span class="opacity-30">·</span>
-          <template v-for="(item, i) in legal" :key="item.label">
-            <RouterLink
-              v-if="item.to"
-              :to="item.to"
-              class="text-[#b6b6be] transition-colors hover:text-white"
-            >
-              {{ item.label }}
-            </RouterLink>
-            <a
-              v-else
-              :href="item.href"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="text-[#b6b6be] transition-colors hover:text-white"
-            >
-              {{ item.label }}
-            </a>
-            <span v-if="i < legal.length - 1" class="opacity-30">·</span>
-          </template>
+          <div>
+            <template v-for="(item, i) in legal" :key="item.label">
+              <RouterLink
+                v-if="item.to"
+                :to="item.to"
+                class="text-[#b6b6be] transition-colors hover:text-white"
+              >
+                {{ item.label }}
+              </RouterLink>
+              <a
+                v-else
+                :href="item.href"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-[#b6b6be] transition-colors hover:text-white"
+              >
+                {{ item.label }}
+              </a>
+              <span v-if="i < legal.length - 1" class="opacity-30">·</span>
+            </template>
+          </div>
         </div>
         <span class="inline-flex items-center gap-2.5">
-          <a href="#" class="text-[#b6b6be] transition-colors hover:text-white">中文</a>
+          <a href="#" class="text-[#b6b6be] transition-colors hover:text-white">中文</a>          
           <span class="opacity-30">·</span>
           <a href="#" class="text-[#b6b6be] transition-colors hover:text-white">English</a>
+          <span class="opacity-30">·</span>
+          <a href="#" class="text-[#b6b6be] transition-colors hover:text-white">日本語</a>
         </span>
       </div>
     </div>
