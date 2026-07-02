@@ -1,0 +1,41 @@
+{
+  "version": 1.1,
+  "atDirectives": [
+    {
+      "name": "@theme",
+      "description": "Tailwind CSS v4 theme variables block. Generates utility tokens from CSS custom properties."
+    },
+    {
+      "name": "@source",
+      "description": "Tailwind CSS v4 source detection directive. Adds files or globs to scan for class names."
+    },
+    {
+      "name": "@utility",
+      "description": "Tailwind CSS v4 custom utility directive."
+    },
+    {
+      "name": "@variant",
+      "description": "Tailwind CSS v4 variant directive for applying variants inside CSS."
+    },
+    {
+      "name": "@custom-variant",
+      "description": "Tailwind CSS v4 directive for defining custom variants."
+    },
+    {
+      "name": "@apply",
+      "description": "Tailwind CSS directive for inlining utility classes into custom CSS."
+    },
+    {
+      "name": "@reference",
+      "description": "Tailwind CSS v4 directive for importing theme variables and utilities without emitting CSS."
+    },
+    {
+      "name": "@config",
+      "description": "Tailwind CSS directive for loading a JavaScript configuration file."
+    },
+    {
+      "name": "@plugin",
+      "description": "Tailwind CSS directive for loading a plugin."
+    }
+  ]
+}
