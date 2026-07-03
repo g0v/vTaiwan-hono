@@ -39,7 +39,7 @@ watch(
 
 <template>
   <header class="sticky top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-4 font-sans">
-    <div class="vt-glass mx-auto flex h-[72px] max-w-6xl items-center justify-between rounded-2xl pl-6 pr-3" :class="{'max-w-7xl': !isChinese}">
+    <div class="vt-glass relative z-20 mx-auto flex h-[72px] max-w-6xl items-center justify-between rounded-2xl pl-6 pr-3" :class="{'max-w-7xl': !isChinese}">
       <RouterLink to="/" class="flex shrink-0 items-center" :aria-label="t('header.home')">
         <img :src="'/assets/vtaiwan-logo.svg'" alt="vTaiwan" class="h-7 w-auto" />
       </RouterLink>
@@ -90,7 +90,7 @@ watch(
     </div>
 
     <!-- 行動選單面板 -->
-    <div v-if="mobileOpen" class="vt-glass mx-auto mt-2 max-w-6xl rounded-2xl p-2.5 xl:hidden">
+    <div v-if="mobileOpen" class="vt-glass relative z-10 mx-auto mt-2 max-w-6xl rounded-2xl p-2.5 xl:hidden">
       <RouterLink
         v-for="l in links"
         :key="l.key"
