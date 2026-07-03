@@ -2,7 +2,20 @@
 // 連結對齊原專案 vue.vTaiwan-neo 的 Footer；文字接上 i18n，原版沒有的鍵已補入多語言。
 import { computed, inject } from 'vue'
 import { useI18n } from 'vue-i18n'
+import FooterLinkIcon from './FooterLinkIcon.vue'
+import FooterNavLink from './FooterNavLink.vue'
 import { localeKey, supportedLocales, type SupportedLocale } from '../i18n'
+
+type FooterIconName = 'mastodon' | 'facebook' | 'x' | 'instagram' | 'linkedin' | 'hackmd' | 'mail' | 'calendar' | 'document'
+
+const connectIcons: Record<string, FooterIconName> = {
+  Mastodon: 'mastodon',
+  Facebook: 'facebook',
+  'X (Twitter)': 'x',
+  Instagram: 'instagram',
+  LinkedIn: 'linkedin',
+  'HackMD Workspace': 'hackmd',
+}
 
 const { t } = useI18n()
 const currentYear = computed(() => new Date().getFullYear())
@@ -28,6 +41,13 @@ const contact = [
   { labelKey: 'footer.joinNextMeeting', to: '/meetups' },
   { labelKey: 'footer.proposeTopic', to: '/topics' },
 ]
+
+function contactIcon(item: (typeof contact)[number]): FooterIconName {
+  if (item.href?.startsWith('mailto:')) return 'mail'
+  if (item.labelKey === 'footer.joinNextMeeting') return 'calendar'
+  if (item.labelKey === 'footer.proposeTopic') return 'document'
+  return 'document'
+}
 
 // 頁尾法務連結 — 對齊原 Footer 底部（原始碼指向本專案 repo）
 const legal = [
@@ -56,16 +76,14 @@ const legal = [
             <span class="h-[5px] w-[5px] rounded-full bg-democratic-red shadow-[0_0_6px_rgba(216,0,0,0.55)]" />
             {{ t('footer.connectTitle') }}
           </div>
-          <ul class="flex flex-col gap-0.5">
+          <ul class="m-0 flex list-none flex-col gap-0.5 p-0">
             <li v-for="item in connect" :key="item.label">
-              <a
-                :href="item.href"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="-mx-2.5 flex items-center rounded-[10px] px-2.5 py-2 text-[13px] text-[#c0c0c8] transition-colors hover:bg-white/5 hover:text-white"
-              >
+              <FooterNavLink :href="item.href" external>
+                <template #icon>
+                  <FooterLinkIcon :name="connectIcons[item.label]" />
+                </template>
                 {{ item.label }}
-              </a>
+              </FooterNavLink>
             </li>
           </ul>
         </div>
@@ -76,22 +94,14 @@ const legal = [
             <span class="h-[5px] w-[5px] rounded-full bg-democratic-red shadow-[0_0_6px_rgba(216,0,0,0.55)]" />
             {{ t('footer.contactTitle') }}
           </div>
-          <ul class="flex flex-col gap-0.5">
+          <ul class="m-0 flex list-none flex-col gap-0.5 p-0">
             <li v-for="item in contact" :key="item.to ?? item.href">
-              <RouterLink
-                v-if="item.to"
-                :to="item.to"
-                class="-mx-2.5 flex items-center rounded-[10px] px-2.5 py-2 text-[13px] text-[#c0c0c8] transition-colors hover:bg-white/5 hover:text-white"
-              >
+              <FooterNavLink :to="item.to" :href="item.href">
+                <template #icon>
+                  <FooterLinkIcon :name="contactIcon(item)" />
+                </template>
                 {{ item.labelKey ? t(item.labelKey) : item.label }}
-              </RouterLink>
-              <a
-                v-else
-                :href="item.href"
-                class="-mx-2.5 flex items-center rounded-[10px] px-2.5 py-2 text-[13px] text-[#c0c0c8] transition-colors hover:bg-white/5 hover:text-white"
-              >
-                {{ item.labelKey ? t(item.labelKey) : item.label }}
-              </a>
+              </FooterNavLink>
             </li>
           </ul>
         </div>
