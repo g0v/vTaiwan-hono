@@ -50,8 +50,8 @@ watch(
           v-for="l in links"
           :key="l.key"
           :to="l.href"
-          class="relative whitespace-nowrap rounded-full px-3.5 py-2 transition-colors hover:bg-black/5"
-          :class="activeKey === l.key ? 'text-democratic-red' : 'text-[#2a2a30]'"
+          class="relative whitespace-nowrap rounded-full px-3.5 py-2 transition-colors hover:bg-vt-gray-100"
+          :class="activeKey === l.key ? 'text-democratic-red' : 'text-vt-gray-800'"
         >
           {{ t(l.labelKey) }}
           <span
@@ -63,10 +63,10 @@ watch(
 
       <div class="flex items-center gap-2.5 text-[13px]">
         <LanguageSwitcher />
-        <span class="hidden h-5 w-px bg-black/10 sm:block" />
+        <span class="hidden h-5 w-px bg-vt-border sm:block" />
         <a
           href="#"
-          class="hidden whitespace-nowrap rounded-full bg-ink px-4 py-2 font-medium text-white transition-colors hover:bg-democratic-red sm:inline-flex"
+          class="hidden whitespace-nowrap rounded-full bg-ink px-4 py-2 font-medium text-vt-fg-inverse transition-colors hover:bg-democratic-red sm:inline-flex"
         >
           {{ t('common.registerLogin') }}
         </a>
@@ -74,7 +74,7 @@ watch(
         <!-- 行動裝置漢堡按鈕 -->
         <button
           type="button"
-          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-ink transition-colors hover:bg-black/5 xl:hidden"
+          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-ink transition-colors hover:bg-vt-gray-100 xl:hidden"
           :aria-expanded="mobileOpen"
           :aria-label="t('header.openMenu')"
           @click="mobileOpen = !mobileOpen"
@@ -95,8 +95,8 @@ watch(
         v-for="l in links"
         :key="l.key"
         :to="l.href"
-        class="flex items-center justify-between rounded-xl px-3.5 py-1.5 transition-colors hover:bg-black/5"
-        :class="activeKey === l.key ? 'text-democratic-red' : 'text-[#2a2a30]'"
+        class="flex items-center justify-between rounded-xl px-3.5 py-1.5 transition-colors hover:bg-vt-gray-100"
+        :class="activeKey === l.key ? 'text-democratic-red' : 'text-vt-gray-800'"
         @click="mobileOpen = false"
       >
         {{ t(l.labelKey) }}
@@ -104,11 +104,10 @@ watch(
           <path d="m9 18 6-6-6-6" />
         </svg>
       </RouterLink>
-      <div class="my-1.5 h-px bg-black/10" />
+      <div class="my-1.5 h-px bg-vt-border" />
       <div class="flex gap-2 px-1.5 pb-1.5 pt-2">
         <LanguageSwitcher block class="flex-1" />
-        <a href="#" class="inline-flex flex-1 
-          items-center justify-center rounded-full bg-ink px-3 py-3 text-white transition-colors hover:bg-democratic-red" :class="{'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish}">
+        <a href="#" class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-3 py-3 text-vt-fg-inverse transition-colors hover:bg-democratic-red" :class="{'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish}">
           {{ t('common.registerLogin') }}
         </a>
       </div>

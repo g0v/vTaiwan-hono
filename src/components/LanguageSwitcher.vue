@@ -35,8 +35,8 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
     <button
       type="button"
       :aria-expanded="isOpen"
-      class="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-[#4a4a52] transition-colors hover:bg-black/5"
-      :class="block ? 'w-full justify-center py-3 bg-black/[0.04]' : ''"
+      class="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-vt-gray-700 transition-colors hover:bg-vt-gray-100"
+      :class="block ? 'w-full justify-center bg-vt-bg-2 py-3' : ''"
       @click="isOpen = !isOpen"
     >
       <svg class="opacity-70" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>
@@ -59,15 +59,15 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
     <div
       v-if="isOpen"
-      class="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-xl border border-black/10 bg-white py-1 shadow-lg"
+      class="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-xl border border-vt-border bg-vt-bg-1 py-1 shadow-vt-lg"
       :class="block ? 'left-0' : ''"
     >
       <button
         v-for="locale in supportedLocales"
         :key="locale.code"
         type="button"
-        class="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors hover:bg-black/5"
-        :class="currentCode === locale.code ? 'font-semibold text-democratic-red' : 'text-[#2a2a30]'"
+        class="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors hover:bg-vt-gray-100"
+        :class="currentCode === locale.code ? 'font-semibold text-democratic-red' : 'text-vt-gray-800'"
         @click="choose(locale.code)"
       >
         <span class="text-base">{{ locale.flag }}</span>
