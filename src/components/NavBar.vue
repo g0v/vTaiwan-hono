@@ -106,7 +106,7 @@ watch(
       </RouterLink>
       <div class="my-1.5 h-px bg-vt-border" />
       <div class="flex gap-2 px-1.5 pb-1.5 pt-2">
-        <LanguageSwitcher block class="flex-1" />
+        <LanguageSwitcher block drop-up class="flex-1" />
         <a href="#" class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-3 py-3 text-vt-fg-inverse transition-colors hover:bg-democratic-red" :class="{'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish}">
           {{ t('common.registerLogin') }}
         </a>

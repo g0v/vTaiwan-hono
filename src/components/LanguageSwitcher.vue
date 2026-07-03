@@ -2,8 +2,9 @@
 import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
 import { localeKey, supportedLocales, type SupportedLocale } from '../i18n'
 
-// 是否為區塊（整寬）樣式，用於行動選單
-const props = defineProps<{ block?: boolean }>()
+// block：是否為區塊（整寬）樣式，用於行動選單
+// dropUp：下拉選單是否往上展開，避免在漢堡選單中往下溢出版面
+const props = defineProps<{ block?: boolean; dropUp?: boolean }>()
 
 // 注入 App.vue 提供的偏好語言情境
 const localeCtx = inject(localeKey)
@@ -59,8 +60,8 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 
     <div
       v-if="isOpen"
-      class="absolute right-0 z-50 mt-2 w-44 overflow-hidden rounded-xl border border-vt-border bg-vt-bg-1 py-1 shadow-vt-lg"
-      :class="block ? 'left-0' : ''"
+      class="absolute right-0 z-50 w-44 overflow-hidden rounded-xl border border-vt-border bg-vt-bg-1 py-1 shadow-vt-lg"
+      :class="[block ? 'left-0' : '', dropUp ? 'bottom-full mb-2' : 'top-full mt-2']"
     >
       <button
         v-for="locale in supportedLocales"
