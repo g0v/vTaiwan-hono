@@ -106,17 +106,6 @@ const filteredTopicsSmallImg = computed(() =>
   filteredTopics.value.filter((topic) => topic.status !== '即將開始'),
 )
 
-const getStatusColor = (status: string): string => {
-  const colorMap: Record<string, string> = {
-    即將開始: 'bg-yellow-100 text-yellow-800',
-    意見徵集: 'bg-blue-100 text-blue-800',
-    研擬草案: 'bg-orange-100 text-orange-800',
-    送交院會: 'bg-green-100 text-green-800',
-    歷史案件: 'bg-gray-100 text-gray-800',
-  }
-  return colorMap[status] || 'bg-gray-100 text-gray-800'
-}
-
 const getStatusText = (status: string): string => {
   const textMap: Record<string, string> = {
     即將開始: '即將開始',
@@ -255,43 +244,48 @@ onMounted(() => {
           <div
             v-for="topic in recentTopics"
             :key="topic.id"
-            class="max-w-sm cursor-pointer rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg"
+            class="vt-topic-card min-h-[260px] max-w-sm cursor-pointer p-6"
             @click="goToTopic(topic)"
           >
-            <div class="mb-4 flex items-start justify-between">
-              <span class="rounded-full px-3 py-1 text-xs font-medium" :class="getStatusColor(topic.status)">
-                {{ t('topics.steps.' + getStatusText(topic.status)) }}
-              </span>
-              <span class="text-xs text-gray-500">
-                {{ formatDate(topic.last_posted_at || topic.created_at) }}
-              </span>
+            <div class="vt-topic-card-arrow">
+              <IconWrapper name="arrow-up-right" :size="14" type="primary" />
             </div>
+
+            <div class="mb-5 flex items-start gap-4 pr-10">
+              <div class="vt-topic-card-halo">
+                <IconWrapper name="message-circle" :size="24" type="primary" />
+              </div>
+              <div class="min-w-0">
+                <h3 class="mb-2 line-clamp-2 text-[19px] font-bold leading-tight tracking-[-0.01em] text-vt-gray-800">{{ topic.title }}</h3>
+                <div class="vt-topic-eyebrow flex-wrap">
+                  <span class="vt-topic-status-dot" aria-hidden="true" />
+                  <span>{{ t('topics.steps.' + getStatusText(topic.status)) }}</span>
+                  <span class="text-vt-fg-3">・{{ formatDate(topic.last_posted_at || topic.created_at) }}</span>
+                </div>
+              </div>
+            </div>
+
+            <p v-if="topic.slogan" class="mb-4 line-clamp-2 text-sm leading-[1.55] text-vt-fg-2">{{ topic.slogan }}</p>
 
             <div
               v-if="topic.cover"
-              class="mb-4 h-32 w-full rounded-lg bg-cover bg-center"
+              class="vt-topic-cover-slice relative mb-4"
               :style="{ backgroundImage: `url(${topic.cover})` }"
             />
-            <div v-else class="mb-4 flex h-32 w-full items-center justify-center rounded-lg bg-gray-100">
-              <IconWrapper name="message-circle" :size="32" color="#9CA3AF" />
-            </div>
 
-            <h3 class="mb-2 line-clamp-2 text-lg font-bold">{{ topic.title }}</h3>
-            <p v-if="topic.slogan" class="mb-4 line-clamp-2 text-sm text-gray-600">{{ topic.slogan }}</p>
-
-            <div class="flex items-center gap-4 text-sm text-gray-500">
-              <div class="flex items-center gap-1">
+            <div class="vt-topic-card-footer mt-auto flex-wrap">
+              <span class="vt-topic-pill text-xs">
                 <IconWrapper name="users" :size="14" />
                 <span>{{ topic.participant_count || 0 }}</span>
-              </div>
-              <div class="flex items-center gap-1">
+              </span>
+              <span class="vt-topic-stat">
                 <IconWrapper name="message-circle" :size="14" />
                 <span>{{ topic.posts_count || 0 }}</span>
-              </div>
-              <div class="flex items-center gap-1">
+              </span>
+              <span class="vt-topic-stat">
                 <IconWrapper name="eye" :size="14" />
                 <span>{{ topic.views || 0 }}</span>
-              </div>
+              </span>
             </div>
           </div>
         </div>
@@ -390,52 +384,64 @@ onMounted(() => {
         </div>
 
         <div v-else-if="filteredTopics.length > 0">
-          <div v-if="filteredTopicsBigImg.length > 0" class="mb-6 flex flex-wrap justify-center gap-6">
+          <div v-if="filteredTopicsBigImg.length > 0" class="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
             <div
               v-for="topic in filteredTopicsBigImg"
               :key="topic.id"
-              class="card relative w-full max-w-sm rounded-lg p-6 transition-shadow hover:shadow-lg md:max-w-sm lg:max-w-md"
+              class="vt-topic-card min-h-[320px] w-full p-6"
             >
-              <div class="absolute right-[-8px] top-[-14px] z-10">
-                <span class="rounded-full px-3 py-1 text-xs font-medium" :class="getStatusColor(topic.status)">
-                  {{ t('topics.steps.' + getStatusText(topic.status)) }}
-                </span>
+              <RouterLink :to="`/topic/${topic.routeName}`" class="vt-topic-card-arrow" :aria-label="topic.title">
+                <IconWrapper name="arrow-up-right" :size="14" type="primary" />
+              </RouterLink>
+
+              <div class="mb-5 flex items-start gap-4 pr-10">
+                <div class="vt-topic-card-halo">
+                  <IconWrapper name="message-circle" :size="24" type="primary" />
+                </div>
+                <div class="min-w-0">
+                  <h3 class="mb-2 line-clamp-2 text-2xl font-bold leading-tight tracking-[-0.01em] text-vt-gray-800">
+                    <RouterLink :to="`/topic/${topic.routeName}`" class="transition hover:text-democratic-red">
+                      {{ topic.title }}
+                    </RouterLink>
+                  </h3>
+                  <div class="vt-topic-eyebrow flex-wrap">
+                    <span class="vt-topic-status-dot" aria-hidden="true" />
+                    <span>{{ t('topics.steps.' + getStatusText(topic.status)) }}</span>
+                    <span class="text-vt-fg-3">・{{ formatDate(topic.last_posted_at || topic.created_at) }}</span>
+                  </div>
+                </div>
               </div>
 
               <div
                 v-if="topic.cover"
-                class="mb-4 h-48 w-full rounded-lg bg-cover bg-center"
+                class="vt-topic-cover-slice relative mb-5 min-h-[112px]"
                 :style="{ backgroundImage: `url(${topic.cover})` }"
               />
-              <div v-else class="mb-4 flex h-48 w-full items-center justify-center rounded-lg bg-gray-200">
-                <IconWrapper name="message-circle" :size="48" color="#9CA3AF" />
-              </div>
 
-              <div class="mb-4">
-                <h3 class="mb-2 text-xl font-bold">
-                  <RouterLink :to="`/topic/${topic.routeName}`" class="transition hover:text-jade-green">
-                    {{ topic.title }}
-                  </RouterLink>
-                </h3>
-                <p v-if="topic.slogan" class="mb-3 text-gray-600">{{ topic.slogan }}</p>
+              <div class="mb-4 flex flex-1 flex-col">
+                <p v-if="topic.slogan" class="mb-5 line-clamp-3 text-base leading-[1.65] text-vt-fg-2">{{ topic.slogan }}</p>
 
-                <div class="mb-3 flex flex-wrap gap-4 text-sm text-gray-500">
-                  <div class="flex items-center gap-1">
-                    <IconWrapper name="eye" :size="16" />
-                    <span>{{ topic.views || 0 }}</span>
-                  </div>
-                  <div class="flex items-center gap-1">
+                <div class="mb-4 grid grid-cols-3 gap-2 text-xs text-vt-fg-2 sm:flex sm:flex-wrap">
+                  <span class="vt-topic-pill">
+                    <IconWrapper name="users" :size="14" />
+                    <span>{{ topic.participant_count || 0 }}</span>
+                  </span>
+                  <span class="vt-topic-pill">
                     <IconWrapper name="message-circle" :size="16" />
                     <span>{{ topic.posts_count || 0 }}</span>
-                  </div>
-                  <div class="flex items-center gap-1">
+                  </span>
+                  <span class="vt-topic-pill">
+                    <IconWrapper name="eye" :size="16" />
+                    <span>{{ topic.views || 0 }}</span>
+                  </span>
+                  <span class="vt-topic-pill">
                     <IconWrapper name="calendar" :size="16" />
                     <span>{{ formatDate(topic.last_posted_at || topic.created_at) }}</span>
-                  </div>
+                  </span>
                 </div>
 
                 <div v-if="topic.tags?.length" class="mb-3 flex flex-wrap gap-2">
-                  <span v-for="tag in topic.tags" :key="tag" class="rounded-full bg-gray-100 px-2 py-1 text-xs text-gray-700">
+                  <span v-for="tag in topic.tags" :key="tag" class="vt-topic-pill text-xs">
                     {{ tag }}
                   </span>
                 </div>
@@ -456,62 +462,64 @@ onMounted(() => {
             <div
               v-for="topic in filteredTopicsSmallImg"
               :key="topic.id"
-              class="relative flex h-34 cursor-pointer flex-row border-b border-gray-200 bg-white px-2 py-4 transition-all duration-200 hover:shadow-md md:h-60 md:flex-col md:rounded-lg md:border md:p-4"
+              class="vt-topic-card min-h-[190px] cursor-pointer p-5"
               @click="goToTopic(topic)"
             >
-              <div class="absolute right-[-8px] top-[-14px] z-10">
-                <span class="rounded-full px-3 py-1 text-xs font-medium" :class="getStatusColor(topic.status)">
-                  {{ t('topics.steps.' + getStatusText(topic.status)) }}
-                </span>
+              <div class="vt-topic-card-arrow">
+                <IconWrapper name="arrow-up-right" :size="14" type="primary" />
               </div>
 
-              <div class="mr-2 flex items-center justify-center md:mr-0 md:items-start md:justify-start md:pb-4">
+              <div class="mb-4 flex items-start gap-3 pr-10">
                 <div
                   v-if="topic.cover"
-                  class="h-16 w-16 rounded-lg bg-cover bg-center"
+                  class="vt-topic-cover-thumb"
                   :style="{ backgroundImage: `url(${topic.cover})` }"
                 />
-                <div v-else class="flex h-16 w-16 items-center justify-center rounded-lg bg-gray-100">
-                  <IconWrapper name="image" :size="16" class="text-gray-400" />
+                <div v-else class="vt-topic-card-halo vt-topic-card-halo-sm">
+                  <IconWrapper name="message-circle" :size="18" type="primary" />
+                </div>
+                <div class="min-w-0">
+                  <h3 class="mb-2 line-clamp-2 text-[17px] font-bold leading-tight tracking-[-0.01em] text-vt-gray-800">{{ topic.title }}</h3>
+                  <div class="vt-topic-eyebrow flex-wrap">
+                    <span class="vt-topic-status-dot" aria-hidden="true" />
+                    <span>{{ t('topics.steps.' + getStatusText(topic.status)) }}</span>
+                  </div>
                 </div>
               </div>
 
-              <div class="flex max-w-[calc(100%-4rem)] flex-1 flex-col md:max-w-none">
-                <div class="mb-2 flex items-start justify-between">
-                  <h3 class="flex-1 truncate text-sm font-semibold text-gray-900">{{ topic.title }}</h3>
-                </div>
-                <p v-if="topic.slogan" class="mb-3 truncate text-sm text-gray-600">{{ topic.slogan }}</p>
+              <div class="flex flex-1 flex-col">
+                <p v-if="topic.slogan" class="mb-4 line-clamp-2 text-sm leading-[1.55] text-vt-fg-2">{{ topic.slogan }}</p>
 
-                <div class="mb-2 flex items-center gap-3 text-xs text-gray-500">
-                  <div class="flex items-center gap-1">
+                <div class="mb-4 flex flex-wrap items-center gap-2 text-xs text-vt-fg-2">
+                  <span class="vt-topic-pill">
                     <IconWrapper name="users" :size="12" />
                     <span>{{ topic.participant_count || 0 }}</span>
-                  </div>
-                  <div class="flex items-center gap-1">
+                  </span>
+                  <span class="vt-topic-pill">
                     <IconWrapper name="message-circle" :size="12" />
                     <span>{{ topic.posts_count || 0 }}</span>
-                  </div>
-                  <div class="flex items-center gap-1">
+                  </span>
+                  <span class="vt-topic-pill">
                     <IconWrapper name="eye" :size="12" />
                     <span>{{ topic.views || 0 }}</span>
-                  </div>
+                  </span>
                 </div>
 
-                <div class="mt-auto flex items-center justify-between text-xs text-gray-400">
-                  <div class="flex items-center gap-1">
+                <div class="vt-topic-card-footer mt-auto text-xs text-vt-fg-3">
+                  <div class="flex items-center gap-1 whitespace-nowrap">
                     <IconWrapper name="calendar" :size="10" />
                     <span>{{ formatDate(topic.created_at) }}</span>
                   </div>
                   <div class="flex items-center gap-1">
                     <button
-                      class="p-1 text-gray-400 transition-colors hover:text-democratic-red"
+                      class="vt-topic-pill p-1 text-vt-fg-3 transition-colors hover:text-democratic-red"
                       :title="t('topics.actions.share')"
                       @click.stop="shareTopic(topic)"
                     >
                       <IconWrapper name="share-2" :size="12" />
                     </button>
                     <button
-                      class="p-1 transition-colors"
+                      class="vt-topic-pill p-1 transition-colors"
                       :title="t('topics.actions.bookmark')"
                       @click.stop="bookmarkTopic(topic)"
                     >
@@ -549,7 +557,16 @@ onMounted(() => {
 <style scoped>
 .line-clamp-2 {
   display: -webkit-box;
+  line-clamp: 2;
   -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  line-clamp: 3;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
