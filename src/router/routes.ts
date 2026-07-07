@@ -8,11 +8,13 @@ import PrivacyView from '../views/Privacy.vue'
 import TermsView from '../views/Terms.vue'
 import TopicsView from '../views/TopicsView.vue'
 import TopicDetailView from '../views/TopicDetailView.vue'
+import PolisView from '../views/PolisView.vue'
 import {
   headForAbout,
   headForHome,
   headForHundredChart,
   headForNotFound,
+  headForPolis,
   headForPrivacy,
   headForTerms,
   headForTopicDetail,
@@ -89,6 +91,12 @@ export const routes: RouteRecordRaw[] = [
     component: TopicDetailView,
     meta: { status: 200 },
   },
+  {
+    path: '/polis',
+    name: 'polis',
+    component: PolisView,
+    meta: { status: 200 },
+  },
   ...placeholderPaths.map((path) => ({
     path,
     name: `placeholder-${path.slice(1)}`,
@@ -129,6 +137,8 @@ export function headForRoute(
       return headForTopics(origin)
     case 'topic':
       return headForTopicDetail(origin, String(route.params.id ?? ''))
+    case 'polis':
+      return headForPolis(origin)
     default:
       return headForNotFound(origin)
   }

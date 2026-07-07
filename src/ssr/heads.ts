@@ -124,6 +124,16 @@ export function headForTopicDetail(origin: string, routeName: string): HeadConfi
   }
 }
 
+export function headForPolis(origin: string): HeadConfig {
+  const title = `提案討論 — vTaiwan`
+  const description = '用 Polis 一起決定下一個 Polis 該討論什麼'
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/polis`),
+  }
+}
+
 export function headForNotFound(origin: string): HeadConfig {
   const title = `404 施工中 — vTaiwan`
   const description = `此頁面目前正在施工中，敬請期待更完善的 vTaiwan 數位民主平台。`
