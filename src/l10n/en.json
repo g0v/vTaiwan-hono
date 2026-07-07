@@ -472,7 +472,9 @@
     "detail": {
       "title": "Topic Details",
       "discussion": "Discussion",
+      "discussionShort": "Discuss",
       "timeline": "Timeline",
+      "timelineShort": "Timeline",
       "introduction": "Introduction",
       "notFound": "Topic not found",
       "comments": "Comments",
@@ -503,14 +505,70 @@
       "送交院會": "To Legislature",
       "歷史案件": "Archived"
     },
-    "noRecent": "There are currently no recent topics."
+    "noRecent": "There are currently no recent topics.",
+    "timeline": {
+      "loading": "Loading timeline...",
+      "externalLinksTitle": "External Link Legend*",
+      "columns": {
+        "time": "Topic Time",
+        "stage": "Topic Stage",
+        "links": "Related Links"
+      },
+      "linkTypes": {
+        "related": "Related",
+        "relatedDesc": "Links related to the topic",
+        "hackpad": "Notes",
+        "hackpadDesc": "Collaborative meeting notes",
+        "record": "Record",
+        "recordDesc": "Highlights from meeting notes",
+        "live": "Live",
+        "liveDesc": "Meeting live stream",
+        "discuss": "Discuss",
+        "discussDesc": "Enter discussion",
+        "comment": "Comments",
+        "commentDesc": "Enter comments"
+      }
+    },
+    "participation": {
+      "noLinks": "No related links",
+      "types": {
+        "hackpad": "Notes",
+        "hackpadLong": "Collaborative meeting notes",
+        "sayit": "Record",
+        "sayitLong": "Highlights from meeting notes",
+        "youtube": "Live",
+        "youtubeLong": "Meeting live stream on YouTube",
+        "livehouse": "Live",
+        "livehouseLong": "Meeting live stream on Livehouse",
+        "polis": "Discuss",
+        "polisLong": "Enter discussion",
+        "discourse": "Comments",
+        "discourseLong": "Enter comments",
+        "slido": "Q&A",
+        "slidoLong": "Collaborative meeting notes",
+        "pdf": "PDF",
+        "pdfLong": "Collaborative meeting notes",
+        "gitbook": "GitBook",
+        "gitbookLong": "Collaborative meeting notes",
+        "related": "Related",
+        "relatedLong": "Links related to the topic"
+      }
+    }
   },
   "topicDetail": {
     "discussion": "Discussion",
     "admin": "Admin",
     "moderator": "Moderator",
     "showAllPosts": "Show All {count} Posts",
-    "showLess": "Show Less"
+    "showLess": "Show Less",
+    "commentsCount": "{count} comments",
+    "viewsCount": "{count} views",
+    "participantsCount": "{count} participants",
+    "postComment": "Post a comment",
+    "firstComment": "Be the first to comment",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "daysAgo": "{count} days ago"
   },
   "contact": {
     "title": "Contact Us",

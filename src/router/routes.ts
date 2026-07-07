@@ -6,6 +6,8 @@ import HundredChartView from '../views/HundredChart.vue'
 import NotFoundView from '../views/NotFound.vue'
 import PrivacyView from '../views/Privacy.vue'
 import TermsView from '../views/Terms.vue'
+import TopicsView from '../views/TopicsView.vue'
+import TopicDetailView from '../views/TopicDetailView.vue'
 import {
   headForAbout,
   headForHome,
@@ -13,13 +15,14 @@ import {
   headForNotFound,
   headForPrivacy,
   headForTerms,
+  headForTopicDetail,
+  headForTopics,
   headForWord,
   type HeadConfig,
 } from '../ssr/heads'
 
 const placeholderPaths = [
   '/404',
-  '/topics',
   '/meetups',
   '/blogs',
   '/newsletters',
@@ -74,6 +77,18 @@ export const routes: RouteRecordRaw[] = [
     component: TermsView,
     meta: { status: 200 },
   },
+  {
+    path: '/topics',
+    name: 'topics',
+    component: TopicsView,
+    meta: { status: 200 },
+  },
+  {
+    path: '/topic/:id',
+    name: 'topic',
+    component: TopicDetailView,
+    meta: { status: 200 },
+  },
   ...placeholderPaths.map((path) => ({
     path,
     name: `placeholder-${path.slice(1)}`,
@@ -110,6 +125,10 @@ export function headForRoute(
       return headForPrivacy(origin)
     case 'terms':
       return headForTerms(origin)
+    case 'topics':
+      return headForTopics(origin)
+    case 'topic':
+      return headForTopicDetail(origin, String(route.params.id ?? ''))
     default:
       return headForNotFound(origin)
   }

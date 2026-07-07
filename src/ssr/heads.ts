@@ -103,6 +103,27 @@ export function headForTerms(origin: string): HeadConfig {
   }
 }
 
+export function headForTopics(origin: string): HeadConfig {
+  const title = `議題 — vTaiwan`
+  const description = 'vTaiwan 的議題討論區，參與政策制定過程。'
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/topics`),
+  }
+}
+
+export function headForTopicDetail(origin: string, routeName: string): HeadConfig {
+  const title = routeName ? `議題 — ${routeName} — vTaiwan` : `議題詳情 — vTaiwan`
+  const description = 'vTaiwan 議題詳情頁，了解政策討論進度與參與方式。'
+  const path = routeName ? `/topic/${encodeURIComponent(routeName)}` : '/topics'
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}${path}`),
+  }
+}
+
 export function headForNotFound(origin: string): HeadConfig {
   const title = `404 施工中 — vTaiwan`
   const description = `此頁面目前正在施工中，敬請期待更完善的 vTaiwan 數位民主平台。`

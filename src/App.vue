@@ -43,6 +43,7 @@ const activeNavKey = computed(() => {
   if (path === '/') return 'home'
 
   const map: Array<{ prefix: string; key: string }> = [
+    { prefix: '/topic', key: 'topics' },
     { prefix: '/topics', key: 'topics' },
     { prefix: '/meetups', key: 'meetups' },
     { prefix: '/blogs', key: 'blogs' },

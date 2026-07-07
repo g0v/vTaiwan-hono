@@ -269,7 +269,15 @@
     "admin": "管理員",
     "moderator": "版主",
     "showAllPosts": "顯示全部 {count} 則留言",
-    "showLess": "顯示較少"
+    "showLess": "顯示較少",
+    "commentsCount": "{count} 則留言",
+    "viewsCount": "{count} 次瀏覽",
+    "participantsCount": "{count} 位參與者",
+    "postComment": "我要留言",
+    "firstComment": "成為第一個留言的人",
+    "today": "今天",
+    "yesterday": "昨天",
+    "daysAgo": "{count} 天前"
   },
   "transcript": {
     "title": "即時逐字稿",
@@ -474,7 +482,9 @@
     "detail": {
       "title": "議題詳情",
       "discussion": "討論",
+      "discussionShort": "討論",
       "timeline": "時間軸",
+      "timelineShort": "時程",
       "introduction": "簡介",
       "notFound": "找不到議題",
       "comments": "留言",
@@ -505,7 +515,55 @@
       "送交院會": "送交院會",
       "歷史案件": "歷史案件"
     },
-    "noRecent": "暫無近期議題"
+    "noRecent": "暫無近期議題",
+    "timeline": {
+      "loading": "載入時間軸...",
+      "externalLinksTitle": "外部連結說明*",
+      "columns": {
+        "time": "議題時間",
+        "stage": "議題階段",
+        "links": "相關外部連結"
+      },
+      "linkTypes": {
+        "related": "相關",
+        "relatedDesc": "與議題相關的連結",
+        "hackpad": "共筆",
+        "hackpadDesc": "會議共同筆記",
+        "record": "記錄",
+        "recordDesc": "當日共同筆記整理出的重點",
+        "live": "直播",
+        "liveDesc": "會議直播影片",
+        "discuss": "討論",
+        "discussDesc": "進入討論",
+        "comment": "留言",
+        "commentDesc": "進入留言"
+      }
+    },
+    "participation": {
+      "noLinks": "無相關連結",
+      "types": {
+        "hackpad": "共筆",
+        "hackpadLong": "會議共同筆記",
+        "sayit": "記錄",
+        "sayitLong": "當日共同筆記整理出的重點",
+        "youtube": "直播",
+        "youtubeLong": "會議直播影片 youtube",
+        "livehouse": "直播",
+        "livehouseLong": "會議直播影片 livehouse",
+        "polis": "討論",
+        "polisLong": "進入討論",
+        "discourse": "留言",
+        "discourseLong": "進入留言",
+        "slido": "提問",
+        "slidoLong": "會議共同筆記",
+        "pdf": "PDF",
+        "pdfLong": "會議共同筆記",
+        "gitbook": "GitBook",
+        "gitbookLong": "會議共同筆記",
+        "related": "相關",
+        "relatedLong": "與議題相關的連結"
+      }
+    }
   },
   "contact": {
     "title": "聯絡我們",

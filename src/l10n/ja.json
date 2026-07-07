@@ -432,21 +432,42 @@
     "description": "vTaiwanプラットフォーム上のすべての公共政策トピック。各トピックは提案・議論・合意形成・政策提案のプロセスを経ます。",
     "tryPolisLink": "今すぐ体験するにはこちら",
     "list": {
+      "title": "トピック一覧",
       "found": "{count} 件のトピックが見つかりました",
       "lastUpdated": "最終更新",
       "empty": "トピックがありません",
       "loading": "読み込み中..."
     },
-    "filters": {
-      "status": "状態",
-      "category": "カテゴリ",
-      "search": "検索",
-      "searchPlaceholder": "トピックを検索..."
+    "search": {
+      "placeholder": "トピックを検索...",
+      "results": "「{query}」の検索結果 {count} 件",
+      "noResults": "一致するトピックが見つかりません",
+      "clearSearch": "検索をクリア"
+    },
+    "sort": {
+      "latest": "最新",
+      "participants": "参加者数",
+      "views": "閲覧数"
+    },
+    "metrics": {
+      "participants": "参加者",
+      "posts": "投稿",
+      "views": "閲覧",
+      "lastActivity": "最終活動"
+    },
+    "actions": {
+      "share": "トピックを共有",
+      "bookmark": "ブックマークに追加"
+    },
+    "bookmarks": {
+      "myBookmarks": "ブックマーク"
     },
     "detail": {
       "title": "トピック詳細",
       "discussion": "議論",
+      "discussionShort": "議論",
       "timeline": "時間軸",
+      "timelineShort": "時程",
       "introduction": "簡介",
       "notFound": "トピックが見つかりません",
       "comments": "コメント",
@@ -460,27 +481,15 @@
       "loading": "読み込み中..."
     },
     "status": {
-      "all": "すべて",
-      "active": "進行中",
-      "completed": "完了"
-    },
-    "categories": {
-      "all": "すべてのカテゴリ"
-    },
-    "participants": "参加者",
-    "created": "作成日",
-    "cta": {
-      "title": "新しいトピックを提案したいですか？",
-      "description": "議論に値する公共政策トピックがあれば、トピック提案を歓迎します。",
-      "button": "トピックを提案"
+      "preparing": "準備中",
+      "discussion": "議論中",
+      "voting": "投票中",
+      "completed": "完了",
+      "draft": "草案作成",
+      "collection": "意見募集"
     },
     "recentTitle": "直近3ヶ月のトピック",
     "recentDesc": "以下は直近3ヶ月以内に更新されたトピックです。vTaiwanが現在注目している政策トピックを新しい方にも分かりやすく紹介します。",
-    "sort": {
-      "latest": "最新",
-      "participants": "参加者数",
-      "views": "閲覧数"
-    },
     "steps": {
       "all": "すべて",
       "即將開始": "まもなく開始",
@@ -489,31 +498,70 @@
       "送交院會": "議会提出",
       "歷史案件": "過去の案件"
     },
-    "noRecent": "直近のトピックはありません"
+    "noRecent": "直近のトピックはありません",
+    "timeline": {
+      "loading": "時間軸を読み込み中...",
+      "externalLinksTitle": "外部リンクの説明*",
+      "columns": {
+        "time": "トピック時間",
+        "stage": "トピック段階",
+        "links": "関連外部リンク"
+      },
+      "linkTypes": {
+        "related": "関連",
+        "relatedDesc": "トピックに関連するリンク",
+        "hackpad": "共筆",
+        "hackpadDesc": "会議の共同メモ",
+        "record": "記録",
+        "recordDesc": "会議メモから整理した要点",
+        "live": "ライブ",
+        "liveDesc": "会議のライブ配信",
+        "discuss": "議論",
+        "discussDesc": "議論に参加",
+        "comment": "コメント",
+        "commentDesc": "コメントに参加"
+      }
+    },
+    "participation": {
+      "noLinks": "関連リンクなし",
+      "types": {
+        "hackpad": "共筆",
+        "hackpadLong": "会議の共同メモ",
+        "sayit": "記録",
+        "sayitLong": "会議メモから整理した要点",
+        "youtube": "ライブ",
+        "youtubeLong": "YouTube ライブ配信",
+        "livehouse": "ライブ",
+        "livehouseLong": "Livehouse ライブ配信",
+        "polis": "議論",
+        "polisLong": "議論に参加",
+        "discourse": "コメント",
+        "discourseLong": "コメントに参加",
+        "slido": "質問",
+        "slidoLong": "会議の共同メモ",
+        "pdf": "PDF",
+        "pdfLong": "会議の共同メモ",
+        "gitbook": "GitBook",
+        "gitbookLong": "会議の共同メモ",
+        "related": "関連",
+        "relatedLong": "トピックに関連するリンク"
+      }
+    }
   },
   "topicDetail": {
-    "objectives": "トピック目標",
-    "howToParticipate": "参加方法",
-    "discuss": "議論に参加",
-    "discussDesc": "トピックの議論エリアであなたの考えや提案を共有し、他の参加者と意見交換しましょう。",
-    "contribute": "コンテンツ貢献",
-    "contributeDesc": "専門知識・研究資料・実務経験を提供し、トピックの発展を支援します。",
-    "share": "情報共有",
-    "shareDesc": "トピック情報をより多くの関心者に共有し、影響力を拡大しましょう。",
-    "join": "チームに参加",
-    "joinDesc": "トピックのコアメンバーとなり、意思決定や実行作業に参加します。",
-    "relatedLinks": "関連リンク",
-    "githubRepo": "GitHubリポジトリ",
-    "documentation": "トピック文書",
     "discussion": "議論フォーラム",
-    "backToTopics": "トピック一覧に戻る",
-    "joinTopic": "トピックに参加",
-    "notFound": "トピックが見つかりません",
-    "notFoundDesc": "ご覧になりたいトピックは存在しないか、削除されました。",
-    "backToList": "← トピック一覧に戻る",
-    "noDiscussion": "現在、討論内容がありません",
-    "noTimeline": "現在、時間軸資料がありません",
-    "loading": "読み込み中..."
+    "admin": "管理者",
+    "moderator": "モデレーター",
+    "showAllPosts": "すべての {count} 件の投稿を表示",
+    "showLess": "少なく表示",
+    "commentsCount": "{count} 件のコメント",
+    "viewsCount": "{count} 回閲覧",
+    "participantsCount": "{count} 人の参加者",
+    "postComment": "コメントする",
+    "firstComment": "最初のコメントを投稿する",
+    "today": "今日",
+    "yesterday": "昨日",
+    "daysAgo": "{count} 日前"
   },
   "contact": {
     "title": "お問い合わせ",

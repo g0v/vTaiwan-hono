@@ -18,6 +18,7 @@
   "dependencies": {
     "@vue/server-renderer": "^3.5.32",
     "hono": "^4.12.14",
+    "lucide-vue-next": "^1.0.0",
     "vue": "^3.5.32",
     "vue-i18n": "^11.4.2",
     "vue-router": "^4.6.4"
