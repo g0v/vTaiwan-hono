@@ -99,7 +99,7 @@ watch(
 <template>
   <div class="topic-slide">
     <div class="bg-gray-100 py-8">
-      <div class="container mx-auto px-4">
+      <div class="mx-auto px-4">
         <div class="mx-auto max-w-4xl">
           <h3 class="mb-8 flex items-center justify-center text-center text-2xl font-bold">
             <IconWrapper name="info" :size="24" class="mr-3" />

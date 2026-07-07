@@ -68,7 +68,7 @@ onMounted(() => {
     <TopicProgress v-if="realTopicId" :topic-id="realTopicId" />
 
     <section class="py-8">
-      <div class="container mx-auto px-4">
+      <div class="mx-auto px-4">
         <div class="mx-auto max-w-4xl text-center">
           <h1 class="mb-4 text-4xl font-bold md:text-5xl">{{ topic.title }}</h1>
         </div>
@@ -78,7 +78,7 @@ onMounted(() => {
     <TopicSlide v-if="realTopicId" :topic-id="realTopicId" :show-discussion-button="showDiscussionButton" />
 
     <section class="py-16">
-      <div class="container mx-auto px-4">
+      <div class="mx-auto px-4">
         <div class="mx-auto max-w-4xl">
           <div class="mb-8 flex flex-wrap justify-center gap-4 border-b border-gray-200">
             <button
@@ -126,7 +126,7 @@ onMounted(() => {
   </div>
 
   <div v-else-if="!loading" class="py-16">
-    <div class="container mx-auto px-4 text-center">
+    <div class="mx-auto px-4 text-center">
       <h1 class="mb-4 text-4xl font-bold">{{ t('topics.detail.notFound') }}</h1>
       <p class="mb-8 text-lg text-gray-600">{{ t('topics.detail.notFound') }}</p>
       <RouterLink to="/topics" class="vt-btn vt-btn-primary">{{ t('topics.detail.backToList') }}</RouterLink>
@@ -134,7 +134,7 @@ onMounted(() => {
   </div>
 
   <div v-else class="py-16">
-    <div class="container mx-auto px-4 text-center">
+    <div class="mx-auto px-4 text-center">
       <div class="mx-auto h-16 w-16 animate-spin rounded-full border-b-2 border-jade-green" />
       <p class="mt-4 text-gray-600">{{ t('topics.list.loading') }}</p>
     </div>
