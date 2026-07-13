@@ -11,6 +11,7 @@ export interface HeadConfig {
 }
 
 const SITE_NAME = 'vTaiwan'
+type Translate = (key: string) => string
 
 // 預設 OG 圖片
 const DEFAULT_OG_IMAGE = `https://vtaiwan-hono.audreyt.workers.dev/img/og-image.png`
@@ -36,10 +37,9 @@ function buildOg(
   ]
 }
 
-export function headForHome(origin: string): HeadConfig {
-  const title = 'vTaiwan - 公共政策開放協作'
-  const description =
-    'vTaiwan 是台灣的公共政策開放協作平台，致力於促進政府與公民之間的對話，讓每個人都能參與公共政策的形成過程。'
+export function headForHome(origin: string, t: Translate): HeadConfig {
+  const title = t('head.home.title')
+  const description = t('head.home.description')
   return {
     title,
     description,
@@ -48,9 +48,9 @@ export function headForHome(origin: string): HeadConfig {
   }
 }
 
-export function headForAbout(origin: string): HeadConfig {
-  const title = `關於我們 | ${SITE_NAME}`
-  const description = '認識 vTaiwan 的理念、歷程與公共政策開放協作方式。'
+export function headForAbout(origin: string, t: Translate): HeadConfig {
+  const title = t('head.about.title')
+  const description = t('head.about.description')
   return {
     title,
     description,
@@ -58,9 +58,9 @@ export function headForAbout(origin: string): HeadConfig {
   }
 }
 
-export function headForWord(word: string, origin: string): HeadConfig {
-  const title = `${word} — ${SITE_NAME}`
-  const description = `探索「${word}」與公共政策開放協作的相關內容。`
+export function headForWord(word: string, origin: string, t: Translate): HeadConfig {
+  const title = t('head.word.title').replace('{word}', word)
+  const description = t('head.word.description').replace('{word}', word)
 
   // 使用 moedict.tw 的 API 來取得字圖
   const ogImage = `https://www.moedict.tw/${encodeURIComponent(word)}.png`
@@ -71,9 +71,9 @@ export function headForWord(word: string, origin: string): HeadConfig {
   }
 }
 
-export function headForHundredChart(origin: string): HeadConfig {
-  const title = `百數表 | ${SITE_NAME}`
-  const description = 'vTaiwan 的百數表互動示範。'
+export function headForHundredChart(origin: string, t: Translate): HeadConfig {
+  const title = t('head.hundred.title')
+  const description = t('head.hundred.description')
   return {
     title,
     description,
@@ -81,10 +81,9 @@ export function headForHundredChart(origin: string): HeadConfig {
   }
 }
 
-export function headForPrivacy(origin: string): HeadConfig {
-  const title = `隱私政策 | ${SITE_NAME}`
-  const description =
-    'vTaiwan 隱私政策 - 我們承諾保護您的個人資料，不會將您的個人資料傳遞給第三方'
+export function headForPrivacy(origin: string, t: Translate): HeadConfig {
+  const title = t('head.privacy.title')
+  const description = t('head.privacy.description')
   return {
     title,
     description,
@@ -92,10 +91,9 @@ export function headForPrivacy(origin: string): HeadConfig {
   }
 }
 
-export function headForTerms(origin: string): HeadConfig {
-  const title = `使用條款 | ${SITE_NAME}`
-  const description =
-    'vTaiwan 使用條款 - 使用我們的視訊和轉錄服務需要註冊帳號並同意 CC-BY-SA 授權'
+export function headForTerms(origin: string, t: Translate): HeadConfig {
+  const title = t('head.terms.title')
+  const description = t('head.terms.description')
   return {
     title,
     description,
@@ -103,9 +101,9 @@ export function headForTerms(origin: string): HeadConfig {
   }
 }
 
-export function headForTopics(origin: string): HeadConfig {
-  const title = `議題 | ${SITE_NAME}`
-  const description = 'vTaiwan 的議題討論區，參與政策制定過程。'
+export function headForTopics(origin: string, t: Translate): HeadConfig {
+  const title = t('head.topics.title')
+  const description = t('head.topics.description')
   return {
     title,
     description,
@@ -113,9 +111,11 @@ export function headForTopics(origin: string): HeadConfig {
   }
 }
 
-export function headForTopicDetail(origin: string, routeName: string): HeadConfig {
-  const title = routeName ? `議題 | ${routeName} | ${SITE_NAME}` : `議題詳情 | ${SITE_NAME}`
-  const description = 'vTaiwan 議題詳情頁，了解政策討論進度與參與方式。'
+export function headForTopicDetail(origin: string, routeName: string, t: Translate): HeadConfig {
+  const title = routeName
+    ? t('head.topicDetail.withNameTitle').replace('{name}', routeName)
+    : t('head.topicDetail.title')
+  const description = t('head.topicDetail.description')
   const path = routeName ? `/topic/${encodeURIComponent(routeName)}` : '/topics'
   return {
     title,
@@ -124,9 +124,9 @@ export function headForTopicDetail(origin: string, routeName: string): HeadConfi
   }
 }
 
-export function headForPolis(origin: string): HeadConfig {
-  const title = `提案討論 | ${SITE_NAME}`
-  const description = '用 Polis 一起決定下一個 Polis 該討論什麼'
+export function headForPolis(origin: string, t: Translate): HeadConfig {
+  const title = t('head.polis.title')
+  const description = t('head.polis.description')
   return {
     title,
     description,
@@ -134,9 +134,9 @@ export function headForPolis(origin: string): HeadConfig {
   }
 }
 
-export function headForProfile(origin: string): HeadConfig {
-  const title = `個人資料 | ${SITE_NAME}`
-  const description = '管理您的 vTaiwan 個人資料。'
+export function headForProfile(origin: string, t: Translate): HeadConfig {
+  const title = t('head.profile.title')
+  const description = t('head.profile.description')
   return {
     title,
     description,
@@ -144,9 +144,9 @@ export function headForProfile(origin: string): HeadConfig {
   }
 }
 
-export function headForNotFound(origin: string): HeadConfig {
-  const title = `404 施工中 | ${SITE_NAME}`
-  const description = `此頁面目前正在施工中，敬請期待更完善的 vTaiwan 數位民主平台。`
+export function headForNotFound(origin: string, t: Translate): HeadConfig {
+  const title = t('head.notFound.title')
+  const description = t('head.notFound.description')
   return {
     title,
     description,

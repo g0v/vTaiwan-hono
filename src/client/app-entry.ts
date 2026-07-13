@@ -1,8 +1,9 @@
 import { createVueApp } from '../app'
+import { watch } from 'vue'
 import { headForRoute } from '../router/routes'
 import type { MetaEntry } from '../ssr/heads'
 
-const { app, router } = createVueApp()
+const { app, router, i18n } = createVueApp()
 
 function upsertMeta(selector: string, attrs: Record<string, string>) {
   let tag = document.head.querySelector<HTMLMetaElement>(selector)
@@ -30,7 +31,9 @@ function applyMeta(entry: MetaEntry) {
 }
 
 function syncHead() {
-  const head = headForRoute(router.currentRoute.value, window.location.origin)
+  const head = headForRoute(router.currentRoute.value, window.location.origin, (key) =>
+    i18n.global.t(key),
+  )
   document.title = head.title
   if (head.description) {
     upsertMeta('meta[name="description"]', {
@@ -46,6 +49,8 @@ function syncHead() {
 router.afterEach(() => {
   syncHead()
 })
+
+watch(i18n.global.locale, syncHead)
 
 router.isReady().then(() => {
   syncHead()

@@ -18,10 +18,10 @@ const clientStyle = import.meta.env.PROD
 
 // 用 vue-router 比對目前 URL，SSR 第一個畫面，再讓瀏覽器端 hydration 接管後續路由。
 export async function renderPage(url: string, origin: string): Promise<RenderPageResult> {
-  const { app, router } = createVueApp(url)
+  const { app, router, i18n } = createVueApp(url)
   await router.isReady()
   const route = router.currentRoute.value
-  const head: HeadConfig = headForRoute(route, origin)
+  const head: HeadConfig = headForRoute(route, origin, (key) => i18n.global.t(key))
   const status = statusForRoute(route) as ContentfulStatusCode
   const bodyHtml = await renderToString(app)
   const headTags = renderHeadTags(head)

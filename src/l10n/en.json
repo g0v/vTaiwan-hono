@@ -1,4 +1,51 @@
 {
+  "head": {
+    "home": {
+      "title": "vTaiwan - Open Collaboration for Public Policy",
+      "description": "vTaiwan is Taiwan's open collaboration platform for public policy, dedicated to fostering dialogue between government and citizens and enabling everyone to participate in shaping public policy."
+    },
+    "about": {
+      "title": "About Us | vTaiwan",
+      "description": "Learn about vTaiwan's mission, history, and approach to open collaboration on public policy."
+    },
+    "word": {
+      "title": "{word} | vTaiwan",
+      "description": "Explore content related to “{word}” and open collaboration on public policy."
+    },
+    "hundred": {
+      "title": "Hundred Chart | vTaiwan",
+      "description": "An interactive hundred chart demonstration from vTaiwan."
+    },
+    "privacy": {
+      "title": "Privacy Policy | vTaiwan",
+      "description": "vTaiwan Privacy Policy — we are committed to protecting your personal data and will not share it with third parties."
+    },
+    "terms": {
+      "title": "Terms of Service | vTaiwan",
+      "description": "vTaiwan Terms of Service — using our video and transcription services requires account registration and agreement to the CC-BY-SA license."
+    },
+    "topics": {
+      "title": "Topics | vTaiwan",
+      "description": "Join vTaiwan's topic discussions and take part in the policy-making process."
+    },
+    "topicDetail": {
+      "title": "Topic Details | vTaiwan",
+      "withNameTitle": "Topic | {name} | vTaiwan",
+      "description": "Learn about the progress of a vTaiwan policy discussion and how to participate."
+    },
+    "polis": {
+      "title": "Proposal Discussion | vTaiwan",
+      "description": "Use Polis to decide what the next Polis discussion should be about."
+    },
+    "profile": {
+      "title": "Profile | vTaiwan",
+      "description": "Manage your vTaiwan profile."
+    },
+    "notFound": {
+      "title": "404 Under Construction | vTaiwan",
+      "description": "This page is currently under construction. Please look forward to a more complete vTaiwan digital democracy platform."
+    }
+  },
   "即將開始": "Upcoming",
   "意見徵集": "Collecting Opinions",
   "研擬草案": "Drafting",

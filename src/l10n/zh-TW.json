@@ -1,4 +1,51 @@
 {
+  "head": {
+    "home": {
+      "title": "vTaiwan - 公共政策開放協作",
+      "description": "vTaiwan 是台灣的公共政策開放協作平台，致力於促進政府與公民之間的對話，讓每個人都能參與公共政策的形成過程。"
+    },
+    "about": {
+      "title": "關於我們 | vTaiwan",
+      "description": "認識 vTaiwan 的理念、歷程與公共政策開放協作方式。"
+    },
+    "word": {
+      "title": "{word} | vTaiwan",
+      "description": "探索「{word}」與公共政策開放協作的相關內容。"
+    },
+    "hundred": {
+      "title": "百數表 | vTaiwan",
+      "description": "vTaiwan 的百數表互動示範。"
+    },
+    "privacy": {
+      "title": "隱私政策 | vTaiwan",
+      "description": "vTaiwan 隱私政策 - 我們承諾保護您的個人資料，不會將您的個人資料傳遞給第三方。"
+    },
+    "terms": {
+      "title": "使用條款 | vTaiwan",
+      "description": "vTaiwan 使用條款 - 使用我們的視訊和轉錄服務需要註冊帳號並同意 CC-BY-SA 授權。"
+    },
+    "topics": {
+      "title": "議題 | vTaiwan",
+      "description": "vTaiwan 的議題討論區，參與政策制定過程。"
+    },
+    "topicDetail": {
+      "title": "議題詳情 | vTaiwan",
+      "withNameTitle": "議題 | {name} | vTaiwan",
+      "description": "vTaiwan 議題詳情頁，了解政策討論進度與參與方式。"
+    },
+    "polis": {
+      "title": "提案討論 | vTaiwan",
+      "description": "用 Polis 一起決定下一個 Polis 該討論什麼。"
+    },
+    "profile": {
+      "title": "個人資料 | vTaiwan",
+      "description": "管理您的 vTaiwan 個人資料。"
+    },
+    "notFound": {
+      "title": "404 施工中 | vTaiwan",
+      "description": "此頁面目前正在施工中，敬請期待更完善的 vTaiwan 數位民主平台。"
+    }
+  },
   "common": {
     "login": "登入",
     "logout": "登出",

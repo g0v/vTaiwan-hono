@@ -126,30 +126,31 @@ export function statusForRoute(route: RouteLocationNormalizedLoaded): number {
 export function headForRoute(
   route: RouteLocationNormalizedLoaded,
   origin: string,
+  t: (key: string) => string,
 ): HeadConfig {
   switch (route.name) {
     case 'home':
-      return headForHome(origin)
+      return headForHome(origin, t)
     case 'about':
     case 'intro':
-      return headForAbout(origin)
+      return headForAbout(origin, t)
     case 'word':
-      return headForWord(String(route.params.w ?? ''), origin)
+      return headForWord(String(route.params.w ?? ''), origin, t)
     case 'hundred':
-      return headForHundredChart(origin)
+      return headForHundredChart(origin, t)
     case 'privacy':
-      return headForPrivacy(origin)
+      return headForPrivacy(origin, t)
     case 'terms':
-      return headForTerms(origin)
+      return headForTerms(origin, t)
     case 'topics':
-      return headForTopics(origin)
+      return headForTopics(origin, t)
     case 'topic':
-      return headForTopicDetail(origin, String(route.params.id ?? ''))
+      return headForTopicDetail(origin, String(route.params.id ?? ''), t)
     case 'polis':
-      return headForPolis(origin)
+      return headForPolis(origin, t)
     case 'profile':
-      return headForProfile(origin)
+      return headForProfile(origin, t)
     default:
-      return headForNotFound(origin)
+      return headForNotFound(origin, t)
   }
 }

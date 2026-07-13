@@ -1,4 +1,51 @@
 {
+  "head": {
+    "home": {
+      "title": "vTaiwan - 公共政策のオープンコラボレーション",
+      "description": "vTaiwanは、政府と市民の対話を促進し、誰もが公共政策の形成に参加できるようにする、台湾の公共政策オープンコラボレーションプラットフォームです。"
+    },
+    "about": {
+      "title": "私たちについて | vTaiwan",
+      "description": "vTaiwanの理念、歩み、公共政策におけるオープンコラボレーションの方法をご紹介します。"
+    },
+    "word": {
+      "title": "{word} | vTaiwan",
+      "description": "「{word}」と公共政策のオープンコラボレーションに関するコンテンツをご覧ください。"
+    },
+    "hundred": {
+      "title": "百ます表 | vTaiwan",
+      "description": "vTaiwanのインタラクティブな百ます表のデモです。"
+    },
+    "privacy": {
+      "title": "プライバシーポリシー | vTaiwan",
+      "description": "vTaiwanのプライバシーポリシー - 個人データの保護に努め、第三者に個人情報を提供しません。"
+    },
+    "terms": {
+      "title": "利用規約 | vTaiwan",
+      "description": "vTaiwanの利用規約 - 動画・書き起こしサービスの利用にはアカウント登録とCC-BY-SAライセンスへの同意が必要です。"
+    },
+    "topics": {
+      "title": "トピック | vTaiwan",
+      "description": "vTaiwanのトピック討論に参加し、政策形成に加わりましょう。"
+    },
+    "topicDetail": {
+      "title": "トピック詳細 | vTaiwan",
+      "withNameTitle": "トピック | {name} | vTaiwan",
+      "description": "vTaiwanの政策討論の進捗と参加方法をご確認ください。"
+    },
+    "polis": {
+      "title": "提案ディスカッション | vTaiwan",
+      "description": "次のPolisで何を話し合うかを、Polisで一緒に決めましょう。"
+    },
+    "profile": {
+      "title": "プロフィール | vTaiwan",
+      "description": "vTaiwanのプロフィールを管理します。"
+    },
+    "notFound": {
+      "title": "404 工事中 | vTaiwan",
+      "description": "このページは現在工事中です。より充実したvTaiwanデジタル民主主義プラットフォームをお待ちください。"
+    }
+  },
   "即將開始": "まもなく開始",
   "意見徵集": "意見募集",
   "研擬草案": "草案作成",
