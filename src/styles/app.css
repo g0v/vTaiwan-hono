@@ -435,7 +435,8 @@
   margin-top: 0;
 }
 
-.container a {
+/* 一般內文連結用民主紅；但 .vt-btn 類按鈕維持自身樣式（紅底白字等），不被連結色覆蓋 */
+.container a:not(.vt-btn) {
   color: var(--color-vt-democratic-red);
 }
 

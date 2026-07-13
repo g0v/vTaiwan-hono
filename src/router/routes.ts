@@ -2,6 +2,8 @@ import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import {
   headForAbout,
   headForBlogs,
+  headForContributors,
+  headForFaq,
   headForHome,
   headForHundredChart,
   headForMastodon,
@@ -57,6 +59,10 @@ export function headForRoute(
       return headForNewsletters(origin, t)
     case 'newsletter-detail':
       return headForNewsletterDetail(origin, String(route.params.slug ?? ''), t)
+    case 'contributors':
+      return headForContributors(origin, t)
+    case 'faq':
+      return headForFaq(origin, t)
     default:
       return headForNotFound(origin, t)
   }

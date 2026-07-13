@@ -14,12 +14,12 @@ import BlogsView from '../views/Blogs.vue'
 import MastodonView from '../views/Mastodon.vue'
 import NewslettersView from '../views/Newsletters.vue'
 import NewsletterDetailView from '../views/NewsletterDetail.vue'
+import ContributorsView from '../views/ContributorsView.vue'
+import FaqView from '../views/FaqView.vue'
 
 const placeholderPaths = [
   '/404',
   '/meetups',
-  '/faq',
-  '/contributors',
 ]
 
 // SSR 與 client 共用的路由表：一律靜態載入元件。
@@ -51,6 +51,8 @@ export const routes: RouteRecordRaw[] = [
   { path: '/mastodon', name: 'mastodon', component: MastodonView, meta: { status: 200 } },
   { path: '/newsletters', name: 'newsletters', component: NewslettersView, meta: { status: 200 } },
   { path: '/newsletters/:slug', name: 'newsletter-detail', component: NewsletterDetailView, meta: { status: 200 } },
+  { path: '/contributors', name: 'contributors', component: ContributorsView, meta: { status: 200 } },
+  { path: '/faq', name: 'faq', component: FaqView, meta: { status: 200 } },
   ...placeholderPaths.map((path) => ({
     path,
     name: `placeholder-${path.slice(1)}`,

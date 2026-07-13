@@ -60,6 +60,14 @@
     "newsletterDetail": {
       "title": "ニュースレター | vTaiwan",
       "description": "vTaiwan ニュースレター詳細。"
+    },
+    "contributors": {
+      "title": "貢献者 | vTaiwan",
+      "description": "vTaiwanの公共政策オープンコラボレーションを支えるコアチームとコミュニティの皆さんをご紹介します。"
+    },
+    "faq": {
+      "title": "よくある質問 (FAQ) | vTaiwan",
+      "description": "vTaiwanプラットフォームに関するよくある質問と回答。"
     }
   },
   "即將開始": "まもなく開始",

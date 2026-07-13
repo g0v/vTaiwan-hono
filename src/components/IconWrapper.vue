@@ -18,6 +18,7 @@ import {
   Play,
   Search,
   Share2,
+  User,
   Users,
   X,
 } from 'lucide-vue-next'
@@ -41,6 +42,7 @@ const icons: Record<string, Component> = {
   play: Play,
   search: Search,
   'share-2': Share2,
+  user: User,
   users: Users,
   x: X,
 }

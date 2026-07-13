@@ -164,6 +164,26 @@ export function headForMastodon(origin: string, t: Translate): HeadConfig {
   }
 }
 
+export function headForContributors(origin: string, t: Translate): HeadConfig {
+  const title = t('head.contributors.title')
+  const description = t('head.contributors.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/contributors`),
+  }
+}
+
+export function headForFaq(origin: string, t: Translate): HeadConfig {
+  const title = t('head.faq.title')
+  const description = t('head.faq.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/faq`),
+  }
+}
+
 export function headForNewsletters(origin: string, t: Translate): HeadConfig {
   const title = t('head.newsletters.title')
   const description = t('head.newsletters.description')

@@ -60,6 +60,14 @@
     "newsletterDetail": {
       "title": "Newsletter | vTaiwan",
       "description": "vTaiwan newsletter detail."
+    },
+    "contributors": {
+      "title": "Contributors | vTaiwan",
+      "description": "Meet the core team and community members behind vTaiwan's open collaboration on public policy."
+    },
+    "faq": {
+      "title": "FAQ | vTaiwan",
+      "description": "Frequently asked questions about the vTaiwan platform."
     }
   },
   "即將開始": "Upcoming",

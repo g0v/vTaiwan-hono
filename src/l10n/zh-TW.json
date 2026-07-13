@@ -60,6 +60,14 @@
     "newsletterDetail": {
       "title": "電子報 | vTaiwan",
       "description": "vTaiwan 電子報詳情。"
+    },
+    "contributors": {
+      "title": "貢獻者 | vTaiwan",
+      "description": "感謝所有參與 vTaiwan 公共政策開放協作的核心團隊與社群夥伴。"
+    },
+    "faq": {
+      "title": "常見問答 (FAQ) | vTaiwan",
+      "description": "關於 vTaiwan 平台的常見問題與解答。"
     }
   },
   "common": {
