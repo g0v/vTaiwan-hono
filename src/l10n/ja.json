@@ -44,6 +44,22 @@
     "notFound": {
       "title": "404 工事中 | vTaiwan",
       "description": "このページは現在工事中です。より充実したvTaiwanデジタル民主主義プラットフォームをお待ちください。"
+    },
+    "blogs": {
+      "title": "Medium 記事 | vTaiwan",
+      "description": "vTaiwan が Medium で公開した記事と見解。"
+    },
+    "mastodon": {
+      "title": "コミュニティ投稿 | vTaiwan",
+      "description": "g0v.social 上の vTaiwan タグの投稿。"
+    },
+    "newsletters": {
+      "title": "ニュースレター | vTaiwan",
+      "description": "Substack で公開された vTaiwan のニュースレター。"
+    },
+    "newsletterDetail": {
+      "title": "ニュースレター | vTaiwan",
+      "description": "vTaiwan ニュースレター詳細。"
     }
   },
   "即將開始": "まもなく開始",

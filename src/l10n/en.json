@@ -44,6 +44,22 @@
     "notFound": {
       "title": "404 Under Construction | vTaiwan",
       "description": "This page is currently under construction. Please look forward to a more complete vTaiwan digital democracy platform."
+    },
+    "blogs": {
+      "title": "Medium Articles | vTaiwan",
+      "description": "Articles and insights published by vTaiwan on Medium."
+    },
+    "mastodon": {
+      "title": "Community Posts | vTaiwan",
+      "description": "Community posts tagged vTaiwan on g0v.social."
+    },
+    "newsletters": {
+      "title": "Newsletters | vTaiwan",
+      "description": "vTaiwan newsletters published on Substack."
+    },
+    "newsletterDetail": {
+      "title": "Newsletter | vTaiwan",
+      "description": "vTaiwan newsletter detail."
     }
   },
   "即將開始": "Upcoming",

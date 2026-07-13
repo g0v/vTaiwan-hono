@@ -144,6 +144,46 @@ export function headForProfile(origin: string, t: Translate): HeadConfig {
   }
 }
 
+export function headForBlogs(origin: string, t: Translate): HeadConfig {
+  const title = t('head.blogs.title')
+  const description = t('head.blogs.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/blogs`),
+  }
+}
+
+export function headForMastodon(origin: string, t: Translate): HeadConfig {
+  const title = t('head.mastodon.title')
+  const description = t('head.mastodon.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/mastodon`),
+  }
+}
+
+export function headForNewsletters(origin: string, t: Translate): HeadConfig {
+  const title = t('head.newsletters.title')
+  const description = t('head.newsletters.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/newsletters`),
+  }
+}
+
+export function headForNewsletterDetail(origin: string, slug: string, t: Translate): HeadConfig {
+  const title = t('head.newsletterDetail.title')
+  const description = t('head.newsletterDetail.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/newsletters/${slug}`),
+  }
+}
+
 export function headForNotFound(origin: string, t: Translate): HeadConfig {
   const title = t('head.notFound.title')
   const description = t('head.notFound.description')

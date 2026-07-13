@@ -10,13 +10,14 @@ import TopicsView from '../views/TopicsView.vue'
 import TopicDetailView from '../views/TopicDetailView.vue'
 import PolisView from '../views/PolisView.vue'
 import ProfileView from '../views/ProfileView.vue'
+import BlogsView from '../views/Blogs.vue'
+import MastodonView from '../views/Mastodon.vue'
+import NewslettersView from '../views/Newsletters.vue'
+import NewsletterDetailView from '../views/NewsletterDetail.vue'
 
 const placeholderPaths = [
   '/404',
   '/meetups',
-  '/blogs',
-  '/newsletters',
-  '/mastodon',
   '/faq',
   '/contributors',
 ]
@@ -45,6 +46,10 @@ export const routes: RouteRecordRaw[] = [
   },
   { path: '/polis', name: 'polis', component: PolisView, meta: { status: 200 } },
   { path: '/profile', name: 'profile', component: ProfileView, meta: { status: 200 } },
+  { path: '/blogs', name: 'blogs', component: BlogsView, meta: { status: 200 } },
+  { path: '/mastodon', name: 'mastodon', component: MastodonView, meta: { status: 200 } },
+  { path: '/newsletters', name: 'newsletters', component: NewslettersView, meta: { status: 200 } },
+  { path: '/newsletters/:slug', name: 'newsletter-detail', component: NewsletterDetailView, meta: { status: 200 } },
   ...placeholderPaths.map((path) => ({
     path,
     name: `placeholder-${path.slice(1)}`,

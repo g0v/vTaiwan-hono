@@ -3,9 +3,6 @@ import type { RouteRecordRaw } from 'vue-router'
 const placeholderPaths = [
   '/404',
   '/meetups',
-  '/blogs',
-  '/newsletters',
-  '/mastodon',
   '/faq',
   '/contributors',
 ]
@@ -54,6 +51,10 @@ export const routes: RouteRecordRaw[] = [
     component: () => import('../views/ProfileView.vue'),
     meta: { status: 200 },
   },
+  { path: '/blogs', name: 'blogs', component: () => import('../views/Blogs.vue'), meta: { status: 200 } },
+  { path: '/mastodon', name: 'mastodon', component: () => import('../views/Mastodon.vue'), meta: { status: 200 } },
+  { path: '/newsletters', name: 'newsletters', component: () => import('../views/Newsletters.vue'), meta: { status: 200 } },
+  { path: '/newsletters/:slug', name: 'newsletter-detail', component: () => import('../views/NewsletterDetail.vue'), meta: { status: 200 } },
   ...placeholderPaths.map((path) => ({
     path,
     name: `placeholder-${path.slice(1)}`,
