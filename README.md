@@ -139,6 +139,63 @@ npm run typecheck    # tsc --noEmit — 型別檢查 / type-check
 
 > 本 repo 目前**沒有測試框架**（`npm run test` 不存在）。日後視需要再導入 Vitest / SSR 煙霧測試。
 
+## Formal Verification / 形式驗證（LemmaScript）
+
+關鍵的純函式已加上 [LemmaScript](https://viteplus.dev/) `//@ ` 形式不變量，可透過 [Dafny](https://dafny.org/) 機器驗證。
+
+Key pure functions are annotated with [LemmaScript](https://viteplus.dev/) `//@ ` invariants and can be formally verified via [Dafny](https://dafny.org/).
+
+### 已加注的檔案 / Annotated files
+
+| 檔案 / File | 不變量 / Invariants |
+|-------------|---------------------|
+| `src/ssr/heads.ts` | `buildOg` → 恆輸出 10 個 MetaEntry；`headFor*` → title 非空、`meta.length === 10`；`renderHeadTags` → output 含 charset、title、viewport |
+| `src/i18n/index.ts` | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale |
+| `src/router/routes.ts` | `statusForRoute` → 回傳 meta.status 或 200；`headForRoute` → 恆回傳合法 HeadConfig |
+| `src/lib/discourse.ts` | `getJson` → path 非空、in-flight 去重；`getAllCategoryTopics` → categoryUri 非空 |
+
+### 執行 / Commands
+
+```bash
+# 重新從 TS 生成 Dafny 驗證基底（不需要安裝 Dafny）
+# Regenerate .dfy.gen from annotated TS — no Dafny needed
+npm run lemma:gen
+
+# 跑 Dafny 驗證（需另外安裝 Dafny >= 4.x）
+# Run Dafny verification — requires Dafny >= 4.x
+npm run lemma:check
+```
+
+**安裝 Dafny / Install Dafny：** 見 [dafny.org/dafny/Installation](https://dafny.org/dafny/Installation)。`lsc` 本身由 `npm install -g lemmascript` 安裝，已包含在本機環境。
+
+### 檔案角色 / File roles
+
+| 檔案 | 追蹤 | 說明 |
+|------|------|------|
+| `src/**/*.dfy` | ✅ git tracked | 驗證基底 + 可加入 proof additions |
+| `src/**/*.dfy.gen` | 🚫 gitignored | 每次 `lemma:gen` 自動重生，不納入版控 |
+
+### 加注語法速查 / Annotation syntax
+
+```typescript
+function foo(x: string): Result {
+  //@ verify          // 標記此函式進行驗證 / opt in for verification
+  //@ requires x.length > 0
+  //@ ensures \result.field === 10
+  //@ autohavoc       // 將不可建模的外部呼叫（如 t()）抽象為任意值
+  //@ contract 自然語言說明函式意圖（prover 忽略，lsc extract 使用）
+  ...
+}
+
+while (condition) {
+  //@ invariant i >= 0 && i <= arr.length
+  //@ decreases arr.length - i
+  ...
+}
+```
+
+完整語法見 [LemmaScript SPEC.md](https://github.com/midspiral/LemmaScript/blob/main/SPEC.md)。
+
 ## Deploy / 部署
 
 ```bash

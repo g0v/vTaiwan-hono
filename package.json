@@ -13,6 +13,8 @@
     "preview": "vp preview",
     "deploy": "npm run build && wrangler deploy",
     "typecheck": "tsc --noEmit",
+    "lemma:gen": "lsc gen --backend=dafny src/ssr/heads.ts src/i18n/index.ts src/router/routes.ts src/lib/discourse.ts",
+    "lemma:check": "lsc check --backend=dafny src/ssr/heads.ts src/i18n/index.ts src/router/routes.ts src/lib/discourse.ts",
     "cf-typegen": "wrangler types"
   },
   "dependencies": {

@@ -30,6 +30,8 @@ npm run watch:css  # 監看模式重建 CSS
 npm run build      # build:css + vite build（server）+ vite build client
 npm run preview    # 預覽建置結果
 npm run typecheck  # tsc --noEmit 型別檢查
+npm run lemma:gen  # LemmaScript：重新生成 Dafny 驗證基底（不需安裝 Dafny）
+npm run lemma:check # LemmaScript：執行 Dafny 形式驗證（需安裝 Dafny >= 4.x）
 npm run deploy     # build + wrangler deploy（除非使用者要求，否則不要執行）
 npm run cf-typegen # 由 wrangler 產生 Cloudflare 綁定型別
 ```
@@ -116,8 +118,58 @@ npm run cf-typegen # 由 wrangler 產生 Cloudflare 綁定型別
 1. `npm run typecheck` — `tsc --noEmit`，應為零錯誤。
 2. `npm run build` — 確認 CSS + server + client 都能成功建置。
 3. `npm run dev` 目視 — 確認 SSR 首屏正確，且 hydration **無 mismatch 警告**（開 devtools console 檢查）。
+4. `npm run lemma:gen` — 重新生成 Dafny 驗證基底（`.dfy.gen`），確認 lsc 能正常解析所有加注函式。
 
 > **未來再加**（尚未導入，需先跟使用者確認再動工）：比照 neo 導入 Vitest 補單元測試；以及 SSR 輸出 / hydration 一致性的煙霧測試。目前本 repo **沒有測試框架**，別假設 `npm run test` 存在。
+
+## LemmaScript 形式驗證
+
+本專案以 [LemmaScript](https://viteplus.dev/) 對純函式加注形式不變量（`//@ requires` / `//@ ensures` / `//@ invariant`），並可透過 Dafny 機器驗證。
+
+### 已加注的模組
+
+| 檔案 | 主要不變量 |
+|------|-----------|
+| `src/ssr/heads.ts` | `buildOg` → `\result.length === 10`；`headFor*` → `\result.title.length > 0` 且 `\result.meta.length === 10`；`renderHeadTags` → output 含 charset、title、viewport |
+| `src/i18n/index.ts` | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale |
+| `src/router/routes.ts` | `statusForRoute` → `\result === 200 || \result === route.meta.status`；`headForRoute` → 恆有效 |
+| `src/lib/discourse.ts` | `getJson` → `requires path.length > 0`；in-flight 去重 contract |
+
+### 執行方式
+
+```bash
+# 重新從 TS 生成 .dfy.gen（不需安裝 Dafny）
+npm run lemma:gen
+
+# 形式驗證（需安裝 Dafny >= 4.x，見 https://dafny.org/dafny/Installation）
+npm run lemma:check
+```
+
+### 加注規則（agent 需遵守）
+
+- **新增 `headFor*` 函式**時，必須在函式體第一行加上：
+  ```typescript
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
+  ```
+  加完後跑 `npm run lemma:gen` 確認 lsc 能正常解析。
+
+- **加注語法**：`//@ ` 開頭（注意 `@` 後有空格）；只能放在函式 / 迴圈 body 第一行。
+  - `//@ verify` — 標記函式納入驗證（brownfield 模式下必填）
+  - `//@ requires <expr>` — 前置條件
+  - `//@ ensures \result <expr>` — 後置條件（`\result` 指回傳值）
+  - `//@ invariant <expr>` — 迴圈不變量
+  - `//@ autohavoc` — 將不可建模的外部呼叫（如 `t()`）抽象為任意值
+  - `//@ contract <text>` — 自然語言意圖說明（prover 忽略，文件用）
+
+- **`.dfy` vs `.dfy.gen`**：
+  - `.dfy.gen` — gitignored，每次 `lemma:gen` 覆寫，**不要手改**。
+  - `.dfy` — tracked，可加 proof additions，diff 只能是新增行。
+
+- **regex / Promise / DOM 無法建模**：含 regex literal、`localStorage`、多行 lambda 的函式跳過 `//@ verify`，改用 `//@ ensures` 作純文件標注。
 
 ## 多 repo 工作區
 
