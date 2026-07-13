@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { renderPage } from './ssr/render'
 import { getAllTopics, getTopic } from './lib/discourse-server'
 
@@ -11,6 +12,22 @@ type Bindings = {
 }
 
 const app = new Hono<{ Bindings: Bindings }>()
+
+// CORS 允許網域（同 vtaiwan-transcription-worker，加上本站）
+const CORS_ORIGINS = [
+  'https://vtaiwan.tw',
+  'https://vue.vtaiwan.tw',
+  'https://vtaiwan-hono.audreyt.workers.dev',
+  'http://localhost:5173',
+  'http://localhost:4321',
+]
+
+app.use('/api/*', cors({
+  origin: (origin) => (CORS_ORIGINS.includes(origin) ? origin : null),
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization'],
+  maxAge: 86400,
+}))
 
 // 純 JSON / 文字 API：直接回傳，不走 SSR
 app.get('/api/hello', (c) => c.text('Hello World!'))
