@@ -12,6 +12,9 @@
     {
       "path": "../vtaiwan-transcription-worker",
     },
+    {
+      "path": "../vtaiwan-jaas-worker",
+    },
   ],
   "settings": {
     "css.customData": [".vscode/tailwind-v4.css-data.json"],
