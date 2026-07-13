@@ -111,6 +111,82 @@ app.get('/api/discourse/topic/:id', async (c) => {
   }
 })
 
+// vtaiwan-transcription-worker 代理（避免瀏覽器直接跨域存取）
+const TRANSCRIPTION_WORKER = 'https://vtaiwan-transcription-worker.bestian123.workers.dev'
+
+app.get('/api/transcriptions/query-table', async (c) => {
+  try {
+    const res = await fetch(`${TRANSCRIPTION_WORKER}/api/query-table`)
+    const data = await res.json()
+    return c.json(data, res.status as Parameters<typeof c.json>[1])
+  } catch (e) {
+    return c.json({ error: 'Transcription worker unavailable' }, 502)
+  }
+})
+
+app.post('/api/transcriptions/upload-transcription', async (c) => {
+  try {
+    const body = await c.req.raw.arrayBuffer()
+    const contentType = c.req.header('content-type') ?? 'multipart/form-data'
+    const res = await fetch(`${TRANSCRIPTION_WORKER}/api/upload-transcription`, {
+      method: 'POST',
+      headers: { 'Content-Type': contentType },
+      body,
+    })
+    const data = await res.json()
+    return c.json(data, res.status as Parameters<typeof c.json>[1])
+  } catch (e) {
+    return c.json({ error: 'Transcription worker unavailable' }, 502)
+  }
+})
+
+app.post('/api/transcriptions/update-outline', async (c) => {
+  try {
+    const body = await c.req.json()
+    const res = await fetch(`${TRANSCRIPTION_WORKER}/api/update-outline`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    const data = await res.json()
+    return c.json(data, res.status as Parameters<typeof c.json>[1])
+  } catch (e) {
+    return c.json({ error: 'Transcription worker unavailable' }, 502)
+  }
+})
+
+// vtaiwan-jaas-jwt-worker 代理（Jitsi Meet 取得 JWT）
+const JAAS_WORKER = 'https://vtaiwan-jaas-jwt-worker.bestian123.workers.dev'
+
+app.get('/api/jitsi/token', async (c) => {
+  try {
+    const qs = c.req.url.split('?')[1] ?? ''
+    const res = await fetch(`${JAAS_WORKER}/api/jitsi-token?${qs}`)
+    const data = await res.json()
+    return c.json(data, res.status as Parameters<typeof c.json>[1])
+  } catch (e) {
+    return c.json({ error: 'JAAS worker unavailable' }, 502)
+  }
+})
+
+// vtaiwan-transcription-worker 音訊轉錄代理
+app.post('/api/transcriptions/transcription/:date', async (c) => {
+  try {
+    const date = c.req.param('date')
+    const body = await c.req.raw.arrayBuffer()
+    const contentType = c.req.header('content-type') ?? 'application/octet-stream'
+    const res = await fetch(`${TRANSCRIPTION_WORKER}/api/transcription/${date}`, {
+      method: 'POST',
+      headers: { 'Content-Type': contentType },
+      body,
+    })
+    const data = await res.json()
+    return c.json(data, res.status as Parameters<typeof c.json>[1])
+  } catch (e) {
+    return c.json({ error: 'Transcription worker unavailable' }, 502)
+  }
+})
+
 // 其他 GET 請求：靜態檔交給 ASSETS，其餘交給 Vue SSR + vue-router。
 app.get('*', async (c) => {
   const url = new URL(c.req.url)
