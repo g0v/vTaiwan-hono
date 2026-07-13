@@ -19,3 +19,6 @@ worker-configuration.d.ts
 
 # Git worktrees (local only)
 .worktrees/
+
+# LemmaScript — generated Dafny merge base (always regeneratable via lsc gen)
+*.dfy.gen

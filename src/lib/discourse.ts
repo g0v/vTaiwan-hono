@@ -8,6 +8,9 @@ export type { DiscoursePost, DiscourseTopic, FormattedTopicData } from "./discou
 const inflight = new Map<string, Promise<unknown>>();
 
 function getJson<T>(path: string): Promise<T> {
+  //@ verify
+  //@ requires path.length > 0
+  //@ contract deduplicates in-flight requests by path; on HTTP error removes path from cache and rejects; on success resolves with parsed JSON of type T
   const cached = inflight.get(path);
   if (cached) return cached as Promise<T>;
 
@@ -35,12 +38,16 @@ const discourseAPI: DiscourseAPI = {
   },
 
   getAllCategoryTopics(categoryUri: string) {
+    //@ verify
+    //@ requires categoryUri.length > 0
     return getJson<DiscourseTopic[]>(
       `/api/discourse/topics?category=${encodeURIComponent(categoryUri)}`,
     );
   },
 
   getTopic(topicId: string | number) {
+    //@ verify
+    //@ requires String(topicId).length > 0
     return getJson<DiscourseTopic>(`/api/discourse/topic/${encodeURIComponent(String(topicId))}`);
   },
 

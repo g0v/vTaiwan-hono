@@ -16,6 +16,10 @@ const DEFAULT_OG_IMAGE = `https://vtaiwan-hono.audreyt.workers.dev/img/og-image.
 
 // 統一產 OG / Twitter Card meta，避免每條路由都自己寫一次
 function buildOg(title: string, description: string, image: string, url: string): MetaEntry[] {
+  //@ verify
+  //@ requires title.length > 0
+  //@ requires url.length > 0
+  //@ ensures \result.length === 10
   return [
     { property: "og:type", content: "website" },
     { property: "og:site_name", content: SITE_NAME },
@@ -31,6 +35,11 @@ function buildOg(title: string, description: string, image: string, url: string)
 }
 
 export function headForHome(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.home.title");
   const description = t("head.home.description");
   return {
@@ -42,6 +51,11 @@ export function headForHome(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForAbout(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.about.title") + " - " + SITE_NAME;
   const description = t("head.about.description");
   return {
@@ -52,6 +66,11 @@ export function headForAbout(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForWord(word: string, origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.word.title").replace("{word}", word) + " - " + SITE_NAME;
   const description = t("head.word.description").replace("{word}", word);
 
@@ -65,6 +84,11 @@ export function headForWord(word: string, origin: string, t: Translate): HeadCon
 }
 
 export function headForHundredChart(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.hundred.title") + " - " + SITE_NAME;
   const description = t("head.hundred.description");
   return {
@@ -75,6 +99,11 @@ export function headForHundredChart(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForPrivacy(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.privacy.title") + " - " + SITE_NAME;
   const description = t("head.privacy.description");
   return {
@@ -85,6 +114,11 @@ export function headForPrivacy(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTerms(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.terms.title") + " - " + SITE_NAME;
   const description = t("head.terms.description");
   return {
@@ -95,6 +129,11 @@ export function headForTerms(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTopics(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.topics.title") + " - " + SITE_NAME;
   const description = t("head.topics.description");
   return {
@@ -105,6 +144,11 @@ export function headForTopics(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTopicDetail(origin: string, routeName: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title =
     (routeName
       ? t("head.topicDetail.withNameTitle").replace("{name}", routeName)
@@ -121,6 +165,11 @@ export function headForTopicDetail(origin: string, routeName: string, t: Transla
 }
 
 export function headForPolis(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.polis.title") + " - " + SITE_NAME;
   const description = t("head.polis.description");
   return {
@@ -131,6 +180,11 @@ export function headForPolis(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForProfile(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.profile.title") + " - " + SITE_NAME;
   const description = t("head.profile.description");
   return {
@@ -141,6 +195,11 @@ export function headForProfile(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForBlogs(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.blogs.title") + " - " + SITE_NAME;
   const description = t("head.blogs.description");
   return {
@@ -151,6 +210,11 @@ export function headForBlogs(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForMastodon(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.mastodon.title") + " - " + SITE_NAME;
   const description = t("head.mastodon.description");
   return {
@@ -161,6 +225,11 @@ export function headForMastodon(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForContributors(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.contributors.title") + " - " + SITE_NAME;
   const description = t("head.contributors.description");
   return {
@@ -171,6 +240,11 @@ export function headForContributors(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForFaq(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.faq.title") + " - " + SITE_NAME;
   const description = t("head.faq.description");
   return {
@@ -181,6 +255,11 @@ export function headForFaq(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForNewsletters(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.newsletters.title") + " - " + SITE_NAME;
   const description = t("head.newsletters.description");
   return {
@@ -191,6 +270,11 @@ export function headForNewsletters(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForNewsletterDetail(origin: string, slug: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.newsletterDetail.title") + " - " + SITE_NAME;
   const description = t("head.newsletterDetail.description");
   return {
@@ -201,6 +285,11 @@ export function headForNewsletterDetail(origin: string, slug: string, t: Transla
 }
 
 export function headForNotFound(origin: string, t: Translate): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   const title = t("head.notFound.title") + " - " + SITE_NAME;
   const description = t("head.notFound.description");
   return {
@@ -210,7 +299,10 @@ export function headForNotFound(origin: string, t: Translate): HeadConfig {
   };
 }
 
+// escapeHtml: regex operations are outside lsc's supported fragment — annotations are doc-only.
 function escapeHtml(s: string): string {
+  //@ ensures \result.length >= s.length
+  //@ ensures !\result.includes("<") && !\result.includes(">") && !\result.includes("\"") && !\result.includes("'")
   return s
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -221,6 +313,9 @@ function escapeHtml(s: string): string {
 
 // 把 HeadConfig 轉成可以塞進 <head> 的 HTML 字串
 export function renderHeadTags(head: HeadConfig): string {
+  //@ verify
+  //@ requires head.title.length > 0
+  //@ ensures \result.includes("<meta charset=") && \result.includes("<title>") && \result.includes("<meta name=\"viewport\"")
   const parts: string[] = [
     '<meta charset="UTF-8" />',
     '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',

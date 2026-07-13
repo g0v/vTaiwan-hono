@@ -20,6 +20,9 @@ export const defaultLocale: SupportedLocale = "zh-TW";
 const STORAGE_KEY = "locale";
 
 export function isSupportedLocale(value: string | null | undefined): value is SupportedLocale {
+  //@ verify
+  //@ ensures \result ==> (value === "zh-TW" || value === "en" || value === "ja")
+  //@ ensures (value === "zh-TW" || value === "en" || value === "ja") ==> \result
   return !!value && supportedLocales.some((l) => l.code === value);
 }
 
@@ -43,6 +46,8 @@ export function createAppI18n(locale: SupportedLocale = defaultLocale) {
 
 // 僅限瀏覽器端：依使用者偏好決定語言（localStorage > 瀏覽器語言 > 預設）。
 export function detectPreferredLocale(): SupportedLocale {
+  //@ verify
+  //@ ensures \result === "zh-TW" || \result === "en" || \result === "ja"
   if (typeof window === "undefined") return defaultLocale;
 
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -58,6 +63,9 @@ export function detectPreferredLocale(): SupportedLocale {
 
 // 僅限瀏覽器端：記住使用者選擇並同步 <html lang>（狀態守恆）。
 export function persistLocale(locale: SupportedLocale) {
+  //@ verify
+  //@ requires locale === "zh-TW" || locale === "en" || locale === "ja"
+  //@ contract persists the locale to localStorage and syncs document.documentElement.lang; no-op when not in browser
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY, locale);
   document.documentElement.lang = locale;

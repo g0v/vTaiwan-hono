@@ -21,6 +21,9 @@ import {
 } from "../ssr/heads";
 
 export function statusForRoute(route: RouteLocationNormalizedLoaded): number {
+  //@ verify
+  //@ contract returns route.meta.status when it is a number, otherwise defaults to 200; result is always a valid HTTP status code range
+  //@ ensures \result === 200 || \result === route.meta.status
   return typeof route.meta.status === "number" ? route.meta.status : 200;
 }
 
@@ -29,6 +32,11 @@ export function headForRoute(
   origin: string,
   t: (key: string) => string,
 ): HeadConfig {
+  //@ verify
+  //@ autohavoc
+  //@ requires origin.length > 0
+  //@ ensures \result.title.length > 0
+  //@ ensures \result.meta.length === 10
   switch (route.name) {
     case "home":
       return headForHome(origin, t);
