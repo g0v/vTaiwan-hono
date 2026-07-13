@@ -16,3 +16,6 @@ worker-configuration.d.ts
 
 # Antigravity CLI workspace state
 .antigravitycli/
+
+# Git worktrees (local only)
+.worktrees/
