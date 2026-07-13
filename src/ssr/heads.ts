@@ -214,6 +214,66 @@ export function headForNotFound(origin: string, t: Translate): HeadConfig {
   }
 }
 
+export function headForMeetups(origin: string, t: Translate): HeadConfig {
+  const title = t('head.meetups.title')
+  const description = t('head.meetups.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/meetups`),
+  }
+}
+
+export function headForContact(origin: string, t: Translate): HeadConfig {
+  const title = t('head.contact.title')
+  const description = t('head.contact.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/contact`),
+  }
+}
+
+export function headForPropose(origin: string, t: Translate): HeadConfig {
+  const title = t('head.propose.title')
+  const description = t('head.propose.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/propose`),
+  }
+}
+
+export function headForTranscriptions(origin: string, t: Translate): HeadConfig {
+  const title = t('head.transcriptions.title')
+  const description = t('head.transcriptions.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/transcriptions`),
+  }
+}
+
+export function headForTranscriptionDetail(origin: string, meetingId: string, t: Translate): HeadConfig {
+  const title = t('head.transcriptionDetail.title')
+  const description = t('head.transcriptionDetail.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/transcription_detail/${meetingId}`),
+  }
+}
+
+export function headForJitsi(origin: string, t: Translate): HeadConfig {
+  const title = t('head.jitsi.title')
+  const description = t('head.jitsi.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/jitsi`),
+  }
+}
+
 
 function escapeHtml(s: string): string {
   return s

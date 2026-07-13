@@ -68,6 +68,30 @@
     "faq": {
       "title": "FAQ | vTaiwan",
       "description": "Frequently asked questions about the vTaiwan platform."
+    },
+    "meetups": {
+      "title": "Meetups | vTaiwan",
+      "description": "vTaiwan hosts regular online and in-person meetups to discuss project progress and public policy issues. Everyone is welcome!"
+    },
+    "contact": {
+      "title": "Contact Us | vTaiwan",
+      "description": "Join the vTaiwan community and help us drive digital democracy."
+    },
+    "propose": {
+      "title": "Submit a Proposal | vTaiwan",
+      "description": "Submit your public policy proposal and take part in vTaiwan's open collaboration process."
+    },
+    "transcriptions": {
+      "title": "Transcriptions | vTaiwan",
+      "description": "Manage vTaiwan meeting transcriptions, including search, download, and upload features."
+    },
+    "transcriptionDetail": {
+      "title": "Transcription Detail | vTaiwan",
+      "description": "View the full content of a vTaiwan meeting transcription."
+    },
+    "jitsi": {
+      "title": "Live Video Meeting | vTaiwan",
+      "description": "Join a vTaiwan live video meeting for online discussion and real-time transcription."
     }
   },
   "即將開始": "Upcoming",

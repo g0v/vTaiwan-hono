@@ -16,10 +16,15 @@ import NewslettersView from '../views/Newsletters.vue'
 import NewsletterDetailView from '../views/NewsletterDetail.vue'
 import ContributorsView from '../views/ContributorsView.vue'
 import FaqView from '../views/FaqView.vue'
+import MeetupsView from '../views/MeetupsView.vue'
+import ContactView from '../views/ContactView.vue'
+import ProposeView from '../views/ProposeView.vue'
+import TranscriptionsView from '../views/TranscriptionsView.vue'
+import TranscriptionDetailView from '../views/TranscriptionDetailView.vue'
+import JitsiView from '../views/JitsiView.vue'
 
 const placeholderPaths = [
   '/404',
-  '/meetups',
 ]
 
 // SSR 與 client 共用的路由表：一律靜態載入元件。
@@ -53,6 +58,20 @@ export const routes: RouteRecordRaw[] = [
   { path: '/newsletters/:slug', name: 'newsletter-detail', component: NewsletterDetailView, meta: { status: 200 } },
   { path: '/contributors', name: 'contributors', component: ContributorsView, meta: { status: 200 } },
   { path: '/faq', name: 'faq', component: FaqView, meta: { status: 200 } },
+  { path: '/meetups', name: 'meetups', component: MeetupsView, meta: { status: 200 } },
+  { path: '/contact', name: 'contact', component: ContactView, meta: { status: 200 } },
+  { path: '/propose', name: 'propose', component: ProposeView, meta: { status: 200 } },
+  { path: '/transcriptions', name: 'transcriptions', component: TranscriptionsView, meta: { status: 200 } },
+  {
+    path: '/transcription_detail/:meeting_id',
+    name: 'transcription-detail',
+    component: TranscriptionDetailView,
+    meta: { status: 200 },
+  },
+  { path: '/jitsi', name: 'jitsi', component: JitsiView, meta: { status: 200 } },
+  // 舊路由別名（alias routes）
+  { path: '/how-to-use', redirect: '/faq' },
+  { path: '/contactus', redirect: '/contact' },
   ...placeholderPaths.map((path) => ({
     path,
     name: `placeholder-${path.slice(1)}`,

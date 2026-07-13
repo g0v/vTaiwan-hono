@@ -68,6 +68,30 @@
     "faq": {
       "title": "よくある質問 (FAQ) | vTaiwan",
       "description": "vTaiwanプラットフォームに関するよくある質問と回答。"
+    },
+    "meetups": {
+      "title": "会議 | vTaiwan",
+      "description": "vTaiwanは定期的にオンラインおよび対面の会議を開催し、プロジェクトの進捗や公共政策の議題を議論します。どなたでも参加歓迎！"
+    },
+    "contact": {
+      "title": "お問い合わせ | vTaiwan",
+      "description": "vTaiwanコミュニティに参加して、デジタル民主主義を一緒に推進しましょう。"
+    },
+    "propose": {
+      "title": "提案を提出 | vTaiwan",
+      "description": "公共政策の提案を提出し、vTaiwanのオープンコラボレーションプロセスに参加してください。"
+    },
+    "transcriptions": {
+      "title": "議事録管理 | vTaiwan",
+      "description": "vTaiwanの会議議事録の管理、検索、ダウンロード、アップロード機能を提供します。"
+    },
+    "transcriptionDetail": {
+      "title": "議事録詳細 | vTaiwan",
+      "description": "vTaiwanの会議議事録の全内容を確認できます。"
+    },
+    "jitsi": {
+      "title": "ライブビデオ会議 | vTaiwan",
+      "description": "vTaiwanのライブビデオ会議に参加して、オンライン討議とリアルタイム議事録作成に取り組みましょう。"
     }
   },
   "即將開始": "まもなく開始",

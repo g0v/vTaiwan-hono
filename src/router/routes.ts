@@ -2,20 +2,26 @@ import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import {
   headForAbout,
   headForBlogs,
+  headForContact,
   headForContributors,
   headForFaq,
   headForHome,
   headForHundredChart,
+  headForJitsi,
   headForMastodon,
+  headForMeetups,
   headForNewsletterDetail,
   headForNewsletters,
   headForNotFound,
   headForPolis,
   headForProfile,
   headForPrivacy,
+  headForPropose,
   headForTerms,
   headForTopicDetail,
   headForTopics,
+  headForTranscriptionDetail,
+  headForTranscriptions,
   headForWord,
   type HeadConfig,
 } from '../ssr/heads'
@@ -63,6 +69,18 @@ export function headForRoute(
       return headForContributors(origin, t)
     case 'faq':
       return headForFaq(origin, t)
+    case 'meetups':
+      return headForMeetups(origin, t)
+    case 'contact':
+      return headForContact(origin, t)
+    case 'propose':
+      return headForPropose(origin, t)
+    case 'transcriptions':
+      return headForTranscriptions(origin, t)
+    case 'transcription-detail':
+      return headForTranscriptionDetail(origin, String(route.params.meeting_id ?? ''), t)
+    case 'jitsi':
+      return headForJitsi(origin, t)
     default:
       return headForNotFound(origin, t)
   }
