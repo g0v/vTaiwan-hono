@@ -84,7 +84,7 @@
     </div>
 
     <!-- 無文章時顯示 -->
-    <div v-if="!loading && !error && articles.length === 0" class="py-8 text-center">
+    <div v-else class="py-8 text-center">
       <p class="text-gray-600">{{ t('medium.noArticles') }}</p>
     </div>
   </div>
@@ -110,7 +110,7 @@ interface Article {
 }
 
 const articles = ref<Article[]>([])
-const loading = ref(false)
+const loading = ref(true)
 const error = ref<string | null>(null)
 
 const formatDate = (dateString: string) => {
