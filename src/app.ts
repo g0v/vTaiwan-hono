@@ -6,7 +6,7 @@ import {
   type RouterHistory,
 } from 'vue-router'
 import App from './App.vue'
-import { routes } from './router/routes'
+import { routes } from '#routes-runtime'
 import { createAppI18n, type SupportedLocale } from './i18n'
 
 export function createVueApp(url?: string, locale?: SupportedLocale) {

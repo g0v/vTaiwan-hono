@@ -10,6 +10,11 @@ const root = path.dirname(fileURLToPath(import.meta.url))
 export default defineConfig({
   root,
   publicDir: false,
+  resolve: {
+    alias: {
+      '#routes-runtime': path.resolve(root, 'src/router/routes.client.ts'),
+    },
+  },
   // 對齊 vite.config.mts 的 vue-i18n feature flag（JIT、非 legacy）
   define: {
     __VUE_I18N_FULL_INSTALL__: true,
@@ -32,7 +37,6 @@ export default defineConfig({
           assetInfo.names?.some((name) => name.endsWith('.css'))
             ? 'js/app.css'
             : 'assets/[name][extname]',
-        inlineDynamicImports: true,
       },
     },
   },
