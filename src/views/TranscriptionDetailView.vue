@@ -4,7 +4,7 @@
       <!-- CC-BY-SA-4.0 授權標註 -->
       <div class="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
         <div class="flex items-center space-x-3">
-          <img src="/img/CC_BY_SA.png" alt="CC-BY-SA-4.0" class="h-8 w-auto" />
+          <img :src="'/img/CC_BY_SA.png'" alt="CC-BY-SA-4.0" class="h-8 w-auto" />
           <div class="text-sm text-blue-800">
             <p class="font-medium">
               本內容以

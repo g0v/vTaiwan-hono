@@ -80,7 +80,7 @@
                   {{ t('transcriptions.list.meetingId') }}: {{ transcription.meeting_id }}
                 </h3>
                 <div class="mb-4 text-sm text-gray-600">
-                  <img src="/img/CC0.png" alt="CC0" class="mb-2 h-8 w-auto" />
+                  <img :src="'/img/CC0.png'" alt="CC0" class="mb-2 h-8 w-auto" />
                   <div v-html="getRenderedOutlinePreview(transcription.outline)" class="prose prose-sm max-w-none"></div>
                 </div>
               </div>
@@ -147,7 +147,7 @@
         </div>
 
         <div class="max-h-[60vh] overflow-y-auto p-6">
-          <img src="/img/CC0.png" alt="CC0" class="mb-4 h-8 w-auto" />
+          <img :src="'/img/CC0.png'" alt="CC0" class="mb-4 h-8 w-auto" />
           <div v-if="!editing" v-html="renderedOutline" class="prose prose-sm max-w-none"></div>
           <textarea v-else v-model="myOutline" class="h-full max-h-[60vh] min-h-[200px] w-full"></textarea>
         </div>
