@@ -1,16 +1,18 @@
 <template>
   <div class="container mx-auto px-4 py-8">
-    <h1 class="mb-8 text-3xl font-bold">{{ t('contributors.title') }}</h1>
+    <h1 class="mb-8 text-3xl font-bold">{{ t("contributors.title") }}</h1>
 
     <section class="mb-12">
-      <h2 class="mb-4 text-2xl font-bold">{{ t('contributors.coreTeam') }}</h2>
+      <h2 class="mb-4 text-2xl font-bold">{{ t("contributors.coreTeam") }}</h2>
       <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div
           v-for="contributor in coreTeam"
           :key="contributor.id"
           class="rounded-lg bg-white p-6 text-center shadow-md"
         >
-          <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-vt-gray-200">
+          <div
+            class="mx-auto mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-vt-gray-200"
+          >
             <img
               v-if="contributor.imgURL"
               :src="contributor.imgURL"
@@ -21,20 +23,24 @@
           </div>
           <h3 class="mb-2 text-xl font-bold">{{ contributor.name }}</h3>
           <p v-if="contributor.role" class="mb-2 text-gray-600">{{ t(contributor.role) }}</p>
-          <p v-if="contributor.description" class="text-sm text-gray-500">{{ t(contributor.description) }}</p>
+          <p v-if="contributor.description" class="text-sm text-gray-500">
+            {{ t(contributor.description) }}
+          </p>
         </div>
       </div>
     </section>
 
     <section>
-      <h2 class="mb-4 text-2xl font-bold">{{ t('contributors.communityContributors') }}</h2>
+      <h2 class="mb-4 text-2xl font-bold">{{ t("contributors.communityContributors") }}</h2>
       <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <div
           v-for="contributor in communityContributors"
           :key="contributor.id"
           class="rounded-lg bg-white p-4 text-center shadow-md"
         >
-          <div class="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-vt-gray-200">
+          <div
+            class="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-vt-gray-200"
+          >
             <img
               v-if="contributor.imgURL"
               :src="contributor.imgURL"
@@ -44,30 +50,39 @@
             <IconWrapper v-else name="user" :size="24" color="#9CA3AF" />
           </div>
           <h3 class="mb-2 font-bold">{{ contributor.name }}</h3>
-          <div v-if="contributor.contributions && contributor.contributions.length > 0" class="space-y-1">
-            <p v-for="contribution in contributor.contributions" :key="contribution" class="text-sm text-gray-600">
+          <div
+            v-if="contributor.contributions && contributor.contributions.length > 0"
+            class="space-y-1"
+          >
+            <p
+              v-for="contribution in contributor.contributions"
+              :key="contribution"
+              class="text-sm text-gray-600"
+            >
               {{ t(contribution) }}
             </p>
           </div>
-          <p v-else-if="contributor.contribution" class="text-sm text-gray-600">{{ t(contributor.contribution) }}</p>
+          <p v-else-if="contributor.contribution" class="text-sm text-gray-600">
+            {{ t(contributor.contribution) }}
+          </p>
         </div>
       </div>
     </section>
 
     <section class="mt-12 text-center">
-      <h2 class="mb-4 text-2xl font-bold">{{ t('contributors.joinUs') }}</h2>
-      <p class="mb-6 text-gray-600">{{ t('contributors.joinUsDescription') }}</p>
+      <h2 class="mb-4 text-2xl font-bold">{{ t("contributors.joinUs") }}</h2>
+      <p class="mb-6 text-gray-600">{{ t("contributors.joinUsDescription") }}</p>
       <RouterLink to="/intro" class="vt-btn vt-btn-primary">
-        {{ t('contributors.learnMore') }}
+        {{ t("contributors.learnMore") }}
       </RouterLink>
     </section>
   </div>
 </template>
 
 <script setup lang="ts">
-import { useI18n } from 'vue-i18n'
-import IconWrapper from '../components/IconWrapper.vue'
-import { coreTeam, communityContributors } from '../data/contributors'
+import { useI18n } from "vue-i18n";
+import IconWrapper from "../components/IconWrapper.vue";
+import { coreTeam, communityContributors } from "../data/contributors";
 
-const { t } = useI18n()
+const { t } = useI18n();
 </script>

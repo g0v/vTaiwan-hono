@@ -1,9 +1,9 @@
 <script setup lang="ts">
 defineProps<{
-  href?: string
-  to?: string
-  external?: boolean
-}>()
+  href?: string;
+  to?: string;
+  external?: boolean;
+}>();
 </script>
 
 <template>

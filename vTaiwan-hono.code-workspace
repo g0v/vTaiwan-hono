@@ -1,33 +1,27 @@
 {
-	"folders": [
-		{
-			"path": "."
-		},
-		{
-			"path": "../vue.vTaiwan-neo"
-		},
-		{
-			"path": "../vtaiwan-design-system"
-		},
-		{
-			"path": "../vtaiwan-transcription-worker"
-		}
-	],
-	"settings": {
-		"css.customData": [
-			".vscode/tailwind-v4.css-data.json"
-		],
-		"scss.customData": [
-			".vscode/tailwind-v4.css-data.json"
-		],
-		"less.customData": [
-			".vscode/tailwind-v4.css-data.json"
-		],
-		"files.associations": {
-			"*.css": "tailwindcss"
-		},
-		"editor.colorDecorators": true,
-		"tailwindCSS.colorDecorators": true,
-		"tailwindCSS.experimental.configFile": "src/styles/app.css"
-	}
+  "folders": [
+    {
+      "path": ".",
+    },
+    {
+      "path": "../vue.vTaiwan-neo",
+    },
+    {
+      "path": "../vtaiwan-design-system",
+    },
+    {
+      "path": "../vtaiwan-transcription-worker",
+    },
+  ],
+  "settings": {
+    "css.customData": [".vscode/tailwind-v4.css-data.json"],
+    "scss.customData": [".vscode/tailwind-v4.css-data.json"],
+    "less.customData": [".vscode/tailwind-v4.css-data.json"],
+    "files.associations": {
+      "*.css": "tailwindcss",
+    },
+    "editor.colorDecorators": true,
+    "tailwindCSS.colorDecorators": true,
+    "tailwindCSS.experimental.configFile": "src/styles/app.css",
+  },
 }

@@ -1,7 +1,3 @@
 {
-  "recommendations": [
-    "bradlc.vscode-tailwindcss",
-    "stivo.tailwind-fold",
-    "austenc.tailwind-docs"
-  ]
+  "recommendations": ["bradlc.vscode-tailwindcss", "stivo.tailwind-fold", "austenc.tailwind-docs"]
 }

@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import { computed, inject, onMounted, onUnmounted, ref } from 'vue'
-import { localeKey, supportedLocales, type SupportedLocale } from '../i18n'
+import { computed, inject, onMounted, onUnmounted, ref } from "vue";
+import { localeKey, supportedLocales, type SupportedLocale } from "../i18n";
 
 // block：是否為區塊（整寬）樣式，用於行動選單
 // dropUp：下拉選單是否往上展開，避免在漢堡選單中往下溢出版面
-const props = defineProps<{ block?: boolean; dropUp?: boolean }>()
+const props = defineProps<{ block?: boolean; dropUp?: boolean }>();
 
 // 注入 App.vue 提供的偏好語言情境
-const localeCtx = inject(localeKey)
+const localeCtx = inject(localeKey);
 
-const isOpen = ref(false)
+const isOpen = ref(false);
 
-const currentCode = computed(() => localeCtx?.locale.value)
+const currentCode = computed(() => localeCtx?.locale.value);
 const current = computed(
   () => supportedLocales.find((l) => l.code === currentCode.value) ?? supportedLocales[0],
-)
+);
 
 const choose = (code: SupportedLocale) => {
-  localeCtx?.setLocale(code)
-  isOpen.value = false
-}
+  localeCtx?.setLocale(code);
+  isOpen.value = false;
+};
 
 // 點擊外部關閉下拉選單（僅瀏覽器端）
 const handleClickOutside = (event: Event) => {
-  const target = event.target as HTMLElement
-  if (!target.closest('[data-lang-switcher]')) isOpen.value = false
-}
+  const target = event.target as HTMLElement;
+  if (!target.closest("[data-lang-switcher]")) isOpen.value = false;
+};
 
-onMounted(() => document.addEventListener('click', handleClickOutside))
-onUnmounted(() => document.removeEventListener('click', handleClickOutside))
+onMounted(() => document.addEventListener("click", handleClickOutside));
+onUnmounted(() => document.removeEventListener("click", handleClickOutside));
 </script>
 
 <template>
@@ -40,7 +40,20 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
       :class="block ? 'w-full justify-center bg-vt-bg-2 py-3' : ''"
       @click="isOpen = !isOpen"
     >
-      <svg class="opacity-70" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path></svg>
+      <svg
+        class="opacity-70"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <circle cx="12" cy="12" r="10"></circle>
+        <path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path>
+      </svg>
       <span>{{ current.name }}</span>
       <svg
         class="opacity-50 transition-transform"
@@ -68,7 +81,9 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
         :key="locale.code"
         type="button"
         class="flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left text-sm transition-colors hover:bg-vt-gray-100"
-        :class="currentCode === locale.code ? 'font-semibold text-democratic-red' : 'text-vt-gray-800'"
+        :class="
+          currentCode === locale.code ? 'font-semibold text-democratic-red' : 'text-vt-gray-800'
+        "
         @click="choose(locale.code)"
       >
         <span class="text-base">{{ locale.flag }}</span>

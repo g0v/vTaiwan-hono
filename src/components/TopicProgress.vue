@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { useI18n } from 'vue-i18n'
-import discourseApi from '../lib/discourse'
+import { ref, onMounted, watch } from "vue";
+import { useI18n } from "vue-i18n";
+import discourseApi from "../lib/discourse";
 
 const props = defineProps<{
-  topicId: string | number
-}>()
+  topicId: string | number;
+}>();
 
-const { t } = useI18n()
+const { t } = useI18n();
 
-const STEP_KEYS = ['即將開始', '意見徵集', '研擬草案', '送交院會', '歷史案件'] as const
+const STEP_KEYS = ["即將開始", "意見徵集", "研擬草案", "送交院會", "歷史案件"] as const;
 
 const steps = ref(
   STEP_KEYS.map((title) => ({
@@ -17,60 +17,60 @@ const steps = ref(
     active: false,
     current: false,
   })),
-)
+);
 
 const loadProgress = async () => {
   try {
-    if (!props.topicId) return
+    if (!props.topicId) return;
 
-    const response = await discourseApi.getTopic(props.topicId)
+    const response = await discourseApi.getTopic(props.topicId);
 
     steps.value.forEach((step) => {
-      step.active = false
-      step.current = false
-    })
+      step.active = false;
+      step.current = false;
+    });
 
     if (response?.post_stream?.posts) {
-      const posts = response.post_stream.posts.slice(1)
+      const posts = response.post_stream.posts.slice(1);
 
       if (posts.length > 0) {
-        const lastPost = posts[posts.length - 1]
-        const currentStage = (lastPost.raw || '').split(' ')[0]
+        const lastPost = posts[posts.length - 1];
+        const currentStage = (lastPost.raw || "").split(" ")[0];
 
-        let foundCurrent = false
+        let foundCurrent = false;
         for (let i = 0; i < steps.value.length; i++) {
           if (steps.value[i].title === currentStage) {
-            steps.value[i].current = true
-            foundCurrent = true
-            break
+            steps.value[i].current = true;
+            foundCurrent = true;
+            break;
           } else {
-            steps.value[i].active = true
+            steps.value[i].active = true;
           }
         }
 
         if (!foundCurrent) {
-          steps.value[0].current = true
+          steps.value[0].current = true;
         }
       } else {
-        steps.value[0].current = true
+        steps.value[0].current = true;
       }
     }
   } catch (error) {
-    console.error('Error loading progress:', error)
-    steps.value[0].current = true
+    console.error("Error loading progress:", error);
+    steps.value[0].current = true;
   }
-}
+};
 
 onMounted(() => {
-  loadProgress()
-})
+  loadProgress();
+});
 
 watch(
   () => props.topicId,
   () => {
-    loadProgress()
+    loadProgress();
   },
-)
+);
 </script>
 
 <template>
@@ -87,7 +87,7 @@ watch(
                 current: step.current,
               }"
             >
-              {{ t('topics.steps.' + step.title) }}
+              {{ t("topics.steps." + step.title) }}
             </li>
           </ul>
         </div>
@@ -146,7 +146,7 @@ watch(
 }
 
 .progress-bar li:after {
-  content: '';
+  content: "";
   width: 100%;
   position: absolute;
   height: 2px;
