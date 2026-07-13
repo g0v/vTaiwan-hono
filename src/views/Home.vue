@@ -88,6 +88,19 @@ const steps = [
         <RouterLink to="/topics" class="vt-btn vt-btn-outline">{{ t('home.cta.buttons.browseTopics') }}</RouterLink>
         <RouterLink to="/intro" class="vt-btn vt-btn-primary">{{ t('home.cta.buttons.learnMore') }}</RouterLink>
       </div>
+
+      <div class="mx-auto mt-12 max-w-2xl">
+        <p class="mb-6 text-3xl font-bold">
+          <span class="block">{{ t('home.cta.make.descriptionLine1') }}</span>
+          <span class="block">{{ t('home.cta.make.descriptionLine2') }}</span>
+        </p>
+        <p class="text-xl">
+          {{ t('home.cta.make.reference') }}
+          <a href="https://make.vtaiwan.tw" target="_blank" rel="noopener noreferrer" class="underline hover:text-white/60">
+            {{ t('home.cta.make.linkText') }}
+          </a>
+        </p>
+      </div>
     </div>
   </section>
 </template>

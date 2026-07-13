@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../vtaiwan-design-system"
+		},
+		{
+			"path": "../vtaiwan-transcription-worker"
 		}
 	],
 	"settings": {
