@@ -190,6 +190,37 @@ npm run lemma:check
 - 常見前綴：`feat`、`fix`、`chore`、`refactor`、`style`、`docs`。
 - 除非使用者明確要求，否則**不要自行 commit / push / deploy**。
 
+## Milestone 規劃
+
+本專案以 GitHub Milestones 追蹤進度：<https://github.com/g0v/vTaiwan-hono/milestones>
+
+| Milestone | 狀態 | 核心目標 | 主要 issues |
+|-----------|------|---------|-------------|
+| [打樣](https://github.com/g0v/vTaiwan-hono/milestone/1) | ✅ 已完成 | 讓首頁、NavBar、Footer 的視覺對齊 `vtaiwan-design-system`；確保多語言切換不會切版。 | #1 導航列、#2 首頁、#4 Footer、#5 logo/favicon/og、#8 隱私條款頁、#14 LanguageSwitcher bug、#17 Title、#21 make.vtaiwan.tw 連結 |
+| [MVP](https://github.com/g0v/vTaiwan-hono/milestone/2) | ✅ 已完成 | **即時會議以外**的所有頁面與功能全部完工，可正式部署取代現行站。 | #3 hydration/vue-router、#10 vue-i18n、#11 共用元件、#12 Manifest、#15 語言偵測、#16 議題頁、#18 Title i18n、#20 三個文章頁（含後端 proxy）、#23 貢獻者/FAQ 靜態頁 |
+| [完整功能](https://github.com/g0v/vTaiwan-hono/milestone/3) | 🚧 進行中（預計 10 月初） | 完成即時會議（JAAS worker + 轉錄 worker）及其餘收尾項目，達成功能完整搬移。 | open: #24 會議頁、#25 所有路由 alias、#28 CORS 標頭、#29 即時會議；closed: #13 登入、#19 lazy-import、#22 hydration fix |
+| [實作自動測試](https://github.com/g0v/vTaiwan-hono/milestone/5) | 📋 待開始 | 尚無 issue，細節待定。動工前先與使用者確認範圍。 | — |
+| [從 Firebase 搬移到全 Cloudflare](https://github.com/g0v/vTaiwan-hono/milestone/4) | 📋 待開始 | 登入改為 BetterAuth；資料庫改用 D1 / R2；即時校對資料考慮使用 Durable Objects (DO)。進行到此 milestone 前**不要**提前動工。 | — |
+
+> Milestone 有嚴格前後依賴：打樣 → MVP → 完整功能 → 自動測試 → 從 Firebase 搬移到全 Cloudflare。
+
+## Migration 基本原則
+
+從 `vue.vTaiwan-neo`（及其搭配的後端 workers）搬移功能時，遵守以下原則：
+
+### 接口整合
+原本分散在**一個前端（vue.vTaiwan-neo）加兩個後端 worker**的所有接口，全部整合進 `vTaiwan-hono` 這個新專案。**新專案不能再打舊專案的外部 worker 路由。**
+
+### 漸進增強
+以漸進增強（progressive enhancement）的方式進行搬移——先確保 SSR 靜態殼可用，再逐步加入動態功能，不中斷現有服務。
+
+### 路由完整性
+**所有原專案的路由（含 alias 路由）在新專案都必須有對應。** 不能讓舊有連結失效。未完成的頁面先掛 `placeholderPaths`（回 404），上線前補完。
+
+### 什麼不搬
+- neo 的開發腳本、CI 配置、測試 fixture——hono 自行維護。
+- 有疑問的功能，動工前先問使用者，不臆測。
+
 ## 守則與禁區
 
 - ✅ **SSR 安全**——SSR 路徑不碰 `window`/`document`/`localStorage`/`navigator`；每請求用獨立實例。
