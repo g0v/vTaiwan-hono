@@ -10,7 +10,7 @@ export interface RenderPageResult {
 }
 
 const clientEntry = import.meta.env.PROD
-  ? '/js/app.js'
+  ? `/js/app.js?v=${import.meta.env.VITE_BUILD_ID}`
   : '/src/client/app-entry.ts'
 const clientStyle = import.meta.env.PROD
   ? '    <link rel="stylesheet" href="/js/app.css" />\n'

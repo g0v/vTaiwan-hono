@@ -9,7 +9,7 @@
     "dev": "vite dev",
     "build:css": "tailwindcss -i ./src/styles/app.css -o ./public/styles.css --minify",
     "watch:css": "tailwindcss -i ./src/styles/app.css -o ./public/styles.css --watch",
-    "build": "npm run build:css && vite build && vite build -c vite.client.config.mts",
+    "build": "VITE_BUILD_ID=$(date +%s) sh -c 'npm run build:css && vite build && vite build -c vite.client.config.mts'",
     "preview": "vite preview",
     "deploy": "npm run build && wrangler deploy",
     "typecheck": "tsc --noEmit",
