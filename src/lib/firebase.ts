@@ -24,6 +24,13 @@ export interface FirebaseServices {
   meetingsRef: DatabaseReference
   GoogleAuthProvider: typeof import('firebase/auth').GoogleAuthProvider
   signInWithPopup: typeof import('firebase/auth').signInWithPopup
+  onAuthStateChanged: typeof import('firebase/auth').onAuthStateChanged
+  signOut: typeof import('firebase/auth').signOut
+  updateProfile: typeof import('firebase/auth').updateProfile
+  databaseRef: typeof import('firebase/database').ref
+  databaseGet: typeof import('firebase/database').get
+  databaseSet: typeof import('firebase/database').set
+  databaseUpdate: typeof import('firebase/database').update
 }
 
 let servicesPromise: Promise<FirebaseServices> | undefined
@@ -60,5 +67,12 @@ async function initializeFirebase(): Promise<FirebaseServices> {
     meetingsRef: databaseModule.ref(database, 'meetings'),
     GoogleAuthProvider: authModule.GoogleAuthProvider,
     signInWithPopup: authModule.signInWithPopup,
+    onAuthStateChanged: authModule.onAuthStateChanged,
+    signOut: authModule.signOut,
+    updateProfile: authModule.updateProfile,
+    databaseRef: databaseModule.ref,
+    databaseGet: databaseModule.get,
+    databaseSet: databaseModule.set,
+    databaseUpdate: databaseModule.update,
   }
 }

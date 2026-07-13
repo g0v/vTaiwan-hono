@@ -152,7 +152,10 @@
     "role": "Role",
     "createdAt": "Created At",
     "lastLogin": "Last Login",
-    "loginRequired": "Please login to view and edit your profile"
+    "loginRequired": "Please login to view and edit your profile",
+    "notSet": "Not set",
+    "avatarAlt": "Profile avatar",
+    "updateFailed": "Failed to update profile. Please try again."
   },
   "contributors": {
     "title": "Contributors",

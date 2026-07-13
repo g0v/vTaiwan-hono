@@ -4,8 +4,29 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 
-const props = defineProps<{ current?: string }>()
-const emit = defineEmits<{ 'show-login': [] }>()
+interface AuthenticatedUser {
+  displayName: string | null
+  photoURL: string | null
+}
+
+interface UserData {
+  name: string | null
+  photoURL: string | null
+}
+
+const props = withDefaults(
+  defineProps<{
+    current?: string
+    user?: AuthenticatedUser | null
+    userData?: UserData | null
+  }>(),
+  {
+    current: '',
+    user: null,
+    userData: null,
+  },
+)
+const emit = defineEmits<{ 'show-login': []; logout: [] }>()
 const route = useRoute()
 const { t } = useI18n()
 const mobileOpen = ref(false)
@@ -24,6 +45,8 @@ const links = [
 ]
 
 const activeKey = computed(() => props.current ?? '')
+const profileName = computed(() => props.userData?.name || props.user?.displayName || t('common.profile'))
+const profilePhotoUrl = computed(() => props.userData?.photoURL || props.user?.photoURL)
 
 const { locale } = useI18n()
 const isJapanese = computed(() => locale.value === 'ja')
@@ -65,7 +88,18 @@ watch(
       <div class="flex items-center gap-2.5 text-[13px]">
         <LanguageSwitcher />
         <span class="hidden h-5 w-px bg-vt-border sm:block" />
+        <RouterLink
+          v-if="user"
+          to="/profile"
+          class="hidden items-center gap-2 rounded-full px-2 py-1 transition-colors hover:bg-vt-bg-2 sm:inline-flex"
+          :title="t('common.profile')"
+        >
+          <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="profileName" class="h-8 w-8 rounded-vt-full border border-vt-border object-cover" />
+          <span v-else class="flex h-8 w-8 items-center justify-center rounded-vt-full bg-vt-bg-2 text-vt-fg-2" aria-hidden="true">👤</span>
+          <span class="hidden max-w-24 truncate text-vt-sm text-vt-fg-1 xl:block">{{ profileName }}</span>
+        </RouterLink>
         <button
+          v-else
           type="button"
           class="hidden whitespace-nowrap rounded-full bg-ink px-4 py-2 font-medium text-vt-fg-inverse transition-colors hover:bg-democratic-red sm:inline-flex"
           @click="emit('show-login')"
@@ -109,7 +143,21 @@ watch(
       <div class="my-1.5 h-px bg-vt-border" />
       <div class="flex gap-2 px-1.5 pb-1.5 pt-2">
         <LanguageSwitcher block drop-up class="flex-1" />
+        <template v-if="user">
+          <RouterLink
+            to="/profile"
+            class="inline-flex flex-1 items-center justify-center rounded-full bg-vt-bg-2 px-3 py-3 text-vt-fg-1 transition-colors hover:bg-vt-gray-100"
+            :class="{'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish}"
+            @click="mobileOpen = false"
+          >
+            {{ t('common.profile') }}
+          </RouterLink>
+          <button type="button" class="rounded-full px-3 py-3 text-vt-sm text-vt-fg-2 transition-colors hover:bg-vt-bg-2" @click="emit('logout'); mobileOpen = false">
+            {{ t('common.logout') }}
+          </button>
+        </template>
         <button
+          v-else
           type="button"
           class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-3 py-3 text-vt-fg-inverse transition-colors hover:bg-democratic-red"
           :class="{'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish}"

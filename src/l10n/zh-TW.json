@@ -147,7 +147,10 @@
     "role": "角色",
     "createdAt": "建立時間",
     "lastLogin": "最後登入",
-    "loginRequired": "請先登入以查看和編輯個人資料"
+    "loginRequired": "請先登入以查看和編輯個人資料",
+    "notSet": "未設定",
+    "avatarAlt": "個人頭像",
+    "updateFailed": "更新個人資料失敗，請重試"
   },
   "contributors": {
     "title": "貢獻者",

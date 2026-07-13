@@ -152,7 +152,10 @@
     "role": "役割",
     "createdAt": "作成日時",
     "lastLogin": "最終ログイン",
-    "loginRequired": "プロフィールの閲覧・編集にはログインが必要です"
+    "loginRequired": "プロフィールの閲覧・編集にはログインが必要です",
+    "notSet": "未設定",
+    "avatarAlt": "プロフィール画像",
+    "updateFailed": "プロフィールの更新に失敗しました。もう一度お試しください。"
   },
   "contributors": {
     "title": "貢献者",

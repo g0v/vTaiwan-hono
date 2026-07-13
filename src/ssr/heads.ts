@@ -134,6 +134,16 @@ export function headForPolis(origin: string): HeadConfig {
   }
 }
 
+export function headForProfile(origin: string): HeadConfig {
+  const title = '個人資料 — vTaiwan'
+  const description = '管理您的 vTaiwan 個人資料。'
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/profile`),
+  }
+}
+
 export function headForNotFound(origin: string): HeadConfig {
   const title = `404 施工中 — vTaiwan`
   const description = `此頁面目前正在施工中，敬請期待更完善的 vTaiwan 數位民主平台。`

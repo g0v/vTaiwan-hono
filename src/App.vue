@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, provide, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, provide, ref, watch } from 'vue'
+import type { User } from 'firebase/auth'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import Footer from './components/Footer.vue'
 import GoogleLogin from './components/GoogleLogin.vue'
 import NavBar from './components/NavBar.vue'
+import { getFirebaseServices } from './lib/firebase'
 import {
   detectPreferredLocale,
   isSupportedLocale,
@@ -17,6 +19,30 @@ import {
 const route = useRoute()
 const showLoginModal = ref(false)
 const isInApp = ref(false)
+const user = ref<AuthenticatedUser | null>(null)
+const userData = ref<UserData | null>(null)
+let unsubscribeAuth: (() => void) | undefined
+
+interface AuthenticatedUser {
+  uid: string
+  displayName: string | null
+  email: string | null
+  photoURL: string | null
+}
+
+interface UserData {
+  uid: string
+  name: string | null
+  email: string | null
+  photoURL: string | null
+  role: string
+  createdAt: string
+  updatedAt: string
+  isAdmin: boolean
+  isSuperAdmin: boolean
+  isActive: boolean
+  isDeleted: boolean
+}
 
 // 偏好語言：以 provide / inject 將語言變數提供給所有子元件使用
 const { locale } = useI18n()
@@ -32,6 +58,7 @@ provide(localeKey, { locale, supportedLocales, setLocale })
 // 待掛載完成後（僅瀏覽器端）再依使用者偏好切換，避免 hydration mismatch。
 onMounted(() => {
   isInApp.value = /\b(FBAN|FBAV|Instagram|Line)\b/i.test(navigator.userAgent)
+  void watchAuthState()
 
   const preferred = detectPreferredLocale()
   if (preferred !== locale.value) {
@@ -44,6 +71,86 @@ onMounted(() => {
 
 function handleLoginSuccess() {
   showLoginModal.value = false
+}
+
+onUnmounted(() => {
+  unsubscribeAuth?.()
+})
+
+function publicUser(firebaseUser: User): AuthenticatedUser {
+  return {
+    uid: firebaseUser.uid,
+    displayName: firebaseUser.displayName,
+    email: firebaseUser.email,
+    photoURL: firebaseUser.photoURL,
+  }
+}
+
+async function watchAuthState() {
+  try {
+    const { auth, onAuthStateChanged } = await getFirebaseServices()
+    unsubscribeAuth = onAuthStateChanged(auth, async firebaseUser => {
+      user.value = firebaseUser ? publicUser(firebaseUser) : null
+
+      if (firebaseUser) {
+        showLoginModal.value = false
+        await loadOrCreateUserData(firebaseUser)
+      } else {
+        userData.value = null
+      }
+    })
+  } catch (error) {
+    console.error('Failed to initialize Firebase authentication:', error)
+  }
+}
+
+async function loadOrCreateUserData(firebaseUser: User) {
+  try {
+    const { database, databaseGet, databaseRef, databaseSet } = await getFirebaseServices()
+    const reference = databaseRef(database, `users/${firebaseUser.uid}`)
+    const snapshot = await databaseGet(reference)
+    const defaults: UserData = {
+      uid: firebaseUser.uid,
+      name: firebaseUser.displayName,
+      email: firebaseUser.email,
+      photoURL: firebaseUser.photoURL,
+      role: 'user',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      isAdmin: false,
+      isSuperAdmin: false,
+      isActive: true,
+      isDeleted: false,
+    }
+
+    if (!snapshot.exists()) {
+      await databaseSet(reference, defaults)
+      userData.value = defaults
+      return
+    }
+
+    userData.value = { ...defaults, ...(snapshot.val() as Partial<UserData>) }
+  } catch (error) {
+    console.error('Failed to load Firebase user data:', error)
+  }
+}
+
+async function handleLogout() {
+  try {
+    const { auth, signOut } = await getFirebaseServices()
+    await signOut(auth)
+  } catch (error) {
+    console.error('Firebase logout error:', error)
+  }
+}
+
+function handleProfileUpdated(displayName: string) {
+  if (user.value) {
+    user.value = { ...user.value, displayName }
+  }
+  if (userData.value) {
+    userData.value = { ...userData.value, name: displayName }
+  }
 }
 
 const activeNavKey = computed(() => {
@@ -79,9 +186,9 @@ watch(
 
 <template>
   <div class="font-serif min-h-screen flex flex-col">
-    <NavBar :current="activeNavKey" @show-login="showLoginModal = true" />
+    <NavBar :current="activeNavKey" :user="user" :user-data="userData" @show-login="showLoginModal = true" @logout="handleLogout" />
     <div class="flex-1">
-      <RouterView />
+      <RouterView :user="user" :user-data="userData" :in-app="isInApp" @login-success="handleLoginSuccess" @logout="handleLogout" @profile-updated="handleProfileUpdated" />
     </div>
     <Footer />
 
