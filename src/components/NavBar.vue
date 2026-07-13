@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 
 const props = defineProps<{ current?: string }>()
+const emit = defineEmits<{ 'show-login': [] }>()
 const route = useRoute()
 const { t } = useI18n()
 const mobileOpen = ref(false)
@@ -64,12 +65,13 @@ watch(
       <div class="flex items-center gap-2.5 text-[13px]">
         <LanguageSwitcher />
         <span class="hidden h-5 w-px bg-vt-border sm:block" />
-        <a
-          href="#"
+        <button
+          type="button"
           class="hidden whitespace-nowrap rounded-full bg-ink px-4 py-2 font-medium text-vt-fg-inverse transition-colors hover:bg-democratic-red sm:inline-flex"
+          @click="emit('show-login')"
         >
           {{ t('common.registerLogin') }}
-        </a>
+        </button>
 
         <!-- 行動裝置漢堡按鈕 -->
         <button
@@ -107,9 +109,14 @@ watch(
       <div class="my-1.5 h-px bg-vt-border" />
       <div class="flex gap-2 px-1.5 pb-1.5 pt-2">
         <LanguageSwitcher block drop-up class="flex-1" />
-        <a href="#" class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-3 py-3 text-vt-fg-inverse transition-colors hover:bg-democratic-red" :class="{'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish}">
+        <button
+          type="button"
+          class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-3 py-3 text-vt-fg-inverse transition-colors hover:bg-democratic-red"
+          :class="{'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish}"
+          @click="emit('show-login')"
+        >
           {{ t('common.registerLogin') }}
-        </a>
+        </button>
       </div>
     </div>
   </header>
