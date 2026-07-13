@@ -49,7 +49,7 @@ export function headForHome(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForAbout(origin: string, t: Translate): HeadConfig {
-  const title = t('head.about.title')
+  const title = t('head.about.title') + ' - ' + SITE_NAME
   const description = t('head.about.description')
   return {
     title,
@@ -59,7 +59,7 @@ export function headForAbout(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForWord(word: string, origin: string, t: Translate): HeadConfig {
-  const title = t('head.word.title').replace('{word}', word)
+  const title = t('head.word.title').replace('{word}', word) + ' - ' + SITE_NAME
   const description = t('head.word.description').replace('{word}', word)
 
   // 使用 moedict.tw 的 API 來取得字圖
@@ -72,7 +72,7 @@ export function headForWord(word: string, origin: string, t: Translate): HeadCon
 }
 
 export function headForHundredChart(origin: string, t: Translate): HeadConfig {
-  const title = t('head.hundred.title')
+  const title = t('head.hundred.title') + ' - ' + SITE_NAME
   const description = t('head.hundred.description')
   return {
     title,
@@ -82,7 +82,7 @@ export function headForHundredChart(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForPrivacy(origin: string, t: Translate): HeadConfig {
-  const title = t('head.privacy.title')
+  const title = t('head.privacy.title') + ' - ' + SITE_NAME
   const description = t('head.privacy.description')
   return {
     title,
@@ -92,7 +92,7 @@ export function headForPrivacy(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTerms(origin: string, t: Translate): HeadConfig {
-  const title = t('head.terms.title')
+  const title = t('head.terms.title') + ' - ' + SITE_NAME
   const description = t('head.terms.description')
   return {
     title,
@@ -102,7 +102,7 @@ export function headForTerms(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTopics(origin: string, t: Translate): HeadConfig {
-  const title = t('head.topics.title')
+  const title = t('head.topics.title') + ' - ' + SITE_NAME
   const description = t('head.topics.description')
   return {
     title,
@@ -112,9 +112,9 @@ export function headForTopics(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTopicDetail(origin: string, routeName: string, t: Translate): HeadConfig {
-  const title = routeName
+  const title = (routeName
     ? t('head.topicDetail.withNameTitle').replace('{name}', routeName)
-    : t('head.topicDetail.title')
+    : t('head.topicDetail.title')) + ' - ' + SITE_NAME
   const description = t('head.topicDetail.description')
   const path = routeName ? `/topic/${encodeURIComponent(routeName)}` : '/topics'
   return {
@@ -125,7 +125,7 @@ export function headForTopicDetail(origin: string, routeName: string, t: Transla
 }
 
 export function headForPolis(origin: string, t: Translate): HeadConfig {
-  const title = t('head.polis.title')
+  const title = t('head.polis.title') + ' - ' + SITE_NAME
   const description = t('head.polis.description')
   return {
     title,
@@ -135,7 +135,7 @@ export function headForPolis(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForProfile(origin: string, t: Translate): HeadConfig {
-  const title = t('head.profile.title')
+  const title = t('head.profile.title') + ' - ' + SITE_NAME
   const description = t('head.profile.description')
   return {
     title,
@@ -145,7 +145,7 @@ export function headForProfile(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForBlogs(origin: string, t: Translate): HeadConfig {
-  const title = t('head.blogs.title')
+  const title = t('head.blogs.title') + ' - ' + SITE_NAME
   const description = t('head.blogs.description')
   return {
     title,
@@ -155,7 +155,7 @@ export function headForBlogs(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForMastodon(origin: string, t: Translate): HeadConfig {
-  const title = t('head.mastodon.title')
+  const title = t('head.mastodon.title') + ' - ' + SITE_NAME
   const description = t('head.mastodon.description')
   return {
     title,
@@ -165,7 +165,7 @@ export function headForMastodon(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForContributors(origin: string, t: Translate): HeadConfig {
-  const title = t('head.contributors.title')
+  const title = t('head.contributors.title') + ' - ' + SITE_NAME
   const description = t('head.contributors.description')
   return {
     title,
@@ -175,7 +175,7 @@ export function headForContributors(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForFaq(origin: string, t: Translate): HeadConfig {
-  const title = t('head.faq.title')
+  const title = t('head.faq.title') + ' - ' + SITE_NAME
   const description = t('head.faq.description')
   return {
     title,
@@ -185,7 +185,7 @@ export function headForFaq(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForNewsletters(origin: string, t: Translate): HeadConfig {
-  const title = t('head.newsletters.title')
+  const title = t('head.newsletters.title') + ' - ' + SITE_NAME
   const description = t('head.newsletters.description')
   return {
     title,
@@ -195,7 +195,7 @@ export function headForNewsletters(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForNewsletterDetail(origin: string, slug: string, t: Translate): HeadConfig {
-  const title = t('head.newsletterDetail.title')
+  const title = t('head.newsletterDetail.title') + ' - ' + SITE_NAME
   const description = t('head.newsletterDetail.description')
   return {
     title,
@@ -205,7 +205,7 @@ export function headForNewsletterDetail(origin: string, slug: string, t: Transla
 }
 
 export function headForNotFound(origin: string, t: Translate): HeadConfig {
-  const title = t('head.notFound.title')
+  const title = t('head.notFound.title') + ' - ' + SITE_NAME
   const description = t('head.notFound.description')
   return {
     title,
