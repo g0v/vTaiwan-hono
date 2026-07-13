@@ -3,6 +3,7 @@
   "name": "vtaiwan-hono",
   "main": "src/index.ts",
   "compatibility_date": "2026-04-17",
+  "keep_vars": true,
   "assets": { "directory": "./public/", "binding": "ASSETS" },
   "observability": {
     "enabled": true
