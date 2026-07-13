@@ -12,7 +12,7 @@ export default defineConfig({
   publicDir: false,
   resolve: {
     alias: {
-      '#routes-runtime': path.resolve(root, 'src/router/routes.client.ts'),
+      '#routes-runtime': path.resolve(root, 'src/router/routes.server.ts'),
     },
   },
   // 對齊 vite.config.mts 的 vue-i18n feature flag（JIT、非 legacy）

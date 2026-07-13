@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { renderPage } from './ssr/render'
+import { getAllTopics, getTopic } from './lib/discourse-server'
 
 // Cloudflare Worker 綁定型別；ASSETS 在 wrangler.jsonc 對應到 ./public/
 type Bindings = {
@@ -69,6 +70,28 @@ app.get('/api/mastodon', async (c) => {
   )
   const data = await response.json()
   return c.json(data, response.status as Parameters<typeof c.json>[1])
+})
+
+// Discourse 議題資料代理（實際抓取在 Worker 端，避免瀏覽器跨網域 CORS）
+app.get('/api/discourse/topics', async (c) => {
+  const category = c.req.query('category')
+  try {
+    const topics = await getAllTopics(category || undefined)
+    return c.json(topics)
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e)
+    return c.json({ error: 'Discourse request failed', message }, 502)
+  }
+})
+
+app.get('/api/discourse/topic/:id', async (c) => {
+  try {
+    const topic = await getTopic(c.req.param('id'))
+    return c.json(topic)
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e)
+    return c.json({ error: 'Discourse request failed', message }, 502)
+  }
 })
 
 // 其他 GET 請求：靜態檔交給 ASSETS，其餘交給 Vue SSR + vue-router。

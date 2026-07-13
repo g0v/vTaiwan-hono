@@ -22,7 +22,8 @@ const placeholderPaths = [
   '/contributors',
 ]
 
-// SSR 須靜態載入元件，才能在每個請求時直接產生首屏 HTML。
+// SSR 與 client 共用的路由表：一律靜態載入元件。
+// SSR 每個請求需直接產生首屏；client 也用同一份靜態表，確保 hydration 與 SSR 完全一致（lazy import 會造成 hydration mismatch）。
 export const routes: RouteRecordRaw[] = [
   { path: '/', name: 'home', component: HomeView, meta: { status: 200 } },
   { path: '/about', name: 'about', component: AboutView, meta: { status: 200 } },
