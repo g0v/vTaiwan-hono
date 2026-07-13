@@ -6,8 +6,5 @@
   "assets": { "directory": "./public/", "binding": "ASSETS" },
   "observability": {
     "enabled": true
-  },
-  "vars": {
-    "MASTODON_TOKEN": ""
   }
 }
