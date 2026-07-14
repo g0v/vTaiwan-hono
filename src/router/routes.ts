@@ -6,7 +6,9 @@ import {
   headForFaq,
   headForHome,
   headForHundredChart,
+  headForJitsi,
   headForMastodon,
+  headForMeetups,
   headForNewsletterDetail,
   headForNewsletters,
   headForNotFound,
@@ -16,6 +18,8 @@ import {
   headForTerms,
   headForTopicDetail,
   headForTopics,
+  headForTranscriptionDetail,
+  headForTranscriptions,
   headForWord,
   type HeadConfig,
 } from "../ssr/heads";
@@ -75,6 +79,14 @@ export function headForRoute(
       return headForContributors(origin, t);
     case "faq":
       return headForFaq(origin, t);
+    case "meetups":
+      return headForMeetups(origin, t);
+    case "transcriptions":
+      return headForTranscriptions(origin, t);
+    case "transcription-detail":
+      return headForTranscriptionDetail(origin, t);
+    case "jitsi":
+      return headForJitsi(origin, t);
     default:
       return headForNotFound(origin, t);
   }

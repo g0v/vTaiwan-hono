@@ -20,9 +20,12 @@
   },
   "dependencies": {
     "@vue/server-renderer": "^3.5.32",
+    "chinese-conv": "^3.2.2",
     "firebase": "^12.16.0",
     "hono": "^4.12.14",
+    "jose": "^6.0.11",
     "lucide-vue-next": "^1.0.0",
+    "marked": "^15.0.12",
     "vue": "^3.5.32",
     "vue-i18n": "^11.4.2",
     "vue-router": "^4.6.4"

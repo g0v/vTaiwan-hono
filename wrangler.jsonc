@@ -1,11 +1,36 @@
 {
-  "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "vtaiwan-hono",
-  "main": "src/index.ts",
-  "compatibility_date": "2026-04-17",
-  "keep_vars": true,
-  "assets": { "directory": "./public/", "binding": "ASSETS" },
-  "observability": {
-    "enabled": true,
-  },
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "vtaiwan-hono",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-04-17",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"keep_vars": true,
+	"assets": {
+		"directory": "./public/",
+		"binding": "ASSETS"
+	},
+	"observability": {
+		"enabled": true,
+	},
+	"d1_databases": [
+		{
+			"remote": true,
+			"binding": "DB",
+			"database_name": "vtaiwan-transcriptions",
+			"database_id": "a79798ab-f899-415d-bc77-f1ce440a8a3a",
+			"migrations_dir": "../../migrations",
+		},
+	],
+	"r2_buckets": [
+		{
+			"binding": "R2",
+			"bucket_name": "vtaiwan-meeting-files",
+			"preview_bucket_name": "vtaiwan-meeting-files-preview",
+		},
+	],
+	"ai": {
+		"binding": "AI"
+	},
 }

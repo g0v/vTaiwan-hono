@@ -14,12 +14,13 @@ const paramSamples: Record<string, string> = {
   w: "vtaiwan",
   id: "sample-topic",
   slug: "sample-newsletter",
+  meeting_id: "20250621",
 };
 
 function samplePath(route: RouteRecordRaw): string {
   // catch-all route（/:pathMatch(.*)*）：用一條必然不存在的路徑測 404 殼
   if (route.path.startsWith("/:")) return "/this-page-does-not-exist";
-  return route.path.replace(/:([A-Za-z]+)/g, (_match, name: string) => {
+  return route.path.replace(/:([A-Za-z_]+)/g, (_match, name: string) => {
     const value = paramSamples[name];
     if (!value) {
       throw new Error(

@@ -16,8 +16,12 @@ import NewslettersView from "../views/Newsletters.vue";
 import NewsletterDetailView from "../views/NewsletterDetail.vue";
 import ContributorsView from "../views/ContributorsView.vue";
 import FaqView from "../views/FaqView.vue";
+import JitsiView from "../views/JitsiView.vue";
+import MeetupsView from "../views/MeetupsView.vue";
+import TranscriptionDetailView from "../views/TranscriptionDetailView.vue";
+import TranscriptionsView from "../views/TranscriptionsView.vue";
 
-const placeholderPaths = ["/404", "/meetups"];
+const placeholderPaths = ["/404"];
 
 // SSR 與 client 共用的路由表：一律靜態載入元件。
 // SSR 每個請求需直接產生首屏；client 也用同一份靜態表，確保 hydration 與 SSR 完全一致（lazy import 會造成 hydration mismatch）。
@@ -60,6 +64,20 @@ export const routes: RouteRecordRaw[] = [
     meta: { status: 200 },
   },
   { path: "/faq", name: "faq", component: FaqView, meta: { status: 200 } },
+  { path: "/meetups", name: "meetups", component: MeetupsView, meta: { status: 200 } },
+  {
+    path: "/transcriptions",
+    name: "transcriptions",
+    component: TranscriptionsView,
+    meta: { status: 200 },
+  },
+  {
+    path: "/transcription_detail/:meeting_id",
+    name: "transcription-detail",
+    component: TranscriptionDetailView,
+    meta: { status: 200 },
+  },
+  { path: "/jitsi", name: "jitsi", component: JitsiView, meta: { status: 200 } },
   ...placeholderPaths.map((path) => ({
     path,
     name: `placeholder-${path.slice(1)}`,

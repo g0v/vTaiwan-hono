@@ -204,6 +204,46 @@ export function headForNewsletterDetail(origin: string, slug: string, t: Transla
   };
 }
 
+export function headForMeetups(origin: string, t: Translate): HeadConfig {
+  const title = t("head.meetups.title") + " - " + SITE_NAME;
+  const description = t("head.meetups.description");
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/meetups`),
+  };
+}
+
+export function headForTranscriptions(origin: string, t: Translate): HeadConfig {
+  const title = t("head.transcriptions.title") + " - " + SITE_NAME;
+  const description = t("head.transcriptions.description");
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/transcriptions`),
+  };
+}
+
+export function headForTranscriptionDetail(origin: string, t: Translate): HeadConfig {
+  const title = t("head.transcriptionDetail.title") + " - " + SITE_NAME;
+  const description = t("head.transcriptionDetail.description");
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/transcriptions`),
+  };
+}
+
+export function headForJitsi(origin: string, t: Translate): HeadConfig {
+  const title = t("head.jitsi.title") + " - " + SITE_NAME;
+  const description = t("head.jitsi.description");
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/jitsi`),
+  };
+}
+
 export function headForNotFound(origin: string, t: Translate): HeadConfig {
   const title = t("head.notFound.title") + " - " + SITE_NAME;
   const description = t("head.notFound.description");
