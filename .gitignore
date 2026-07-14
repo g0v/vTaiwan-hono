@@ -22,3 +22,7 @@ worker-configuration.d.ts
 
 # LemmaScript — generated Dafny merge base (always regeneratable via lsc gen)
 *.dfy.gen
+
+# Reports
+
+report.md
