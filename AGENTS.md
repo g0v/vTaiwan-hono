@@ -19,6 +19,7 @@
 - **路由**：`vue-router`（SSR 用 `createMemoryHistory`，client 用 `createWebHistory`）。
 - **多語**：`vue-i18n`（每請求獨立實例，見下）。
 - **樣式**：Tailwind CSS v4（CLI 建置到 `public/styles.css`）。
+- **建置工具**：VitePlus（`vp`）——本專案的 `vite` 指向 `@voidzero-dev/vite-plus-core`；`npm run dev` / `preview` 走 `vp` CLI，`npm run build` 走雙設定檔（`vite.config.mts` server build + `vite.client.config.mts` client build）。`vp` 同時提供 `lsc`（LemmaScript）形式驗證工具（見「LemmaScript 形式驗證」章節）。
 
 ## 常用指令
 
@@ -30,6 +31,8 @@ npm run watch:css  # 監看模式重建 CSS
 npm run build      # build:css + vite build（server）+ vite build client
 npm run preview    # 預覽建置結果
 npm run typecheck  # tsc --noEmit 型別檢查
+npm run test       # vp test：連結完整性測試（src/tests/）
+npm run check      # vp check：format + lint + typecheck 一次到位
 npm run lemma:gen  # LemmaScript：重新生成 Dafny 驗證基底（不需安裝 Dafny）
 npm run lemma:check # LemmaScript：執行 Dafny 形式驗證（需安裝 Dafny >= 4.x）
 npm run deploy     # build + wrangler deploy（除非使用者要求，否則不要執行）
@@ -113,14 +116,34 @@ npm run cf-typegen # 由 wrangler 產生 Cloudflare 綁定型別
 
 ## 驗證流程（改完必做）
 
-**現階段：**
+### 過程中：邊做邊跑
+
+每完成一個邏輯完整的子步驟（加完路由、加完元件、加完 i18n key），先跑：
+
+```bash
+npm run check       # format + lint + typecheck 一次到位（比單跑 typecheck 更完整）
+```
+
+涉及新頁面、新依賴、或改 Vite 設定時，加跑：
+
+```bash
+npm run build       # server + client 雙 build 皆需成功；路由元件須靜態 import（見「新增一個頁面」第 2 步）
+```
+
+不要等功能全部完成才驗證——累積改動後出錯難以定位。
+
+### 改完後：完整驗收
+
+**現階段（依序執行）：**
 
 1. `npm run typecheck` — `tsc --noEmit`，應為零錯誤。
 2. `npm run build` — 確認 CSS + server + client 都能成功建置。
 3. `npm run dev` 目視 — 確認 SSR 首屏正確，且 hydration **無 mismatch 警告**（開 devtools console 檢查）。
 4. `npm run lemma:gen` — 重新生成 Dafny 驗證基底（`.dfy.gen`），確認 lsc 能正常解析所有加注函式。
+5. `npm run check` — format + lint + typecheck 全部無錯。
+6. `npm run test` — 連結完整性測試全數通過（NavBar / Footer 每條站內連結都解析到已定義 route）。
 
-> **未來再加**（尚未導入，需先跟使用者確認再動工）：比照 neo 導入 Vitest 補單元測試；以及 SSR 輸出 / hydration 一致性的煙霧測試。目前本 repo **沒有測試框架**，別假設 `npm run test` 存在。
+> **尚未涵蓋**（需先跟使用者確認再動工）：SSR 輸出 / hydration 一致性的煙霧測試。目前 `src/tests/` 只有連結完整性測試，其他測試情境尚未導入。
 
 ## LemmaScript 形式驗證
 
@@ -128,12 +151,12 @@ npm run cf-typegen # 由 wrangler 產生 Cloudflare 綁定型別
 
 ### 已加注的模組
 
-| 檔案 | 主要不變量 |
-|------|-----------|
-| `src/ssr/heads.ts` | `buildOg` → `\result.length === 10`；`headFor*` → `\result.title.length > 0` 且 `\result.meta.length === 10`；`renderHeadTags` → output 含 charset、title、viewport |
-| `src/i18n/index.ts` | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale |
-| `src/router/routes.ts` | `statusForRoute` → `\result === 200 || \result === route.meta.status`；`headForRoute` → 恆有效 |
-| `src/lib/discourse.ts` | `getJson` → `requires path.length > 0`；in-flight 去重 contract |
+| 檔案                   | 主要不變量                                                                                                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------------------- |
+| `src/ssr/heads.ts`     | `buildOg` → `\result.length === 10`；`headFor*` → `\result.title.length > 0` 且 `\result.meta.length === 10`；`renderHeadTags` → output 含 charset、title、viewport |
+| `src/i18n/index.ts`    | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale                                                                |
+| `src/router/routes.ts` | `statusForRoute` → `\result === 200                                                                                                                                 |     | \result === route.meta.status`；`headForRoute` → 恆有效 |
+| `src/lib/discourse.ts` | `getJson` → `requires path.length > 0`；in-flight 去重 contract                                                                                                     |
 
 ### 執行方式
 
@@ -148,6 +171,7 @@ npm run lemma:check
 ### 加注規則（agent 需遵守）
 
 - **新增 `headFor*` 函式**時，必須在函式體第一行加上：
+
   ```typescript
   //@ verify
   //@ autohavoc
@@ -155,6 +179,7 @@ npm run lemma:check
   //@ ensures \result.title.length > 0
   //@ ensures \result.meta.length === 10
   ```
+
   加完後跑 `npm run lemma:gen` 確認 lsc 能正常解析。
 
 - **加注語法**：`//@ ` 開頭（注意 `@` 後有空格）；只能放在函式 / 迴圈 body 第一行。
@@ -194,13 +219,13 @@ npm run lemma:check
 
 本專案以 GitHub Milestones 追蹤進度：<https://github.com/g0v/vTaiwan-hono/milestones>
 
-| Milestone | 狀態 | 核心目標 | 主要 issues |
-|-----------|------|---------|-------------|
-| [打樣](https://github.com/g0v/vTaiwan-hono/milestone/1) | ✅ 已完成 | 讓首頁、NavBar、Footer 的視覺對齊 `vtaiwan-design-system`；確保多語言切換不會切版。 | #1 導航列、#2 首頁、#4 Footer、#5 logo/favicon/og、#8 隱私條款頁、#14 LanguageSwitcher bug、#17 Title、#21 make.vtaiwan.tw 連結 |
-| [MVP](https://github.com/g0v/vTaiwan-hono/milestone/2) | ✅ 已完成 | **即時會議以外**的所有頁面與功能全部完工，可正式部署取代現行站。 | #3 hydration/vue-router、#10 vue-i18n、#11 共用元件、#12 Manifest、#15 語言偵測、#16 議題頁、#18 Title i18n、#20 三個文章頁（含後端 proxy）、#23 貢獻者/FAQ 靜態頁 |
-| [完整功能](https://github.com/g0v/vTaiwan-hono/milestone/3) | 🚧 進行中（預計 10 月初） | 完成即時會議（JAAS worker + 轉錄 worker）及其餘收尾項目，達成功能完整搬移。 | open: #24 會議頁、#25 所有路由 alias、#28 CORS 標頭、#29 即時會議；closed: #13 登入、#19 lazy-import、#22 hydration fix |
-| [實作自動測試](https://github.com/g0v/vTaiwan-hono/milestone/5) | 📋 待開始 | 尚無 issue，細節待定。動工前先與使用者確認範圍。 | — |
-| [從 Firebase 搬移到全 Cloudflare](https://github.com/g0v/vTaiwan-hono/milestone/4) | 📋 待開始 | 登入改為 BetterAuth；資料庫改用 D1 / R2；即時校對資料考慮使用 Durable Objects (DO)。進行到此 milestone 前**不要**提前動工。 | — |
+| Milestone                                                                          | 狀態                      | 核心目標                                                                                                                    | 主要 issues                                                                                                                                                        |
+| ---------------------------------------------------------------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [打樣](https://github.com/g0v/vTaiwan-hono/milestone/1)                            | ✅ 已完成                 | 讓首頁、NavBar、Footer 的視覺對齊 `vtaiwan-design-system`；確保多語言切換不會切版。                                         | #1 導航列、#2 首頁、#4 Footer、#5 logo/favicon/og、#8 隱私條款頁、#14 LanguageSwitcher bug、#17 Title、#21 make.vtaiwan.tw 連結                                    |
+| [MVP](https://github.com/g0v/vTaiwan-hono/milestone/2)                             | ✅ 已完成                 | **即時會議以外**的所有頁面與功能全部完工，可正式部署取代現行站。                                                            | #3 hydration/vue-router、#10 vue-i18n、#11 共用元件、#12 Manifest、#15 語言偵測、#16 議題頁、#18 Title i18n、#20 三個文章頁（含後端 proxy）、#23 貢獻者/FAQ 靜態頁 |
+| [完整功能](https://github.com/g0v/vTaiwan-hono/milestone/3)                        | 🚧 進行中（預計 10 月初） | 完成即時會議（JAAS worker + 轉錄 worker）及其餘收尾項目，達成功能完整搬移。                                                 | open: #24 會議頁、#25 所有路由 alias、#28 CORS 標頭、#29 即時會議；closed: #13 登入、#19 lazy-import、#22 hydration fix                                            |
+| [實作自動測試](https://github.com/g0v/vTaiwan-hono/milestone/5)                    | 📋 待開始                 | 尚無 issue，細節待定。動工前先與使用者確認範圍。                                                                            | —                                                                                                                                                                  |
+| [從 Firebase 搬移到全 Cloudflare](https://github.com/g0v/vTaiwan-hono/milestone/4) | 📋 待開始                 | 登入改為 BetterAuth；資料庫改用 D1 / R2；即時校對資料考慮使用 Durable Objects (DO)。進行到此 milestone 前**不要**提前動工。 | —                                                                                                                                                                  |
 
 > Milestone 有嚴格前後依賴：打樣 → MVP → 完整功能 → 自動測試 → 從 Firebase 搬移到全 Cloudflare。
 
@@ -209,15 +234,19 @@ npm run lemma:check
 從 `vue.vTaiwan-neo`（及其搭配的後端 workers）搬移功能時，遵守以下原則：
 
 ### 接口整合
+
 原本分散在**一個前端（vue.vTaiwan-neo）加兩個後端 worker**的所有接口，全部整合進 `vTaiwan-hono` 這個新專案。**新專案不能再打舊專案的外部 worker 路由。**
 
 ### 漸進增強
+
 以漸進增強（progressive enhancement）的方式進行搬移——先確保 SSR 靜態殼可用，再逐步加入動態功能，不中斷現有服務。
 
 ### 路由完整性
+
 **所有原專案的路由（含 alias 路由）在新專案都必須有對應。** 不能讓舊有連結失效。未完成的頁面先掛 `placeholderPaths`（回 404），上線前補完。
 
 ### 什麼不搬
+
 - neo 的開發腳本、CI 配置、測試 fixture——hono 自行維護。
 - 有疑問的功能，動工前先問使用者，不臆測。
 

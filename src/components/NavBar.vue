@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { useI18n } from "vue-i18n";
 import LanguageSwitcher from "./LanguageSwitcher.vue";
+import { navLinks as links } from "../router/nav-links";
 
 interface AuthenticatedUser {
   displayName: string | null;
@@ -31,18 +32,7 @@ const route = useRoute();
 const { t } = useI18n();
 const mobileOpen = ref(false);
 
-// 導覽連結對齊至 vue.vTaiwan-neo 專案項目；label 由 i18n 提供
-const links = [
-  { key: "home", labelKey: "header.home", href: "/" },
-  { key: "topics", labelKey: "header.topics", href: "/topics" },
-  { key: "meetups", labelKey: "header.meetups", href: "/meetups" },
-  { key: "blogs", labelKey: "header.blogs", href: "/blogs" },
-  { key: "newsletters", labelKey: "header.newsletters", href: "/newsletters" },
-  { key: "mastodon", labelKey: "header.mastodon", href: "/mastodon" },
-  { key: "faq", labelKey: "header.faq", href: "/faq" },
-  { key: "about", labelKey: "header.about", href: "/intro" },
-  { key: "contributors", labelKey: "header.contributors", href: "/contributors" },
-];
+// 導覽連結對齊至 vue.vTaiwan-neo 專案項目；label 由 i18n 提供（資料源自 nav-links.ts）
 
 const activeKey = computed(() => props.current ?? "");
 const profileName = computed(

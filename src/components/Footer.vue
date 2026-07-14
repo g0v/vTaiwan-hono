@@ -5,6 +5,7 @@ import { useI18n } from "vue-i18n";
 import FooterLinkIcon from "./FooterLinkIcon.vue";
 import FooterNavLink from "./FooterNavLink.vue";
 import { localeKey, supportedLocales, type SupportedLocale } from "../i18n";
+import { contact, legal, type FooterContactItem } from "../router/nav-links";
 
 type FooterIconName =
   | "mastodon"
@@ -47,26 +48,12 @@ const connect = [
   },
 ];
 
-// 聯絡 — info@vtaiwan.tw 對齊原 Footer（email 不翻譯）；其餘為站內連結
-const contact = [
-  { label: "info@vtaiwan.tw", href: "mailto:info@vtaiwan.tw" },
-  { labelKey: "footer.joinNextMeeting", to: "/meetups" },
-  { labelKey: "footer.proposeTopic", to: "/topics" },
-];
-
-function contactIcon(item: (typeof contact)[number]): FooterIconName {
+function contactIcon(item: FooterContactItem): FooterIconName {
   if (item.href?.startsWith("mailto:")) return "mail";
   if (item.labelKey === "footer.joinNextMeeting") return "calendar";
   if (item.labelKey === "footer.proposeTopic") return "document";
   return "document";
 }
-
-// 頁尾法務連結 — 對齊原 Footer 底部（原始碼指向本專案 repo）
-const legal = [
-  { labelKey: "footer.sourceCode", href: "https://github.com/g0v/vTaiwan-hono" },
-  { labelKey: "footer.privacyPolicy", to: "/privacy" },
-  { labelKey: "footer.termsOfService", to: "/terms" },
-];
 </script>
 
 <template>

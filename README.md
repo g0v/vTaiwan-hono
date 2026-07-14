@@ -147,12 +147,12 @@ Key pure functions are annotated with [LemmaScript](https://viteplus.dev/) `//@ 
 
 ### 已加注的檔案 / Annotated files
 
-| 檔案 / File | 不變量 / Invariants |
-|-------------|---------------------|
-| `src/ssr/heads.ts` | `buildOg` → 恆輸出 10 個 MetaEntry；`headFor*` → title 非空、`meta.length === 10`；`renderHeadTags` → output 含 charset、title、viewport |
-| `src/i18n/index.ts` | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale |
-| `src/router/routes.ts` | `statusForRoute` → 回傳 meta.status 或 200；`headForRoute` → 恆回傳合法 HeadConfig |
-| `src/lib/discourse.ts` | `getJson` → path 非空、in-flight 去重；`getAllCategoryTopics` → categoryUri 非空 |
+| 檔案 / File            | 不變量 / Invariants                                                                                                                      |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/ssr/heads.ts`     | `buildOg` → 恆輸出 10 個 MetaEntry；`headFor*` → title 非空、`meta.length === 10`；`renderHeadTags` → output 含 charset、title、viewport |
+| `src/i18n/index.ts`    | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale                                     |
+| `src/router/routes.ts` | `statusForRoute` → 回傳 meta.status 或 200；`headForRoute` → 恆回傳合法 HeadConfig                                                       |
+| `src/lib/discourse.ts` | `getJson` → path 非空、in-flight 去重；`getAllCategoryTopics` → categoryUri 非空                                                         |
 
 ### 執行 / Commands
 
@@ -170,10 +170,10 @@ npm run lemma:check
 
 ### 檔案角色 / File roles
 
-| 檔案 | 追蹤 | 說明 |
-|------|------|------|
-| `src/**/*.dfy` | ✅ git tracked | 驗證基底 + 可加入 proof additions |
-| `src/**/*.dfy.gen` | 🚫 gitignored | 每次 `lemma:gen` 自動重生，不納入版控 |
+| 檔案               | 追蹤           | 說明                                  |
+| ------------------ | -------------- | ------------------------------------- |
+| `src/**/*.dfy`     | ✅ git tracked | 驗證基底 + 可加入 proof additions     |
+| `src/**/*.dfy.gen` | 🚫 gitignored  | 每次 `lemma:gen` 自動重生，不納入版控 |
 
 ### 加注語法速查 / Annotation syntax
 

@@ -24,6 +24,11 @@ export default defineConfig({
     rules: { "vite-plus/prefer-vite-plus-imports": "error" },
     options: { typeAware: true, typeCheck: true },
   },
+  test: {
+    // 連結完整性測試：routes.server.ts 靜態 import .vue，vue plugin 仍需載入
+    include: ["src/tests/**/*.test.ts"],
+    environment: "node",
+  },
   publicDir: "public",
   resolve: {
     alias: {
@@ -31,5 +36,9 @@ export default defineConfig({
     },
   },
   define: vueI18nFlags,
-  plugins: lazyPlugins(() => [cloudflare(), vue({ compiler: vueCompiler })]),
+  plugins: lazyPlugins(() => [
+    // Cloudflare plugin 與 Vitest 不相容；測試時略過，由 vue plugin 單獨處理 .vue
+    ...(process.env["VITEST"] ? [] : [cloudflare()]),
+    vue({ compiler: vueCompiler }),
+  ]),
 });
