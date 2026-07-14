@@ -1,8 +1,10 @@
+import { corsFor } from "./cors";
 import type { App } from "./types";
 
 const allowedHosts = ["medium.com", "vtaiwantw.substack.com"];
 
 export function registerProxyApi(app: App) {
+  app.use("/api/proxy", corsFor(['GET']));
   app.get("/api/proxy", async (c) => {
     const rawUrl = c.req.query("url");
     if (!rawUrl) return c.json({ error: "Missing url parameter" }, 400);
