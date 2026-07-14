@@ -175,6 +175,7 @@ vp run cf-typegen           # 由 wrangler 產生 Cloudflare 綁定型別
    - 連結完整性（NavBar / Footer 每條站內連結都解析到已定義 route）
    - SSR 煙霧測試（`src/tests/ssr.test.ts`：路由表每條 route 實跑 `renderPage()`，驗 status / title / 首屏非空殼；誤觸瀏覽器 API 的 SSR 安全違規會在此爆掉）
 6. `vp run dev` 目視（**僅互動 session；無人看管的長程 run 跳過此步，以第 5 步替代**）— 確認 hydration **無 mismatch 警告**（開 devtools console 檢查）。
+7. `vp check --fix` - 修理細微的format錯誤
 
 > **尚未涵蓋**（需先跟使用者確認再動工）：hydration 一致性的自動化驗證（需真瀏覽器，如 Playwright，屬「實作自動測試」milestone 範圍）。SSR 輸出煙霧測試已由 `vp test` 涵蓋。
 >
