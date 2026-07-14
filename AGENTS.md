@@ -154,20 +154,20 @@ vp run build       # server + client 雙 build 皆需成功；路由元件須靜
 ### 已加注的模組
 
 | 檔案                   | 主要不變量                                                                                                                                                                                      |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------------------- |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/ssr/heads.ts`     | `buildOg` → `\result.length === 10`（已驗證）；`headFor*` 和 `renderHeadTags` → 文件標注（`t()` autohavoc 後 title 為任意值無法滿足 `buildOg requires`；MetaEntry union discriminant 無法建模） |
 | `src/i18n/index.ts`    | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale                                                                                            |
-| `src/router/routes.ts` | `statusForRoute` → `\result === 200                                                                                                                                                             |     | \result === route.meta.status`；`headForRoute` → 恆有效 |
+| `src/router/routes.ts` | `statusForRoute` → `\result === 200 \|\| \result === route.meta.status`；`headForRoute` → 恆有效                                                                                                |
 | `src/lib/discourse.ts` | `getJson` → `requires path.length > 0`；in-flight 去重 contract                                                                                                                                 |
 
 ### 執行方式
 
 ```bash
 # 重新從 TS 生成 .dfy.gen（不需安裝 Dafny）
-npm run lemma:gen
+vp run lemma:gen
 
 # 形式驗證（需安裝 Dafny >= 4.x，見 https://dafny.org/dafny/Installation）
-npm run lemma:check
+vp run lemma:check
 ```
 
 ### 加注規則（agent 需遵守）
@@ -181,7 +181,7 @@ npm run lemma:check
   //@ ensures \result.meta.length === 10
   ```
 
-  加完後跑 `npm run lemma:gen` 確認 lsc 能正常解析（標注會被納入 `.dfy.gen` 但不觸發 `dafny verify`）。
+  加完後跑 `vp run lemma:gen` 確認 lsc 能正常解析（標注會被納入 `.dfy.gen` 但不觸發 `dafny verify`）。
 
 - **加注語法**：`//@ ` 開頭（注意 `@` 後有空格）；只能放在函式 / 迴圈 body 第一行。
   - `//@ verify` — 標記函式納入驗證（brownfield 模式下必填）
@@ -217,6 +217,7 @@ npm run lemma:check
   - `chore(deps): 升級 hono`
 - 常見前綴：`feat`、`fix`、`chore`、`refactor`、`style`、`docs`。
 - 除非使用者明確要求，否則**不要自行 commit / push / deploy**。
+- **長程（無人看管）任務例外**：使用者明確授權跑長程任務時，允許在 **feature branch** 上以 Conventional Commits 做 **checkpoint commit**——每完成一個驗證通過（`vp check` + `vp test`）的子步驟一筆，方便回溯。仍然 🚫 **禁止 push、禁止直接 commit 到 main、禁止 deploy**。
 
 ## Milestone 規劃
 
@@ -261,5 +262,6 @@ npm run lemma:check
 - ✅ **i18n 三檔同步**——新增文字時 zh-TW / en / ja 都要有對應 key。
 - ✅ **動工前確認需求**——不憑空臆測，模糊就先問清楚。
 - 🚫 **不手改 `public/styles.css`**——那是 `build:css` 的產物；改 `src/styles/app.css`。
-- 🚫 **不手改 `dist/`**——`npm run build` 的自動產物。
+- 🚫 **不手改 `dist/`**——`vp run build` 的自動產物。
+- **Firebase 僅限 client 端使用（登入）**，🚫 **不得在 Worker/SSR 路徑 import firebase**——要改動態策略先跟使用者確認。
 - 🚫 **不提交機密**——金鑰等不進 git。
