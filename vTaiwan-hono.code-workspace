@@ -13,7 +13,7 @@
       "path": "../vtaiwan-transcription-worker",
     },
     {
-      "path": "../vtaiwan-jaas-worker",
+      "path": "../vtaiwan-jaas-jwt-worker",
     },
   ],
   "settings": {
