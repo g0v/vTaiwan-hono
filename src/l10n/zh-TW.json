@@ -68,6 +68,22 @@
     "faq": {
       "title": "常見問答 (FAQ) | vTaiwan",
       "description": "關於 vTaiwan 平台的常見問題與解答。"
+    },
+    "meetups": {
+      "title": "會議 | vTaiwan",
+      "description": "vTaiwan 定期舉辦線上與實體會議，討論各專案的進展與公共政策議題。歡迎所有人參與！"
+    },
+    "transcriptions": {
+      "title": "逐字稿管理 | vTaiwan",
+      "description": "管理 vTaiwan 會議逐字稿，包含查詢、下載和上傳功能。"
+    },
+    "transcriptionDetail": {
+      "title": "逐字稿詳情 | vTaiwan",
+      "description": "查看完整的 vTaiwan 會議逐字稿內容。"
+    },
+    "jitsi": {
+      "title": "即時會議 | vTaiwan",
+      "description": "vTaiwan 定期舉辦線上與實體會議，討論各專案的進展與公共政策議題。歡迎所有人參與！"
     }
   },
   "common": {

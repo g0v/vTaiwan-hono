@@ -1,6 +1,21 @@
 import type { FirebaseApp } from "firebase/app";
-import type { Auth } from "firebase/auth";
-import type { Database, DatabaseReference } from "firebase/database";
+import type {
+  Auth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+  signInWithPopup,
+  signOut,
+  updateProfile,
+} from "firebase/auth";
+import type {
+  Database,
+  DatabaseReference,
+  get as DatabaseGet,
+  onValue as DatabaseOnValue,
+  ref as DatabaseRef,
+  set as DatabaseSet,
+  update as DatabaseUpdate,
+} from "firebase/database";
 import type { FirebaseStorage } from "firebase/storage";
 
 const firebaseConfig = {
@@ -22,15 +37,16 @@ export interface FirebaseServices {
   blogsRef: DatabaseReference;
   usersRef: DatabaseReference;
   meetingsRef: DatabaseReference;
-  GoogleAuthProvider: typeof import("firebase/auth").GoogleAuthProvider;
-  signInWithPopup: typeof import("firebase/auth").signInWithPopup;
-  onAuthStateChanged: typeof import("firebase/auth").onAuthStateChanged;
-  signOut: typeof import("firebase/auth").signOut;
-  updateProfile: typeof import("firebase/auth").updateProfile;
-  databaseRef: typeof import("firebase/database").ref;
-  databaseGet: typeof import("firebase/database").get;
-  databaseSet: typeof import("firebase/database").set;
-  databaseUpdate: typeof import("firebase/database").update;
+  GoogleAuthProvider: typeof GoogleAuthProvider;
+  signInWithPopup: typeof signInWithPopup;
+  onAuthStateChanged: typeof onAuthStateChanged;
+  signOut: typeof signOut;
+  updateProfile: typeof updateProfile;
+  databaseRef: typeof DatabaseRef;
+  databaseGet: typeof DatabaseGet;
+  databaseSet: typeof DatabaseSet;
+  databaseUpdate: typeof DatabaseUpdate;
+  databaseOnValue: typeof DatabaseOnValue;
 }
 
 let servicesPromise: Promise<FirebaseServices> | undefined;
@@ -75,5 +91,6 @@ async function initializeFirebase(): Promise<FirebaseServices> {
     databaseGet: databaseModule.get,
     databaseSet: databaseModule.set,
     databaseUpdate: databaseModule.update,
+    databaseOnValue: databaseModule.onValue,
   };
 }

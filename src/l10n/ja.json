@@ -68,6 +68,22 @@
     "faq": {
       "title": "よくある質問 (FAQ) | vTaiwan",
       "description": "vTaiwanプラットフォームに関するよくある質問と回答。"
+    },
+    "meetups": {
+      "title": "ミートアップ | vTaiwan",
+      "description": "vTaiwanは定期的にオンラインおよびオフラインのミートアップを開催し、各プロジェクトの進捗や公共政策トピックについて議論します。どなたでもご参加いただけます！"
+    },
+    "transcriptions": {
+      "title": "書き起こし管理 | vTaiwan",
+      "description": "vTaiwanミーティングの書き起こしを管理します。照会、ダウンロード、アップロード機能を含みます。"
+    },
+    "transcriptionDetail": {
+      "title": "書き起こし詳細 | vTaiwan",
+      "description": "vTaiwanミーティングの完全な書き起こし内容を表示します。"
+    },
+    "jitsi": {
+      "title": "リアルタイム会議 | vTaiwan",
+      "description": "vTaiwanは定期的にオンラインおよびオフラインのミートアップを開催し、各プロジェクトの進捗や公共政策トピックについて議論します。どなたでもご参加いただけます！"
     }
   },
   "即將開始": "まもなく開始",

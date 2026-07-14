@@ -2,8 +2,10 @@ import { Hono } from "hono";
 import { registerDiscourseTopicIdApi } from "./api/discourse_topic_id";
 import { registerDiscourseTopicsApi } from "./api/discourse_topics";
 import { registerHelloApi } from "./api/hello";
+import { registerJitsiTokenApi } from "./api/jitsi_token";
 import { registerMastodonApi } from "./api/mastodon";
 import { registerProxyApi } from "./api/proxy";
+import { registerTranscriptionApi } from "./api/transcription";
 import type { AppEnv } from "./api/types";
 import { renderPage } from "./ssr/render";
 
@@ -15,6 +17,8 @@ registerProxyApi(app);
 registerMastodonApi(app);
 registerDiscourseTopicsApi(app);
 registerDiscourseTopicIdApi(app);
+registerJitsiTokenApi(app);
+registerTranscriptionApi(app);
 
 // 其他 GET 請求：靜態檔交給 ASSETS，其餘交給 Vue SSR + vue-router。
 app.get("*", async (c) => {
