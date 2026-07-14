@@ -12,71 +12,107 @@
 
 - **平行搬移**：把 `vue.vTaiwan-neo`（現行官網）的頁面與功能逐頁移植到本 SSR 專案。尚未實作的頁面先以 placeholder（回 404）佔位，逐步替換。
 - **套用新視覺**：以 `vtaiwan-design-system` 為視覺唯一來源，**只收斂 design token** 進 `src/styles/app.css`，用 token / Tailwind 工具類別，不硬寫顏色數值。
-- **動態功能策略**：現階段 SSR 只出靜態骨架，動態資料（原站的登入、Topics、Blogs、Polis、轉錄等）在瀏覽器端 hydration 後才抓。
+- **動態功能策略**：SSR 出靜態骨架，動態資料在瀏覽器端 hydration 後才抓；跨網域來源（Discourse 議題、Mastodon 貼文、Medium／Substack RSS）走 Worker 上的 `/api/*` proxy 避免 CORS，登入則以 Firebase Google 登入在瀏覽器端進行。
 - **多 repo 工作區**：本專案與 `../vtaiwan-design-system`（視覺參考）、`../vue.vTaiwan-neo`（功能／內容來源，`2026-new-UI` 分支）並列於同一 workspace（見 `vTaiwan-hono.code-workspace`）。`./pull-all.sh` 會依序 `git pull` 這三個 repo。
 
 > 本專案之後**可能**把成果回貢獻到 `vue.vTaiwan-neo` 的 `2026-new-UI` 分支，但現階段為單向取材，尚未定義回饋流程。
 
 ## Routes / 路由
 
-| Route                                                                                 | Status | EN                                                                   | 中文                                                     |
-| ------------------------------------------------------------------------------------- | ------ | -------------------------------------------------------------------- | -------------------------------------------------------- |
-| `/`                                                                                   | 200    | Home — vTaiwan design system, dark hero, three civic colors          | 首頁 — vTaiwan 設計系統、黑底 Hero、三種公民色           |
-| `/about`, `/intro`                                                                    | 200    | About page                                                           | 關於頁                                                   |
-| `/word/:w`                                                                            | 200    | Dynamic page; `og:image` is `https://www.moedict.tw/{w}.png`         | 動態頁；`og:image` 為 `https://www.moedict.tw/{w}.png`   |
-| `/hundred`                                                                            | 200    | 10×10 grid (1–100), multiples highlighted; hydrated interactive page | 百數表（10×10，1～100）、倍數著色；hydration 後可互動    |
-| `/privacy`                                                                            | 200    | Privacy policy                                                       | 隱私權政策                                               |
-| `/terms`                                                                              | 200    | Terms of service                                                     | 服務條款                                                 |
-| `/topics`, `/meetups`, `/blogs`, `/newsletters`, `/mastodon`, `/faq`, `/contributors` | 404    | Placeholders — routed to `NotFound`, awaiting migration              | 尚未搬移的頁面，暫以 `NotFound` 佔位、回 404             |
-| `/api/hello`                                                                          | 200    | Returns `Hello World!` (plain Hono, no SSR)                          | 回傳 `Hello World!`（純 Hono，不走 SSR）                 |
-| `*`                                                                                   | 404    | Static files → `ASSETS` binding; unknown page-like URLs → `NotFound` | 靜態檔交給 `ASSETS` 綁定；未知的頁面 URL 交給 `NotFound` |
+路由表的唯一來源是 `src/router/routes.server.ts`（SSR 與 client 共用）。
+
+### 頁面 / Pages
+
+| Route                | Status | EN                                                                   | 中文                                                   |
+| -------------------- | ------ | -------------------------------------------------------------------- | ------------------------------------------------------ |
+| `/`                  | 200    | Home — dark hero, three civic colors                                 | 首頁 — 黑底 Hero、三種公民色                           |
+| `/about`, `/intro`   | 200    | About page                                                           | 關於頁                                                 |
+| `/topics`            | 200    | Topic list — fetched from Discourse after hydration                  | 議題列表；hydration 後向 Discourse 取資料              |
+| `/topic/:id`         | 200    | Topic detail — progress, timeline, slides, discussion                | 議題詳情：進度、時間軸、簡報、討論串                   |
+| `/polis`             | 200    | Polis embed                                                          | Polis 頁                                               |
+| `/blogs`             | 200    | Blog list — Medium / Substack RSS via `/api/proxy`                   | 部落格列表，經 `/api/proxy` 取 RSS                     |
+| `/newsletters`       | 200    | Newsletter list                                                      | 電子報列表                                             |
+| `/newsletters/:slug` | 200    | Newsletter detail                                                    | 電子報單篇                                             |
+| `/mastodon`          | 200    | Mastodon timeline (`g0v.social` `#vtaiwan`) via `/api/mastodon`      | Mastodon 貼文牆，經 `/api/mastodon` 取得               |
+| `/faq`               | 200    | FAQ                                                                  | 常見問題                                               |
+| `/contributors`      | 200    | Contributors                                                         | 貢獻者                                                 |
+| `/profile`           | 200    | Profile — Firebase Google login, client-side only                    | 個人頁；Firebase Google 登入，僅瀏覽器端               |
+| `/word/:w`           | 200    | Dynamic page; `og:image` is `https://www.moedict.tw/{w}.png`         | 動態頁；`og:image` 為 `https://www.moedict.tw/{w}.png` |
+| `/hundred`           | 200    | 10×10 grid (1–100), multiples highlighted; hydrated interactive page | 百數表（10×10，1～100）、倍數著色；hydration 後可互動  |
+| `/privacy`           | 200    | Privacy policy                                                       | 隱私權政策                                             |
+| `/terms`             | 200    | Terms of service                                                     | 服務條款                                               |
+| `/meetups`, `/404`   | 404    | Placeholders — routed to `NotFound`, awaiting migration              | 尚未搬移的頁面，暫以 `NotFound` 佔位、回 404           |
+| `*`                  | 404    | Unknown page-like URLs → `NotFound`                                  | 未知的頁面 URL 交給 `NotFound`                         |
+
+### API（純 Hono，不走 SSR）/ API endpoints
+
+| Route                      | EN                                                             | 中文                                    |
+| -------------------------- | -------------------------------------------------------------- | --------------------------------------- |
+| `/api/hello`               | Returns `Hello World!`                                         | 回傳 `Hello World!`                     |
+| `/api/proxy?url=`          | RSS proxy — allow-list: `medium.com`, `vtaiwantw.substack.com` | RSS 代理，白名單：Medium、Substack      |
+| `/api/mastodon`            | `g0v.social` `#vtaiwan` timeline (needs `MASTODON_TOKEN`)      | Mastodon 貼文（需 `MASTODON_TOKEN`）    |
+| `/api/discourse/topics`    | Discourse topic list (optional `?category=`)                   | Discourse 議題列表（可帶 `?category=`） |
+| `/api/discourse/topic/:id` | Discourse topic detail                                         | Discourse 單一議題                      |
+
+靜態檔（路徑含副檔名）交給 `ASSETS` 綁定 / Static files are served via the `ASSETS` binding.
 
 ## Stack / 技術棧
 
 - [Hono](https://hono.dev) — Worker 與路由 / the worker & router
 - [Vue 3](https://vuejs.org) + `@vue/server-renderer` + [Vue Router](https://router.vuejs.org) — SSR + hydration 後的 SPA 路由
 - [vue-i18n](https://vue-i18n.intlify.dev) — 多語（zh-TW / en / ja）/ i18n
-- [Vite](https://vite.dev) + `@vitejs/plugin-vue` + `@cloudflare/vite-plugin` — 建置與本機開發 / build & dev
+- [VitePlus](https://viteplus.dev)（`vp`）+ `@vitejs/plugin-vue` + `@cloudflare/vite-plugin` — 建置、開發、測試、format/lint / build, dev, test, fmt & lint。本專案的 `vite` 指向 `@voidzero-dev/vite-plus-core`。
 - [Tailwind CSS v4](https://tailwindcss.com) — 樣式，以獨立 CLI 編譯輸出到 `public/styles.css` / styling via standalone CLI
+- [Firebase](https://firebase.google.com) — Google 登入（僅瀏覽器端）/ Google sign-in, client-side only
+- [lucide-vue-next](https://lucide.dev) — 圖示 / icons
 - [Wrangler](https://developers.cloudflare.com/workers/wrangler/) — 部署 / deploy（Cloudflare Workers）
 
 ## Layout / 目錄結構
 
 ```
 src/
-├── index.ts             # Hono worker entry — API, static assets, SSR fallback / Worker 入口
+├── index.ts             # Hono worker entry — /api/*, static assets, SSR fallback / Worker 入口
 ├── app.ts               # createSSRApp + vue-router + vue-i18n factory / 建立 app、router、i18n
 ├── App.vue              # RouterView root / router 根元件
 ├── router/
-│   └── routes.ts        # route table + status/head helpers + placeholder 404 paths / 路由表
+│   ├── routes.server.ts # route table（SSR + client 共用，靜態 import 元件）/ 路由表本體
+│   ├── routes.ts        # statusForRoute / headForRoute helpers（已加 LemmaScript 注解）
+│   ├── nav-links.ts     # NavBar / Footer 連結的單一來源 / single source for nav & footer links
+│   └── routes.runtime.d.ts # `#routes-runtime` alias 的型別 / types for the alias
 ├── ssr/
 │   ├── render.ts        # renderToString → full HTML page / 產出完整 HTML
 │   └── heads.ts         # per-route <title> / OG meta builders / 各路由的 head
 ├── views/               # 頁面 / pages
-│   ├── Home.vue
-│   ├── About.vue
-│   ├── Word.vue
-│   ├── HundredChart.vue
-│   ├── Privacy.vue
-│   ├── Terms.vue
-│   └── NotFound.vue
+│   ├── Home.vue、About.vue、TopicsView.vue、TopicDetailView.vue、PolisView.vue
+│   ├── Blogs.vue、Newsletters.vue、NewsletterDetail.vue、Mastodon.vue
+│   ├── FaqView.vue、ContributorsView.vue、ProfileView.vue
+│   └── Word.vue、HundredChart.vue、Privacy.vue、Terms.vue、NotFound.vue
 ├── components/
 │   ├── NavBar.vue           # 毛玻璃導覽列（RouterLink + mobile state）/ glass header
 │   ├── LanguageSwitcher.vue # 語言切換（zh-TW / en / ja）/ locale switcher
-│   ├── Footer.vue           # 深色頁尾 / dark footer
-│   ├── FooterNavLink.vue
-│   └── FooterLinkIcon.vue
+│   ├── Footer.vue、FooterNavLink.vue、FooterLinkIcon.vue  # 深色頁尾 / dark footer
+│   ├── GoogleLogin.vue      # Firebase Google 登入按鈕 / sign-in button
+│   ├── TopicProgress.vue、TopicTimeline.vue、TopicSlide.vue
+│   ├── TopicDiscussion.vue、TopicDiscussionComment.vue     # 議題詳情區塊 / topic detail blocks
+│   ├── ParticipationLink.vue、IconWrapper.vue
+├── lib/
+│   ├── discourse.ts、discourse-server.ts、discourse-types.ts # Discourse 抓取 / fetch layer
+│   ├── firebase.ts      # Firebase app + Google auth（僅瀏覽器端）/ client-side only
+│   └── newsletters.ts   # 電子報資料 / newsletter data
+├── data/
+│   ├── faqs.ts、contributors.ts  # 靜態內容 / static content
 ├── i18n/
 │   └── index.ts         # createAppI18n + locale 偵測/持久化（僅瀏覽器端）/ i18n factory
 ├── l10n/                # 翻譯 JSON（三檔同步）/ translation JSON (keep in sync)
-│   ├── zh-TW.json
-│   ├── en.json
-│   └── ja.json
+│   ├── zh-TW.json、en.json、ja.json
+├── tests/
+│   └── links.test.ts    # 連結完整性測試（`npm run test`）/ link-integrity tests
 ├── client/
 │   └── app-entry.ts     # browser entry — hydrate + sync head after navigation / hydration 入口
-└── styles/
-    └── app.css          # Tailwind v4 source — @theme design tokens / 樣式與 token 來源
-vite.config.mts          # server build (Worker) / 伺服端建置
+├── styles/
+│   └── app.css          # Tailwind v4 source — @theme design tokens / 樣式與 token 來源
+└── **/*.dfy             # LemmaScript / Dafny 驗證基底（見下方章節）
+vite.config.mts          # server build (Worker) + test / lint / fmt 設定
 vite.client.config.mts   # client build — hydration bundle only / 僅輸出 hydration bundle
 wrangler.jsonc           # Cloudflare Workers config / Cloudflare 設定
 pull-all.sh              # git pull this repo + sibling repos / 同步本專案與 sibling repo
@@ -121,10 +157,12 @@ vite build -c vite.client.config.mts
 
 ```bash
 npm install
-npm run dev          # vite dev — 本機跑 Worker，含 HMR / runs the worker locally with HMR
+npm run dev          # vp dev — 本機跑 Worker，含 HMR / runs the worker locally with HMR
                    # `predev` 會先把 src/styles/app.css 編譯成 public/styles.css
 npm run watch:css    # (另開終端機) 監看 .vue 變更並即時重編 Tailwind 樣式
 npm run typecheck    # tsc --noEmit — 型別檢查 / type-check
+npm run test         # vp test — 連結完整性測試 / link-integrity tests
+npm run check        # vp check — format + lint + typecheck 一次到位 / all three at once
 ```
 
 > **EN:** `npm run dev` rebuilds `public/styles.css` once on start (via `predev`). When you add or change Tailwind classes in `.vue` files during a session, run `npm run watch:css` in a second terminal so the stylesheet stays in sync.
@@ -134,10 +172,22 @@ npm run typecheck    # tsc --noEmit — 型別檢查 / type-check
 ### Verify / 驗證（改完必做）
 
 1. `npm run typecheck` — 應為零錯誤 / zero errors.
-2. `npm run build` — 確認 CSS + server + client 都能成功建置 / all builds succeed.
-3. `npm run dev` 目視 — 確認 SSR 首屏正確、hydration 無 mismatch 警告（檢查 devtools console）。
+2. `npm run test` — 連結完整性測試全數通過 / all link-integrity tests pass.
+3. `npm run build` — 確認 CSS + server + client 都能成功建置 / all builds succeed.
+4. `npm run dev` 目視 — 確認 SSR 首屏正確、hydration 無 mismatch 警告（檢查 devtools console）。
 
-> 本 repo 目前**沒有測試框架**（`npm run test` 不存在）。日後視需要再導入 Vitest / SSR 煙霧測試。
+### Tests / 測試
+
+`src/tests/links.test.ts`（`vp test`，設定見 `vite.config.mts` 的 `test` 區塊）用真實路由表建 memory-history router，逐一 `router.resolve()`：
+
+- `navLinks`（NavBar）與 `footerInternalLinks`（Footer）的每條站內連結都必須解析到已定義的 route（`name !== "not-found"`）——`/meetups` 這類 placeholder 回 404 但有具名 route，仍算有效連結。
+- NavBar 需涵蓋所有主要內容頁，Footer 需涵蓋 `/privacy`、`/terms`。
+
+連結的單一來源是 `src/router/nav-links.ts`；新增導覽／頁尾連結請改那裡，測試會自動涵蓋。
+
+**EN:** `src/tests/links.test.ts` resolves every NavBar / Footer internal link against the real route table, so a dead link fails CI. Links live in `src/router/nav-links.ts` (single source) — add there and the test picks it up automatically.
+
+> **尚未涵蓋**：SSR 輸出 / hydration 一致性的煙霧測試，日後視需要再導入。
 
 ## Formal Verification / 形式驗證（LemmaScript）
 
@@ -208,7 +258,7 @@ npm run deploy       # 完整 build（含 hydration bundle）+ wrangler deploy
 
 1. Create a `.vue` file in `src/views/`.
 2. Add a `headForX(...)` function in `src/ssr/heads.ts`.
-3. Add a vue-router route in `src/router/routes.ts` (**static import** the component — not lazy — so it bundles into SSR), set `meta.status`, remove it from `placeholderPaths` if present, and add a `case` in `headForRoute(...)`:
+3. Add a vue-router route in `src/router/routes.server.ts` (**static import** the component — not lazy — so it bundles into SSR and hydration matches), set `meta.status`, and remove it from `placeholderPaths` if present:
 
    ```ts
    {
@@ -219,16 +269,20 @@ npm run deploy       # 完整 build（含 hydration bundle）+ wrangler deploy
    }
    ```
 
-4. Add the page's UI strings to all three `src/l10n/{zh-TW,en,ja}.json` files.
-5. Use `<RouterLink>` for internal links so navigation stays inside the hydrated app.
+4. Add a `case` for the route name in `headForRoute(...)` in `src/router/routes.ts`.
+5. If the page belongs in the nav or footer, add the link to `src/router/nav-links.ts` — `npm run test` then covers it.
+6. Add the page's UI strings to all three `src/l10n/{zh-TW,en,ja}.json` files.
+7. Use `<RouterLink>` for internal links so navigation stays inside the hydrated app.
 
 **中文**
 
 1. 在 `src/views/` 新增 `.vue` 檔。
 2. 在 `src/ssr/heads.ts` 新增 `headForX(...)` 函式。
-3. 在 `src/router/routes.ts` 新增 route（元件用**靜態 import**、非 lazy，SSR 打包需要），設 `meta.status`，若原本在 `placeholderPaths` 就移除，並在 `headForRoute(...)` 補上對應 `case`。
-4. 把頁面的介面文字補進 `src/l10n/{zh-TW,en,ja}.json` 三個檔。
-5. 站內連結使用 `<RouterLink>`，導覽才會留在 hydrated app 裡。
+3. 在 `src/router/routes.server.ts` 新增 route（元件用**靜態 import**、非 lazy，SSR 打包與 hydration 一致需要），設 `meta.status`，若原本在 `placeholderPaths` 就移除。
+4. 在 `src/router/routes.ts` 的 `headForRoute(...)` 補上對應 `case`。
+5. 若要出現在導覽列／頁尾，把連結加進 `src/router/nav-links.ts`——`npm run test` 就會自動涵蓋。
+6. 把頁面的介面文字補進 `src/l10n/{zh-TW,en,ja}.json` 三個檔。
+7. 站內連結使用 `<RouterLink>`，導覽才會留在 hydrated app 裡。
 
 ## Hydration + vue-router / 全站 hydration
 
