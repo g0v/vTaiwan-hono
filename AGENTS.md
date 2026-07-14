@@ -33,8 +33,8 @@ vp preview                  # 預覽建置結果
 vp check --no-fmt --no-lint # 僅型別檢查
 vp test                     # 自動測試：連結完整性 + SSR 煙霧測試（src/tests/）
 vp check                    # format + lint + typecheck 一次到位
-vp run lemma:gen            # LemmaScript：重新生成 Dafny 驗證基底，四模組全跑（不需安裝 Dafny）
-vp run lemma:check          # LemmaScript：Dafny 形式驗證，只跑 heads.ts（需 Dafny >= 4.x，詳見 LemmaScript 章節）
+vp run lemma:gen            # LemmaScript：重新生成 Dafny 驗證基底（不需安裝 Dafny）
+vp run lemma:check          # LemmaScript：Dafny 形式驗證，三模組 4 VCs（需 Dafny >= 4.x，詳見 LemmaScript 章節）
 vp run deploy               # build + wrangler deploy（除非使用者要求，否則不要執行）
 vp run cf-typegen           # 由 wrangler 產生 Cloudflare 綁定型別
 ```
@@ -151,57 +151,54 @@ vp run build       # server + client 雙 build 皆需成功；路由元件須靜
 
 ## LemmaScript 形式驗證
 
-本專案以 [LemmaScript](https://viteplus.dev/) 對純函式加注形式不變量（`//@ requires` / `//@ ensures` / `//@ invariant`），並可透過 Dafny 機器驗證。
+本專案以 [LemmaScript](https://viteplus.dev/) 對純函式加注形式不變量（`//@ requires` / `//@ ensures` / `//@ invariant`），並透過 Dafny 機器驗證。**只加真的會被驗證的標注**——不可建模的函式一律不加 `//@`（用一般註解記契約），因為 doc-only 標注不會進入生成模型，只會偽裝成形式規格誤導讀者。
 
-### 已加注的模組
+### 已驗證的模組（共 4 VCs，`lemma:check` 全跑）
 
-| 檔案                   | 機器驗證                  | 主要不變量                                                                                                                                                                                      |
-| ---------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/ssr/heads.ts`     | ✅ 2 VCs（`lemma:check`） | `buildOg` → `\result.length === 10`（已驗證）；`headFor*` 和 `renderHeadTags` → 文件標注（`t()` autohavoc 後 title 為任意值無法滿足 `buildOg requires`；MetaEntry union discriminant 無法建模） |
-| `src/i18n/index.ts`    | ❌ 僅文件                 | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale                                                                                            |
-| `src/router/routes.ts` | ❌ 僅文件                 | `statusForRoute` → `\result === 200 \|\| \result === route.meta.status`；`headForRoute` → 恆有效                                                                                                |
-| `src/lib/discourse.ts` | ❌ 僅文件                 | `getJson` → `requires path.length > 0`；in-flight 去重 contract                                                                                                                                 |
+| 檔案                   | VCs | 驗證的不變量                                                         |
+| ---------------------- | --- | -------------------------------------------------------------------- |
+| `src/ssr/heads.ts`     | 2   | `buildOg` → `requires title/url 非空`、`\result.length === 10`       |
+| `src/i18n/index.ts`    | 1   | `isSupportedLocaleCode` ↔ value ∈ `{"zh-TW","en","ja"}`              |
+| `src/router/routes.ts` | 1   | `resolveRouteStatus` → `\result === 200 \|\| \result === metaStatus` |
 
-> **為何只有 `heads.ts` 進 `lemma:check`**：其餘三個模組 lsc 生成的 Dafny 本身無法通過 Dafny 解析／型別檢查——`i18n`（字串聯集 `"zh-TW"` 生成帶連字號的 datatype 建構子，Dafny 語法不合法）、`routes`（生成含 Vue 的 `import(...)` 型別與 `&` 交集型別）、`discourse`（`Promise<unknown>` 未宣告）。這三個模組的標注僅作 `lemma:gen` 文件性產出；除非 lsc 未來版本能建模，否則**不要**把它們加回 `lemma:check`。
+### 純核心抽取模式（讓函式可驗證的關鍵）
+
+lsc 只能建模 TS 的一個小片段。碰到不可建模的型別時，**把邏輯抽成一個只吃窄型別的純核心函式**加 `//@ verify`，原函式變薄封裝（不加註）：
+
+- `isSupportedLocaleCode(value: string): boolean` ← `isSupportedLocale`（union type alias `SupportedLocale` 會生成帶連字號的 Dafny datatype 建構子，語法不合法）
+- `resolveRouteStatus(metaStatus: number | undefined): number` ← `statusForRoute`（`RouteLocationNormalizedLoaded` 會把整個 Vue 型別閉包拉進 Dafny）
+
+已知的建模地雷（實測過）：
+
+- **union type alias / vue-router 型別 / `unknown` / `Promise`**：出現在加注函式簽名即不可建模。
+- **`typeof x === "number"` 窄化**：lsc 原樣輸出 `typeof(...)`（不合法 Dafny）；改寫成 `x === undefined ? ... : ...` 才會生成正確的 `match`。
+- **`t()` 等外部呼叫**：`//@ autohavoc` 後為任意值，依賴其內容的後置條件不可證（`headFor*` 因此不加註）。
+- **regex / `localStorage` / DOM / 多敘述 lambda**：整個函式跳過，不加註（`escapeHtml`、`detectPreferredLocale`、`persistLocale`、`getJson`）。
+- **`\result.includes(...)` 這類字串內容斷言**：即使改寫成 split/join 可建模，也需要手寫 Dafny lemma 才能證，不划算。
 
 ### 執行方式
 
 ```bash
-# 重新從 TS 生成 .dfy.gen，四個模組全跑（不需安裝 Dafny）
+# 重新從 TS 生成 .dfy.gen，三個模組全跑（不需安裝 Dafny）
 vp run lemma:gen
 
-# Dafny 形式驗證，只跑可機器驗證的 heads.ts（需 Dafny >= 4.x，見 https://dafny.org/dafny/Installation；CI 亦會執行）
+# Dafny 形式驗證，三個模組共 4 VCs（需 Dafny >= 4.x，見 https://dafny.org/dafny/Installation；CI 亦會執行）
 vp run lemma:check
 ```
 
 ### 加注規則（agent 需遵守）
 
-- **新增 `headFor*` 函式**時，加上文件標注（**不要**加 `//@ verify`——`t()` 經 autohavoc 後為任意字串，無法滿足 `buildOg` 的 `requires title.length > 0`，機器驗證不可達）：
-
-  ```typescript
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
-  ```
-
-  加完後跑 `vp run lemma:gen` 確認 lsc 能正常解析（標注會被納入 `.dfy.gen` 但不觸發 `dafny verify`）。
-
 - **加注語法**：`//@ ` 開頭（注意 `@` 後有空格）；只能放在函式 / 迴圈 body 第一行。
-  - `//@ verify` — 標記函式納入驗證（brownfield 模式下必填）
+  - `//@ verify` — 標記函式納入驗證（**有加註就必須有這行**——會被驗證才值得加註）
   - `//@ requires <expr>` — 前置條件
   - `//@ ensures \result <expr>` — 後置條件（`\result` 指回傳值）
   - `//@ invariant <expr>` — 迴圈不變量
-  - `//@ autohavoc` — 將不可建模的外部呼叫（如 `t()`）抽象為任意值
-  - `//@ contract <text>` — 自然語言意圖說明（prover 忽略，文件用）
-
+  - `//@ autohavoc` — 將不可建模的外部呼叫抽象為任意值
+- **新增標注後必跑 `vp run lemma:check`**：不只 gen——要看到 `verified, 0 errors` 才算數。不可建模就把 `//@` 全刪，改一般註解。
 - **`.dfy` vs `.dfy.gen`**：
   - `.dfy.gen` — gitignored，每次 `lemma:gen` 覆寫，**不要手改**。
-  - `.dfy` — tracked，可加 proof additions，diff 只能是新增行。
-
-- **regex / Promise / DOM 無法建模**：含 regex literal、`localStorage`、多行 lambda 的函式跳過 `//@ verify`，改用 `//@ ensures` 作純文件標注。
-
-- **`headFor*` 函式無法 `//@ verify`**：`//@ autohavoc` 使 `t()` 回傳任意字串，Dafny 無法証明 `buildOg requires |title| > 0`，故 `headFor*` 一律使用文件標注，不加 `//@ verify`。
+  - `.dfy` — tracked，可加 proof additions，diff 只能是新增行。`src/ssr/heads.dfy` 現有一行手工 addition（`type MetaEntry = (string, string)`），是 `buildOg` 能驗證的前提，**不要刪**。
+  - 被驗證函式的簽名／body 改動後，`.dfy` 需 rebase：刪掉舊 `.dfy` 讓 `lsc check` 重建，再補回仍需要的 proof additions。
 
 ## 多 repo 工作區
 

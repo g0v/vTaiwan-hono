@@ -19,11 +19,17 @@ export const defaultLocale: SupportedLocale = "zh-TW";
 
 const STORAGE_KEY = "locale";
 
-export function isSupportedLocale(value: string | null | undefined): value is SupportedLocale {
+// 純字串判斷核心：可被 LemmaScript/Dafny 機器驗證。刻意不引用 SupportedLocale
+// union type（lsc 會為其生成帶連字號的 Dafny datatype 建構子，語法不合法）。
+// 新增語言時：supportedLocales、此函式、detectPreferredLocale 三處同步。
+export function isSupportedLocaleCode(value: string): boolean {
   //@ verify
-  //@ ensures \result ==> (value === "zh-TW" || value === "en" || value === "ja")
-  //@ ensures (value === "zh-TW" || value === "en" || value === "ja") ==> \result
-  return !!value && supportedLocales.some((l) => l.code === value);
+  //@ ensures \result === (value === "zh-TW" || value === "en" || value === "ja")
+  return value === "zh-TW" || value === "en" || value === "ja";
+}
+
+export function isSupportedLocale(value: string | null | undefined): value is SupportedLocale {
+  return typeof value === "string" && isSupportedLocaleCode(value);
 }
 
 // 每個請求建立獨立的 i18n 實例，避免 SSR 跨請求狀態污染。
@@ -45,9 +51,8 @@ export function createAppI18n(locale: SupportedLocale = defaultLocale) {
 }
 
 // 僅限瀏覽器端：依使用者偏好決定語言（localStorage > 瀏覽器語言 > 預設）。
+// 回傳值恆為合法 locale。（localStorage 不可建模，故不做 LemmaScript 標注）
 export function detectPreferredLocale(): SupportedLocale {
-  //@ verify
-  //@ ensures \result === "zh-TW" || \result === "en" || \result === "ja"
   if (typeof window === "undefined") return defaultLocale;
 
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -62,10 +67,8 @@ export function detectPreferredLocale(): SupportedLocale {
 }
 
 // 僅限瀏覽器端：記住使用者選擇並同步 <html lang>（狀態守恆）。
+// （localStorage / document 不可建模，故不做 LemmaScript 標注）
 export function persistLocale(locale: SupportedLocale) {
-  //@ verify
-  //@ requires locale === "zh-TW" || locale === "en" || locale === "ja"
-  //@ contract persists the locale to localStorage and syncs document.documentElement.lang; no-op when not in browser
   if (typeof window === "undefined") return;
   localStorage.setItem(STORAGE_KEY, locale);
   document.documentElement.lang = locale;

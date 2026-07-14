@@ -35,10 +35,6 @@ function buildOg(title: string, description: string, image: string, url: string)
 }
 
 export function headForHome(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.home.title");
   const description = t("head.home.description");
   return {
@@ -50,10 +46,6 @@ export function headForHome(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForAbout(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.about.title") + " - " + SITE_NAME;
   const description = t("head.about.description");
   return {
@@ -64,10 +56,6 @@ export function headForAbout(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForWord(word: string, origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.word.title").replace("{word}", word) + " - " + SITE_NAME;
   const description = t("head.word.description").replace("{word}", word);
 
@@ -81,10 +69,6 @@ export function headForWord(word: string, origin: string, t: Translate): HeadCon
 }
 
 export function headForHundredChart(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.hundred.title") + " - " + SITE_NAME;
   const description = t("head.hundred.description");
   return {
@@ -95,10 +79,6 @@ export function headForHundredChart(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForPrivacy(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.privacy.title") + " - " + SITE_NAME;
   const description = t("head.privacy.description");
   return {
@@ -109,10 +89,6 @@ export function headForPrivacy(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTerms(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.terms.title") + " - " + SITE_NAME;
   const description = t("head.terms.description");
   return {
@@ -123,10 +99,6 @@ export function headForTerms(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTopics(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.topics.title") + " - " + SITE_NAME;
   const description = t("head.topics.description");
   return {
@@ -137,10 +109,6 @@ export function headForTopics(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTopicDetail(origin: string, routeName: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title =
     (routeName
       ? t("head.topicDetail.withNameTitle").replace("{name}", routeName)
@@ -157,10 +125,6 @@ export function headForTopicDetail(origin: string, routeName: string, t: Transla
 }
 
 export function headForPolis(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.polis.title") + " - " + SITE_NAME;
   const description = t("head.polis.description");
   return {
@@ -171,10 +135,6 @@ export function headForPolis(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForProfile(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.profile.title") + " - " + SITE_NAME;
   const description = t("head.profile.description");
   return {
@@ -185,10 +145,6 @@ export function headForProfile(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForBlogs(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.blogs.title") + " - " + SITE_NAME;
   const description = t("head.blogs.description");
   return {
@@ -199,10 +155,6 @@ export function headForBlogs(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForMastodon(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.mastodon.title") + " - " + SITE_NAME;
   const description = t("head.mastodon.description");
   return {
@@ -213,10 +165,6 @@ export function headForMastodon(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForContributors(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.contributors.title") + " - " + SITE_NAME;
   const description = t("head.contributors.description");
   return {
@@ -227,10 +175,6 @@ export function headForContributors(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForFaq(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.faq.title") + " - " + SITE_NAME;
   const description = t("head.faq.description");
   return {
@@ -241,10 +185,6 @@ export function headForFaq(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForNewsletters(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.newsletters.title") + " - " + SITE_NAME;
   const description = t("head.newsletters.description");
   return {
@@ -255,10 +195,6 @@ export function headForNewsletters(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForNewsletterDetail(origin: string, slug: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.newsletterDetail.title") + " - " + SITE_NAME;
   const description = t("head.newsletterDetail.description");
   return {
@@ -269,10 +205,6 @@ export function headForNewsletterDetail(origin: string, slug: string, t: Transla
 }
 
 export function headForNotFound(origin: string, t: Translate): HeadConfig {
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   const title = t("head.notFound.title") + " - " + SITE_NAME;
   const description = t("head.notFound.description");
   return {
@@ -282,10 +214,9 @@ export function headForNotFound(origin: string, t: Translate): HeadConfig {
   };
 }
 
-// escapeHtml: regex operations are outside lsc's supported fragment — annotations are doc-only.
+// 契約：輸出不含 < > " '（皆轉為 entity）。
+// （regex 不可建模；改寫成 split/join 後「不含 <」的 ensures 也需手寫 Dafny lemma 才能證，故不做 LemmaScript 標注）
 function escapeHtml(s: string): string {
-  //@ ensures \result.length >= s.length
-  //@ ensures !\result.includes("<") && !\result.includes(">") && !\result.includes("\"") && !\result.includes("'")
   return s
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -296,8 +227,6 @@ function escapeHtml(s: string): string {
 
 // 把 HeadConfig 轉成可以塞進 <head> 的 HTML 字串
 export function renderHeadTags(head: HeadConfig): string {
-  //@ requires head.title.length > 0
-  //@ ensures \result.includes("<meta charset=") && \result.includes("<title>") && \result.includes("<meta name=\"viewport\"")
   const parts: string[] = [
     '<meta charset="UTF-8" />',
     '<meta name="viewport" content="width=device-width, initial-scale=1.0" />',

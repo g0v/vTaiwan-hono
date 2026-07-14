@@ -7,10 +7,9 @@ export type { DiscoursePost, DiscourseTopic, FormattedTopicData } from "./discou
 // 依 path 去重的請求快取：多個議題元件在同頁各自 getTopic(sameId) 時只打一次 /api/discourse
 const inflight = new Map<string, Promise<unknown>>();
 
+// 契約：依 path 去重進行中的請求；HTTP 錯誤時自快取移除該 path 並 reject；成功時解析 JSON 回傳 T。
+// （回傳 Promise 且含多敘述 lambda，LemmaScript 不可建模，故不做標注）
 function getJson<T>(path: string): Promise<T> {
-  //@ verify
-  //@ requires path.length > 0
-  //@ contract deduplicates in-flight requests by path; on HTTP error removes path from cache and rejects; on success resolves with parsed JSON of type T
   const cached = inflight.get(path);
   if (cached) return cached as Promise<T>;
 
@@ -38,16 +37,12 @@ const discourseAPI: DiscourseAPI = {
   },
 
   getAllCategoryTopics(categoryUri: string) {
-    //@ verify
-    //@ requires categoryUri.length > 0
     return getJson<DiscourseTopic[]>(
       `/api/discourse/topics?category=${encodeURIComponent(categoryUri)}`,
     );
   },
 
   getTopic(topicId: string | number) {
-    //@ verify
-    //@ requires String(topicId).length > 0
     return getJson<DiscourseTopic>(`/api/discourse/topic/${encodeURIComponent(String(topicId))}`);
   },
 

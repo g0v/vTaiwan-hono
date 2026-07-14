@@ -20,23 +20,27 @@ import {
   type HeadConfig,
 } from "../ssr/heads";
 
-export function statusForRoute(route: RouteLocationNormalizedLoaded): number {
+// 純核心：可被 LemmaScript/Dafny 機器驗證。刻意不吃 RouteLocationNormalizedLoaded
+// （lsc 會把整個 Vue 型別閉包拉進 Dafny，無法解析）。
+export function resolveRouteStatus(metaStatus: number | undefined): number {
   //@ verify
-  //@ contract returns route.meta.status when it is a number, otherwise defaults to 200; result is always a valid HTTP status code range
-  //@ ensures \result === 200 || \result === route.meta.status
-  return typeof route.meta.status === "number" ? route.meta.status : 200;
+  //@ ensures \result === 200 || \result === metaStatus
+  return metaStatus === undefined ? 200 : metaStatus;
 }
 
+// 回傳 route.meta.status（非數字時預設 200）
+export function statusForRoute(route: RouteLocationNormalizedLoaded): number {
+  const status = route.meta.status;
+  return resolveRouteStatus(typeof status === "number" ? status : undefined);
+}
+
+// 恆回傳有效 HeadConfig（title 非空、meta 十項）；未知 route 落到 headForNotFound。
+// （吃 RouteLocationNormalizedLoaded 且依賴 t()，不可建模，故不做 LemmaScript 標注）
 export function headForRoute(
   route: RouteLocationNormalizedLoaded,
   origin: string,
   t: (key: string) => string,
 ): HeadConfig {
-  //@ verify
-  //@ autohavoc
-  //@ requires origin.length > 0
-  //@ ensures \result.title.length > 0
-  //@ ensures \result.meta.length === 10
   switch (route.name) {
     case "home":
       return headForHome(origin, t);
