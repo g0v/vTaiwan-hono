@@ -31,7 +31,7 @@ vp run watch:css            # 監看模式重建 CSS
 vp run build                # build:css + server build + client build
 vp preview                  # 預覽建置結果
 vp check --no-fmt --no-lint # 僅型別檢查
-vp test                     # 連結完整性測試（src/tests/）
+vp test                     # 自動測試：連結完整性 + SSR 煙霧測試（src/tests/）
 vp check                    # format + lint + typecheck 一次到位
 vp run lemma:gen            # LemmaScript：重新生成 Dafny 驗證基底（不需安裝 Dafny）
 vp run lemma:check          # LemmaScript：執行 Dafny 形式驗證（需安裝 Dafny >= 4.x）
@@ -138,12 +138,14 @@ vp run build       # server + client 雙 build 皆需成功；路由元件須靜
 
 1. `vp check --no-fmt --no-lint` — 僅做型別檢查，應為零錯誤。
 2. `vp run build` — 確認 CSS + server + client 都能成功建置。
-3. `vp run dev` 目視 — 確認 SSR 首屏正確，且 hydration **無 mismatch 警告**（開 devtools console 檢查）。
-4. `vp run lemma:gen` — 重新生成 Dafny 驗證基底（`.dfy.gen`），確認 lsc 能正常解析所有加注函式。
-5. `vp check` — format + lint + typecheck 全部無錯。
-6. `vp test` — 連結完整性測試全數通過（NavBar / Footer 每條站內連結都解析到已定義 route）。
+3. `vp run lemma:gen` — 重新生成 Dafny 驗證基底（`.dfy.gen`），確認 lsc 能正常解析所有加注函式。
+4. `vp check` — format + lint + typecheck 全部無錯。
+5. `vp test` — 自動測試全數通過：
+   - 連結完整性（NavBar / Footer 每條站內連結都解析到已定義 route）
+   - SSR 煙霧測試（`src/tests/ssr.test.ts`：路由表每條 route 實跑 `renderPage()`，驗 status / title / 首屏非空殼；誤觸瀏覽器 API 的 SSR 安全違規會在此爆掉）
+6. `vp run dev` 目視（**僅互動 session；無人看管的長程 run 跳過此步，以第 5 步替代**）— 確認 hydration **無 mismatch 警告**（開 devtools console 檢查）。
 
-> **尚未涵蓋**（需先跟使用者確認再動工）：SSR 輸出 / hydration 一致性的煙霧測試。目前 `src/tests/` 只有連結完整性測試，其他測試情境尚未導入。
+> **尚未涵蓋**（需先跟使用者確認再動工）：hydration 一致性的自動化驗證（需真瀏覽器，如 Playwright，屬「實作自動測試」milestone 範圍）。SSR 輸出煙霧測試已由 `vp test` 涵蓋。
 
 ## LemmaScript 形式驗證
 
@@ -151,12 +153,12 @@ vp run build       # server + client 雙 build 皆需成功；路由元件須靜
 
 ### 已加注的模組
 
-| 檔案                   | 主要不變量                                                                                                                                                          |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------------------- |
+| 檔案                   | 主要不變量                                                                                                                                                                                      |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --- | ------------------------------------------------------- |
 | `src/ssr/heads.ts`     | `buildOg` → `\result.length === 10`（已驗證）；`headFor*` 和 `renderHeadTags` → 文件標注（`t()` autohavoc 後 title 為任意值無法滿足 `buildOg requires`；MetaEntry union discriminant 無法建模） |
-| `src/i18n/index.ts`    | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale                                                                |
-| `src/router/routes.ts` | `statusForRoute` → `\result === 200                                                                                                                                 |     | \result === route.meta.status`；`headForRoute` → 恆有效 |
-| `src/lib/discourse.ts` | `getJson` → `requires path.length > 0`；in-flight 去重 contract                                                                                                     |
+| `src/i18n/index.ts`    | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale                                                                                            |
+| `src/router/routes.ts` | `statusForRoute` → `\result === 200                                                                                                                                                             |     | \result === route.meta.status`；`headForRoute` → 恆有效 |
+| `src/lib/discourse.ts` | `getJson` → `requires path.length > 0`；in-flight 去重 contract                                                                                                                                 |
 
 ### 執行方式
 

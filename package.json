@@ -14,8 +14,8 @@
     "typecheck": "vp check --no-fmt --no-lint",
     "test": "vp test",
     "check": "vp check",
-    "lemma:gen": "vp exec lsc gen --backend=dafny src/ssr/heads.ts src/i18n/index.ts src/router/routes.ts src/lib/discourse.ts",
-    "lemma:check": "vp exec lsc check --backend=dafny src/ssr/heads.ts src/i18n/index.ts src/router/routes.ts src/lib/discourse.ts",
+    "lemma:gen": "vp exec lsc gen --backend=dafny src/ssr/heads.ts && vp exec lsc gen --backend=dafny src/i18n/index.ts && vp exec lsc gen --backend=dafny src/router/routes.ts && vp exec lsc gen --backend=dafny src/lib/discourse.ts",
+    "lemma:check": "vp exec lsc check --backend=dafny src/ssr/heads.ts && vp exec lsc check --backend=dafny src/i18n/index.ts && vp exec lsc check --backend=dafny src/router/routes.ts && vp exec lsc check --backend=dafny src/lib/discourse.ts",
     "cf-typegen": "vp exec wrangler types"
   },
   "dependencies": {
@@ -33,6 +33,7 @@
     "@types/node": "^22.10.0",
     "@vitejs/plugin-vue": "^6.0.7",
     "@vue/compiler-sfc": "^3.5.32",
+    "lemmascript": "^0.5.13",
     "tailwindcss": "^4.3.0",
     "typescript": "^5.6.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.2.4",

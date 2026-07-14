@@ -19,14 +19,10 @@ export function registerProxyApi(app: App) {
     }
 
     const isAllowed = allowedHosts.some(
-      (host) =>
-        targetUrl.hostname === host || targetUrl.hostname.endsWith(`.${host}`),
+      (host) => targetUrl.hostname === host || targetUrl.hostname.endsWith(`.${host}`),
     );
     if (!isAllowed) {
-      return c.json(
-        { error: "Target host not allowed", hostname: targetUrl.hostname },
-        403,
-      );
+      return c.json({ error: "Target host not allowed", hostname: targetUrl.hostname }, 403);
     }
 
     try {
