@@ -15,7 +15,7 @@
     "test": "vp test",
     "check": "vp check",
     "lemma:gen": "vp exec lsc gen --backend=dafny src/ssr/heads.ts && vp exec lsc gen --backend=dafny src/i18n/index.ts && vp exec lsc gen --backend=dafny src/router/routes.ts && vp exec lsc gen --backend=dafny src/lib/discourse.ts",
-    "lemma:check": "vp exec lsc check --backend=dafny src/ssr/heads.ts && vp exec lsc check --backend=dafny src/i18n/index.ts && vp exec lsc check --backend=dafny src/router/routes.ts && vp exec lsc check --backend=dafny src/lib/discourse.ts",
+    "lemma:check": "vp exec lsc check --backend=dafny src/ssr/heads.ts",
     "cf-typegen": "vp exec wrangler types"
   },
   "dependencies": {

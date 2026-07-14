@@ -33,8 +33,8 @@ vp preview                  # 預覽建置結果
 vp check --no-fmt --no-lint # 僅型別檢查
 vp test                     # 自動測試：連結完整性 + SSR 煙霧測試（src/tests/）
 vp check                    # format + lint + typecheck 一次到位
-vp run lemma:gen            # LemmaScript：重新生成 Dafny 驗證基底（不需安裝 Dafny）
-vp run lemma:check          # LemmaScript：執行 Dafny 形式驗證（需安裝 Dafny >= 4.x）
+vp run lemma:gen            # LemmaScript：重新生成 Dafny 驗證基底，四模組全跑（不需安裝 Dafny）
+vp run lemma:check          # LemmaScript：Dafny 形式驗證，只跑 heads.ts（需 Dafny >= 4.x，詳見 LemmaScript 章節）
 vp run deploy               # build + wrangler deploy（除非使用者要求，否則不要執行）
 vp run cf-typegen           # 由 wrangler 產生 Cloudflare 綁定型別
 ```
@@ -146,6 +146,8 @@ vp run build       # server + client 雙 build 皆需成功；路由元件須靜
 6. `vp run dev` 目視（**僅互動 session；無人看管的長程 run 跳過此步，以第 5 步替代**）— 確認 hydration **無 mismatch 警告**（開 devtools console 檢查）。
 
 > **尚未涵蓋**（需先跟使用者確認再動工）：hydration 一致性的自動化驗證（需真瀏覽器，如 Playwright，屬「實作自動測試」milestone 範圍）。SSR 輸出煙霧測試已由 `vp test` 涵蓋。
+>
+> **CI**：`.github/workflows/ci.yml` 會在 push / PR 時跑 `vp check` → `vp test` → `vp run build` → `vp run lemma:gen`，另一個 job 安裝 Dafny 跑 `vp run lemma:check`。本機驗收過了 CI 也應該過；CI 紅燈時先看是哪個 gate。
 
 ## LemmaScript 形式驗證
 
@@ -153,20 +155,22 @@ vp run build       # server + client 雙 build 皆需成功；路由元件須靜
 
 ### 已加注的模組
 
-| 檔案                   | 主要不變量                                                                                                                                                                                      |
-| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/ssr/heads.ts`     | `buildOg` → `\result.length === 10`（已驗證）；`headFor*` 和 `renderHeadTags` → 文件標注（`t()` autohavoc 後 title 為任意值無法滿足 `buildOg requires`；MetaEntry union discriminant 無法建模） |
-| `src/i18n/index.ts`    | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale                                                                                            |
-| `src/router/routes.ts` | `statusForRoute` → `\result === 200 \|\| \result === route.meta.status`；`headForRoute` → 恆有效                                                                                                |
-| `src/lib/discourse.ts` | `getJson` → `requires path.length > 0`；in-flight 去重 contract                                                                                                                                 |
+| 檔案                   | 機器驗證                  | 主要不變量                                                                                                                                                                                      |
+| ---------------------- | ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/ssr/heads.ts`     | ✅ 2 VCs（`lemma:check`） | `buildOg` → `\result.length === 10`（已驗證）；`headFor*` 和 `renderHeadTags` → 文件標注（`t()` autohavoc 後 title 為任意值無法滿足 `buildOg requires`；MetaEntry union discriminant 無法建模） |
+| `src/i18n/index.ts`    | ❌ 僅文件                 | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale                                                                                            |
+| `src/router/routes.ts` | ❌ 僅文件                 | `statusForRoute` → `\result === 200 \|\| \result === route.meta.status`；`headForRoute` → 恆有效                                                                                                |
+| `src/lib/discourse.ts` | ❌ 僅文件                 | `getJson` → `requires path.length > 0`；in-flight 去重 contract                                                                                                                                 |
+
+> **為何只有 `heads.ts` 進 `lemma:check`**：其餘三個模組 lsc 生成的 Dafny 本身無法通過 Dafny 解析／型別檢查——`i18n`（字串聯集 `"zh-TW"` 生成帶連字號的 datatype 建構子，Dafny 語法不合法）、`routes`（生成含 Vue 的 `import(...)` 型別與 `&` 交集型別）、`discourse`（`Promise<unknown>` 未宣告）。這三個模組的標注僅作 `lemma:gen` 文件性產出；除非 lsc 未來版本能建模，否則**不要**把它們加回 `lemma:check`。
 
 ### 執行方式
 
 ```bash
-# 重新從 TS 生成 .dfy.gen（不需安裝 Dafny）
+# 重新從 TS 生成 .dfy.gen，四個模組全跑（不需安裝 Dafny）
 vp run lemma:gen
 
-# 形式驗證（需安裝 Dafny >= 4.x，見 https://dafny.org/dafny/Installation）
+# Dafny 形式驗證，只跑可機器驗證的 heads.ts（需 Dafny >= 4.x，見 https://dafny.org/dafny/Installation；CI 亦會執行）
 vp run lemma:check
 ```
 

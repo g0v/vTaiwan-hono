@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(vp check)",
+      "Bash(vp check *)",
+      "Bash(vp test)",
+      "Bash(vp test *)",
+      "Bash(vp run build)",
+      "Bash(vp run build:css)",
+      "Bash(vp run typecheck)",
+      "Bash(vp run lemma:gen)",
+      "Bash(vp run lemma:check)",
+      "Bash(npx vp check)",
+      "Bash(npx vp check *)",
+      "Bash(npx vp test)",
+      "Bash(npx vp test *)",
+      "Bash(npx vp run build)",
+      "Bash(npx vp run build:css)",
+      "Bash(npx vp run typecheck)",
+      "Bash(npx vp run lemma:gen)",
+      "Bash(npx vp run lemma:check)",
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git diff)",
+      "Bash(git diff *)",
+      "Bash(git log)",
+      "Bash(git log *)"
+    ],
+    "ask": [
+      "Bash(vp run deploy)",
+      "Bash(npx vp run deploy)",
+      "Bash(vp exec wrangler deploy *)",
+      "Bash(npx vp exec wrangler deploy *)",
+      "Bash(git push)",
+      "Bash(git push *)"
+    ]
+  }
+}

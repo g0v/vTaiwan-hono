@@ -477,24 +477,31 @@
     "transcriptions": "書き起こし管理"
   },
   "meetupDetail": {
-    "objectives": "ミートアップ目標",
-    "howToParticipate": "参加方法",
-    "discuss": "議論に参加",
-    "discussDesc": "ミートアップの議論エリアであなたの考えや提案を共有し、他の参加者と意見交換しましょう。",
-    "contribute": "コンテンツ貢献",
-    "contributeDesc": "専門知識・研究資料・実務経験を提供し、ミートアップの発展を支援します。",
-    "share": "情報共有",
-    "shareDesc": "ミートアップ情報をより多くの関心者に共有し、影響力を拡大しましょう。",
-    "join": "チームに参加",
-    "joinDesc": "ミートアップのコアメンバーとなり、意思決定や実行作業に参加します。",
+    "upcoming": "開催予定",
+    "past": "終了",
+    "details": "ミートアップ詳細",
+    "date": "日付",
+    "time": "時間",
+    "location": "場所",
+    "relatedProject": "関連プロジェクト",
+    "tags": "タグ",
     "relatedLinks": "関連リンク",
-    "githubRepo": "GitHubリポジトリ",
-    "documentation": "ミートアップ文書",
-    "discussion": "議論フォーラム",
+    "registration": "申し込みリンク",
+    "recording": "録画リンク",
+    "summary": "会議記録",
+    "hackmd": "HackMD 共同メモ",
+    "kktix": "KKTIX 申し込み",
+    "googleForm": "Google フォーム",
     "backToMeetups": "ミートアップ一覧に戻る",
-    "joinMeetup": "ミートアップに参加",
+    "register": "今すぐ申し込む",
     "notFound": "ミートアップが見つかりません",
-    "notFoundDesc": "ご覧になりたいミートアップは存在しないか、削除されました。"
+    "notFoundDesc": "ご覧になりたいミートアップは存在しないか、削除されました。",
+    "share": {
+      "title": "この議題をシェア",
+      "facebook": "Facebook でシェア",
+      "line": "LINE でシェア",
+      "twitter": "X (Twitter) でシェア"
+    }
   },
   "polis": {
     "title": "提案ディスカッション",
@@ -645,9 +652,43 @@
   },
   "contact": {
     "title": "お問い合わせ",
-    "description": "ご質問やご提案がある場合は、お気軽にご連絡ください：",
-    "contactUs": "お問い合わせ",
-    "facebook": "Facebook"
+    "subtitle": "vTaiwan コミュニティに参加して、デジタル民主主義を一緒に推進しましょう",
+    "workingGroup": {
+      "title": "vTaiwan ワーキンググループ",
+      "description": "vTaiwan ワーキンググループはデジタル民主主義を推進する重要なプラットフォームです。ここで政策を議論し、アイデアを共有し、さまざまなプロジェクトで協働しています。",
+      "button": "ワーキンググループ Book を見る"
+    },
+    "slack": {
+      "title": "g0v Slack チャンネル",
+      "description": "g0v の Slack ワークスペースに参加し、#vtaiwan チャンネルでコミュニティメンバーとリアルタイムに交流し、議論や協働に参加しましょう。",
+      "channel": "#vtaiwan",
+      "channelDesc": "政策議論、プロジェクト協働、コミュニティ交流のためのメインチャンネル",
+      "button": "g0v Slack に参加"
+    },
+    "otherMethods": {
+      "title": "その他の連絡方法",
+      "github": {
+        "title": "GitHub",
+        "description": "オープンソースプロジェクトを見る",
+        "link": "GitHub へ →"
+      },
+      "email": {
+        "title": "メール",
+        "description": "メールでお問い合わせください",
+        "link": "メールを送る →"
+      },
+      "meetups": {
+        "title": "オフラインミートアップ",
+        "description": "定期ミートアップに参加する",
+        "link": "ミートアップを見る →"
+      }
+    },
+    "cta": {
+      "title": "参加の準備はできましたか？",
+      "description": "開発者、デザイナー、政策専門家、デジタル民主主義に関心のある方——どなたでも vTaiwan コミュニティへの参加を歓迎します！",
+      "workingGroup": "ワーキンググループを見る",
+      "slack": "Slack に参加"
+    }
   },
   "transcriptions": {
     "title": "書き起こし管理",
@@ -660,47 +701,49 @@
       "uploadButton": "書き起こしをアップロード",
       "loginRequired": "書き起こしファイルをアップロードするには、まずログインしてください"
     },
-    "filters": {
-      "status": "状態",
-      "category": "カテゴリ",
-      "search": "検索",
-      "searchPlaceholder": "書き起こしを検索..."
+    "list": {
+      "title": "文字起こし一覧",
+      "meetingId": "会議 ID",
+      "fileName": "ファイル名",
+      "viewOutline": "アウトラインを見る",
+      "viewDetail": "詳細を見る",
+      "download": "全文をダウンロード",
+      "empty": "文字起こしデータがありません",
+      "copyLink": "文字起こしリンクをコピー",
+      "copyLinkSuccess": "文字起こしリンクをクリップボードにコピーしました",
+      "copyLinkError": "リンクのコピーに失敗しました。しばらくしてから再試行してください"
     },
-    "status": {
-      "all": "すべて",
-      "active": "進行中",
-      "completed": "完了"
+    "outline": {
+      "title": "会議アウトライン",
+      "close": "閉じる",
+      "copy": "アウトラインをコピー",
+      "edit": "アウトラインを編集",
+      "saveAndEndEdit": "保存して編集を終了",
+      "cancel": "編集をキャンセル",
+      "copySuccess": "アウトラインをクリップボードにコピーしました",
+      "copyError": "コピーに失敗しました。しばらくしてから再試行してください",
+      "editRequireAdmin": "アウトラインの編集には管理者権限が必要です"
     },
-    "categories": {
-      "all": "すべてのカテゴリ"
-    },
-    "participants": "参加者",
-    "created": "作成日",
-    "cta": {
-      "title": "新しい書き起こしを記録したいですか？",
-      "description": "議論に値する公共政策トピックがあれば、書き起こし記録を歓迎します。",
-      "button": "書き起こしを記録"
+    "messages": {
+      "selectFileFirst": "ファイルを選択してください",
+      "invalidFileName": "ファイル名の形式が正しくありません。transcript-YYYY-MM-DD.txt 形式を使用してください",
+      "existsRequireAdmin": "この会議の文字起こしは既に存在します。更新には管理者権限が必要です",
+      "confirmUpdate": "会議 {meetingId} の文字起こしは既に存在します。更新してもよろしいですか？",
+      "uploadSuccess": "文字起こしのアップロードに成功しました！",
+      "uploadError": "アップロードに失敗しました。しばらくしてから再試行してください",
+      "loadError": "文字起こし一覧の読み込みに失敗しました。しばらくしてから再試行してください"
     }
   },
   "transcriptionDetail": {
-    "objectives": "書き起こし目標",
-    "howToParticipate": "参加方法",
-    "discuss": "議論に参加",
-    "discussDesc": "書き起こしの議論エリアであなたの考えや提案を共有し、他の参加者と意見交換しましょう。",
-    "contribute": "コンテンツ貢献",
-    "contributeDesc": "専門知識・研究資料・実務経験を提供し、書き起こしの発展を支援します。",
-    "share": "情報共有",
-    "shareDesc": "書き起こし情報をより多くの関心者に共有し、影響力を拡大しましょう。",
-    "join": "チームに参加",
-    "joinDesc": "書き起こしのコアメンバーとなり、意思決定や実行作業に参加します。",
-    "relatedLinks": "関連リンク",
-    "githubRepo": "GitHubリポジトリ",
-    "documentation": "書き起こし文書",
-    "discussion": "議論フォーラム",
-    "backToTranscriptions": "書き起こし一覧に戻る",
-    "joinTranscription": "書き起こしに参加",
-    "notFound": "書き起こしが見つかりません",
-    "notFoundDesc": "ご覧になりたい書き起こしは存在しないか、削除されました。"
+    "title": "文字起こし詳細",
+    "description": "会議の完全な文字起こしを見る",
+    "backToList": "一覧に戻る",
+    "speaker": "発言者",
+    "noContent": "文字起こしの内容がありません",
+    "loadError": "文字起こしの読み込みに失敗しました。しばらくしてから再試行してください",
+    "photoAlt": "ユーザーアバター",
+    "loading": "読み込み中...",
+    "error": "読み込みに失敗しました"
   },
   "faq": {
     "title": "よくある質問 (FAQ)",

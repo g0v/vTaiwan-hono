@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: check / test / build / lemma:gen
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # actions/checkout v4.3.0
+      - name: Checkout
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+
+      # voidzero-dev/setup-vp v1.1.0
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@e1609b468742ba9232ce5e12b3a77bdf14495277
+        with:
+          cache: true
+
+      - name: Install dependencies (frozen lockfile)
+        run: vp install --frozen-lockfile
+
+      - name: Check formatting, lint, and types
+        run: vp check
+
+      - name: Test（連結完整性 + SSR 煙霧 + l10n 三檔同步）
+        run: vp test
+
+      - name: Build (CSS + server + client)
+        run: vp run build
+
+      - name: LemmaScript generate (Dafny base)
+        run: vp run lemma:gen
+
+  dafny:
+    name: lemma:check (Dafny formal verification)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      # actions/checkout v4.3.0
+      - name: Checkout
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955
+
+      # dafny-lang/setup-dafny-action v1.9.1
+      - name: Setup Dafny
+        uses: dafny-lang/setup-dafny-action@be023fc606339d46ed6b077dcb8614d0279ded31
+        with:
+          dafny-version: "4.9.0"
+
+      # voidzero-dev/setup-vp v1.1.0
+      - name: Setup Vite+
+        uses: voidzero-dev/setup-vp@e1609b468742ba9232ce5e12b3a77bdf14495277
+        with:
+          cache: true
+
+      - name: Install dependencies (frozen lockfile)
+        run: vp install --frozen-lockfile
+
+      - name: Verify formal invariants
+        run: vp run lemma:check
