@@ -260,5 +260,4 @@ npm run lemma:check
 - ✅ **動工前確認需求**——不憑空臆測，模糊就先問清楚。
 - 🚫 **不手改 `public/styles.css`**——那是 `build:css` 的產物；改 `src/styles/app.css`。
 - 🚫 **不手改 `dist/`**——`npm run build` 的自動產物。
-- 🚫 **不引入 Firebase SDK / Worker 端動態 SSR**——除非先確認要改動態策略。
 - 🚫 **不提交機密**——金鑰等不進 git。
