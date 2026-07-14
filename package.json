@@ -5,19 +5,18 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "predev": "npm run build:css",
-    "dev": "vp dev",
-    "build:css": "tailwindcss -i ./src/styles/app.css -o ./public/styles.css --minify",
-    "watch:css": "tailwindcss -i ./src/styles/app.css -o ./public/styles.css --watch",
-    "build": "VITE_BUILD_ID=$(date +%s) sh -c 'npm run build:css && npx vite build && npx vite build -c vite.client.config.mts'",
+    "dev": "vp run build:css && vp dev",
+    "build:css": "vp exec tailwindcss -i ./src/styles/app.css -o ./public/styles.css --minify",
+    "watch:css": "vp exec tailwindcss -i ./src/styles/app.css -o ./public/styles.css --watch",
+    "build": "VITE_BUILD_ID=$(date +%s) sh -c 'vp run build:css && vp build && vp build -c vite.client.config.mts'",
     "preview": "vp preview",
-    "deploy": "npm run build && wrangler deploy",
-    "typecheck": "tsc --noEmit",
+    "deploy": "vp run build && vp exec wrangler deploy",
+    "typecheck": "vp check --no-fmt --no-lint",
     "test": "vp test",
     "check": "vp check",
-    "lemma:gen": "lsc gen --backend=dafny src/ssr/heads.ts src/i18n/index.ts src/router/routes.ts src/lib/discourse.ts",
-    "lemma:check": "lsc check --backend=dafny src/ssr/heads.ts src/i18n/index.ts src/router/routes.ts src/lib/discourse.ts",
-    "cf-typegen": "wrangler types"
+    "lemma:gen": "vp exec lsc gen --backend=dafny src/ssr/heads.ts src/i18n/index.ts src/router/routes.ts src/lib/discourse.ts",
+    "lemma:check": "vp exec lsc check --backend=dafny src/ssr/heads.ts src/i18n/index.ts src/router/routes.ts src/lib/discourse.ts",
+    "cf-typegen": "vp exec wrangler types"
   },
   "dependencies": {
     "@vue/server-renderer": "^3.5.32",
