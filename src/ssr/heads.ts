@@ -35,7 +35,6 @@ function buildOg(title: string, description: string, image: string, url: string)
 }
 
 export function headForHome(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -51,7 +50,6 @@ export function headForHome(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForAbout(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -66,7 +64,6 @@ export function headForAbout(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForWord(word: string, origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -84,7 +81,6 @@ export function headForWord(word: string, origin: string, t: Translate): HeadCon
 }
 
 export function headForHundredChart(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -99,7 +95,6 @@ export function headForHundredChart(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForPrivacy(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -114,7 +109,6 @@ export function headForPrivacy(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTerms(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -129,7 +123,6 @@ export function headForTerms(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTopics(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -144,7 +137,6 @@ export function headForTopics(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForTopicDetail(origin: string, routeName: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -165,7 +157,6 @@ export function headForTopicDetail(origin: string, routeName: string, t: Transla
 }
 
 export function headForPolis(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -180,7 +171,6 @@ export function headForPolis(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForProfile(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -195,7 +185,6 @@ export function headForProfile(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForBlogs(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -210,7 +199,6 @@ export function headForBlogs(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForMastodon(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -225,7 +213,6 @@ export function headForMastodon(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForContributors(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -240,7 +227,6 @@ export function headForContributors(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForFaq(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -255,7 +241,6 @@ export function headForFaq(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForNewsletters(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -270,7 +255,6 @@ export function headForNewsletters(origin: string, t: Translate): HeadConfig {
 }
 
 export function headForNewsletterDetail(origin: string, slug: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -285,7 +269,6 @@ export function headForNewsletterDetail(origin: string, slug: string, t: Transla
 }
 
 export function headForNotFound(origin: string, t: Translate): HeadConfig {
-  //@ verify
   //@ autohavoc
   //@ requires origin.length > 0
   //@ ensures \result.title.length > 0
@@ -313,7 +296,6 @@ function escapeHtml(s: string): string {
 
 // 把 HeadConfig 轉成可以塞進 <head> 的 HTML 字串
 export function renderHeadTags(head: HeadConfig): string {
-  //@ verify
   //@ requires head.title.length > 0
   //@ ensures \result.includes("<meta charset=") && \result.includes("<title>") && \result.includes("<meta name=\"viewport\"")
   const parts: string[] = [
