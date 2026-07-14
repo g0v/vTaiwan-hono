@@ -2,7 +2,7 @@ import { corsFor } from "./cors";
 import type { App } from "./types";
 
 export function registerMastodonApi(app: App) {
-  app.use("/api/mastodon", corsFor(['GET']));
+  app.use("/api/mastodon", corsFor(["GET"]));
   app.get("/api/mastodon", async (c) => {
     const token = c.env.MASTODON_TOKEN;
     if (!token) return c.json({ error: "MASTODON_TOKEN not configured" }, 500);

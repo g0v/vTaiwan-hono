@@ -3,7 +3,7 @@ import { getTopic } from "../lib/discourse-server";
 import type { App } from "./types";
 
 export function registerDiscourseTopicIdApi(app: App) {
-  app.use("/api/discourse/topic/:id", corsFor(['GET']));
+  app.use("/api/discourse/topic/:id", corsFor(["GET"]));
   app.get("/api/discourse/topic/:id", async (c) => {
     try {
       const topic = await getTopic(c.req.param("id"));
