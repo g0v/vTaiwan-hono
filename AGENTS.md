@@ -10,6 +10,21 @@
 - **功能／內容來源**：`../vue.vTaiwan-neo`（現行官網，`2026-new-UI` 分支）。
 - **回饋 neo（暫緩）**：本專案之後**可能**把成果回貢獻到 neo 的 `2026-new-UI` 分支，但**現階段為單向取材**——先不定義回饋流程，也不要為了「方便回貢獻」而扭曲 hono 的寫法。日後要回饋時再另議。
 
+## 不可妥協的不變量（Non-negotiable invariants）
+
+違反任何一條就是破壞專案的根本契約。動手前先讀，改完後逐條自查。
+
+1. **SSR 路徑絕不碰瀏覽器 API。** 任何在 SSR 期間執行的程式碼（元件 setup、模組頂層、`app.ts`／`i18n`）不得使用 `window`／`document`／`localStorage`／`navigator`——需要時用 `typeof window === 'undefined'` 守衛或放到 `onMounted`。每請求由 `createVueApp` 新建獨立實例（app／router／i18n），嚴禁跨請求共享可變狀態。
+2. **SSR 只出靜態殼，動態資料 hydration 後才抓。** 不在 Worker 端接 Firebase／外部 API 做動態 SSR；Firebase 僅限 client 端使用（登入）。要改這個策略，先與使用者確認。
+3. **路由完整性與靜態 import。** 原站所有路由（含 alias）在本專案都必須有對應，未完成頁掛 `placeholderPaths`（404）——**舊連結永不失效**。路由元件一律靜態 import（lazy import 會造成 hydration mismatch，SSR 打包也需要靜態表）。
+4. **i18n 三檔同步，介面文字一律走翻譯。** `zh-TW`／`en`／`ja` 的 key 集合必須完全一致（`vp test` 機器把關）；模板與程式不寫死介面字串。
+5. **視覺只用 design token。** 顏色、字級、間距一律走 `app.css` `@theme` 的 `--vt-*` token 或既有工具類別，不硬寫數值。
+6. **生成物不手改。** `public/styles.css`、`dist/`、`*.dfy.gen`、`worker-configuration.d.ts` 皆為建置產物——改源頭重新生成。唯一例外：tracked 的 `.dfy` 允許「只新增行」的 proof additions（見 LemmaScript 章節）。
+7. **Vite+ 是唯一專案介面。** 指令一律走 `vp`（`vp run`／`vp exec`／`vp install`）；不要繞過 vp 直呼全域工具或改用其他套件管理器。版本鎖定見「工具鏈版本」。
+8. **形式標注與測試必須誠實。** `//@` 標注只加真的會被 Dafny 驗證的（`lemma:check` 看到 `verified` 才算數），不可建模就用一般註解——doc-only 標注是偽裝的形式規格。測試必須斷言可觀察行為，恆真測試視同缺陷。
+9. **完成 = 全部綠燈。** `vp check`、`vp test`、`vp run build`、`vp run lemma:gen` 全過才算改完（本機有 Dafny 時加跑 `lemma:check`；CI 必跑）。紅燈狀態不 commit。
+10. **機密不進 git；不擅自 push／deploy。** `.dev.vars` 等憑證只留本地。commit／push／deploy 的界線與長程 checkpoint 例外，見「Git / Commit 慣例」。
+
 ## 技術棧
 
 **Hono + Vue 3 SSR + Cloudflare Workers**。核心：
@@ -20,6 +35,21 @@
 - **多語**：`vue-i18n`（每請求獨立實例，見下）。
 - **樣式**：Tailwind CSS v4（CLI 建置到 `public/styles.css`）。
 - **建置工具**：VitePlus（`vp`）——本專案的 `vite` 指向 `@voidzero-dev/vite-plus-core`；`vp run dev` / `vp preview` 走 `vp` CLI，`vp run build` 走雙設定檔（`vite.config.mts` server build + `vite.client.config.mts` client build）。`vp` 同時提供 `lsc`（LemmaScript）形式驗證工具（見「LemmaScript 形式驗證」章節）。
+
+## 工具鏈版本
+
+| 工具                 | 版本                     | 鎖定位置                                          |
+| -------------------- | ------------------------ | ------------------------------------------------- |
+| npm（套件管理）      | 12.0.1                   | `devEngines`（onFail: download，由 Vite+ 供裝）   |
+| Vite+（`vp`）        | 0.2.4（exact）           | `devDependencies` + `overrides`（vite 指向 core） |
+| LemmaScript（`lsc`） | ^0.5.13                  | `devDependencies`                                 |
+| TypeScript           | ^5.6                     | `devDependencies`                                 |
+| Tailwind CSS         | ^4.3（v4 CLI）           | `devDependencies`                                 |
+| Wrangler             | ^4.83                    | `devDependencies`                                 |
+| Vue / vue-i18n       | ^3.5 / ^11.4             | `dependencies`                                    |
+| Dafny（形式驗證）    | CI 固定 4.9.0；本機 >= 4 | `.github/workflows/ci.yml`（setup-dafny-action）  |
+
+> 升級 Vite+ / LemmaScript / Dafny 前先告知使用者——三者互相咬合（`vp` 供裝 `lsc`、`lsc` 生成的 Dafny 語法隨版本變化），升級後必跑 `vp run lemma:check` 確認 VCs 仍全數通過。
 
 ## 常用指令
 
@@ -116,21 +146,22 @@ vp run cf-typegen           # 由 wrangler 產生 Cloudflare 綁定型別
 
 ## 驗證流程（改完必做）
 
-### 過程中：邊做邊跑
+### 按改動類型的必跑檢查
 
-每完成一個邏輯完整的子步驟（加完路由、加完元件、加完 i18n key），先跑：
+每完成一個邏輯完整的子步驟就跑對應檢查——不要等功能全部完成才驗證，累積改動後出錯難以定位。
 
-```bash
-vp check       # format + lint + typecheck 一次到位（比單跑 typecheck 更完整）
-```
-
-涉及新頁面、新依賴、或改 Vite 設定時，加跑：
-
-```bash
-vp run build       # server + client 雙 build 皆需成功；路由元件須靜態 import（見「新增一個頁面」第 2 步）
-```
-
-不要等功能全部完成才驗證——累積改動後出錯難以定位。
+| 改動類型                                                  | 必跑檢查                                                                                  |
+| --------------------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| 文件（`.md`）                                             | `vp check`；核對文中引用的指令／檔案／設定與現實一致                                      |
+| 樣式／token（`src/styles/app.css`）                       | `vp run build:css` + `vp check`；互動 session 加 `vp run dev` 目視                        |
+| 元件／頁面（`.vue`）                                      | `vp check` + `vp test`（SSR 煙霧會抓到瀏覽器 API 違規）                                   |
+| 新增／修改路由                                            | `vp check` + `vp test` + `vp run build`（靜態 import 驗證）；同步 `heads.ts` 與 l10n 三檔 |
+| i18n / l10n JSON                                          | `vp test`（三檔同步 gate）+ `vp check`                                                    |
+| SSR 管線（`render.ts`／`heads.ts`／`app.ts`／`index.ts`） | `vp check` + `vp test` + `vp run build`；`heads.ts` 另跑 `vp run lemma:gen`               |
+| 帶 `//@` 標注的檔案（`heads` / `i18n` / `routes`）        | `vp run lemma:check` 看到 `verified, 0 errors` + `vp check`                               |
+| 依賴／`package.json`                                      | `vp install` + `vp check` + `vp test` + `vp run build`                                    |
+| Vite／wrangler 設定                                       | `vp check` + `vp run build` + `vp test`                                                   |
+| CI workflow（`.github/workflows/`）                       | `actionlint`；確認每個 step 在本機有等價指令且為綠燈                                      |
 
 ### 改完後：完整驗收
 
@@ -254,15 +285,3 @@ vp run lemma:check
 
 - neo 的開發腳本、CI 配置、測試 fixture——hono 自行維護。
 - 有疑問的功能，動工前先問使用者，不臆測。
-
-## 守則與禁區
-
-- ✅ **SSR 安全**——SSR 路徑不碰 `window`/`document`/`localStorage`/`navigator`；每請求用獨立實例。
-- ✅ **動態資料 client 端才抓**——SSR 只出靜態殼（現階段策略）。
-- ✅ **只收斂 design token**——用 `app.css` 的 `--vt-*` token / 工具類別，不硬寫顏色數值。
-- ✅ **i18n 三檔同步**——新增文字時 zh-TW / en / ja 都要有對應 key。
-- ✅ **動工前確認需求**——不憑空臆測，模糊就先問清楚。
-- 🚫 **不手改 `public/styles.css`**——那是 `build:css` 的產物；改 `src/styles/app.css`。
-- 🚫 **不手改 `dist/`**——`vp run build` 的自動產物。
-- **Firebase 僅限 client 端使用（登入）**，🚫 **不得在 Worker/SSR 路徑 import firebase**——要改動態策略先跟使用者確認。
-- 🚫 **不提交機密**——金鑰等不進 git。
