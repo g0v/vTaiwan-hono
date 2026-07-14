@@ -24,7 +24,7 @@
 ## 常用指令
 
 ```bash
-npm install                  # 安裝依賴
+vp install                  # 安裝依賴
 vp run dev                  # 本機開發（先 build:css）
 vp run build:css            # tailwindcss CLI：src/styles/app.css → public/styles.css
 vp run watch:css            # 監看模式重建 CSS
