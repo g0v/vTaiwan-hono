@@ -60,6 +60,8 @@
   --font-vt-sans:
     "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
   --font-vt-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-weight-vt-bold: 700;
+  --leading-vt-tight: 1.25;
 
   /* Legacy font aliases used by current Vue templates */
   --font-serif: var(--font-vt-serif);
@@ -86,6 +88,7 @@
   --text-vt-5xl--line-height: 1.15;
 
   /* Spacing */
+  --spacing-vt-0_5: 2px;
   --spacing-vt-1: 4px;
   --spacing-vt-2: 8px;
   --spacing-vt-3: 12px;
@@ -100,6 +103,7 @@
   --radius-vt-sm: 4px;
   --radius-vt-md: 6px;
   --radius-vt-lg: 8px;
+  --radius-vt-xl: 12px;
   --radius-vt-full: 9999px;
 
   /* Elevation */

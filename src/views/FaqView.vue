@@ -139,6 +139,10 @@ const currentLocale = computed<Locale>(() => locale.value as Locale);
 }
 /* FAQ 答案（v-html）中的超連結樣式 */
 .faq-answer :deep(a) {
-  @apply text-democratic-red underline hover:opacity-80;
+  color: var(--color-democratic-red);
+  text-decoration-line: underline;
+}
+.faq-answer :deep(a:hover) {
+  opacity: 0.8;
 }
 </style>

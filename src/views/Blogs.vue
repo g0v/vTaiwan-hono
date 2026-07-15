@@ -216,9 +216,13 @@ onMounted(() => {
 
 <style scoped>
 .prose :deep(a) {
-  @apply text-democratic-red underline hover:opacity-80;
+  color: var(--color-democratic-red);
+  text-decoration-line: underline;
+}
+.prose :deep(a:hover) {
+  opacity: 0.8;
 }
 .prose :deep(p) {
-  @apply mb-2;
+  margin-bottom: var(--spacing-vt-2);
 }
 </style>

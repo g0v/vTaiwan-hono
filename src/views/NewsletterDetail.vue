@@ -132,7 +132,9 @@ watch(() => route.params.slug, loadNewsletter);
   display: none;
 }
 .newsletter-content :deep(img) {
-  @apply h-auto max-w-full rounded-xl;
+  height: auto;
+  max-width: 100%;
+  border-radius: var(--radius-vt-xl);
 }
 .newsletter-content :deep(p),
 .newsletter-content :deep(ul),
@@ -144,36 +146,61 @@ watch(() => route.params.slug, loadNewsletter);
 .newsletter-content :deep(h2),
 .newsletter-content :deep(h3),
 .newsletter-content :deep(h4) {
-  @apply my-6;
+  margin-top: var(--spacing-vt-6);
+  margin-bottom: var(--spacing-vt-6);
 }
 .newsletter-content :deep(li) {
-  @apply my-2;
+  margin-top: var(--spacing-vt-2);
+  margin-bottom: var(--spacing-vt-2);
 }
 .newsletter-content :deep(h1),
 .newsletter-content :deep(h2),
 .newsletter-content :deep(h3),
 .newsletter-content :deep(h4) {
-  @apply font-bold leading-tight;
+  font-weight: var(--font-weight-vt-bold);
+  line-height: var(--leading-vt-tight);
 }
 .newsletter-content :deep(h1) {
-  @apply text-2xl md:text-3xl;
+  font-size: var(--text-vt-2xl);
+  line-height: var(--text-vt-2xl--line-height);
 }
 .newsletter-content :deep(h2) {
-  @apply text-xl md:text-2xl;
+  font-size: var(--text-vt-xl);
+  line-height: var(--text-vt-xl--line-height);
 }
 .newsletter-content :deep(h3) {
-  @apply text-lg md:text-xl;
+  font-size: var(--text-vt-lg);
+  line-height: var(--text-vt-lg--line-height);
 }
 .newsletter-content :deep(h4) {
-  @apply text-lg md:text-xl;
+  font-size: var(--text-vt-lg);
+  line-height: var(--text-vt-lg--line-height);
+}
+@media (min-width: 48rem) {
+  .newsletter-content :deep(h1) {
+    font-size: var(--text-vt-3xl);
+    line-height: var(--text-vt-3xl--line-height);
+  }
+  .newsletter-content :deep(h2) {
+    font-size: var(--text-vt-2xl);
+    line-height: var(--text-vt-2xl--line-height);
+  }
+  .newsletter-content :deep(h3),
+  .newsletter-content :deep(h4) {
+    font-size: var(--text-vt-xl);
+    line-height: var(--text-vt-xl--line-height);
+  }
 }
 .newsletter-content :deep(a) {
-  @apply text-democratic-red underline underline-offset-2;
+  color: var(--color-democratic-red);
+  text-decoration-line: underline;
+  text-underline-offset: var(--spacing-vt-0_5);
 }
 .newsletter-content :deep(iframe) {
-  @apply max-w-full;
+  max-width: 100%;
 }
 .newsletter-content :deep(hr) {
-  @apply my-8;
+  margin-top: var(--spacing-vt-8);
+  margin-bottom: var(--spacing-vt-8);
 }
 </style>
