@@ -387,11 +387,15 @@ export default {
 
       isRecorder: false,
       isTranscripting: false,
+      // SSR 與首次 hydration 都維持桌面版，mounted 後才量測實際 viewport。
+      isMobile: false,
       joinMeetingName: "",
       today: "",
       selectedDate: "",
       meetingData: { recordingStartTime: null, recordingSpeaker: null },
       transcriptData: {},
+      // Firebase lazy 初始化期間產生的逐字稿，待服務可用後再依條目寫入。
+      pendingTranscriptChanges: {},
       firebaseUnsubscribe: null,
 
       appId: "vpaas-magic-cookie-7c142b7a730e4478878703f86c03d5a1",
@@ -449,22 +453,14 @@ export default {
 
       transcriptionLanguage: "zh-TW",
 
-      // SSR 安全：showJitsiTipBanner 讀 localStorage 已有 typeof window 守衛
-      showJitsiTipBanner:
-        typeof window !== "undefined" && window.localStorage
-          ? localStorage.getItem("vtaiwan_jitsi_tip_dismissed") !== "1"
-          : true,
+      // localStorage 的偏好在 hydration 後才讀取，確保首屏 DOM 與 SSR 一致。
+      showJitsiTipBanner: true,
     };
   },
 
   computed: {
     fullRoomName() {
       return `${this.appId}/${this.room}`;
-    },
-    // SSR 安全：window 存取加守衛
-    isMobile() {
-      if (typeof window === "undefined") return false;
-      return window.innerWidth < 768;
     },
     transcriptionLanguageFlag() {
       const found = supportedLocales.find((l) => l.code === this.transcriptionLanguage);
@@ -490,6 +486,8 @@ export default {
   mounted() {
     // 瀏覽器端初始化：設定 drawerWidth、載入 Firebase、設定計時器
     this.drawerWidth = Math.min(window.innerWidth * 0.9, 400);
+    this.updateViewportState();
+    this.loadJitsiTipBanner();
     this.joinMeetingName = (this.userData || {}).name || "Guest";
 
     // 錄音計時器，每秒觸發 recordingDuration 重新計算
@@ -501,9 +499,15 @@ export default {
 
     // 初始化 Firebase 服務（lazy、browser-only），完成後載入會議資料
     getFirebaseServices()
-      .then((services) => {
+      .then(async (services) => {
         this.firebaseServices = services;
-        this.loadMeetingData();
+        try {
+          await this.flushPendingTranscriptChanges();
+        } catch (error) {
+          console.error("flushPendingTranscriptChanges failed:", error);
+        }
+        this.syncRecordingStatus();
+        await this.loadMeetingData();
       })
       .catch((err) => console.error("Firebase init failed:", err));
 
@@ -572,6 +576,14 @@ export default {
         localStorage.setItem("vtaiwan_jitsi_tip_dismissed", "1");
       } catch {
         // localStorage 不可用時忽略
+      }
+    },
+
+    loadJitsiTipBanner() {
+      try {
+        this.showJitsiTipBanner = localStorage.getItem("vtaiwan_jitsi_tip_dismissed") !== "1";
+      } catch {
+        // localStorage 不可用時維持顯示提示。
       }
     },
 
@@ -739,31 +751,82 @@ export default {
 
     addTranscriptData(newEntry) {
       this.transcriptData[newEntry.timestamp] = newEntry;
-      this.updateMeetingData();
+      this.saveTranscriptEntry(newEntry);
     },
 
     updateTranscriptData(updatedData) {
       this.transcriptData[updatedData.timestamp] = updatedData;
-      this.updateMeetingData();
+      this.saveTranscriptEntry(updatedData);
     },
 
     deleteTranscriptData(timestamp) {
       delete this.transcriptData[timestamp];
-      this.updateMeetingData();
+      this.deleteTranscriptEntry(timestamp);
     },
 
     updateMeetingData() {
       if (!this.firebaseServices) return;
+      const { databaseRef, databaseUpdate, database } = this.firebaseServices;
+      databaseUpdate(databaseRef(database, `/meetings/${this.today}`), {
+        recorder: this.meetingData.recorder || null,
+      }).catch((err) => console.error("updateMeetingData failed:", err));
+    },
+
+    syncRecordingStatus() {
+      if (!this.firebaseServices) return;
+      const { databaseRef, databaseUpdate, database } = this.firebaseServices;
+      databaseUpdate(databaseRef(database, `/meetings/${this.today}`), {
+        recordingSpeaker: this.meetingData.recordingSpeaker || null,
+        recordingStartTime: this.meetingData.recordingStartTime || null,
+      }).catch((err) => console.error("syncRecordingStatus failed:", err));
+    },
+
+    saveTranscriptEntry(entry) {
+      if (!this.firebaseServices) {
+        this.pendingTranscriptChanges[entry.timestamp] = entry;
+        return;
+      }
       const { databaseRef, databaseSet, database } = this.firebaseServices;
-      this.meetingData.transcripts = this.transcriptData;
       databaseSet(
-        databaseRef(database, `/meetings/${this.today}/transcripts`),
-        this.transcriptData,
-      ).catch((err) => console.error("updateMeetingData failed:", err));
+        databaseRef(database, `/meetings/${this.today}/transcripts/${entry.timestamp}`),
+        entry,
+      ).catch((err) => console.error("saveTranscriptEntry failed:", err));
+    },
+
+    deleteTranscriptEntry(timestamp) {
+      if (!this.firebaseServices) {
+        this.pendingTranscriptChanges[timestamp] = null;
+        return;
+      }
+      const { databaseRef, databaseSet, database } = this.firebaseServices;
+      databaseSet(
+        databaseRef(database, `/meetings/${this.today}/transcripts/${timestamp}`),
+        null,
+      ).catch((err) => console.error("deleteTranscriptEntry failed:", err));
+    },
+
+    async flushPendingTranscriptChanges() {
+      const pendingChanges = this.pendingTranscriptChanges;
+      this.pendingTranscriptChanges = {};
+
+      await Promise.all(
+        Object.entries(pendingChanges).map(([timestamp, entry]) => {
+          const { databaseRef, databaseSet, database } = this.firebaseServices;
+          return databaseSet(
+            databaseRef(database, `/meetings/${this.today}/transcripts/${timestamp}`),
+            entry,
+          );
+        }),
+      );
     },
 
     handleResize() {
+      this.updateViewportState();
       if (!this.isMobile && this.showTranscript) this.$forceUpdate();
+    },
+
+    updateViewportState() {
+      this.isMobile = window.innerWidth < 768;
     },
 
     startDragging(event) {
@@ -897,20 +960,10 @@ export default {
         this.audioMediaRecorder.start();
         this.isRecordingAudio = true;
 
-        if (this.firebaseServices) {
-          const { databaseRef, databaseSet, database } = this.firebaseServices;
-          const speakerName = (this.userData || {}).name || "未知說話者";
-          this.meetingData.recordingStartTime = Date.now();
-          this.meetingData.recordingSpeaker = speakerName;
-          databaseSet(
-            databaseRef(database, `/meetings/${this.today}/recordingSpeaker`),
-            speakerName,
-          ).catch(console.error);
-          databaseSet(
-            databaseRef(database, `/meetings/${this.today}/recordingStartTime`),
-            this.meetingData.recordingStartTime,
-          ).catch(console.error);
-        }
+        const speakerName = (this.userData || {}).name || "未知說話者";
+        this.meetingData.recordingStartTime = Date.now();
+        this.meetingData.recordingSpeaker = speakerName;
+        this.syncRecordingStatus();
 
         this.recordingTimeLeft = Math.ceil(this.maxRecordingTime / 1000);
         this.countdownInterval = setInterval(() => {
@@ -927,18 +980,9 @@ export default {
     },
 
     async stopAudioRecording() {
-      if (this.firebaseServices) {
-        const { databaseRef, databaseSet, database } = this.firebaseServices;
-        this.meetingData.recordingStartTime = null;
-        this.meetingData.recordingSpeaker = null;
-        databaseSet(
-          databaseRef(database, `/meetings/${this.today}/recordingStartTime`),
-          null,
-        ).catch(console.error);
-        databaseSet(databaseRef(database, `/meetings/${this.today}/recordingSpeaker`), null).catch(
-          console.error,
-        );
-      }
+      this.meetingData.recordingStartTime = null;
+      this.meetingData.recordingSpeaker = null;
+      this.syncRecordingStatus();
       this.recordingTimer = 0;
       if (this.audioRecordingTimer) {
         clearTimeout(this.audioRecordingTimer);
@@ -1150,8 +1194,7 @@ export default {
 
     async loadMeetingData() {
       if (!this.firebaseServices) return;
-      const { databaseRef, databaseGet, databaseSet, databaseOnValue, database } =
-        this.firebaseServices;
+      const { databaseRef, databaseOnValue, database } = this.firebaseServices;
 
       if (this.firebaseUnsubscribe) {
         this.firebaseUnsubscribe();
@@ -1159,14 +1202,6 @@ export default {
       }
 
       try {
-        const snapshot = await databaseGet(databaseRef(database, `/meetings/${this.today}`));
-        if (!snapshot.exists()) {
-          await databaseSet(databaseRef(database, `/meetings/${this.today}`), {
-            recorder: "",
-            transcripts: {},
-          });
-        }
-
         this.firebaseUnsubscribe = databaseOnValue(
           databaseRef(database, `/meetings/${this.today}`),
           (snap) => {
@@ -1250,7 +1285,8 @@ export default {
         } else {
           this.stopQueueProcessing();
         }
-      } catch {
+      } catch (error) {
+        console.error("processNextAudioInQueue failed:", error);
         if (this.audioQueue.length > 0) {
           this.$nextTick(() => this.processNextAudioInQueue());
         } else {
