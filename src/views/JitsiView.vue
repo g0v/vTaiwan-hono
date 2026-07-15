@@ -362,6 +362,7 @@
 import TranscriptPanel from "../components/TranscriptPanel.vue";
 import IconWrapper from "../components/IconWrapper.vue";
 import TranscriptLanguageSwitcher from "../components/TranscriptLanguageSwitcher.vue";
+import { markRaw } from "vue";
 import { useI18n } from "vue-i18n";
 import { supportedLocales } from "../i18n";
 import { getFirebaseServices } from "../lib/firebase";
@@ -500,7 +501,9 @@ export default {
     // 初始化 Firebase 服務（lazy、browser-only），完成後載入會議資料
     getFirebaseServices()
       .then(async (services) => {
-        this.firebaseServices = services;
+        // Firebase SDK 實例含有自訂樹狀索引物件；Vue 深層 Proxy 會破壞其 prototype，
+        // 導致 Realtime Database 寫入時出現「insert is not a function」。
+        this.firebaseServices = markRaw(services);
         try {
           await this.flushPendingTranscriptChanges();
         } catch (error) {
