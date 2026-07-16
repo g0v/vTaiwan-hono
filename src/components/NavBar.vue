@@ -49,6 +49,11 @@ watch(
     mobileOpen.value = false
   }
 )
+
+function logout() {
+  emit('logout')
+  mobileOpen.value = false
+}
 </script>
 
 <template>
@@ -137,10 +142,7 @@ watch(
           <button
             type="button"
             class="rounded-full px-3 py-3 text-vt-sm text-vt-fg-2 transition-colors hover:bg-vt-bg-2"
-            @click="
-              emit('logout')
-              mobileOpen = false
-            "
+            @click="logout"
           >
             {{ t('common.logout') }}
           </button>
