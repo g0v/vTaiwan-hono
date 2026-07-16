@@ -38,6 +38,7 @@
     "@vitejs/plugin-vue": "^6.0.7",
     "@vue/compiler-sfc": "^3.5.32",
     "lemmascript": "^0.5.13",
+    "oxfmt": "^0.59.0",
     "tailwindcss": "^4.3.0",
     "typescript": "^5.6.0",
     "vite": "npm:@voidzero-dev/vite-plus-core@0.2.4",
