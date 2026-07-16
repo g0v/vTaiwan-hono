@@ -57,7 +57,7 @@ function logout() {
 </script>
 
 <template>
-  <header class="fixed top-3 z-50 w-full px-3 font-sans sm:top-4 sm:px-6">
+  <header class="sticky top-0 z-50 px-3 pt-3 font-sans sm:px-6 sm:pt-4">
     <div class="vt-glass relative z-20 mx-auto flex h-[72px] max-w-6xl items-center justify-between rounded-2xl pr-3 pl-6" :class="{ 'max-w-7xl': !isChinese }">
       <RouterLink to="/" class="flex shrink-0 items-center" :aria-label="t('header.home')">
         <img :src="'/assets/vtaiwan-logo.svg'" alt="vTaiwan" class="h-7 w-auto" />
