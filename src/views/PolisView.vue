@@ -27,7 +27,7 @@ onBeforeUnmount(() => {
 
 <template>
   <section class="bg-black py-8 text-white">
-    <div class="container mx-auto px-2">
+    <div class="container px-2">
       <div class="mx-auto max-w-4xl">
         <h1 class="mb-4 text-3xl font-bold md:text-4xl">{{ t('polis.title') }}</h1>
         <p class="text-lg opacity-90">{{ t('polis.subtitle') }}</p>
@@ -36,7 +36,7 @@ onBeforeUnmount(() => {
   </section>
 
   <section class="bg-gray-50 py-12">
-    <div class="container mx-auto px-2">
+    <div class="container px-2">
       <div class="mx-auto max-w-4xl">
         <div class="mb-8 rounded-lg bg-white p-6 shadow-md md:p-8">
           <p class="mb-4 text-xl font-semibold text-gray-900">{{ t('polis.intro.p1') }}</p>

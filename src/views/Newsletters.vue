@@ -1,6 +1,6 @@
 <template>
   <div class="pt-20">
-    <div class="container mx-auto">
+    <div class="container py-8">
       <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div class="max-w-3xl">
           <h1 class="mb-3 text-3xl font-bold">{{ t('newsletter.title') }}</h1>

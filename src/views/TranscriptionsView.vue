@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="container px-4 py-8">
     <div class="mx-auto max-w-6xl">
       <!-- 頁面標題 -->
       <div class="mb-8">

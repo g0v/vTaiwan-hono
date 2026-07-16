@@ -139,11 +139,7 @@ function logout() {
           >
             {{ t('common.profile') }}
           </RouterLink>
-          <button
-            type="button"
-            class="rounded-full px-3 py-3 text-vt-sm text-vt-fg-2 transition-colors hover:bg-vt-bg-2"
-            @click="logout"
-          >
+          <button type="button" class="rounded-full px-3 py-3 text-vt-sm text-vt-fg-2 transition-colors hover:bg-vt-bg-2" @click="logout">
             {{ t('common.logout') }}
           </button>
         </template>

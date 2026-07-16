@@ -21,7 +21,7 @@
 
   <!-- Calendar View -->
   <section class="bg-gray-100 py-12">
-    <div class="container mx-auto px-4 text-center">
+    <div class="container px-4 text-center">
       <h2 class="mb-6 text-2xl font-bold">{{ t('meetups.calendar.title') }}</h2>
       <p class="mb-8">
         {{ t('meetups.calendar.description') }}
@@ -42,7 +42,7 @@
 
   <!-- Host a Meetup -->
   <section class="bg-gray-100 py-12">
-    <div class="container mx-auto px-4 text-center">
+    <div class="container px-4 text-center">
       <h2 class="mb-4 text-2xl font-bold">{{ t('meetups.host.title') }}</h2>
       <p class="mx-auto mb-6 max-w-2xl text-lg">
         {{ t('meetups.host.description') }}

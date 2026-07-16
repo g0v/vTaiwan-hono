@@ -1,6 +1,6 @@
 <template>
   <div class="pt-20">
-    <div class="container mx-auto py-8">
+    <div class="container py-8">
       <h1 class="mb-8 text-3xl font-bold">{{ t('contributors.title') }}</h1>
 
       <section class="mb-12">

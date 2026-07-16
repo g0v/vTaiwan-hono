@@ -1,6 +1,6 @@
 <template>
   <div class="pt-20">
-    <div class="container mx-auto">
+    <div class="container py-8">
       <div class="mb-8 flex flex-col items-center justify-between md:flex-row">
         <h1 class="text-3xl font-bold md:w-1/2">{{ $t('header.mastodon') }}</h1>
         <p class="text-sm text-gray-500">

@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="container px-4 py-8">
     <div class="mx-auto max-w-4xl">
       <!-- CC-BY-SA-4.0 授權標註 -->
       <div class="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">

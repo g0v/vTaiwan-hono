@@ -1,5 +1,5 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
+  <div class="container px-4 py-8">
     <div v-if="loading" class="py-10 text-center text-gray-600">
       {{ t('newsletter.loading') }}
     </div>

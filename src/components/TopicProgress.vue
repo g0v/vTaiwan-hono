@@ -75,7 +75,7 @@ watch(
 
 <template>
   <div class="topic-progress py-6">
-    <div class="container mx-auto px-4">
+    <div class="container px-4">
       <div class="mx-auto max-w-4xl">
         <div class="step-progress-bar">
           <ul class="progress-bar">
