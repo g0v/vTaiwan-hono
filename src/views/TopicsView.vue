@@ -218,8 +218,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="vt-hero-bg -mt-[84px] text-white sm:-mt-[88px]">
-    <div class="relative z-10 mx-auto max-w-5xl px-2 pb-24 pt-[156px] sm:pt-[184px]">
+  <section class="vt-hero-bg text-white">
+    <div class="mx-auto max-w-5xl px-6 pb-24 pt-36 relative z-1">
       <div class="mx-auto max-w-7xl">
         <h1 class="mb-4 text-3xl font-bold md:text-4xl">{{ t("topics.title") }}</h1>
         <p class="mb-6 text-lg opacity-90">

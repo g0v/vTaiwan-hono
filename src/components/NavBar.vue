@@ -54,7 +54,7 @@ watch(
 </script>
 
 <template>
-  <header class="sticky top-0 z-50 px-3 pt-3 sm:px-6 sm:pt-4 font-sans">
+  <header class="fixed top-3 z-50 px-3 sm:px-6 sm:top-4 font-sans w-full">
     <div
       class="vt-glass relative z-20 mx-auto flex h-[72px] max-w-6xl items-center justify-between rounded-2xl pl-6 pr-3"
       :class="{ 'max-w-7xl': !isChinese }"

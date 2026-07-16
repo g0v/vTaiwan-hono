@@ -1,7 +1,7 @@
 <template>
   <!-- Hero Section -->
-  <section class="bg-black py-12 text-white">
-    <div class="container mx-auto px-4">
+  <section class="vt-hero-bg text-white">
+    <div class="max-w-5xl mx-auto px-6 pb-24 pt-36 relative z-1">
       <h1 class="mb-4 text-3xl font-bold md:text-4xl">{{ t("meetups.title") }}</h1>
       <p class="max-w-3xl text-xl">
         {{ t("meetups.description") }}

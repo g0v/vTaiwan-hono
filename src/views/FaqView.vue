@@ -1,6 +1,6 @@
 <template>
-  <main class="container mx-auto px-4 py-12">
-    <div class="mx-auto max-w-3xl">
+  <main class="pt-20">
+    <div class="mx-auto max-w-3xl py-12">
       <h1 class="mb-8 text-4xl font-bold">{{ t("faq.title") }}</h1>
 
       <section class="mb-12">

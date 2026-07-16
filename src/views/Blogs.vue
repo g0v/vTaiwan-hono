@@ -1,94 +1,96 @@
 <template>
-  <div class="container mx-auto px-2 py-8">
-    <div class="mb-8 flex flex-col items-center justify-between md:flex-row">
-      <h1 class="text-3xl font-bold md:w-1/2">{{ t("medium.title") }}</h1>
-      <p class="text-sm text-gray-500">
-        {{ t("medium.sourceDescription") }}
-        <a
-          :href="`https://medium.com/@${MEDIUM_USERNAME}`"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="text-sm text-democratic-red hover:underline"
-          >Medium/@{{ MEDIUM_USERNAME }}</a
+  <div class="pt-20">
+    <div class="container mx-auto">
+      <div class="mb-8 flex flex-col items-center justify-between md:flex-row">
+        <h1 class="text-3xl font-bold md:w-1/2">{{ t("medium.title") }}</h1>
+        <p class="text-sm text-gray-500">
+          {{ t("medium.sourceDescription") }}
+          <a
+            :href="`https://medium.com/@${MEDIUM_USERNAME}`"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="text-sm text-democratic-red hover:underline"
+            >Medium/@{{ MEDIUM_USERNAME }}</a
+          >
+        </p>
+      </div>
+
+      <div v-if="loading" class="py-8 text-center">
+        <p class="text-gray-600">{{ t("medium.loading") }}</p>
+      </div>
+
+      <div v-else-if="error" class="py-8 text-center">
+        <p class="mb-4 text-red-600">{{ error }}</p>
+        <button
+          @click="loadArticles"
+          class="rounded-md bg-democratic-red px-4 py-2 text-white transition hover:opacity-90"
         >
-      </p>
-    </div>
+          {{ t("medium.retry") }}
+        </button>
+      </div>
 
-    <div v-if="loading" class="py-8 text-center">
-      <p class="text-gray-600">{{ t("medium.loading") }}</p>
-    </div>
+      <div v-else-if="articles.length > 0" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <article
+          v-for="article in articles"
+          :key="article.id"
+          class="rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg"
+        >
+          <!-- 文章標題 -->
+          <h2 class="mb-3 text-xl font-bold">
+            <a
+              :href="article.link"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-gray-900 transition-colors hover:text-democratic-red"
+            >
+              {{ article.title }}
+            </a>
+          </h2>
 
-    <div v-else-if="error" class="py-8 text-center">
-      <p class="mb-4 text-red-600">{{ error }}</p>
-      <button
-        @click="loadArticles"
-        class="rounded-md bg-democratic-red px-4 py-2 text-white transition hover:opacity-90"
-      >
-        {{ t("medium.retry") }}
-      </button>
-    </div>
-
-    <div v-else-if="articles.length > 0" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-      <article
-        v-for="article in articles"
-        :key="article.id"
-        class="rounded-lg bg-white p-6 shadow-md transition-shadow hover:shadow-lg"
-      >
-        <!-- 文章標題 -->
-        <h2 class="mb-3 text-xl font-bold">
-          <a
-            :href="article.link"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-gray-900 transition-colors hover:text-democratic-red"
-          >
-            {{ article.title }}
-          </a>
-        </h2>
-
-        <!-- 作者和日期 -->
-        <div class="mb-4 flex items-center space-x-3">
-          <div v-if="article.author" class="flex items-center space-x-2">
-            <span class="text-sm text-gray-600">{{ article.author }}</span>
+          <!-- 作者和日期 -->
+          <div class="mb-4 flex items-center space-x-3">
+            <div v-if="article.author" class="flex items-center space-x-2">
+              <span class="text-sm text-gray-600">{{ article.author }}</span>
+            </div>
+            <div v-if="article.pubDate" class="text-sm text-gray-500">
+              {{ formatDate(article.pubDate) }}
+            </div>
           </div>
-          <div v-if="article.pubDate" class="text-sm text-gray-500">
-            {{ formatDate(article.pubDate) }}
+
+          <!-- 文章摘要 -->
+          <div class="mb-4">
+            <div class="prose prose-sm max-w-none text-gray-700">
+              {{ article.summary }}
+            </div>
           </div>
-        </div>
 
-        <!-- 文章摘要 -->
-        <div class="mb-4">
-          <div class="prose prose-sm max-w-none text-gray-700">
-            {{ article.summary }}
+          <!-- 標籤 -->
+          <div v-if="article.categories.length > 0" class="mb-4 flex flex-wrap gap-2">
+            <span
+              v-for="category in article.categories"
+              :key="category"
+              class="rounded-full bg-jade-green/10 px-2 py-1 text-sm text-jade-green"
+              >#{{ category }}</span
+            >
           </div>
-        </div>
 
-        <!-- 標籤 -->
-        <div v-if="article.categories.length > 0" class="mb-4 flex flex-wrap gap-2">
-          <span
-            v-for="category in article.categories"
-            :key="category"
-            class="rounded-full bg-jade-green/10 px-2 py-1 text-sm text-jade-green"
-            >#{{ category }}</span
-          >
-        </div>
+          <!-- 外部連結 -->
+          <div class="mt-4">
+            <a
+              :href="article.link"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="text-sm font-medium text-democratic-red hover:underline"
+              >{{ t("medium.readMore") }} →</a
+            >
+          </div>
+        </article>
+      </div>
 
-        <!-- 外部連結 -->
-        <div class="mt-4">
-          <a
-            :href="article.link"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-sm font-medium text-democratic-red hover:underline"
-            >{{ t("medium.readMore") }} →</a
-          >
-        </div>
-      </article>
-    </div>
-
-    <!-- 無文章時顯示 -->
-    <div v-else class="py-8 text-center">
-      <p class="text-gray-600">{{ t("medium.noArticles") }}</p>
+      <!-- 無文章時顯示 -->
+      <div v-else class="py-8 text-center">
+        <p class="text-gray-600">{{ t("medium.noArticles") }}</p>
+      </div>
     </div>
   </div>
 </template>

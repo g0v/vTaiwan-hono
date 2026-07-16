@@ -14,7 +14,7 @@ const values = [
 <template>
   <main class="font-serif">
     <!-- 標題 -->
-    <section class="bg-vt-gray-100 py-16 sm:py-20">
+    <section class="bg-vt-gray-100 pb-16 pt-26 sm:pb-20 sm:pt-36">
       <div class="mx-auto max-w-4xl px-6">
         <h1 class="text-center text-4xl font-bold sm:text-5xl">
           <span class="vt-title-underline">{{ t("about.title") }}</span>
