@@ -18,7 +18,18 @@ const vueI18nFlags = {
 };
 
 export default defineConfig({
-  fmt: {},
+  fmt: {
+    semi: false,
+    singleQuote: true,
+    trailingComma: 'es5',
+    printWidth: 200,
+    bracketSpacing: true,
+    arrowParens: 'avoid',
+    sortTailwindcss: {
+      stylesheet: './src/styles/app.css',
+    },
+    ignorePatterns: ['public/**', 'dist/**', '.claude/**', '.vscode/**', '.wrangler/**'],
+  },
   lint: {
     jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],
     rules: { "vite-plus/prefer-vite-plus-imports": "error" },

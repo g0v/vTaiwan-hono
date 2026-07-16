@@ -14,6 +14,7 @@
     "typecheck": "vp check --no-fmt --no-lint",
     "test": "vp test",
     "check": "vp check",
+    "fmt": "vp fmt",
     "lemma:gen": "vp exec lsc gen --backend=dafny src/ssr/heads.ts && vp exec lsc gen --backend=dafny src/i18n/index.ts && vp exec lsc gen --backend=dafny src/router/routes.ts",
     "lemma:check": "vp exec lsc check --backend=dafny src/ssr/heads.ts && vp exec lsc check --backend=dafny src/i18n/index.ts && vp exec lsc check --backend=dafny src/router/routes.ts",
     "cf-typegen": "vp exec wrangler types"
