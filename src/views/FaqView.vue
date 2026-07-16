@@ -1,7 +1,7 @@
 <template>
-  <main class="pt-20 mt-[-84px] sm:mt-[-88px] bg-vt-gray-800 text-white">
+  <main class="mt-[-84px] bg-vt-gray-800 pt-20 text-white sm:mt-[-88px]">
     <div class="mx-auto max-w-3xl py-12">
-      <h1 class="mb-8 text-4xl font-bold ">{{ t('faq.title') }}</h1>
+      <h1 class="mb-8 text-4xl font-bold">{{ t('faq.title') }}</h1>
 
       <section class="mb-12">
         <p class="mb-6 leading-relaxed">{{ t('faq.description') }}</p>

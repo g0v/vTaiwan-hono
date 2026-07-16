@@ -1,8 +1,8 @@
 <template>
-  <div class="pt-20 mt-[-84px] sm:mt-[-88px] bg-vt-gray-800 text-white">
+  <div class="mt-[-84px] bg-vt-gray-800 pt-20 text-white sm:mt-[-88px]">
     <div class="container py-8">
       <div class="mb-8 flex flex-col items-center justify-between md:flex-row">
-        <h1 class="text-3xl font-bold md:w-1/2 text-white">{{ $t('header.mastodon') }}</h1>
+        <h1 class="text-3xl font-bold text-white md:w-1/2">{{ $t('header.mastodon') }}</h1>
         <p class="text-sm text-gray-300">
           {{ $t('blog.sourceDescription') }}
           <a href="https://g0v.social/tags/vTaiwan" target="_blank" rel="noopener noreferrer" class="text-sm text-democratic-red hover:underline">g0v.social/tags/vTaiwan</a>

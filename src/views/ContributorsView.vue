@@ -1,7 +1,7 @@
 <template>
-  <div class="pt-20 mt-[-84px] sm:mt-[-88px] bg-vt-gray-800">
+  <div class="mt-[-84px] bg-vt-gray-800 pt-20 sm:mt-[-88px]">
     <div class="container py-8">
-      <h1 class="mb-8 text-3xl font-bold  text-white">{{ t('contributors.title') }}</h1>
+      <h1 class="mb-8 text-3xl font-bold text-white">{{ t('contributors.title') }}</h1>
 
       <section class="mb-12">
         <h2 class="mb-4 text-2xl font-bold text-white">{{ t('contributors.coreTeam') }}</h2>

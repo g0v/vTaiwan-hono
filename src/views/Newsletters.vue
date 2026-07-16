@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-20 mt-[-84px] sm:mt-[-88px] bg-vt-gray-800 text-white">
+  <div class="mt-[-84px] bg-vt-gray-800 pt-20 text-white sm:mt-[-88px]">
     <div class="container py-8">
       <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div class="max-w-3xl">
