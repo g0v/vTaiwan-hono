@@ -12,7 +12,7 @@ const SITE_NAME = 'vTaiwan'
 type Translate = (key: string) => string
 
 // 預設 OG 圖片
-const DEFAULT_OG_IMAGE = `https://vtaiwan-hono.audreyt.workers.dev/img/og-image.png`
+const DEFAULT_OG_IMAGE = `https://vtaiwan-hono.vtaiwan-tw-349.workers.dev/img/og-image.png`
 
 // 統一產 OG / Twitter Card meta，避免每條路由都自己寫一次
 function buildOg(title: string, description: string, image: string, url: string): MetaEntry[] {
