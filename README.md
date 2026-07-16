@@ -307,7 +307,7 @@ npm run deploy       # 完整 build（含 hydration bundle）+ wrangler deploy
 - `npm run watch:css` — rebuild on `.vue` changes during development.
 - Don't hard-code color / size values — use tokens. Don't edit the generated `public/styles.css` by hand.
 
-**中文：**樣式採用 **Tailwind CSS v4**。由於 Worker 是伺服端渲染 HTML _字串_、再以 `<link rel="stylesheet" href="/styles.css">` 載入靜態樣式，因此 Tailwind 以**獨立 CLI**（非 Vite plugin）編譯：來源 `src/styles/app.css`，編譯成 `public/styles.css`，由 `ASSETS` 綁定提供。
+**中文：**樣式採用 **Tailwind CSS v4**。由於 Worker 是伺服端渲染 HTML *字串*、再以 `<link rel="stylesheet" href="/styles.css">` 載入靜態樣式，因此 Tailwind 以**獨立 CLI**（非 Vite plugin）編譯：來源 `src/styles/app.css`，編譯成 `public/styles.css`，由 `ASSETS` 綁定提供。
 
 - `src/styles/app.css` — `@import "tailwindcss"`、`@theme` 定義由 `vtaiwan-design-system` 收斂進來的 **design token**（民主紅 `--color-vt-democratic-red`、青玉綠 `-jade-green`、麥穗黃 `-wheat-yellow`，Noto Serif / Sans TC，字級、間距、圓角）。優先用 `vt-*` 工具類別（如 `text-vt-democratic-red`、`bg-vt-bg-2`、`font-vt-serif`）；既有樣板用的 **legacy 別名**（`democratic-red`、`font-serif` 等）已保留。另含少數 `@layer components` 效果（hero 漸層、毛玻璃 `.vt-glass`、pill 按鈕 `.vt-btn*`、標題紅底線 `.vt-title-underline`）與既有的 `.container` / `.hundred-*` 樣式。
 - `npm run build:css` — 編譯並壓縮輸出到 `public/styles.css`。
