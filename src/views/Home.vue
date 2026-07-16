@@ -13,9 +13,9 @@ const steps = [
 
 <template>
   <!-- Hero -->
-  <section class="vt-hero-bg flex min-h-screen items-center text-white">
-    <div class="mx-auto mt-6 h-fit w-full max-w-5xl px-6 py-24">
-      <div class="mb-12 inline-flex items-center gap-3.5 font-sans text-[13px] font-semibold tracking-[0.22em] text-white/55 uppercase">
+  <section class="vt-hero-bg flex min-h-screen items-center mt-[-84px] text-white sm:mt-[-88px]">
+    <div class="mx-auto h-fit w-full max-w-5xl px-6">
+      <div class="mb-12 inline-flex items-center gap-3.5 font-sans text-[13px] font-semibold tracking-[0.22em] text-white/55 uppercase pt-[156px] sm:pt-[184px]">
         <span class="h-px w-7 bg-white/45" />
         {{ t('home.hero.eyebrow') }}
       </div>

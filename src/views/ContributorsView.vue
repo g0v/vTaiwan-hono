@@ -1,10 +1,10 @@
 <template>
-  <div class="pt-20">
+  <div class="pt-20 mt-[-84px] sm:mt-[-88px] bg-vt-gray-800">
     <div class="container py-8">
-      <h1 class="mb-8 text-3xl font-bold">{{ t('contributors.title') }}</h1>
+      <h1 class="mb-8 text-3xl font-bold  text-white">{{ t('contributors.title') }}</h1>
 
       <section class="mb-12">
-        <h2 class="mb-4 text-2xl font-bold">{{ t('contributors.coreTeam') }}</h2>
+        <h2 class="mb-4 text-2xl font-bold text-white">{{ t('contributors.coreTeam') }}</h2>
         <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div v-for="contributor in coreTeam" :key="contributor.id" class="rounded-lg bg-white p-6 text-center shadow-md">
             <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-vt-gray-200">
@@ -21,7 +21,7 @@
       </section>
 
       <section>
-        <h2 class="mb-4 text-2xl font-bold">{{ t('contributors.communityContributors') }}</h2>
+        <h2 class="mb-4 text-2xl font-bold text-white">{{ t('contributors.communityContributors') }}</h2>
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <div v-for="contributor in communityContributors" :key="contributor.id" class="rounded-lg bg-white p-4 text-center shadow-md">
             <div class="mx-auto mb-3 flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-vt-gray-200">
@@ -42,8 +42,8 @@
       </section>
 
       <section class="mt-12 text-center">
-        <h2 class="mb-4 text-2xl font-bold">{{ t('contributors.joinUs') }}</h2>
-        <p class="mb-6 text-gray-600">{{ t('contributors.joinUsDescription') }}</p>
+        <h2 class="mb-4 text-2xl font-bold text-white">{{ t('contributors.joinUs') }}</h2>
+        <p class="mb-6 text-gray-300">{{ t('contributors.joinUsDescription') }}</p>
         <RouterLink to="/intro" class="vt-btn vt-btn-primary">
           {{ t('contributors.learnMore') }}
         </RouterLink>

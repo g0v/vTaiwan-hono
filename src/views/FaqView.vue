@@ -1,7 +1,7 @@
 <template>
-  <main class="pt-20">
+  <main class="pt-20 mt-[-84px] sm:mt-[-88px] bg-vt-gray-800 text-white">
     <div class="mx-auto max-w-3xl py-12">
-      <h1 class="mb-8 text-4xl font-bold">{{ t('faq.title') }}</h1>
+      <h1 class="mb-8 text-4xl font-bold ">{{ t('faq.title') }}</h1>
 
       <section class="mb-12">
         <p class="mb-6 leading-relaxed">{{ t('faq.description') }}</p>
@@ -27,7 +27,7 @@
         <p class="mb-8">{{ t('faq.contact.description') }}</p>
 
         <div class="grid gap-6 md:grid-cols-2">
-          <div class="rounded-lg bg-vt-gray-100 p-6">
+          <div class="rounded-lg bg-vt-gray-100 p-6 text-black">
             <h3 class="mb-4 text-xl font-semibold">{{ t('faq.contact.email.title') }}</h3>
             <p class="flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" class="mr-2 h-5 w-5 text-democratic-red" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -37,7 +37,7 @@
             </p>
           </div>
 
-          <div class="rounded-lg bg-vt-gray-100 p-6">
+          <div class="rounded-lg bg-vt-gray-100 p-6 text-black">
             <h3 class="mb-4 text-xl font-semibold">{{ t('faq.contact.social.title') }}</h3>
             <div class="space-y-2">
               <p class="flex items-center">

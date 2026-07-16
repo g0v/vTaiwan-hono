@@ -1,9 +1,9 @@
 <template>
-  <div class="pt-20">
+  <div class="pt-20 mt-[-84px] sm:mt-[-88px] bg-vt-gray-800 text-white">
     <div class="container py-8">
       <div class="mb-8 flex flex-col items-center justify-between md:flex-row">
         <h1 class="text-3xl font-bold md:w-1/2">{{ t('medium.title') }}</h1>
-        <p class="text-sm text-gray-500">
+        <p class="text-sm text-gray-300">
           {{ t('medium.sourceDescription') }}
           <a :href="`https://medium.com/@${MEDIUM_USERNAME}`" target="_blank" rel="noopener noreferrer" class="text-sm text-democratic-red hover:underline">Medium/@{{ MEDIUM_USERNAME }}</a>
         </p>

@@ -1,10 +1,10 @@
 <template>
-  <div class="pt-20">
+  <div class="pt-20 mt-[-84px] sm:mt-[-88px] bg-vt-gray-800 text-white">
     <div class="container py-8">
       <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div class="max-w-3xl">
           <h1 class="mb-3 text-3xl font-bold">{{ t('newsletter.title') }}</h1>
-          <p class="text-gray-600">{{ t('newsletter.description') }}</p>
+          <p class="text-gray-300">{{ t('newsletter.description') }}</p>
         </div>
 
         <a :href="NEWSLETTER_FEED_URL.replace('/feed', '')" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-sm font-medium text-democratic-red hover:underline">
