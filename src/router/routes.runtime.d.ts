@@ -1,5 +1,5 @@
-declare module "#routes-runtime" {
-  import type { RouteRecordRaw } from "vue-router";
+declare module '#routes-runtime' {
+  import type { RouteRecordRaw } from 'vue-router'
 
-  export const routes: RouteRecordRaw[];
+  export const routes: RouteRecordRaw[]
 }

@@ -4,9 +4,9 @@
    Design tokens follow Tofuswang/vtaiwan-design-system (colors_and_type.css).
    ========================================================================== */
 
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;700;900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;700;900&display=swap');
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Scan the SSR Vue components + worker entry for class names. */
 @source '../**/*.vue';
@@ -56,10 +56,9 @@
   --color-ink: var(--color-vt-fg-1);
 
   /* Type families */
-  --font-vt-serif: "Noto Serif TC", "Source Han Serif TC", "Songti TC", serif;
-  --font-vt-sans:
-    "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
-  --font-vt-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --font-vt-serif: 'Noto Serif TC', 'Source Han Serif TC', 'Songti TC', serif;
+  --font-vt-sans: 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+  --font-vt-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   --font-weight-vt-bold: 700;
   --leading-vt-tight: 1.25;
 
@@ -151,46 +150,33 @@
     background: #0a0a0b;
   }
   .vt-hero-bg::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
     background:
-      radial-gradient(600px 400px at 18% 28%, rgba(216, 0, 0, 0.18), transparent 65%),
-      radial-gradient(520px 380px at 82% 72%, rgba(0, 136, 136, 0.14), transparent 65%),
+      radial-gradient(600px 400px at 18% 28%, rgba(216, 0, 0, 0.18), transparent 65%), radial-gradient(520px 380px at 82% 72%, rgba(0, 136, 136, 0.14), transparent 65%),
       radial-gradient(480px 340px at 50% 110%, rgba(219, 119, 0, 0.1), transparent 65%);
   }
   .vt-hero-bg::after {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     pointer-events: none;
     background-image: linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
     background-size: 100% 96px;
-    -webkit-mask-image: linear-gradient(
-      to bottom,
-      transparent 0,
-      black 30%,
-      black 70%,
-      transparent 100%
-    );
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0, black 30%, black 70%, transparent 100%);
     mask-image: linear-gradient(to bottom, transparent 0, black 30%, black 70%, transparent 100%);
   }
 
   /* Footer — quiet civic glow */
   .vt-footer-bg {
     background:
-      radial-gradient(80% 120% at 0% 0%, rgba(216, 0, 0, 0.1) 0%, rgba(216, 0, 0, 0) 55%),
-      radial-gradient(70% 120% at 100% 100%, rgba(0, 136, 136, 0.08) 0%, rgba(0, 136, 136, 0) 60%),
+      radial-gradient(80% 120% at 0% 0%, rgba(216, 0, 0, 0.1) 0%, rgba(216, 0, 0, 0) 55%), radial-gradient(70% 120% at 100% 100%, rgba(0, 136, 136, 0.08) 0%, rgba(0, 136, 136, 0) 60%),
       linear-gradient(180deg, #14141a 0%, #0b0b10 100%);
   }
   .vt-hairline {
-    background: linear-gradient(
-      90deg,
-      rgba(255, 255, 255, 0) 0%,
-      rgba(255, 255, 255, 0.08) 50%,
-      rgba(255, 255, 255, 0) 100%
-    );
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.08) 50%, rgba(255, 255, 255, 0) 100%);
   }
 
   /* Frosted-glass header bar */
@@ -268,7 +254,7 @@
   }
 
   .vt-topic-card::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     border-radius: inherit;
@@ -296,7 +282,7 @@
   }
 
   .vt-topic-card::after {
-    content: "";
+    content: '';
     position: absolute;
     right: -56px;
     bottom: -72px;
@@ -340,13 +326,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background:
-      radial-gradient(
-        120% 120% at 30% 20%,
-        rgba(255, 255, 255, 0.85) 0%,
-        rgba(255, 255, 255, 0) 55%
-      ),
-      rgba(216, 0, 0, 0.12);
+    background: radial-gradient(120% 120% at 30% 20%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%), rgba(216, 0, 0, 0.12);
     box-shadow:
       inset 0 1px 0 rgba(255, 255, 255, 0.9),
       inset 0 -1px 0 rgba(216, 0, 0, 0.15),
@@ -370,7 +350,7 @@
   }
 
   .vt-topic-cover-slice::before {
-    content: "";
+    content: '';
     position: absolute;
     inset: 0;
     border-radius: inherit;

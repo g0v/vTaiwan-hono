@@ -1,10 +1,10 @@
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { defineConfig } from "vite";
-import vue from "@vitejs/plugin-vue";
-import * as vueCompiler from "@vue/compiler-sfc";
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+import * as vueCompiler from '@vue/compiler-sfc'
 
-const root = path.dirname(fileURLToPath(import.meta.url));
+const root = path.dirname(fileURLToPath(import.meta.url))
 
 // 建置全站 hydration bundle，輸出到 public/js/ 供 ASSETS 提供
 export default defineConfig({
@@ -12,7 +12,7 @@ export default defineConfig({
   publicDir: false,
   resolve: {
     alias: {
-      "#routes-runtime": path.resolve(root, "src/router/routes.server.ts"),
+      '#routes-runtime': path.resolve(root, 'src/router/routes.server.ts'),
     },
   },
   // 對齊 vite.config.mts 的 vue-i18n feature flag（JIT、非 legacy）
@@ -25,19 +25,16 @@ export default defineConfig({
   },
   plugins: [vue({ compiler: vueCompiler })],
   build: {
-    outDir: "public",
+    outDir: 'public',
     emptyOutDir: false,
     cssCodeSplit: false,
     rollupOptions: {
-      input: path.resolve(root, "src/client/app-entry.ts"),
+      input: path.resolve(root, 'src/client/app-entry.ts'),
       output: {
-        format: "es",
-        entryFileNames: "js/app.js",
-        assetFileNames: (assetInfo) =>
-          assetInfo.names?.some((name) => name.endsWith(".css"))
-            ? "js/app.css"
-            : "assets/[name][extname]",
+        format: 'es',
+        entryFileNames: 'js/app.js',
+        assetFileNames: assetInfo => (assetInfo.names?.some(name => name.endsWith('.css')) ? 'js/app.css' : 'assets/[name][extname]'),
       },
     },
   },
-});
+})

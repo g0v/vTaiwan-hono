@@ -1,7 +1,7 @@
 <script setup lang="ts">
 defineProps<{
-  word: string;
-}>();
+  word: string
+}>()
 </script>
 
 <template>
@@ -9,20 +9,10 @@ defineProps<{
     <h1>Word: {{ word }}</h1>
     <p>
       The Open Graph image for this page is served from
-      <a
-        :href="`https://www.moedict.tw/${encodeURIComponent(word)}.png`"
-        target="_blank"
-        rel="noopener"
-      >
-        moedict.tw/{{ word }}.png </a
-      >.
+      <a :href="`https://www.moedict.tw/${encodeURIComponent(word)}.png`" target="_blank" rel="noopener"> moedict.tw/{{ word }}.png </a>.
     </p>
     <figure>
-      <img
-        :src="`https://www.moedict.tw/${encodeURIComponent(word)}.png`"
-        :alt="`Stroke order of ${word}`"
-        loading="lazy"
-      />
+      <img :src="`https://www.moedict.tw/${encodeURIComponent(word)}.png`" :alt="`Stroke order of ${word}`" loading="lazy" />
       <figcaption>Stroke order of {{ word }}</figcaption>
     </figure>
     <p><RouterLink to="/">Back home</RouterLink></p>

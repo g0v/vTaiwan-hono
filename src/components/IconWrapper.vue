@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type Component } from "vue";
+import { computed, type Component } from 'vue'
 import {
   ArrowUpRight,
   Book,
@@ -27,63 +27,63 @@ import {
   User,
   Users,
   X,
-} from "lucide-vue-next";
+} from 'lucide-vue-next'
 
 // 只註冊實際用到的圖示（具名 import 才能被 tree-shake；勿用 import * 全量引入）
 const icons: Record<string, Component> = {
-  "arrow-up-right": ArrowUpRight,
+  'arrow-up-right': ArrowUpRight,
   book: Book,
   bookmark: Bookmark,
   calendar: Calendar,
-  "chevron-down": ChevronDown,
-  "chevron-up": ChevronUp,
+  'chevron-down': ChevronDown,
+  'chevron-up': ChevronUp,
   download: Download,
   edit: Edit,
-  "external-link": ExternalLink,
+  'external-link': ExternalLink,
   eye: Eye,
-  "file-text": FileText,
+  'file-text': FileText,
   github: Github,
   info: Info,
   link: Link,
   megaphone: Megaphone,
-  "message-circle": MessageCircle,
+  'message-circle': MessageCircle,
   mic: Mic,
   play: Play,
   search: Search,
   settings: Settings,
-  "share-2": Share2,
+  'share-2': Share2,
   square: Square,
   trash: Trash2,
   user: User,
   users: Users,
   x: X,
-};
+}
 
 const props = withDefaults(
   defineProps<{
-    name: string;
-    size?: number;
-    color?: string;
-    type?: "default" | "primary" | "teal" | "amber";
-    class?: string;
+    name: string
+    size?: number
+    color?: string
+    type?: 'default' | 'primary' | 'teal' | 'amber'
+    class?: string
   }>(),
   {
     size: 24,
-    color: "",
-    type: "default",
-    class: "",
-  },
-);
+    color: '',
+    type: 'default',
+    class: '',
+  }
+)
 
 const colorMap: Record<string, string> = {
-  default: "#000000",
-  primary: "#D82000",
-  teal: "#008888",
-  amber: "#DB7700",
-};
+  default: '#000000',
+  primary: '#D82000',
+  teal: '#008888',
+  amber: '#DB7700',
+}
 
-const iconColor = computed(() => props.color || colorMap[props.type]);
-const iconComponent = computed(() => icons[props.name] ?? null);
+const iconColor = computed(() => props.color || colorMap[props.type])
+const iconComponent = computed(() => icons[props.name] ?? null)
 </script>
 
 <template>

@@ -6,10 +6,7 @@
 
         <section class="mb-8">
           <h2 class="mb-4 text-2xl font-semibold">引言</h2>
-          <p class="mb-4">
-            vTaiwan
-            致力於保護用戶的隱私權。本隱私政策說明我們如何收集、使用、儲存和保護您的個人資料。
-          </p>
+          <p class="mb-4">vTaiwan 致力於保護用戶的隱私權。本隱私政策說明我們如何收集、使用、儲存和保護您的個人資料。</p>
         </section>
 
         <section class="mb-8">
@@ -34,9 +31,7 @@
 
         <section class="mb-8">
           <h2 class="mb-4 text-2xl font-semibold">資料分享</h2>
-          <p class="mb-4">
-            除了必要的分析記錄用途之外，我們承諾不會將您的瀏覽記錄與個人資料出售、出租或分享給第三方。
-          </p>
+          <p class="mb-4">除了必要的分析記錄用途之外，我們承諾不會將您的瀏覽記錄與個人資料出售、出租或分享給第三方。</p>
           <div class="mb-4 border-l-4 border-blue-400 bg-blue-50 p-4">
             <p class="font-semibold text-blue-800">重要：我們不會將您的個人資料傳遞給第三方</p>
           </div>
@@ -44,9 +39,7 @@
 
         <section class="mb-8">
           <h2 class="mb-4 text-2xl font-semibold">資料安全</h2>
-          <p class="mb-4">
-            我們採取適當的技術和組織措施來保護您的個人資料，防止未經授權的存取、使用或洩露。
-          </p>
+          <p class="mb-4">我們採取適當的技術和組織措施來保護您的個人資料，防止未經授權的存取、使用或洩露。</p>
         </section>
 
         <section class="mb-8">
@@ -61,20 +54,12 @@
 
         <section class="mb-8">
           <h2 class="mb-4 text-2xl font-semibold">聯絡我們</h2>
-          <p class="mb-4">
-            如果您對本隱私政策有任何疑問，或希望行使您的權利，請透過以下方式聯絡我們：
-          </p>
+          <p class="mb-4">如果您對本隱私政策有任何疑問，或希望行使您的權利，請透過以下方式聯絡我們：</p>
           <div class="rounded-lg bg-gray-50 p-4">
             <p><strong>電子郵件：</strong> info@vtaiwan.tw</p>
             <p>
               <strong>GitHub：</strong>
-              <a
-                href="https://github.com/g0v/vTaiwan-hono"
-                class="text-blue-600 underline hover:text-blue-800"
-                target="_blank"
-                rel="noopener noreferrer"
-                >https://github.com/g0v/vTaiwan-hono</a
-              >
+              <a href="https://github.com/g0v/vTaiwan-hono" class="text-blue-600 underline hover:text-blue-800" target="_blank" rel="noopener noreferrer">https://github.com/g0v/vTaiwan-hono</a>
             </p>
           </div>
         </section>

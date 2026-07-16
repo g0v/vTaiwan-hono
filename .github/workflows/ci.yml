@@ -60,7 +60,7 @@ jobs:
       - name: Setup Dafny
         uses: dafny-lang/setup-dafny-action@be023fc606339d46ed6b077dcb8614d0279ded31
         with:
-          dafny-version: "4.9.0"
+          dafny-version: '4.9.0'
 
       # voidzero-dev/setup-vp v1.1.0
       - name: Setup Vite+

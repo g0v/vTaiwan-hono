@@ -11,9 +11,7 @@
 
         <section class="mb-8">
           <h2 class="mb-4 text-2xl font-semibold">接受條款</h2>
-          <p class="mb-4">
-            透過使用我們的服務，您表示同意遵守本使用條款。如果您不同意這些條款，請勿使用我們的服務。
-          </p>
+          <p class="mb-4">透過使用我們的服務，您表示同意遵守本使用條款。如果您不同意這些條款，請勿使用我們的服務。</p>
         </section>
 
         <section class="mb-8">
@@ -56,10 +54,7 @@
           <div class="mb-4 border-l-4 border-purple-400 bg-purple-50 p-4">
             <p class="font-semibold text-purple-800">所有轉錄內容將以 CC-BY-SA 創用授權釋出</p>
           </div>
-          <p class="mb-4">
-            CC-BY-SA
-            授權允許他人自由使用、修改和分享您的內容，但必須標明原作者並以相同授權釋出衍生作品。
-          </p>
+          <p class="mb-4">CC-BY-SA 授權允許他人自由使用、修改和分享您的內容，但必須標明原作者並以相同授權釋出衍生作品。</p>
         </section>
 
         <section class="mb-8">
@@ -75,16 +70,12 @@
 
         <section class="mb-8">
           <h2 class="mb-4 text-2xl font-semibold">免責聲明</h2>
-          <p class="mb-4">
-            我們的服務按「現狀」提供，不提供任何明示或暗示的保證。我們不承擔因使用服務而產生的任何直接或間接損失。
-          </p>
+          <p class="mb-4">我們的服務按「現狀」提供，不提供任何明示或暗示的保證。我們不承擔因使用服務而產生的任何直接或間接損失。</p>
         </section>
 
         <section class="mb-8">
           <h2 class="mb-4 text-2xl font-semibold">條款修改</h2>
-          <p class="mb-4">
-            我們保留隨時修改本使用條款的權利。修改後的條款將在網站上公佈，繼續使用服務即表示接受修改後的條款。
-          </p>
+          <p class="mb-4">我們保留隨時修改本使用條款的權利。修改後的條款將在網站上公佈，繼續使用服務即表示接受修改後的條款。</p>
         </section>
 
         <section class="mb-8">
@@ -94,13 +85,7 @@
             <p><strong>電子郵件：</strong> info@vtaiwan.tw</p>
             <p>
               <strong>GitHub：</strong>
-              <a
-                href="https://github.com/g0v/vTaiwan-hono"
-                class="text-blue-600 underline hover:text-blue-800"
-                target="_blank"
-                rel="noopener noreferrer"
-                >https://github.com/g0v/vTaiwan-hono</a
-              >
+              <a href="https://github.com/g0v/vTaiwan-hono" class="text-blue-600 underline hover:text-blue-800" target="_blank" rel="noopener noreferrer">https://github.com/g0v/vTaiwan-hono</a>
             </p>
           </div>
         </section>

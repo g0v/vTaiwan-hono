@@ -1,27 +1,15 @@
 <template>
   <!-- Main Content Container -->
   <main class="flex items-center justify-center px-6 py-16">
-    <div
-      class="vt-glass max-w-2xl w-full rounded-2xl p-8 sm:p-12 text-center flex flex-col items-center"
-    >
+    <div class="vt-glass flex w-full max-w-2xl flex-col items-center rounded-2xl p-8 text-center sm:p-12">
       <!-- Premium Deliberation/Construction SVG Illustration -->
-      <div class="relative w-full max-w-[320px] mb-8 select-none">
-        <svg
-          viewBox="0 0 240 200"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          class="w-full h-auto drop-shadow-xl"
-        >
+      <div class="relative mb-8 w-full max-w-[320px] select-none">
+        <svg viewBox="0 0 240 200" fill="none" xmlns="http://www.w3.org/2000/svg" class="h-auto w-full drop-shadow-xl">
           <!-- Background Soft Glows -->
           <circle cx="120" cy="100" r="80" fill="url(#bg-glow)" opacity="0.4" />
 
           <!-- Isometric Network Grid Lines -->
-          <path
-            d="M120 20 L200 66 L200 154 L120 200 L40 154 L40 66 Z"
-            stroke="url(#grid-gradient)"
-            stroke-width="1.5"
-            stroke-dasharray="4,4"
-          />
+          <path d="M120 20 L200 66 L200 154 L120 200 L40 154 L40 66 Z" stroke="url(#grid-gradient)" stroke-width="1.5" stroke-dasharray="4,4" />
           <path d="M120 20 L120 200" stroke="url(#grid-gradient)" stroke-width="1" opacity="0.3" />
           <path d="M40 66 L200 154" stroke="url(#grid-gradient)" stroke-width="1" opacity="0.3" />
           <path d="M40 154 L200 66" stroke="url(#grid-gradient)" stroke-width="1" opacity="0.3" />
@@ -73,24 +61,13 @@
 
           <g class="float-bubble bubble-2">
             <circle cx="190" cy="125" r="12" fill="#008888" fill-opacity="0.9" />
-            <path
-              d="M184 123 H196 M186 127 H194"
-              stroke="white"
-              stroke-width="1.5"
-              stroke-linecap="round"
-            />
+            <path d="M184 123 H196 M186 127 H194" stroke="white" stroke-width="1.5" stroke-linecap="round" />
           </g>
 
           <g class="float-bubble bubble-3">
             <circle cx="120" cy="180" r="8" fill="#d80000" fill-opacity="0.95" />
             <!-- checkmark -->
-            <path
-              d="M117 180 L119 182 L123 178"
-              stroke="white"
-              stroke-width="1.2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            />
+            <path d="M117 180 L119 182 L123 178" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" />
           </g>
 
           <!-- Definitions of Gradients -->
@@ -109,44 +86,26 @@
         </svg>
 
         <!-- Modern Floating Crane or Deliberation Crane beam -->
-        <div
-          class="absolute top-[10%] right-[32%] w-1.5 h-16 bg-gradient-to-b from-wheat-yellow to-transparent animate-pulse-line"
-        ></div>
+        <div class="animate-pulse-line absolute top-[10%] right-[32%] h-16 w-1.5 bg-gradient-to-b from-wheat-yellow to-transparent"></div>
       </div>
 
       <!-- Big Bold Title and Subtitle -->
-      <h1 class="text-4xl sm:text-5xl font-extrabold text-ink tracking-tight mb-4 font-sans">
-        施工中<span class="text-democratic-red">...</span>
-      </h1>
-      <p class="text-lg sm:text-xl font-medium text-vt-gray-700 max-w-md mx-auto mb-3 font-sans">
-        數位民主空間建設中！
-      </p>
-      <p class="text-sm sm:text-base text-vt-gray-400 max-w-lg mx-auto mb-10">
+      <h1 class="mb-4 font-sans text-4xl font-extrabold tracking-tight text-ink sm:text-5xl">施工中<span class="text-democratic-red">...</span></h1>
+      <p class="mx-auto mb-3 max-w-md font-sans text-lg font-medium text-vt-gray-700 sm:text-xl">數位民主空間建設中！</p>
+      <p class="mx-auto mb-10 max-w-lg text-sm text-vt-gray-400 sm:text-base">
         您所存取的頁面屬於
-        <span class="font-semibold text-ink font-sans">vue.vTaiwan-neo</span> 的新版規劃項目。
-        我們正在 Hono 輕量化架構上重整此區塊，敬請期待更極速流暢的公共政策協作體驗。
+        <span class="font-sans font-semibold text-ink">vue.vTaiwan-neo</span> 的新版規劃項目。 我們正在 Hono 輕量化架構上重整此區塊，敬請期待更極速流暢的公共政策協作體驗。
       </p>
 
       <!-- Navigation Buttons -->
-      <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto font-sans">
+      <div class="flex w-full flex-col gap-4 font-sans sm:w-auto sm:flex-row">
         <RouterLink to="/" class="vt-btn vt-btn-primary justify-center">
-          <svg
-            class="w-4 h-4"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.5"
-            viewBox="0 0 24 24"
-          >
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
           </svg>
           返回首頁
         </RouterLink>
-        <RouterLink
-          to="/#explore"
-          class="vt-btn vt-btn-outline border-vt-gray-400 hover:border-ink hover:text-ink text-vt-gray-700 justify-center"
-        >
-          瀏覽已開放的範例
-        </RouterLink>
+        <RouterLink to="/#explore" class="vt-btn vt-btn-outline justify-center border-vt-gray-400 text-vt-gray-700 hover:border-ink hover:text-ink"> 瀏覽已開放的範例 </RouterLink>
       </div>
     </div>
   </main>
