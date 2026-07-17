@@ -19,12 +19,7 @@
             <p class="mb-6 text-gray-600">
               {{ t('contact.workingGroup.description') }}
             </p>
-            <a
-              href="https://g0v.hackmd.io/@tmonk/rJHYWR9S4/%2Ff9c4pS_TQjClh0g6wCJ8iw?type=book"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="vt-btn vt-btn-primary inline-flex items-center"
-            >
+            <a href="https://g0v.hackmd.io/@tmonk/rJHYWR9S4/%2Ff9c4pS_TQjClh0g6wCJ8iw?type=book" target="_blank" rel="noopener noreferrer" class="vt-btn vt-btn-primary inline-flex items-center">
               <IconWrapper name="external-link" :size="20" class="mr-2" color="white" />
               {{ t('contact.workingGroup.button') }}
             </a>

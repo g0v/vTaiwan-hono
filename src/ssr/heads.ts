@@ -258,7 +258,6 @@ export function headForPropose(origin: string, t: Translate): HeadConfig {
   }
 }
 
-
 export function headForNotFound(origin: string, t: Translate): HeadConfig {
   const title = t('head.notFound.title') + ' - ' + SITE_NAME
   const description = t('head.notFound.description')
