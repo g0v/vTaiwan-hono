@@ -96,6 +96,8 @@
   --spacing-vt-8: 32px;
   --spacing-vt-12: 48px;
   --spacing-vt-16: 64px;
+  --spacing-vt-navbar-overlap: 86px;
+  --spacing-vt-navbar-overlap-sm: 90px;
 
   /* Radii */
   --radius-vt-none: 0;
@@ -135,6 +137,17 @@
    Design-system components — the few effects that are awkward as utilities
    -------------------------------------------------------------------------- */
 @layer components {
+  /* 讓頁面背景延伸到 sticky Navbar 後方；集中管理，避免各頁使用 arbitrary value。 */
+  .vt-under-navbar {
+    margin-top: calc(-1 * var(--spacing-vt-navbar-overlap));
+  }
+
+  @media (min-width: 40rem) {
+    .vt-under-navbar {
+      margin-top: calc(-1 * var(--spacing-vt-navbar-overlap-sm));
+    }
+  }
+
   /* Signature red underline on section headings */
   .vt-title-underline {
     position: relative;

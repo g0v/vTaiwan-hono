@@ -1,6 +1,6 @@
 <template>
   <!-- Hero Section -->
-  <section class="vt-hero-bg mt-[-86px] text-white sm:mt-[-90px]">
+  <section class="vt-hero-bg vt-under-navbar text-white">
     <div class="relative z-1 mx-auto max-w-5xl px-6 pt-36 pb-24">
       <h1 class="mb-4 text-3xl font-bold md:text-4xl">{{ t('meetups.title') }}</h1>
       <p class="max-w-3xl text-xl">

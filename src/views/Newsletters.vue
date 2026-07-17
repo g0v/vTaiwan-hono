@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-[-86px] bg-vt-gray-800 pt-20 text-white sm:mt-[-90px]">
+  <div class="vt-under-navbar bg-vt-gray-800 pt-20 text-white">
     <div class="container py-8">
       <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div class="max-w-3xl">

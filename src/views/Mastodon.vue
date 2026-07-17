@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-[-86px] bg-vt-gray-800 pt-20 text-white sm:mt-[-90px]">
+  <div class="vt-under-navbar bg-vt-gray-800 pt-20 text-white">
     <div class="container py-8">
       <div class="mb-8 flex flex-col items-center justify-between md:flex-row">
         <h1 class="text-3xl font-bold text-white md:w-1/2">{{ $t('header.mastodon') }}</h1>

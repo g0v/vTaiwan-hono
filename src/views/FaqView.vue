@@ -1,5 +1,5 @@
 <template>
-  <main class="mt-[-86px] bg-vt-gray-800 pt-20 text-white sm:mt-[-90px]">
+  <main class="vt-under-navbar bg-vt-gray-800 pt-20 text-white">
     <div class="mx-auto max-w-3xl py-12">
       <h1 class="sticky top-[80px] z-10 mb-8 bg-vt-gray-800 p-2 text-4xl font-bold sm:top-[88px]">{{ t('faq.title') }}</h1>
 

@@ -13,7 +13,7 @@ const steps = [
 
 <template>
   <!-- Hero -->
-  <section class="vt-hero-bg mt-[-86px] flex min-h-screen items-center text-white sm:mt-[-90px]">
+  <section class="vt-hero-bg vt-under-navbar flex min-h-screen items-center text-white">
     <div class="mx-auto h-fit w-full max-w-5xl px-6">
       <div class="mb-12 inline-flex items-center gap-3.5 pt-[156px] font-sans text-[13px] font-semibold tracking-[0.22em] text-white/55 uppercase sm:pt-[184px]">
         <span class="h-px w-7 bg-white/45" />

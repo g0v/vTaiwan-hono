@@ -9,8 +9,10 @@ export interface RenderPageResult {
   status: ContentfulStatusCode
 }
 
-const clientEntry = import.meta.env.PROD ? `/js/app.js?v=${import.meta.env.VITE_BUILD_ID}` : '/src/client/app-entry.ts'
-const clientStyle = import.meta.env.PROD ? '    <link rel="stylesheet" href="/js/app.css" />\n' : ''
+const buildId = import.meta.env.VITE_BUILD_ID
+const clientEntry = import.meta.env.PROD ? `/js/app.js?v=${buildId}` : '/src/client/app-entry.ts'
+const appStyle = import.meta.env.PROD ? `/styles.css?v=${buildId}` : '/styles.css'
+const clientStyle = import.meta.env.PROD ? `    <link rel="stylesheet" href="/js/app.css?v=${buildId}" />\n` : ''
 
 // 用 vue-router 比對目前 URL，SSR 第一個畫面，再讓瀏覽器端 hydration 接管後續路由。
 export async function renderPage(url: string, origin: string): Promise<RenderPageResult> {
@@ -36,7 +38,7 @@ export async function renderPage(url: string, origin: string): Promise<RenderPag
     <meta name="msapplication-TileColor" content="#da532c" />
     <meta name="theme-color" content="#ffffff" />
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-    <link rel="stylesheet" href="/styles.css" />
+    <link rel="stylesheet" href="${appStyle}" />
 ${clientStyle}
   </head>
   <body>
