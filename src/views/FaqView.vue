@@ -1,7 +1,7 @@
 <template>
   <main class="mt-[-86px] bg-vt-gray-800 pt-20 text-white sm:mt-[-90px]">
     <div class="mx-auto max-w-3xl py-12">
-      <h1 class="p-2 mb-8 text-4xl font-bold sticky top-[80px] sm:top-[88px] bg-vt-gray-800 z-10">{{ t('faq.title') }}</h1>
+      <h1 class="sticky top-[80px] z-10 mb-8 bg-vt-gray-800 p-2 text-4xl font-bold sm:top-[88px]">{{ t('faq.title') }}</h1>
 
       <section class="mb-12">
         <p class="mb-6 leading-relaxed">{{ t('faq.description') }}</p>
