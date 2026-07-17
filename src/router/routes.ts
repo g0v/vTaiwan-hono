@@ -2,6 +2,7 @@ import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import {
   headForAbout,
   headForBlogs,
+  headForContact,
   headForContributors,
   headForFaq,
   headForHome,
@@ -15,6 +16,7 @@ import {
   headForPolis,
   headForProfile,
   headForPrivacy,
+  headForPropose,
   headForTerms,
   headForTopicDetail,
   headForTopics,
@@ -83,6 +85,10 @@ export function headForRoute(route: RouteLocationNormalizedLoaded, origin: strin
       return headForTranscriptionDetail(origin, t)
     case 'jitsi':
       return headForJitsi(origin, t)
+    case 'contact':
+      return headForContact(origin, t)
+    case 'propose':
+      return headForPropose(origin, t)
     default:
       return headForNotFound(origin, t)
   }

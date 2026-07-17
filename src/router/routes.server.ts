@@ -20,6 +20,7 @@ import JitsiView from '../views/JitsiView.vue'
 import MeetupsView from '../views/MeetupsView.vue'
 import TranscriptionDetailView from '../views/TranscriptionDetailView.vue'
 import TranscriptionsView from '../views/TranscriptionsView.vue'
+import ContactView from '../views/ContactView.vue'
 
 const placeholderPaths = ['/404']
 
@@ -64,6 +65,8 @@ export const routes: RouteRecordRaw[] = [
     meta: { status: 200 },
   },
   { path: '/faq', name: 'faq', component: FaqView, meta: { status: 200 } },
+  { path: '/contact', name: 'contact', component: ContactView, meta: { status: 200 } },
+  { path: '/contactus', redirect: '/contact' },
   { path: '/meetups', name: 'meetups', component: MeetupsView, meta: { status: 200 } },
   {
     path: '/transcriptions',
