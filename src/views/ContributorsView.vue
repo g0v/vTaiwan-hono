@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-[-84px] bg-vt-gray-800 pt-20 sm:mt-[-88px]">
+  <div class="mt-[-86px] bg-vt-gray-800 pt-20 sm:mt-[-90px]">
     <div class="container py-8">
       <h1 class="mb-8 text-3xl font-bold text-white">{{ t('contributors.title') }}</h1>
 
