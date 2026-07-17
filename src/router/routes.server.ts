@@ -21,6 +21,7 @@ import MeetupsView from '../views/MeetupsView.vue'
 import TranscriptionDetailView from '../views/TranscriptionDetailView.vue'
 import TranscriptionsView from '../views/TranscriptionsView.vue'
 import ContactView from '../views/ContactView.vue'
+import ProposeView from '../views/ProposeView.vue'
 
 const placeholderPaths = ['/404']
 
@@ -67,6 +68,7 @@ export const routes: RouteRecordRaw[] = [
   { path: '/faq', name: 'faq', component: FaqView, meta: { status: 200 } },
   { path: '/contact', name: 'contact', component: ContactView, meta: { status: 200 } },
   { path: '/contactus', redirect: '/contact' },
+  { path: '/propose', name: 'propose', component: ProposeView, meta: { status: 200 } },
   { path: '/meetups', name: 'meetups', component: MeetupsView, meta: { status: 200 } },
   {
     path: '/transcriptions',
