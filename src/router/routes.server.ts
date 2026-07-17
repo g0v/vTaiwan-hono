@@ -66,6 +66,7 @@ export const routes: RouteRecordRaw[] = [
     meta: { status: 200 },
   },
   { path: '/faq', name: 'faq', component: FaqView, meta: { status: 200 } },
+  { path: '/how-to-use', redirect: '/faq' },
   { path: '/contact', name: 'contact', component: ContactView, meta: { status: 200 } },
   { path: '/contactus', redirect: '/contact' },
   { path: '/propose', name: 'propose', component: ProposeView, meta: { status: 200 } },
