@@ -47,7 +47,7 @@
               href="https://join.g0v.tw/"
               target="_blank"
               rel="noopener noreferrer"
-              class="mt-4 vt-btn vt-btn-primary inline-flex items-center rounded-lg px-6 py-3 font-medium transition duration-200"
+              class="vt-btn vt-btn-primary mt-4 inline-flex items-center rounded-lg px-6 py-3 font-medium transition duration-200"
             >
               <IconWrapper name="slack" :size="20" class="mr-2" color="#FFFFFF" />
               {{ t('contact.slack.button') }}
