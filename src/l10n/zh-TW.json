@@ -84,6 +84,14 @@
     "jitsi": {
       "title": "即時會議 | vTaiwan",
       "description": "vTaiwan 定期舉辦線上與實體會議，討論各專案的進展與公共政策議題。歡迎所有人參與！"
+    },
+    "contact": {
+      "title": "聯絡我們 | vTaiwan",
+      "description": "加入 vTaiwan 社群，與我們一起推動數位民主。"
+    },
+    "propose": {
+      "title": "提出專案提案 | vTaiwan",
+      "description": "如果您有值得討論的公共政策議題，歡迎提出專案建議。"
     }
   },
   "common": {

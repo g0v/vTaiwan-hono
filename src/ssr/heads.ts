@@ -238,6 +238,25 @@ export function headForJitsi(origin: string, t: Translate): HeadConfig {
     meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/jitsi`),
   }
 }
+export function headForContact(origin: string, t: Translate): HeadConfig {
+  const title = t('head.contact.title') + ' - ' + SITE_NAME
+  const description = t('head.contact.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/contact`),
+  }
+}
+
+export function headForPropose(origin: string, t: Translate): HeadConfig {
+  const title = t('head.propose.title') + ' - ' + SITE_NAME
+  const description = t('head.propose.description')
+  return {
+    title,
+    description,
+    meta: buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/propose`),
+  }
+}
 
 export function headForNotFound(origin: string, t: Translate): HeadConfig {
   const title = t('head.notFound.title') + ' - ' + SITE_NAME

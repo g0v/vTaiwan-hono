@@ -84,6 +84,14 @@
     "jitsi": {
       "title": "Live Meeting | vTaiwan",
       "description": "vTaiwan regularly hosts online and physical meetings to discuss project progress and public policy issues. Everyone is welcome!"
+    },
+    "contact": {
+      "title": "Contact Us | vTaiwan",
+      "description": "Join the vTaiwan community and help us promote digital democracy."
+    },
+    "propose": {
+      "title": "Propose a Project | vTaiwan",
+      "description": "If you have public policy issues worth discussing, you are welcome to propose project suggestions."
     }
   },
   "即將開始": "Upcoming",
