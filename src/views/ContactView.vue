@@ -47,7 +47,7 @@
               href="https://join.g0v.tw/"
               target="_blank"
               rel="noopener noreferrer"
-              class="mt-4 inline-flex items-center rounded-lg bg-gray-800 px-6 py-3 font-medium text-white transition duration-200 hover:bg-gray-700"
+              class="mt-4 vt-btn vt-btn-primary inline-flex items-center rounded-lg px-6 py-3 font-medium transition duration-200"
             >
               <IconWrapper name="slack" :size="20" class="mr-2" color="#FFFFFF" />
               {{ t('contact.slack.button') }}
@@ -106,7 +106,7 @@
               href="https://join.g0v.tw/"
               target="_blank"
               rel="noopener noreferrer"
-              class="group inline-flex items-center rounded-lg border-2 border-white px-6 py-3 font-medium text-white transition duration-200 hover:bg-white hover:text-democratic-red"
+              class="group vt-btn vt-btn-primary inline-flex items-center rounded-lg border-2 px-6 py-3 font-medium transition duration-200 hover:bg-white hover:text-democratic-red"
             >
               <IconWrapper name="slack" :size="20" class="mr-2 stroke-white group-hover:stroke-democratic-red" />
               {{ t('contact.cta.slack') }}
