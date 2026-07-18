@@ -8,7 +8,7 @@
     "dev": "vp run build:css && vp dev",
     "build:css": "vp exec tailwindcss -i ./src/styles/app.css -o ./public/styles.css --minify",
     "watch:css": "vp exec tailwindcss -i ./src/styles/app.css -o ./public/styles.css --watch",
-    "build": "VITE_BUILD_ID=$(date +%s) sh -c 'vp run build:css && vp build && vp build -c vite.client.config.mts'",
+    "build": "VITE_BUILD_ID=$(date +%s) sh -c 'vp run build:css && vp build -c vite.client.config.mts && vp build'",
     "preview": "vp preview",
     "deploy": "vp run build && vp exec wrangler deploy",
     "typecheck": "vp check --no-fmt --no-lint",
