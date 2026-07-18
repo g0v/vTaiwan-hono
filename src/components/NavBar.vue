@@ -113,45 +113,47 @@ function logout() {
     </div>
 
     <!-- 行動選單面板 -->
-    <div v-if="mobileOpen" class="vt-glass relative z-10 mx-auto mt-2 max-w-6xl rounded-2xl p-2.5 xl:hidden">
-      <RouterLink
-        v-for="l in links"
-        :key="l.key"
-        :to="l.href"
-        class="flex items-center justify-between rounded-xl px-3.5 py-1.5 transition-colors hover:bg-vt-gray-100"
-        :class="activeKey === l.key ? 'text-democratic-red' : 'text-vt-gray-800'"
-        @click="mobileOpen = false"
-      >
-        {{ t(l.labelKey) }}
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40">
-          <path d="m9 18 6-6-6-6" />
-        </svg>
-      </RouterLink>
-      <div class="my-1.5 h-px bg-vt-border" />
-      <div class="flex gap-2 px-1.5 pt-2 pb-1.5">
-        <LanguageSwitcher block drop-up class="flex-1" />
-        <template v-if="user">
-          <RouterLink
-            to="/profile"
-            class="inline-flex flex-1 items-center justify-center rounded-full bg-vt-bg-2 px-3 py-3 text-vt-fg-1 transition-colors hover:bg-vt-gray-100"
-            :class="{ 'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish }"
-            @click="mobileOpen = false"
-          >
-            {{ t('common.profile') }}
-          </RouterLink>
-          <button type="button" class="rounded-full px-3 py-3 text-vt-sm text-vt-fg-2 transition-colors hover:bg-vt-bg-2" @click="logout">
-            {{ t('common.logout') }}
-          </button>
-        </template>
-        <button
-          v-else
-          type="button"
-          class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-3 py-3 text-vt-fg-inverse transition-colors hover:bg-democratic-red"
-          :class="{ 'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish }"
-          @click="emit('show-login')"
+    <div v-if="mobileOpen" class="absolute left-0 w-full px-3 sm:px-6 xl:hidden">
+      <div class="vt-glass relative z-10 mx-auto mt-2 max-w-6xl rounded-2xl p-2.5">
+        <RouterLink
+          v-for="l in links"
+          :key="l.key"
+          :to="l.href"
+          class="flex items-center justify-between rounded-xl px-3.5 py-1.5 transition-colors hover:bg-vt-gray-100"
+          :class="activeKey === l.key ? 'text-democratic-red' : 'text-vt-gray-800'"
+          @click="mobileOpen = false"
         >
-          {{ t('common.registerLogin') }}
-        </button>
+          {{ t(l.labelKey) }}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </RouterLink>
+        <div class="my-1.5 h-px bg-vt-border" />
+        <div class="flex gap-2 px-1.5 pt-2 pb-1.5">
+          <LanguageSwitcher block drop-up class="flex-1" />
+          <template v-if="user">
+            <RouterLink
+              to="/profile"
+              class="inline-flex flex-1 items-center justify-center rounded-full bg-vt-bg-2 px-3 py-3 text-vt-fg-1 transition-colors hover:bg-vt-gray-100"
+              :class="{ 'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish }"
+              @click="mobileOpen = false"
+            >
+              {{ t('common.profile') }}
+            </RouterLink>
+            <button type="button" class="rounded-full px-3 py-3 text-vt-sm text-vt-fg-2 transition-colors hover:bg-vt-bg-2" @click="logout">
+              {{ t('common.logout') }}
+            </button>
+          </template>
+          <button
+            v-else
+            type="button"
+            class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-3 py-3 text-vt-fg-inverse transition-colors hover:bg-democratic-red"
+            :class="{ 'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish }"
+            @click="emit('show-login')"
+          >
+            {{ t('common.registerLogin') }}
+          </button>
+        </div>
       </div>
     </div>
   </header>
