@@ -1,4 +1,5 @@
 import type { Hono } from 'hono'
+import type { D1Database, R2Bucket, Ai } from '@cloudflare/workers-types'
 
 export type AppBindings = {
   ASSETS?: {
