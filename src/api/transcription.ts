@@ -57,7 +57,7 @@ export function registerTranscriptionApi(app: App) {
     const transcription = await file.text()
 
     if (c.env.R2) {
-      await c.env.R2.put(`${meeting_id}.txt`, file.stream(), {
+      await c.env.R2.put(`${meeting_id}.txt`, transcription, {
         httpMetadata: { contentType: 'text/plain; charset=utf-8' },
       })
     }
