@@ -26,6 +26,16 @@
       <p class="mb-8">
         {{ t('meetups.calendar.description') }}
       </p>
+      <div class="mb-4">
+        <iframe
+          src="https://calendar.google.com/calendar/embed?src=28ed4c2608d217756c62b9c18f228d42c4f43715eba517adbcb9160fa36944a7%40group.calendar.google.com&ctz=Asia%2FTaipei"
+          style="border: 0"
+          width="100%"
+          height="600"
+          frameborder="0"
+          scrolling="no"
+        ></iframe>
+      </div>
       <div class="flex justify-center gap-4">
         <a
           href="https://calendar.google.com/calendar/u/2?cid=MjhlZDRjMjYwOGQyMTc3NTZjNjJiOWMxOGYyMjhkNDJjNGY0MzcxNWViYTUxN2FkYmNiOTE2MGZhMzY5NDRhN0Bncm91cC5jYWxlbmRhci5nb29nbGUuY29t"
