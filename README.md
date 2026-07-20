@@ -156,18 +156,19 @@ vite build -c vite.client.config.mts
 ## Develop / 開發
 
 ```bash
-npm install
-npm run dev          # vp dev — 本機跑 Worker，含 HMR / runs the worker locally with HMR
-                   # `predev` 會先把 src/styles/app.css 編譯成 public/styles.css
-npm run watch:css    # (另開終端機) 監看 .vue 變更並即時重編 Tailwind 樣式
-npm run typecheck    # tsc --noEmit — 型別檢查 / type-check
-npm run test         # vp test — 連結完整性測試 / link-integrity tests
-npm run check        # vp check — format + lint + typecheck 一次到位 / all three at once
+vp install
+vp run dev           # 本機跑 Worker，D1 使用本機模擬資料庫，含 HMR
+vp run dev:remote    # 本機跑 Worker，但 D1 連線到遠端資料庫
+vp preview           # 預覽 production build，D1 連線到遠端資料庫
+vp run watch:css     # (另開終端機) 監看 .vue 變更並即時重編 Tailwind 樣式
+vp check --no-fmt --no-lint # 型別檢查 / type-check
+vp test              # 連結完整性測試 / link-integrity tests
+vp check             # format + lint + typecheck 一次到位 / all three at once
 ```
 
-> **EN:** `npm run dev` rebuilds `public/styles.css` once on start (via `predev`). When you add or change Tailwind classes in `.vue` files during a session, run `npm run watch:css` in a second terminal so the stylesheet stays in sync.
+> **EN:** `vp run dev` rebuilds `public/styles.css` once on start. It uses local D1 simulation by default; use `vp run dev:remote` only when you need the remote D1 data. When you add or change Tailwind classes in `.vue` files during a session, run `vp run watch:css` in a second terminal so the stylesheet stays in sync.
 >
-> **中文：**`npm run dev` 啟動時會（透過 `predev`）重新編譯一次 `public/styles.css`。開發過程中若在 `.vue` 增修 Tailwind class，請另開終端機跑 `npm run watch:css`，樣式才會即時更新。
+> **中文：**`vp run dev` 啟動時會重新編譯一次 `public/styles.css`，預設使用本機 D1 模擬資料庫；需要遠端資料時才用 `vp run dev:remote`。開發過程中若在 `.vue` 增修 Tailwind class，請另開終端機跑 `vp run watch:css`，樣式才會即時更新。
 
 ### Verify / 驗證（改完必做）
 

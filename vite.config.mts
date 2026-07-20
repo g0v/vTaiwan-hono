@@ -17,7 +17,7 @@ const vueI18nFlags = {
   __INTLIFY_PROD_DEVTOOLS__: false,
 }
 
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   fmt: {
     semi: false,
     singleQuote: true,
@@ -49,7 +49,8 @@ export default defineConfig({
   define: vueI18nFlags,
   plugins: lazyPlugins(() => [
     // Cloudflare plugin 與 Vitest 不相容；測試時略過，由 vue plugin 單獨處理 .vue
-    ...(process.env['VITEST'] ? [] : [cloudflare()]),
+    // 只有明確使用 `--mode remote` 時才連遠端綁定；一般 dev 使用本機模擬資源。
+    ...(process.env['VITEST'] ? [] : [cloudflare({ remoteBindings: mode === 'remote' })]),
     vue({ compiler: vueCompiler }),
   ]),
-})
+}))
