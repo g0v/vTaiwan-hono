@@ -76,7 +76,7 @@
                 <div class="mb-4 text-sm text-gray-600">
                   <img :src="'/CC0.png'" alt="CC0" class="h-8 w-auto" />
                   <!-- eslint-disable-next-line vue/no-v-html -->
-                  <div v-html="getRenderedOutlinePreview(item.outline)" class="prose prose-sm max-w-none"></div>
+                  <div v-html="getRenderedOutlinePreview(item.outline)" class="transcription-outline prose prose-sm max-w-none"></div>
                 </div>
               </div>
 
@@ -126,7 +126,7 @@
             <img :src="'/CC0.png'" alt="CC0" class="h-8 w-auto" />
           </div>
           <!-- eslint-disable-next-line vue/no-v-html -->
-          <div v-if="!editing" v-html="renderedOutline" class="prose prose-sm max-w-none"></div>
+          <div v-if="!editing" v-html="renderedOutline" class="transcription-outline prose prose-sm max-w-none"></div>
           <textarea v-else v-model="myOutline" class="h-full max-h-[60vh] min-h-[200px] w-full"></textarea>
         </div>
 
@@ -404,11 +404,28 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.transcription-outline :deep(table) {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--color-vt-border);
+}
+
+.transcription-outline :deep(th),
+.transcription-outline :deep(td) {
+  padding: var(--spacing-vt-2);
+  border: 1px solid var(--color-vt-border);
+  text-align: left;
+}
+
+.transcription-outline :deep(th) {
+  background: var(--color-vt-bg-2);
+}
+
 textarea {
-  border: 2px solid #000000;
-  border-radius: 4px;
-  padding: 8px;
-  font-size: 14px;
+  border: 2px solid var(--color-vt-border-strong);
+  border-radius: var(--radius-vt-sm);
+  padding: var(--spacing-vt-2);
+  font-size: var(--text-vt-sm);
   resize: vertical;
 }
 </style>
