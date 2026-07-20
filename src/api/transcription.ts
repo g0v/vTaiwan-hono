@@ -1,6 +1,7 @@
 import { corsFor } from './cors'
 import { readAudioToText } from '../lib/transcribe'
 import { generateOutline } from '../lib/ai-summarize'
+import { splitTranscriptionIntoChunks, TRANSCRIPTION_MAX_BYTES, utf8ByteLength } from '../lib/transcription-storage'
 import type { App } from './types'
 
 const LANG_MAP: Record<string, string> = {
@@ -55,6 +56,19 @@ export function registerTranscriptionApi(app: App) {
     const filename = file.name
     const meeting_id = filename.replace('.txt', '').replace('transcript-', '').split('-').join('')
     const transcription = await file.text()
+    const transcriptionBytes = utf8ByteLength(transcription)
+    if (transcriptionBytes > TRANSCRIPTION_MAX_BYTES) {
+      return c.json(
+        {
+          error: '逐字稿檔案過大',
+          code: 'TRANSCRIPTION_TOO_LARGE',
+          max_bytes: TRANSCRIPTION_MAX_BYTES,
+        },
+        413
+      )
+    }
+    const chunks = splitTranscriptionIntoChunks(transcription)
+    const isChunked = chunks.length > 1
 
     if (c.env.R2) {
       await c.env.R2.put(`${meeting_id}.txt`, transcription, {
@@ -67,23 +81,25 @@ export function registerTranscriptionApi(app: App) {
     const db = c.env.DB
     if (!db) return c.json({ error: 'DB binding not configured' }, 500)
 
-    const existing = await db.prepare('SELECT * FROM transcriptions WHERE meeting_id = ?').bind(meeting_id).first()
+    const existing = await db.prepare('SELECT meeting_id FROM transcriptions WHERE meeting_id = ?').bind(meeting_id).first()
+    const storedTranscription = isChunked ? '' : transcription
+    const saveMain = existing
+      ? db.prepare('UPDATE transcriptions SET transcription = ?, outline = ? WHERE meeting_id = ?').bind(storedTranscription, outline, meeting_id)
+      : db.prepare('INSERT INTO transcriptions (meeting_id, transcription, outline) VALUES (?, ?, ?)').bind(meeting_id, storedTranscription, outline)
+    const statements = [saveMain, db.prepare('DELETE FROM transcription_chunks WHERE meeting_id = ?').bind(meeting_id)]
 
-    if (!existing) {
-      await db.prepare('INSERT INTO transcriptions (meeting_id, transcription, outline) VALUES (?, ?, ?)').bind(meeting_id, transcription, outline).run()
-      return c.json({
-        message: 'Transcription created successfully',
-        meeting_id,
-        r2_key: `${meeting_id}.txt`,
-      })
-    } else {
-      await db.prepare('UPDATE transcriptions SET transcription = ?, outline = ? WHERE meeting_id = ?').bind(transcription, outline, meeting_id).run()
-      return c.json({
-        message: 'Transcription updated successfully',
-        meeting_id,
-        r2_key: `${meeting_id}.txt`,
-      })
+    if (isChunked) {
+      statements.push(...chunks.map((chunk, chunkIndex) => db.prepare('INSERT INTO transcription_chunks (meeting_id, chunk_index, content) VALUES (?, ?, ?)').bind(meeting_id, chunkIndex, chunk)))
     }
+
+    await db.batch(statements)
+    return c.json({
+      message: existing ? 'Transcription updated successfully' : 'Transcription created successfully',
+      meeting_id,
+      r2_key: `${meeting_id}.txt`,
+      storage: isChunked ? 'chunked' : 'inline',
+      chunk_count: isChunked ? chunks.length : 0,
+    })
   })
 
   // POST /api/update-outline — 手動更新大綱
@@ -110,7 +126,10 @@ export function registerTranscriptionApi(app: App) {
   app.post('/api/create-table', async c => {
     const db = c.env.DB
     if (!db) return c.json({ error: 'DB binding not configured' }, 500)
-    await db.prepare('CREATE TABLE IF NOT EXISTS transcriptions (meeting_id TEXT, transcription TEXT, outline TEXT)').run()
+    await db.batch([
+      db.prepare('CREATE TABLE IF NOT EXISTS transcriptions (meeting_id TEXT, transcription TEXT, outline TEXT)'),
+      db.prepare('CREATE TABLE IF NOT EXISTS transcription_chunks (meeting_id TEXT NOT NULL, chunk_index INTEGER NOT NULL, content TEXT NOT NULL, PRIMARY KEY (meeting_id, chunk_index))'),
+    ])
     return c.json({ message: 'Table created successfully' })
   })
 
@@ -138,7 +157,14 @@ export function registerTranscriptionApi(app: App) {
     if (!db) return c.json({ error: 'DB binding not configured' }, 500)
     const row = await db.prepare('SELECT transcription FROM transcriptions WHERE meeting_id = ?').bind(meeting_id).first<{ transcription: string }>()
     if (!row) return c.text('', 404)
-    return new Response(row.transcription, {
+    let transcription = row.transcription
+    if (transcription === '') {
+      const chunkResult = await db.prepare('SELECT content FROM transcription_chunks WHERE meeting_id = ? ORDER BY chunk_index').bind(meeting_id).all<{ content: string }>()
+      if (chunkResult.results.length > 0) {
+        transcription = chunkResult.results.map((chunk: { content: string }) => chunk.content).join('')
+      }
+    }
+    return new Response(transcription, {
       status: 200,
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
