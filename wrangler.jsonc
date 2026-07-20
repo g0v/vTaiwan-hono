@@ -18,7 +18,7 @@
       "binding": "DB",
       "database_name": "vtaiwan-transcriptions",
       "database_id": "af71c224-5fd2-4859-becb-6012ad1fc3b2",
-      "migrations_dir": "../../migrations",
+      "migrations_dir": "./migrations",
     },
   ],
   "r2_buckets": [
