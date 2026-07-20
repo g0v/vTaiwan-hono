@@ -212,7 +212,9 @@ const search = ref('')
 
 const renderedOutline = computed(() => (currentOutline.value ? marked(currentOutline.value) : ''))
 
-const filteredTranscriptions = computed(() => transcriptions.value.filter(item => item.meeting_id.includes(search.value) || item.outline.includes(search.value)))
+const filteredTranscriptions = computed(() =>
+  transcriptions.value.filter(item => item.meeting_id.includes(search.value) || item.outline.includes(search.value)).sort((a, b) => a.meeting_id.localeCompare(b.meeting_id))
+)
 
 function getRenderedOutlinePreview(outline: string): string {
   if (!outline) return ''
