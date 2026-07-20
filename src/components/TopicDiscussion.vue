@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import IconWrapper from './IconWrapper.vue'
 import TopicDiscussionComment from './TopicDiscussionComment.vue'
 import discourseApi, { type DiscourseTopic } from '../lib/discourse'
+import { sanitizeEmbedHtml } from '../lib/html-sanitizer'
 
 interface UserData {
   isAdmin?: boolean
@@ -34,6 +35,8 @@ const { t } = useI18n()
 const discussionType = ref<DiscussionType>({ type: '', embeder: '' })
 const loading = ref(true)
 const lastStep = ref('')
+const allowedEmbedHostnames = ['pol.is', 'app.sli.do', 'livehouse.in', 'embed.livehouse.in', 'form.typeform.com']
+const sanitizedEmbedder = computed(() => (typeof discussionType.value.embeder === 'string' ? sanitizeEmbedHtml(discussionType.value.embeder, allowedEmbedHostnames) : ''))
 
 const chineseSort = (a: string, b: string): number => {
   const c2n: Record<string, string> = {
@@ -200,7 +203,7 @@ onMounted(() => {
             </h3>
           </div>
           <div class="p-4">
-            <div v-html="discussionType.embeder" />
+            <div v-html="sanitizedEmbedder" />
           </div>
         </div>
       </div>

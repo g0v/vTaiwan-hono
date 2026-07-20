@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import IconWrapper from './IconWrapper.vue'
 import discourseApi from '../lib/discourse'
+import { sanitizeEmbedHtml, sanitizeUntrustedHtml } from '../lib/html-sanitizer'
 
 const props = defineProps<{
   topicId: string | number
@@ -15,6 +16,10 @@ const slide = ref({
   iframe: '',
   info: '',
 })
+const sanitizedSlide = computed(() => ({
+  iframe: sanitizeEmbedHtml(slide.value.iframe, ['docs.google.com']),
+  info: sanitizeUntrustedHtml(slide.value.info),
+}))
 
 function buildGoogleSlidesIframe(content: string): string {
   if (typeof document === 'undefined') return ''
@@ -105,7 +110,7 @@ watch(
 
           <div class="flex flex-col gap-8 lg:flex-row">
             <div class="lg:flex-1">
-              <div v-if="slide.iframe" v-html="slide.iframe" class="iframe-container" />
+              <div v-if="sanitizedSlide.iframe" v-html="sanitizedSlide.iframe" class="iframe-container" />
               <div v-else class="rounded-lg bg-white p-8 text-center text-gray-500">
                 {{ t('topics.detail.noSlide') }}
               </div>
@@ -113,7 +118,7 @@ watch(
 
             <div class="lg:flex-1 lg:pl-8">
               <div class="h-full max-h-96 overflow-auto rounded-lg bg-white p-6">
-                <div v-if="slide.info" v-html="slide.info" class="topic-slide-prose max-w-none" />
+                <div v-if="sanitizedSlide.info" v-html="sanitizedSlide.info" class="topic-slide-prose max-w-none" />
                 <div v-else class="text-center text-gray-500">
                   {{ t('topics.detail.noInfo') }}
                 </div>

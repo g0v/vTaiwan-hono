@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import IconWrapper from './IconWrapper.vue'
 import discourseApi from '../lib/discourse'
+import { sanitizeUntrustedHtml } from '../lib/html-sanitizer'
 
 interface CommentItem {
   username: string
@@ -140,7 +141,7 @@ onMounted(() => {
               <span class="font-semibold text-gray-900">{{ comment.username }}</span>
               <span class="text-sm text-gray-500">{{ comment.created_at }}</span>
             </div>
-            <div class="comment-prose max-w-none text-sm text-gray-700" v-html="comment.cooked" />
+            <div class="comment-prose max-w-none text-sm text-gray-700" v-html="sanitizeUntrustedHtml(comment.cooked)" />
           </div>
         </div>
       </div>

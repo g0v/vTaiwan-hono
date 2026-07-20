@@ -2,6 +2,7 @@ import { corsFor } from './cors'
 import { readAudioToText } from '../lib/transcribe'
 import { generateOutline } from '../lib/ai-summarize'
 import { splitTranscriptionIntoChunks, TRANSCRIPTION_MAX_BYTES, utf8ByteLength } from '../lib/transcription-storage'
+import { stripHtmlFromMarkdown } from '../lib/html-sanitizer'
 import type { App } from './types'
 
 const LANG_MAP: Record<string, string> = {
@@ -53,8 +54,11 @@ export function registerTranscriptionApi(app: App) {
     const file = formData.get('file')
     if (!(file instanceof File)) return c.text('No file uploaded', 400)
 
-    const filename = file.name
-    const meeting_id = filename.replace('.txt', '').replace('transcript-', '').split('-').join('')
+    const meetingIdMatch = /^transcript-(\d{4})-(\d{2})-(\d{2})\.(?:txt|srt|md)$/.exec(file.name)
+    if (!meetingIdMatch) {
+      return c.json({ error: '檔名格式不正確', code: 'INVALID_TRANSCRIPTION_FILENAME' }, 400)
+    }
+    const meeting_id = meetingIdMatch.slice(1).join('')
     const transcription = await file.text()
     const transcriptionBytes = utf8ByteLength(transcription)
     if (transcriptionBytes > TRANSCRIPTION_MAX_BYTES) {
@@ -76,7 +80,7 @@ export function registerTranscriptionApi(app: App) {
       })
     }
 
-    const outline = await generateOutline(transcription, c.env)
+    const outline = stripHtmlFromMarkdown(await generateOutline(transcription, c.env))
 
     const db = c.env.DB
     if (!db) return c.json({ error: 'DB binding not configured' }, 500)
@@ -105,10 +109,13 @@ export function registerTranscriptionApi(app: App) {
   // POST /api/update-outline — 手動更新大綱
   app.use('/api/update-outline', corsFor(['POST']))
   app.post('/api/update-outline', async c => {
-    const { meeting_id, outline } = await c.req.json<{ meeting_id: string; outline: string }>()
+    const { meeting_id, outline } = await c.req.json<{ meeting_id: unknown; outline: unknown }>()
+    if (typeof meeting_id !== 'string' || !/^\d{8}$/.test(meeting_id) || typeof outline !== 'string') {
+      return c.json({ error: '大綱資料格式不正確', code: 'INVALID_OUTLINE' }, 400)
+    }
     const db = c.env.DB
     if (!db) return c.json({ error: 'DB binding not configured' }, 500)
-    await db.prepare('UPDATE transcriptions SET outline = ? WHERE meeting_id = ?').bind(outline, meeting_id).run()
+    await db.prepare('UPDATE transcriptions SET outline = ? WHERE meeting_id = ?').bind(stripHtmlFromMarkdown(outline), meeting_id).run()
     return c.json({ message: 'Outline updated successfully' })
   })
 
@@ -153,6 +160,7 @@ export function registerTranscriptionApi(app: App) {
   app.use('/api/transcriptions/*', corsFor(['GET']))
   app.get('/api/transcriptions/:meeting_id/text', async c => {
     const meeting_id = c.req.param('meeting_id')
+    if (!/^\d{8}$/.test(meeting_id)) return c.text('', 400)
     const db = c.env.DB
     if (!db) return c.json({ error: 'DB binding not configured' }, 500)
     const row = await db.prepare('SELECT transcription FROM transcriptions WHERE meeting_id = ?').bind(meeting_id).first<{ transcription: string }>()
@@ -166,7 +174,11 @@ export function registerTranscriptionApi(app: App) {
     }
     return new Response(transcription, {
       status: 200,
-      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Content-Disposition': `attachment; filename="transcript-${meeting_id}.txt"`,
+        'X-Content-Type-Options': 'nosniff',
+      },
     })
   })
 }

@@ -12,7 +12,7 @@
               {{ faq.question[currentLocale] }}
             </h3>
             <!-- 答案含站方維護的 HTML 連結，來源為靜態資料 -->
-            <p class="faq-answer text-gray-700" v-html="faq.answer[currentLocale]"></p>
+            <p class="faq-answer text-gray-700" v-html="sanitizeUntrustedHtml(faq.answer[currentLocale])"></p>
             <ol v-if="faq.details" class="mt-2 list-decimal space-y-1 pl-6">
               <li v-for="detail in faq.details[currentLocale]" :key="detail" class="text-gray-700">
                 {{ detail }}
@@ -72,6 +72,7 @@
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { faqs, type Locale } from '../data/faqs'
+import { sanitizeUntrustedHtml } from '../lib/html-sanitizer'
 
 const { t, locale } = useI18n()
 

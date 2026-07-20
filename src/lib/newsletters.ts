@@ -1,3 +1,5 @@
+import { sanitizeUntrustedHtml } from './html-sanitizer'
+
 export const NEWSLETTER_FEED_URL = 'https://vtaiwantw.substack.com/feed'
 
 export interface NewsletterItem {
@@ -146,34 +148,4 @@ export const getNewsletterBySlug = async (slug: string): Promise<NewsletterItem 
   return newsletters.find(item => item.slug === slug) || null
 }
 
-export const sanitizeNewsletterHtml = (html: string): string => {
-  if (!html) return ''
-  // SSR 守衛：DOMParser 是瀏覽器 API
-  if (typeof DOMParser === 'undefined') return html
-
-  const doc = new DOMParser().parseFromString(html, 'text/html')
-  const blockedSelectors = ['script', 'style', 'iframe', 'form', 'input', 'button', 'textarea', 'select']
-  blockedSelectors.forEach(selector => {
-    doc.querySelectorAll(selector).forEach(element => element.remove())
-  })
-
-  doc.querySelectorAll('*').forEach(element => {
-    Array.from(element.attributes).forEach(attribute => {
-      const name = attribute.name.toLowerCase()
-      const value = attribute.value.trim()
-      if (name.startsWith('on')) {
-        element.removeAttribute(attribute.name)
-        return
-      }
-      if ((name === 'href' || name === 'src') && /^javascript:/i.test(value)) {
-        element.removeAttribute(attribute.name)
-      }
-    })
-    if (element.tagName === 'A') {
-      element.setAttribute('target', '_blank')
-      element.setAttribute('rel', 'noopener noreferrer')
-    }
-  })
-
-  return doc.body.innerHTML
-}
+export const sanitizeNewsletterHtml = sanitizeUntrustedHtml

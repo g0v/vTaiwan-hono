@@ -172,6 +172,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { marked } from 'marked'
+import { sanitizeUntrustedHtml } from '../lib/html-sanitizer'
 
 interface Transcription {
   meeting_id: string
@@ -210,7 +211,7 @@ const editing = ref(false)
 const myOutline = ref('')
 const search = ref('')
 
-const renderedOutline = computed(() => (currentOutline.value ? marked(currentOutline.value) : ''))
+const renderedOutline = computed(() => (currentOutline.value ? renderMarkdown(currentOutline.value) : ''))
 
 const filteredTranscriptions = computed(() =>
   transcriptions.value.filter(item => item.meeting_id.includes(search.value) || item.outline.includes(search.value)).sort((a, b) => a.meeting_id.localeCompare(b.meeting_id))
@@ -219,7 +220,11 @@ const filteredTranscriptions = computed(() =>
 function getRenderedOutlinePreview(outline: string): string {
   if (!outline) return ''
   const truncated = outline.length > 500 ? outline.substring(0, 500) + '...' : outline
-  return marked(truncated) as string
+  return renderMarkdown(truncated)
+}
+
+function renderMarkdown(markdown: string): string {
+  return sanitizeUntrustedHtml(marked.parse(markdown) as string)
 }
 
 function formatMeetingId(id: string): string {

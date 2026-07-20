@@ -11,6 +11,18 @@ import { renderPage } from './ssr/render'
 
 const app = new Hono<AppEnv>()
 
+// 防禦縱深：即使清洗器發生回歸，也禁止內嵌 script 與事件處理器執行。
+app.use('*', async (c, next) => {
+  await next()
+  c.header(
+    'Content-Security-Policy',
+    "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self' https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://*.googleapis.com; frame-src https://pol.is https://app.sli.do https://livehouse.in https://embed.livehouse.in https://form.typeform.com https://docs.google.com; frame-ancestors 'self'; form-action 'self'"
+  )
+  c.header('Referrer-Policy', 'strict-origin-when-cross-origin')
+  c.header('X-Content-Type-Options', 'nosniff')
+  c.header('X-Frame-Options', 'SAMEORIGIN')
+})
+
 // 純 JSON / 文字 API：直接回傳，不走 SSR
 registerHelloApi(app)
 registerProxyApi(app)

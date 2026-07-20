@@ -525,3 +525,20 @@ figcaption {
   border: 1px solid var(--color-vt-gray-200);
   transition: background-color 0.15s ease;
 }
+
+.transcription-outline table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--color-vt-border);
+}
+
+.transcription-outline th,
+.transcription-outline td {
+  padding: var(--spacing-vt-2);
+  border: 1px solid var(--color-vt-border);
+  text-align: left;
+}
+
+.transcription-outline th {
+  background: var(--color-vt-bg-2);
+}
