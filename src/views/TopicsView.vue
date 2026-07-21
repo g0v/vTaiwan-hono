@@ -426,7 +426,7 @@ onMounted(() => {
             </div>
           </div>
 
-          <div v-if="filteredTopicsSmallImg.length > 0" class="grid grid-cols-1 gap-0 md:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+          <div v-if="filteredTopicsSmallImg.length > 0" class="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             <div v-for="topic in filteredTopicsSmallImg" :key="topic.id" class="vt-topic-card min-h-[190px] cursor-pointer p-5" @click="goToTopic(topic)">
               <div class="vt-topic-card-arrow">
                 <IconWrapper name="arrow-up-right" :size="14" type="primary" />
