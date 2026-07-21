@@ -9,8 +9,10 @@ interface TopicListResponse {
   }
 }
 
-// per-isolate 快取（盡力而為；Worker isolate 存活期間有效）
-const cache = new Map<string, unknown>()
+const DISCOURSE_CACHE_TTL_SECONDS = 300
+
+// 同一 isolate 內只合併尚在進行的相同請求；資料快取交由 Cloudflare edge cache 與 TTL 管理。
+const inFlightRequests = new Map<string, Promise<unknown>>()
 
 // 只允許相對於 talk.vtaiwan.tw 的路徑：剝除同源 origin，拒絕其他 host
 function normalizePath(input: string): string {
@@ -26,27 +28,43 @@ function normalizePath(input: string): string {
 }
 
 async function cachedGet<T>(path: string): Promise<T> {
-  if (cache.has(path)) {
-    return cache.get(path) as T
+  const inFlightRequest = inFlightRequests.get(path)
+  if (inFlightRequest) {
+    return inFlightRequest as Promise<T>
   }
 
-  const url = `${DISCOURSE_BASE_URL}${path}`
-  const controller = new AbortController()
-  const timeoutId = setTimeout(() => controller.abort(), 10000)
+  const request = (async () => {
+    const url = `${DISCOURSE_BASE_URL}${path}`
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 10000)
 
-  try {
-    const response = await fetch(url, {
-      headers: { Accept: 'application/json' },
-      signal: controller.signal,
-    })
-    if (!response.ok) {
-      throw new Error(`Discourse API error: ${response.status}`)
+    try {
+      const requestInit = {
+        headers: { Accept: 'application/json' },
+        signal: controller.signal,
+        cf: {
+          cacheEverything: true,
+          cacheTtlByStatus: {
+            '200-299': DISCOURSE_CACHE_TTL_SECONDS,
+            '300-599': 0,
+          },
+        },
+      }
+      const response = await fetch(url, requestInit)
+      if (!response.ok) {
+        throw new Error(`Discourse API error: ${response.status}`)
+      }
+      return (await response.json()) as T
+    } finally {
+      clearTimeout(timeoutId)
     }
-    const data = (await response.json()) as T
-    cache.set(path, data)
-    return data
+  })()
+
+  inFlightRequests.set(path, request)
+  try {
+    return await request
   } finally {
-    clearTimeout(timeoutId)
+    inFlightRequests.delete(path)
   }
 }
 
