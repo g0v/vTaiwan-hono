@@ -234,7 +234,7 @@ onMounted(() => {
             </div>
 
             <div class="mb-5 flex items-start gap-4 pr-10">
-              <div class="vt-topic-card-halo">
+              <div class="vt-topic-bubble vt-topic-bubble-red">
                 <IconWrapper name="message-circle" :size="24" type="primary" />
               </div>
               <div class="min-w-0">
@@ -368,7 +368,7 @@ onMounted(() => {
               </RouterLink>
 
               <div class="mb-5 flex items-start gap-4 pr-10">
-                <div class="vt-topic-card-halo">
+                <div class="vt-topic-bubble vt-topic-bubble-red">
                   <IconWrapper name="message-circle" :size="24" type="primary" />
                 </div>
                 <div class="min-w-0">
@@ -434,7 +434,7 @@ onMounted(() => {
 
               <div class="mb-4 flex items-start gap-3 pr-10">
                 <div v-if="topic.cover" class="vt-topic-cover-thumb" :style="{ backgroundImage: `url(${topic.cover})` }" />
-                <div v-else class="vt-topic-card-halo vt-topic-card-halo-sm">
+                <div v-else class="vt-topic-bubble vt-topic-bubble-red vt-topic-bubble-sm">
                   <IconWrapper name="message-circle" :size="18" type="primary" />
                 </div>
                 <div class="min-w-0">

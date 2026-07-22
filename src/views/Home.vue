@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import IconWrapper from '../components/IconWrapper.vue'
 
 const { t } = useI18n()
 
 // 「如何運作」三步驟 — 對應三種公民色；文字由 i18n 提供
 const steps = [
-  { key: 'propose', tint: 'bg-democratic-red/10', color: 'text-democratic-red' },
-  { key: 'discuss', tint: 'bg-jade-green/10', color: 'text-jade-green' },
-  { key: 'policy', tint: 'bg-wheat-yellow/10', color: 'text-wheat-yellow' },
+  { key: 'propose', color: 'red', icon: 'message-circle' },
+  { key: 'discuss', color: 'green', icon: 'users' },
+  { key: 'policy', color: 'orange', icon: 'circle-check-big' },
 ]
 </script>
 
@@ -50,23 +51,12 @@ const steps = [
         <span class="vt-title-underline">{{ t('home.features.title') }}</span>
       </h2>
 
-      <div class="grid gap-8 md:grid-cols-3">
-        <div v-for="(step, i) in steps" :key="step.key" class="rounded-lg border border-vt-gray-200 bg-white p-8 text-center shadow-md transition-transform duration-200 hover:-translate-y-1">
-          <div class="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full" :class="step.tint">
-            <svg :class="step.color" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path v-if="i === 0" d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z" />
-              <template v-else-if="i === 1">
-                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
-              </template>
-              <template v-else>
-                <path d="M21.8 10A10 10 0 1 1 17 3.34" />
-                <path d="m9 11 3 3L22 4" />
-              </template>
-            </svg>
+      <div class="grid gap-6 md:grid-cols-3">
+        <div v-for="step in steps" :key="step.key" class="rounded-3xl bg-white p-8 shadow-lg transition-transform duration-200 hover:-translate-y-1">
+          <div class="vt-topic-bubble mb-4" :class="`vt-topic-bubble-${step.color}`">
+            <IconWrapper :name="step.icon" :size="24" />
           </div>
-          <h3 class="mb-3 text-xl font-bold">{{ t(`home.features.items.${step.key}.title`) }}</h3>
+          <h3 class="mb-3 text-lg font-bold">{{ t(`home.features.items.${step.key}.title`) }}</h3>
           <p class="text-vt-gray-700">{{ t(`home.features.items.${step.key}.description`) }}</p>
         </div>
       </div>

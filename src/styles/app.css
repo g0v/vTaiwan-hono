@@ -331,24 +331,55 @@
     background: var(--color-vt-white);
   }
 
-  .vt-topic-card-halo {
-    width: 52px;
-    height: 52px;
+  .vt-topic-bubble {
+    --vt-topic-bubble-width: 60px;
+    --vt-topic-bubble-height: 60px;
+
+    width: var(--vt-topic-bubble-width);
+    height: var(--vt-topic-bubble-height);
     border-radius: var(--radius-vt-full);
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: radial-gradient(120% 120% at 30% 20%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0) 55%), rgba(216, 0, 0, 0.12);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.9),
-      inset 0 -1px 0 rgba(216, 0, 0, 0.15),
-      0 4px 10px -4px rgba(216, 0, 0, 0.25);
+    background: var(--vt-topic-bubble-background);
+    box-shadow: var(--vt-topic-bubble-box-shadow);
   }
 
-  .vt-topic-card-halo-sm {
-    width: 40px;
-    height: 40px;
+  .vt-topic-bubble svg {
+    stroke: var(--vt-topic-bubble-icon-color);
+  }
+
+  .vt-topic-bubble-red {
+    --vt-topic-bubble-icon-color: var(--color-vt-democratic-red);
+    --vt-topic-bubble-background:
+      radial-gradient(120% 120% at 30% 20%, color-mix(in srgb, var(--color-vt-white) 85%, transparent) 0%, transparent 55%), color-mix(in srgb, var(--color-vt-democratic-red) 12%, transparent);
+    --vt-topic-bubble-box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--color-vt-white) 90%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--color-vt-democratic-red) 15%, transparent),
+      0 4px 10px -4px color-mix(in srgb, var(--color-vt-democratic-red) 25%, transparent);
+  }
+
+  .vt-topic-bubble-green {
+    --vt-topic-bubble-icon-color: var(--color-vt-jade-green);
+    --vt-topic-bubble-background:
+      radial-gradient(120% 120% at 30% 20%, color-mix(in srgb, var(--color-vt-white) 90%, transparent) 0%, transparent 55%), color-mix(in srgb, var(--color-vt-jade-green) 14%, var(--color-vt-white));
+    --vt-topic-bubble-box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--color-vt-white) 95%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--color-vt-jade-green) 12%, transparent),
+      0 4px 10px -4px color-mix(in srgb, var(--color-vt-jade-green) 18%, transparent);
+  }
+
+  .vt-topic-bubble-orange {
+    --vt-topic-bubble-icon-color: var(--color-vt-wheat-yellow);
+    --vt-topic-bubble-background:
+      radial-gradient(120% 120% at 30% 20%, color-mix(in srgb, var(--color-vt-white) 90%, transparent) 0%, transparent 55%), color-mix(in srgb, var(--color-vt-wheat-yellow) 14%, var(--color-vt-white));
+    --vt-topic-bubble-box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--color-vt-white) 95%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--color-vt-wheat-yellow) 15%, transparent),
+      0 4px 10px -4px color-mix(in srgb, var(--color-vt-wheat-yellow) 22%, transparent);
+  }
+
+  .vt-topic-bubble-sm {
+    --vt-topic-bubble-width: 40px;
+    --vt-topic-bubble-height: 40px;
   }
 
   .vt-topic-cover-slice {
