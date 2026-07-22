@@ -1,5 +1,6 @@
 import { createVueApp } from '../app'
 import { watch } from 'vue'
+import { initGtag, trackPageView } from '../analytics/gtag'
 import { headForRoute } from '../router/routes'
 import type { MetaEntry } from '../ssr/heads'
 
@@ -44,13 +45,19 @@ function syncHead() {
   }
 }
 
-router.afterEach(() => {
+initGtag()
+
+router.afterEach(to => {
   syncHead()
+  // 先 syncHead 更新 document.title，再送 page_view，page_title 才會是新頁標題。
+  trackPageView(to.fullPath)
 })
 
 watch(i18n.global.locale, syncHead)
 
 void router.isReady().then(() => {
   syncHead()
+  // afterEach 在首屏 hydration 是否觸發不保證，這裡補一次；trackPageView 內建去重。
+  trackPageView(router.currentRoute.value.fullPath)
   app.mount('#app', true)
 })

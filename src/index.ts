@@ -12,11 +12,14 @@ import { renderPage } from './ssr/render'
 const app = new Hono<AppEnv>()
 
 // 防禦縱深：即使清洗器發生回歸，也禁止內嵌 script 與事件處理器執行。
+// 仍不允許 'unsafe-inline'／nonce——GA 由 client bundle（script-src 'self'）動態
+// 注入 gtag.js，只需放行特定主機 googletagmanager.com（不重新開放內嵌 script），
+// 並在 connect-src 放行 GA4 beacon（google-analytics.com / region1 由萬用字元涵蓋）。
 app.use('*', async (c, next) => {
   await next()
   c.header(
     'Content-Security-Policy',
-    "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self' https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://*.googleapis.com; frame-src https://pol.is https://app.sli.do https://livehouse.in https://embed.livehouse.in https://form.typeform.com https://docs.google.com https://calendar.google.com; frame-ancestors 'self'; form-action 'self'"
+    "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self' https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://*.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com; frame-src https://pol.is https://app.sli.do https://livehouse.in https://embed.livehouse.in https://form.typeform.com https://docs.google.com https://calendar.google.com; frame-ancestors 'self'; form-action 'self'"
   )
   c.header('Referrer-Policy', 'strict-origin-when-cross-origin')
   c.header('X-Content-Type-Options', 'nosniff')
