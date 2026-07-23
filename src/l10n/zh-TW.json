@@ -129,7 +129,7 @@
     "newsletters": "電子報",
     "mastodon": "社群貼文",
     "transcriptions": "逐字稿管理",
-    "faq": "常見問題",
+    "faq": "常見問答",
     "contributors": "貢獻者",
     "openMenu": "開啟選單"
   },
@@ -765,7 +765,7 @@
     "error": "載入失敗"
   },
   "faq": {
-    "title": "常見問答 (FAQ)",
+    "title": "常見問答",
     "description": "以下是關於 vTaiwan 平台的常見問題與解答。如果您有其他問題，歡迎聯繫我們。",
     "contact": {
       "title": "還有其他問題？",
