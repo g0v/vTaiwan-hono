@@ -58,7 +58,10 @@ function logout() {
 
 <template>
   <header class="sticky top-0 z-50 px-3 pt-3 font-sans sm:px-6 sm:pt-4">
-    <div class="vt-glass relative z-20 mx-auto flex h-[72px] max-w-6xl items-center justify-between rounded-2xl pr-3 pl-6" :class="{ 'max-w-7xl': !isChinese }">
+    <div
+      class="vt-glass vt-glass--navbar relative z-20 mx-auto flex h-[72px] max-w-6xl items-center justify-between pr-3 pl-6 backdrop-blur-vt-navbar backdrop-saturate-vt-navbar"
+      :class="{ 'max-w-7xl': !isChinese }"
+    >
       <RouterLink to="/" class="flex shrink-0 items-center" :aria-label="t('header.home')">
         <img :src="'/assets/vtaiwan-logo.svg'" alt="vTaiwan" class="h-7 w-auto" />
       </RouterLink>
@@ -114,7 +117,7 @@ function logout() {
 
     <!-- 行動選單面板 -->
     <div v-if="mobileOpen" class="absolute left-0 w-full px-3 sm:px-6 xl:hidden">
-      <div class="vt-glass relative z-10 mx-auto mt-2 max-w-6xl rounded-2xl p-2.5">
+      <div class="vt-glass vt-glass--navbar relative z-10 mx-auto mt-2 max-w-6xl p-2.5 backdrop-blur-vt-navbar backdrop-saturate-vt-navbar">
         <RouterLink
           v-for="l in links"
           :key="l.key"
