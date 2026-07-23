@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test'
-import app from '../index'
+import app, { contentSecurityPolicyFor } from '../index'
 
 function directiveSources(policy: string, directive: string): string[] {
   const value = policy
@@ -17,6 +17,7 @@ describe('安全標頭', () => {
 
     expect(policy).not.toBeNull()
     const scriptSources = directiveSources(policy!, 'script-src')
+    const styleSources = directiveSources(policy!, 'style-src')
     const connectSources = directiveSources(policy!, 'connect-src')
     const frameSources = directiveSources(policy!, 'frame-src')
 
@@ -25,9 +26,16 @@ describe('安全標頭', () => {
     expect(scriptSources).toContain('https://*.firebaseio.com')
     expect(scriptSources).toContain("'sha256-3bzWVxQE32IZQKH9eh8KzyHuhXOlMrboDVVBRd0fWTU='")
     expect(scriptSources).not.toContain("'unsafe-inline'")
+    expect(styleSources).toContain("'unsafe-inline'")
     expect(connectSources).toContain('https://*.google-analytics.com')
     expect(connectSources).toContain('https://*.firebaseio.com')
     expect(connectSources).toContain('wss://*.firebaseio.com')
     expect(frameSources).toContain('https://*.firebaseapp.com')
+  })
+
+  it('正式環境的 CSP 禁止內嵌樣式', () => {
+    const styleSources = directiveSources(contentSecurityPolicyFor(true), 'style-src')
+
+    expect(styleSources).not.toContain("'unsafe-inline'")
   })
 })

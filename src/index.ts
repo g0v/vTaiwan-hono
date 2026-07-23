@@ -12,12 +12,18 @@ import { renderPage } from './ssr/render'
 const app = new Hono<AppEnv>()
 
 // 防禦縱深：即使清洗器發生回歸，也禁止內嵌 script 與事件處理器執行。
-// 仍不允許 'unsafe-inline'／nonce。script-src 額外允許 GA、Firebase Auth 的
-// gapi、Realtime Database 的 long-poll script，以及第三方套件產生的固定
-// inline script（僅放行瀏覽器回報的 SHA-256）。connect-src 則允許
-// Firebase API/WebSocket 與 GA4 beacon。
-export const CONTENT_SECURITY_POLICY =
-  "default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-3bzWVxQE32IZQKH9eh8KzyHuhXOlMrboDVVBRd0fWTU=' https://www.googletagmanager.com https://apis.google.com https://*.firebaseio.com; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self' https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://*.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://pol.is https://app.sli.do https://livehouse.in https://embed.livehouse.in https://form.typeform.com https://docs.google.com https://calendar.google.com; frame-ancestors 'self'; form-action 'self'"
+// Vite 開發伺服器會以 <style> 注入 Vue SFC 樣式，因此僅在 dev 放寬 style-src；
+// 正式環境仍禁止內嵌樣式。script-src 額外允許 GA、Firebase Auth 的 gapi、
+// Realtime Database 的 long-poll script，以及第三方套件產生的固定 inline
+// script（僅放行瀏覽器回報的 SHA-256）。connect-src 則允許 Firebase
+// API/WebSocket 與 GA4 beacon。
+export function contentSecurityPolicyFor(isProduction: boolean): string {
+  const styleSource = isProduction ? "'self' https://fonts.googleapis.com" : "'self' 'unsafe-inline' https://fonts.googleapis.com"
+
+  return `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-3bzWVxQE32IZQKH9eh8KzyHuhXOlMrboDVVBRd0fWTU=' https://www.googletagmanager.com https://apis.google.com https://*.firebaseio.com; style-src ${styleSource}; font-src 'self' https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self' https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://*.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://pol.is https://app.sli.do https://livehouse.in https://embed.livehouse.in https://form.typeform.com https://docs.google.com https://calendar.google.com; frame-ancestors 'self'; form-action 'self'`
+}
+
+export const CONTENT_SECURITY_POLICY = contentSecurityPolicyFor(import.meta.env.PROD)
 
 app.use('*', async (c, next) => {
   await next()
