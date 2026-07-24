@@ -64,7 +64,7 @@ function toggleFaq(faqId: string) {
 }
 </script>
 
-<style>
+<style scoped>
 .faq-answer {
   line-height: 1.75;
 }
