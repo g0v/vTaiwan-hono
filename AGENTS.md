@@ -120,6 +120,7 @@ vp run cf-typegen           # 由 wrangler 產生 Cloudflare 綁定型別
 - **既有樣板用的 legacy 別名**（`text-democratic-red`、`font-serif`、`bg-jade-green/10` 等）在 `app.css` 已保留對應——沿用即可，不用一次全換。
 - 少數難用工具類別表達的效果（hero 漸層、frosted glass header、pill 按鈕 `.vt-btn*`、標題紅底線 `.vt-title-underline`）放在 `app.css` 的 `@layer components`。
 - **元件外觀自行對齊即可**：以 token 為準重刻頁面／元件，**不要求**逐一照抄 `vtaiwan-design-system` 內的 `_source_reference` SFC；那些檔案與 `project/preview/*.html` 當作視覺規格參考。
+- **View 的 SFC 樣式原則上必須使用 `<style scoped>`**，避免樣式跨頁交叉污染，並確保 `:deep()` 由 Vue 正確編譯後套用到 `v-html` 等動態子節點。真正需要全站共用的樣式應移至 `src/styles/app.css`，不要以 View 內的無 `scoped` `<style>` 實作。
 - 新增 token 時：先在 `app.css` 的 `@theme` 定義，再於模板使用，然後 `vp run build:css`。
 
 ## i18n（多語系）
