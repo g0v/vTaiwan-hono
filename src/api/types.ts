@@ -16,6 +16,9 @@ export type AppBindings = {
 
 export type AppEnv = {
   Bindings: AppBindings
+  Variables: {
+    cspNonce: string
+  }
 }
 
 export type App = Hono<AppEnv>

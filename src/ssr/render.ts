@@ -15,7 +15,7 @@ const appStyle = import.meta.env.PROD ? `/styles.css?v=${buildId}` : '/styles.cs
 const clientStyle = import.meta.env.PROD ? `    <link rel="stylesheet" href="/js/app.css?v=${buildId}" />\n` : ''
 
 // 用 vue-router 比對目前 URL，SSR 第一個畫面，再讓瀏覽器端 hydration 接管後續路由。
-export async function renderPage(url: string, origin: string): Promise<RenderPageResult> {
+export async function renderPage(url: string, origin: string, cspNonce: string): Promise<RenderPageResult> {
   const { app, router, i18n } = createVueApp(url)
   await router.isReady()
   const route = router.currentRoute.value
@@ -29,6 +29,7 @@ export async function renderPage(url: string, origin: string): Promise<RenderPag
     html: `<!doctype html>
 <html lang="zh-Hant">
   <head>
+    <meta property="csp-nonce" nonce="${cspNonce}" />
     ${headTags}
     <link rel="apple-touch-icon" sizes="180x180" href="/img/apple-touch-icon.png" />
     <link rel="icon" type="image/png" sizes="32x32" href="/img/favicon-32x32.png" />
