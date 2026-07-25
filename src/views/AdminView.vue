@@ -1,6 +1,6 @@
 <template>
   <div class="vt-under-navbar min-h-screen bg-vt-bg-2 pt-20">
-    <div class="container mx-auto px-vt-4 mt-10">
+    <div class="container mx-auto mt-10 px-vt-4">
       <div class="mx-auto max-w-6xl">
         <!-- 頁首 -->
         <header class="mb-vt-6">
@@ -54,7 +54,12 @@
                     </td>
                     <td class="hidden px-vt-3 py-vt-3 text-vt-fg-2 md:table-cell">{{ m.email }}</td>
                     <td class="px-vt-3 py-vt-3">
-                      <select :value="m.role" :disabled="!canManageRole(m)" class="rounded-md border border-vt-border bg-vt-bg-1 px-vt-2 py-vt-1 text-vt-sm text-vt-fg-1" @change="onRoleChange(m, $event)">
+                      <select
+                        :value="m.role"
+                        :disabled="!canManageRole(m)"
+                        class="rounded-md border border-vt-border bg-vt-bg-1 px-vt-2 py-vt-1 text-vt-sm text-vt-fg-1"
+                        @change="onRoleChange(m, $event)"
+                      >
                         <option v-for="r in availableRolesFor(m)" :key="r" :value="r">{{ t('admin.roles.' + r) }}</option>
                       </select>
                     </td>
@@ -120,7 +125,9 @@
                   <tr v-for="log in logs" :key="log.id" class="border-b border-vt-border/60">
                     <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-3">{{ log.time }}</td>
                     <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-2">
-                      <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: actorName(log.actor) })" @click="showActor(log.actor)">{{ actorName(log.actor) }}</button>
+                      <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: actorName(log.actor) })" @click="showActor(log.actor)">
+                        {{ actorName(log.actor) }}
+                      </button>
                     </td>
                     <td class="px-vt-3 py-vt-3 text-vt-fg-1">{{ describeLog(log) }}</td>
                   </tr>
@@ -140,7 +147,14 @@
       </div>
     </div>
 
-    <div v-if="selectedMember" class="fixed inset-0 z-[100] flex items-center justify-center bg-vt-black/50 p-vt-4" role="dialog" aria-modal="true" :aria-label="t('admin.members.detailsTitle', { name: selectedMember.name })" @click.self="selectedMember = null">
+    <div
+      v-if="selectedMember"
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-vt-black/50 p-vt-4"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="t('admin.members.detailsTitle', { name: selectedMember.name })"
+      @click.self="selectedMember = null"
+    >
       <div class="w-full max-w-md rounded-vt-lg bg-vt-bg-1 p-vt-6 shadow-vt-lg">
         <div class="mb-vt-4 flex items-center justify-between gap-vt-4">
           <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.members.detailsTitle', { name: selectedMember.name }) }}</h2>
@@ -267,7 +281,7 @@ function load() {
   try {
     const parsed = JSON.parse(stored) as { members?: Member[]; logs?: LogEntry[] }
     if (parsed.members) {
-      members.value = parsed.members.map((member) => {
+      members.value = parsed.members.map(member => {
         const storedRole = member.role as string
         return {
           ...member,
@@ -275,7 +289,7 @@ function load() {
         }
       })
     }
-    if (parsed.logs) logs.value = parsed.logs.filter((log) => log.type === 'role' || log.type === 'member')
+    if (parsed.logs) logs.value = parsed.logs.filter(log => log.type === 'role' || log.type === 'member')
     persist()
   } catch {
     // 解析失敗：重置為 seed 並覆寫，避免對著壞資料渲染
@@ -304,7 +318,7 @@ function addLog(entry: Omit<LogEntry, 'id' | 'time' | 'actor'>) {
 }
 
 function currentActorRole(): RoleKey {
-  return members.value.find((member) => member.email === CURRENT_ACTOR)?.role ?? 'member'
+  return members.value.find(member => member.email === CURRENT_ACTOR)?.role ?? 'member'
 }
 
 function canManageRole(member: Member): boolean {
@@ -324,7 +338,7 @@ function showMember(member: Member) {
 }
 
 function actorMember(actor: string): Member | undefined {
-  return members.value.find((member) => member.id === actor || member.email === actor)
+  return members.value.find(member => member.id === actor || member.email === actor)
 }
 
 function actorName(actor: string): string {
