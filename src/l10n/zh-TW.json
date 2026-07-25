@@ -92,6 +92,10 @@
     "propose": {
       "title": "提出專案提案 | vTaiwan",
       "description": "如果您有值得討論的公共政策議題，歡迎提出專案建議。"
+    },
+    "admin": {
+      "title": "管理員後台",
+      "description": "vTaiwan 管理員後台樣稿（僅供內部討論）。"
     }
   },
   "common": {
@@ -971,5 +975,72 @@
   "意見徵集": "意見徵集",
   "研擬草案": "研擬草案",
   "送交院會": "送交院會",
-  "歷史案件": "歷史案件"
+  "歷史案件": "歷史案件",
+  "admin": {
+    "badge": "樣稿 Prototype",
+    "title": "管理員後台",
+    "subtitle": "此為使用偽資料的介面樣稿，所有變更僅同步至瀏覽器 localStorage，供後續功能討論。",
+    "reset": "重設偽資料",
+    "tabs": {
+      "members": "成員與權限",
+      "logs": "變更日誌",
+      "transcripts": "逐字稿管理"
+    },
+    "members": {
+      "listTitle": "成員清單",
+      "count": "共 {n} 位成員",
+      "showDetails": "查看 {name} 的完整資料",
+      "detailsTitle": "{name} 的成員資料",
+      "col": {
+        "name": "姓名",
+        "email": "電子郵件",
+        "role": "角色",
+        "joinedAt": "加入時間",
+        "status": "狀態"
+      }
+    },
+    "status": {
+      "active": "啟用",
+      "invited": "已邀請",
+      "suspended": "停用"
+    },
+    "roles": {
+      "superAdmin": "超級管理員",
+      "admin": "管理員",
+      "editor": "編輯",
+      "member": "成員",
+      "confirm": "確定要將 {member} 的角色變更為「{role}」嗎？"
+    },
+    "perms": {
+      "title": "成員權限管理",
+      "hint": "權限由上方角色決定；變更角色後會自動更新。",
+      "col": {
+        "member": "成員"
+      },
+      "manageRoles": "管理角色",
+      "uploadTranscripts": "上傳逐字稿",
+      "updateTranscripts": "更新逐字稿",
+      "updateOutline": "更新大綱",
+      "viewLogs": "檢視日誌"
+    },
+    "logs": {
+      "title": "變更日誌記錄",
+      "empty": "尚無變更記錄",
+      "col": {
+        "time": "時間",
+        "actor": "操作者",
+        "action": "動作"
+      },
+      "role": {
+        "changed": "將 {member} 的角色變更為 {role}"
+      },
+      "member": {
+        "added": "新增成員 {member}"
+      }
+    },
+    "transcripts": {
+      "title": "逐字稿管理",
+      "placeholder": "此功能將於後續版本直接搬移現有的逐字稿管理功能，敬請期待。"
+    }
+  }
 }

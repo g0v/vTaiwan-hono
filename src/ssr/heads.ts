@@ -258,6 +258,17 @@ export function headForPropose(origin: string, t: Translate): HeadConfig {
   }
 }
 
+export function headForAdmin(origin: string, t: Translate): HeadConfig {
+  const title = t('head.admin.title') + ' - ' + SITE_NAME
+  const description = t('head.admin.description')
+  return {
+    title,
+    description,
+    // 管理員後台不應被索引：在標準 OG meta 之外附加 robots noindex（不動 buildOg 的長度契約）
+    meta: [...buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/admin`), { name: 'robots', content: 'noindex,nofollow' }],
+  }
+}
+
 export function headForNotFound(origin: string, t: Translate): HeadConfig {
   const title = t('head.notFound.title') + ' - ' + SITE_NAME
   const description = t('head.notFound.description')

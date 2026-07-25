@@ -92,6 +92,10 @@
     "propose": {
       "title": "Propose a Project | vTaiwan",
       "description": "If you have public policy issues worth discussing, you are welcome to propose project suggestions."
+    },
+    "admin": {
+      "title": "Admin Console",
+      "description": "vTaiwan admin console prototype (internal discussion only)."
     }
   },
   "即將開始": "Upcoming",
@@ -970,6 +974,73 @@
       "checkUrl": "• Please check if the URL is correct",
       "useNavigation": "• Use the navigation menu above to browse the website",
       "contactSupport": "• Contact us if you have any questions"
+    }
+  },
+  "admin": {
+    "badge": "Prototype",
+    "title": "Admin Console",
+    "subtitle": "An interface prototype using mock data; all changes are synced only to your browser's localStorage, for feature discussion.",
+    "reset": "Reset mock data",
+    "tabs": {
+      "members": "Members & Permissions",
+      "logs": "Change Log",
+      "transcripts": "Transcripts"
+    },
+    "members": {
+      "listTitle": "Member List",
+      "count": "{n} members",
+      "showDetails": "View full details for {name}",
+      "detailsTitle": "{name}'s member details",
+      "col": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "joinedAt": "Joined",
+        "status": "Status"
+      }
+    },
+    "status": {
+      "active": "Active",
+      "invited": "Invited",
+      "suspended": "Suspended"
+    },
+    "roles": {
+      "superAdmin": "Super Admin",
+      "admin": "Admin",
+      "editor": "Editor",
+      "member": "Member",
+      "confirm": "Change {member}'s role to \"{role}\"?"
+    },
+    "perms": {
+      "title": "Member Permission Management",
+      "hint": "Permissions are determined by the role above and update automatically when it changes.",
+      "col": {
+        "member": "Member"
+      },
+      "manageRoles": "Manage Roles",
+      "uploadTranscripts": "Upload Transcripts",
+      "updateTranscripts": "Update Transcripts",
+      "updateOutline": "Update Outline",
+      "viewLogs": "View Logs"
+    },
+    "logs": {
+      "title": "Change Log",
+      "empty": "No changes recorded yet",
+      "col": {
+        "time": "Time",
+        "actor": "Actor",
+        "action": "Action"
+      },
+      "role": {
+        "changed": "Changed {member}'s role to {role}"
+      },
+      "member": {
+        "added": "Added member {member}"
+      }
+    },
+    "transcripts": {
+      "title": "Transcript Management",
+      "placeholder": "This feature will migrate the existing transcript management in a future release. Stay tuned."
     }
   }
 }

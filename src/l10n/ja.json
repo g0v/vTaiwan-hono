@@ -92,6 +92,10 @@
     "propose": {
       "title": "プロジェクト提案 | vTaiwan",
       "description": "議論に値する公共政策の課題がある場合は、プロジェクト提案を歓迎します。"
+    },
+    "admin": {
+      "title": "管理者コンソール",
+      "description": "vTaiwan 管理者コンソールの試作（内部検討用）。"
     }
   },
   "即將開始": "まもなく開始",
@@ -970,6 +974,73 @@
       "checkUrl": "• URLが正しいかご確認ください",
       "useNavigation": "• 上部のナビゲーションメニューを使用してウェブサイトを閲覧してください",
       "contactSupport": "• ご質問がある場合はお問い合わせください"
+    }
+  },
+  "admin": {
+    "badge": "試作 Prototype",
+    "title": "管理者コンソール",
+    "subtitle": "モックデータを使用したUI試作です。すべての変更はブラウザの localStorage にのみ同期され、機能検討のためのものです。",
+    "reset": "モックデータをリセット",
+    "tabs": {
+      "members": "メンバーと権限",
+      "logs": "変更履歴",
+      "transcripts": "逐語録管理"
+    },
+    "members": {
+      "listTitle": "メンバー一覧",
+      "count": "計 {n} 名",
+      "showDetails": "{name} の詳細を表示",
+      "detailsTitle": "{name} のメンバー情報",
+      "col": {
+        "name": "氏名",
+        "email": "メール",
+        "role": "ロール",
+        "joinedAt": "参加日",
+        "status": "ステータス"
+      }
+    },
+    "status": {
+      "active": "有効",
+      "invited": "招待済み",
+      "suspended": "停止"
+    },
+    "roles": {
+      "superAdmin": "スーパー管理者",
+      "admin": "管理者",
+      "editor": "編集者",
+      "member": "メンバー",
+      "confirm": "{member} のロールを「{role}」に変更しますか？"
+    },
+    "perms": {
+      "title": "メンバー権限管理",
+      "hint": "権限は上部のロールによって決まり、ロールの変更時に自動更新されます。",
+      "col": {
+        "member": "メンバー"
+      },
+      "manageRoles": "ロール管理",
+      "uploadTranscripts": "逐語録のアップロード",
+      "updateTranscripts": "逐語録の更新",
+      "updateOutline": "アウトラインの更新",
+      "viewLogs": "ログの閲覧"
+    },
+    "logs": {
+      "title": "変更履歴",
+      "empty": "まだ変更はありません",
+      "col": {
+        "time": "日時",
+        "actor": "操作者",
+        "action": "操作"
+      },
+      "role": {
+        "changed": "{member} のロールを {role} に変更"
+      },
+      "member": {
+        "added": "メンバー {member} を追加"
+      }
+    },
+    "transcripts": {
+      "title": "逐語録管理",
+      "placeholder": "この機能は今後のリリースで既存の逐語録管理機能をそのまま移行する予定です。"
     }
   }
 }
