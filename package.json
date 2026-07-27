@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@vue/server-renderer": "^3.5.32",
+    "better-auth": "^1.6.25",
     "chinese-conv": "^3.2.2",
     "firebase": "^12.16.0",
     "hono": "^4.12.14",

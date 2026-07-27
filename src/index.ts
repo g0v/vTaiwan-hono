@@ -7,6 +7,7 @@ import { registerMastodonApi } from './api/mastodon'
 import { registerProxyApi } from './api/proxy'
 import { registerTranscriptionApi } from './api/transcription'
 import type { AppEnv } from './api/types'
+import auth from './api/auth'
 import { renderPage } from './ssr/render'
 
 const app = new Hono<AppEnv>()
@@ -38,6 +39,7 @@ app.use('*', async (c, next) => {
 })
 
 // 純 JSON / 文字 API：直接回傳，不走 SSR
+app.route('/', auth)
 registerHelloApi(app)
 registerProxyApi(app)
 registerMastodonApi(app)
