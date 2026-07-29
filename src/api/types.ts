@@ -7,6 +7,7 @@ export type AppBindings = {
   }
   MASTODON_TOKEN?: string
   DB: D1Database
+  DB_AUTH: D1Database
   R2?: R2Bucket
   AI?: Ai
 

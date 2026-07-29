@@ -3,7 +3,9 @@
   "name": "vtaiwan-hono",
   "main": "src/index.ts",
   "compatibility_date": "2026-04-17",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "keep_vars": true,
   "assets": {
     "directory": "./public/",
@@ -19,6 +21,13 @@
       "database_name": "vtaiwan-transcriptions",
       "database_id": "af71c224-5fd2-4859-becb-6012ad1fc3b2",
       "migrations_dir": "./migrations",
+    },
+    {
+      "remote": true,
+      "binding": "DB_AUTH",
+      "database_name": "vtaiwan-auth",
+      "database_id": "e26edd14-d163-427d-8630-9304f815e9fa",
+      "migrations_dir": "./migrations/auth",
     },
   ],
   "r2_buckets": [
