@@ -981,6 +981,15 @@
     "title": "Admin Console",
     "subtitle": "An interface prototype using mock data; all changes are synced only to your browser's localStorage, for feature discussion.",
     "reset": "Reset mock data",
+    "search": {
+      "label": "Keyword search",
+      "clear": "Clear search",
+      "empty": "No results found for \"{q}\"",
+      "placeholder": {
+        "members": "Search name, email, role or status…",
+        "logs": "Search time, actor or action…"
+      }
+    },
     "tabs": {
       "members": "Members & Permissions",
       "logs": "Change Log",
@@ -989,6 +998,7 @@
     "members": {
       "listTitle": "Member List",
       "count": "{n} members",
+      "countFiltered": "Showing {n} of {total} members",
       "showDetails": "View full details for {name}",
       "detailsTitle": "{name}'s member details",
       "col": {

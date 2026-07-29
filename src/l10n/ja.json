@@ -981,6 +981,15 @@
     "title": "管理者コンソール",
     "subtitle": "モックデータを使用したUI試作です。すべての変更はブラウザの localStorage にのみ同期され、機能検討のためのものです。",
     "reset": "モックデータをリセット",
+    "search": {
+      "label": "キーワード検索",
+      "clear": "検索をクリア",
+      "empty": "「{q}」に一致する結果はありません",
+      "placeholder": {
+        "members": "氏名・メール・ロール・ステータスで検索…",
+        "logs": "日時・操作者・操作で検索…"
+      }
+    },
     "tabs": {
       "members": "メンバーと権限",
       "logs": "変更履歴",
@@ -989,6 +998,7 @@
     "members": {
       "listTitle": "メンバー一覧",
       "count": "計 {n} 名",
+      "countFiltered": "{total} 名中 {n} 名を表示",
       "showDetails": "{name} の詳細を表示",
       "detailsTitle": "{name} のメンバー情報",
       "col": {

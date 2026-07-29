@@ -981,6 +981,15 @@
     "title": "管理員後台",
     "subtitle": "此為使用偽資料的介面樣稿，所有變更僅同步至瀏覽器 localStorage，供後續功能討論。",
     "reset": "重設偽資料",
+    "search": {
+      "label": "關鍵字搜尋",
+      "clear": "清除搜尋",
+      "empty": "找不到符合「{q}」的結果",
+      "placeholder": {
+        "members": "搜尋姓名、電子郵件、角色或狀態…",
+        "logs": "搜尋時間、操作者或動作…"
+      }
+    },
     "tabs": {
       "members": "成員與權限",
       "logs": "變更日誌",
@@ -989,6 +998,7 @@
     "members": {
       "listTitle": "成員清單",
       "count": "共 {n} 位成員",
+      "countFiltered": "顯示 {n} / 共 {total} 位成員",
       "showDetails": "查看 {name} 的完整資料",
       "detailsTitle": "{name} 的成員資料",
       "col": {

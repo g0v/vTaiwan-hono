@@ -30,13 +30,19 @@
 
         <!-- Tab 1：成員與權限 -->
         <section v-show="activeTab === 'members'" class="space-y-vt-6">
+          <!-- 關鍵字搜尋：同時套用到下方兩張表 -->
+          <AdminSearchInput v-model="memberQuery" :placeholder="t('admin.search.placeholder.members')" :label="t('admin.search.label')" :clear-label="t('admin.search.clear')" />
+
           <!-- 功能 1：成員清單 -->
           <div class="admin-card">
             <div class="mb-vt-4 flex flex-wrap items-center justify-between gap-vt-2">
               <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.members.listTitle') }}</h2>
-              <span class="text-vt-sm text-vt-fg-3">{{ t('admin.members.count', { n: members.length }) }}</span>
+              <span class="text-vt-sm text-vt-fg-3">
+                {{ memberQuery.trim() ? t('admin.members.countFiltered', { n: filteredMembers.length, total: members.length }) : t('admin.members.count', { n: members.length }) }}
+              </span>
             </div>
-            <div class="overflow-x-auto">
+            <p v-if="filteredMembers.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.search.empty', { q: memberQuery.trim() }) }}</p>
+            <div v-else class="overflow-x-auto">
               <table class="w-full text-left text-vt-sm">
                 <thead>
                   <tr class="border-b border-vt-border text-vt-fg-3">
@@ -48,7 +54,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="m in members" :key="m.id" class="border-b border-vt-border/60">
+                  <tr v-for="m in filteredMembers" :key="m.id" class="border-b border-vt-border/60">
                     <td class="px-vt-3 py-vt-3 font-medium text-vt-fg-1">
                       <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: m.name })" @click="showMember(m)">{{ m.name }}</button>
                     </td>
@@ -79,7 +85,8 @@
           <div class="admin-card">
             <h2 class="mb-vt-1 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.perms.title') }}</h2>
             <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.perms.hint') }}</p>
-            <div class="overflow-x-auto">
+            <p v-if="filteredMembers.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.search.empty', { q: memberQuery.trim() }) }}</p>
+            <div v-else class="overflow-x-auto">
               <table class="w-full text-left text-vt-sm">
                 <thead>
                   <tr class="border-b border-vt-border text-vt-fg-3">
@@ -90,7 +97,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="m in members" :key="m.id" class="border-b border-vt-border/60">
+                  <tr v-for="m in filteredMembers" :key="m.id" class="border-b border-vt-border/60">
                     <td class="px-vt-3 py-vt-3 font-medium text-vt-fg-1">
                       <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: m.name })" @click="showMember(m)">{{ m.name }}</button>
                     </td>
@@ -111,7 +118,9 @@
               <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.logs.title') }}</h2>
               <button type="button" class="admin-btn-ghost" @click="resetData">{{ t('admin.reset') }}</button>
             </div>
+            <AdminSearchInput v-model="logQuery" class="mb-vt-4" :placeholder="t('admin.search.placeholder.logs')" :label="t('admin.search.label')" :clear-label="t('admin.search.clear')" />
             <p v-if="logs.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.logs.empty') }}</p>
+            <p v-else-if="filteredLogs.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.search.empty', { q: logQuery.trim() }) }}</p>
             <div v-else class="overflow-x-auto">
               <table class="w-full text-left text-vt-sm">
                 <thead>
@@ -122,7 +131,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="log in logs" :key="log.id" class="border-b border-vt-border/60">
+                  <tr v-for="log in filteredLogs" :key="log.id" class="border-b border-vt-border/60">
                     <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-3">{{ log.time }}</td>
                     <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-2">
                       <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: actorName(log.actor) })" @click="showActor(log.actor)">
@@ -188,8 +197,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import AdminSearchInput from '../components/AdminSearchInput.vue'
 
 const { t } = useI18n()
 
@@ -260,6 +270,23 @@ function seedLogs(): LogEntry[] {
 const members = ref<Member[]>(seedMembers())
 const logs = ref<LogEntry[]>(seedLogs())
 const selectedMember = ref<Member | null>(null)
+
+// ── 關鍵字搜尋（tab 1 / tab 2；純顯示狀態，不寫入 localStorage）──
+const memberQuery = ref('')
+const logQuery = ref('')
+
+// 以「使用者看得到的字」為比對範圍：翻譯後的標籤與原始 key 都納入
+function matches(query: string, fields: string[]): boolean {
+  const q = query.trim().toLowerCase()
+  if (!q) return true
+  return fields.some(field => field.toLowerCase().includes(q))
+}
+
+const filteredMembers = computed(() =>
+  members.value.filter(m => matches(memberQuery.value, [m.name, m.email, m.role, t('admin.roles.' + m.role), m.status, t('admin.status.' + m.status), m.joinedAt]))
+)
+
+const filteredLogs = computed(() => logs.value.filter(log => matches(logQuery.value, [log.time, log.actor, actorName(log.actor), describeLog(log)])))
 
 // ── localStorage 同步（僅瀏覽器端；SSR 期間不執行）──────────
 function persist() {
@@ -448,8 +475,8 @@ function describeLog(log: LogEntry): string {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--spacing-vt-9);
-  height: var(--spacing-vt-9);
+  width: var(--spacing-vt-8);
+  height: var(--spacing-vt-8);
   border-radius: var(--radius-vt-full);
   color: var(--color-vt-fg-2);
   font-size: var(--text-vt-xl);
