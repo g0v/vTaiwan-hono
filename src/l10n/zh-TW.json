@@ -512,7 +512,7 @@
       "contactUs": "聯絡我們"
     },
     "jitsi": "即時會議",
-    "transcriptions": "逐字稿管理"
+    "transcriptions": "瀏覽逐字稿"
   },
   "meetupDetail": {
     "upcoming": "即將舉行",
@@ -715,7 +715,13 @@
   },
   "transcriptions": {
     "title": "逐字稿管理",
-    "description": "管理會議逐字稿，包含查詢、下載和上傳功能",
+    "description": "瀏覽會議逐字稿，可查看大綱與下載全文（上傳與大綱編輯請至管理員後台）",
+    "search": {
+      "label": "關鍵字搜尋",
+      "placeholder": "搜尋會議 ID 或大綱內容…",
+      "clearSearch": "清除搜尋",
+      "noResults": "找不到符合「{query}」的逐字稿"
+    },
     "upload": {
       "title": "上傳逐字稿",
       "description": "上傳即代表您同意以CC-BY-SA創用授權釋出，並同意由AI整理大綱，大綱以CC0釋出",
@@ -726,6 +732,7 @@
     },
     "list": {
       "title": "逐字稿列表",
+      "prototypeBadge": "樣稿",
       "meetingId": "會議 ID",
       "fileName": "檔案名稱",
       "viewOutline": "查看大綱",
@@ -1050,7 +1057,7 @@
     },
     "transcripts": {
       "title": "逐字稿管理",
-      "placeholder": "此功能將於後續版本直接搬移現有的逐字稿管理功能，敬請期待。"
+      "hint": "此分頁使用真實資料（非偽資料）：登入後即可上傳逐字稿；覆蓋既有逐字稿與編輯 AI 大綱需管理員權限。"
     }
   }
 }

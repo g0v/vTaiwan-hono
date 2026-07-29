@@ -502,7 +502,7 @@
       "contactUs": "Contact Us"
     },
     "jitsi": "Jitsi Meet",
-    "transcriptions": "Transcriptions"
+    "transcriptions": "Browse Transcriptions"
   },
   "meetupDetail": {
     "upcoming": "Upcoming",
@@ -720,7 +720,13 @@
   },
   "transcriptions": {
     "title": "Transcription Management",
-    "description": "Manage meeting transcriptions, including query, download, and upload functions",
+    "description": "Browse meeting transcriptions, view outlines and download full text (uploading and outline editing moved to the admin console)",
+    "search": {
+      "label": "Keyword search",
+      "placeholder": "Search meeting ID or outline…",
+      "clearSearch": "Clear search",
+      "noResults": "No transcriptions match \"{query}\""
+    },
     "upload": {
       "title": "Upload Transcription",
       "description": "By uploading, you agree to release under CC-BY-SA Creative Commons license and consent to AI-generated outlines, with outlines released under CC0",
@@ -731,6 +737,7 @@
     },
     "list": {
       "title": "Transcription List",
+      "prototypeBadge": "Prototype",
       "meetingId": "Meeting ID",
       "fileName": "File Name",
       "viewOutline": "View Outline",
@@ -1050,7 +1057,7 @@
     },
     "transcripts": {
       "title": "Transcript Management",
-      "placeholder": "This feature will migrate the existing transcript management in a future release. Stay tuned."
+      "hint": "This tab uses real data (not mock data): sign in to upload transcripts; overwriting an existing transcript or editing AI outlines requires admin privileges."
     }
   }
 }

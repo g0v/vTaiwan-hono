@@ -1,8 +1,8 @@
 <template>
-  <div class="admin-search">
-    <IconWrapper name="search" :size="18" class="admin-search__icon" aria-hidden="true" />
-    <input :value="modelValue" type="search" class="admin-search__input" :placeholder="placeholder" :aria-label="label" @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)" />
-    <button v-if="modelValue" type="button" class="admin-search__clear" :aria-label="clearLabel" @click="emit('update:modelValue', '')">
+  <div class="vt-search">
+    <IconWrapper name="search" :size="18" class="vt-search__icon" aria-hidden="true" />
+    <input :value="modelValue" type="search" class="vt-search__input" :placeholder="placeholder" :aria-label="label" @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)" />
+    <button v-if="modelValue" type="button" class="vt-search__clear" :aria-label="clearLabel" @click="emit('update:modelValue', '')">
       <IconWrapper name="x" :size="14" />
     </button>
   </div>
@@ -25,13 +25,13 @@ const emit = defineEmits<{
 </script>
 
 <style scoped>
-.admin-search {
+.vt-search {
   position: relative;
   width: 100%;
   max-width: 22rem;
 }
 
-.admin-search__icon {
+.vt-search__icon {
   position: absolute;
   top: 50%;
   left: var(--spacing-vt-3);
@@ -40,7 +40,7 @@ const emit = defineEmits<{
   pointer-events: none;
 }
 
-.admin-search__input {
+.vt-search__input {
   width: 100%;
   /* 左右保留 icon / 清除鈕的空間（--spacing-vt-8 = 32px）*/
   padding-block: var(--spacing-vt-2);
@@ -53,23 +53,23 @@ const emit = defineEmits<{
   transition: border-color 0.15s ease;
 }
 
-.admin-search__input::placeholder {
+.vt-search__input::placeholder {
   color: var(--color-vt-fg-3);
 }
 
-.admin-search__input:focus {
+.vt-search__input:focus {
   outline: none;
   border-color: var(--color-vt-democratic-red);
   box-shadow: 0 0 0 2px var(--color-vt-red-tint);
 }
 
 /* 隱藏瀏覽器原生的 search 清除鈕，統一用自訂按鈕 */
-.admin-search__input::-webkit-search-cancel-button {
+.vt-search__input::-webkit-search-cancel-button {
   -webkit-appearance: none;
   appearance: none;
 }
 
-.admin-search__clear {
+.vt-search__clear {
   position: absolute;
   top: 50%;
   right: var(--spacing-vt-1);
@@ -84,7 +84,7 @@ const emit = defineEmits<{
   cursor: pointer;
 }
 
-.admin-search__clear:hover {
+.vt-search__clear:hover {
   color: var(--color-vt-fg-1);
   background-color: var(--color-vt-bg-2);
 }

@@ -79,6 +79,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { formatMeetingId } from '../lib/transcription-format'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -99,14 +100,6 @@ const meetingId = computed(() => route.params.meeting_id as string)
 const loading = ref(true)
 const error = ref('')
 const transcriptionContent = ref<string[]>([])
-
-// 格式化會議 ID（20250621 → 2025-06-21）
-function formatMeetingId(id: string): string {
-  if (id.length === 8) {
-    return `${id.substring(0, 4)}-${id.substring(4, 6)}-${id.substring(6, 8)}`
-  }
-  return id
-}
 
 function getSpeaker(message: string): string {
   return message

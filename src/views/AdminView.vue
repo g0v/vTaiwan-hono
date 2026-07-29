@@ -31,7 +31,7 @@
         <!-- Tab 1：成員與權限 -->
         <section v-show="activeTab === 'members'" class="space-y-vt-6">
           <!-- 關鍵字搜尋：同時套用到下方兩張表 -->
-          <AdminSearchInput v-model="memberQuery" :placeholder="t('admin.search.placeholder.members')" :label="t('admin.search.label')" :clear-label="t('admin.search.clear')" />
+          <SearchInput v-model="memberQuery" :placeholder="t('admin.search.placeholder.members')" :label="t('admin.search.label')" :clear-label="t('admin.search.clear')" />
 
           <!-- 功能 1：成員清單 -->
           <div class="admin-card">
@@ -118,7 +118,7 @@
               <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.logs.title') }}</h2>
               <button type="button" class="admin-btn-ghost" @click="resetData">{{ t('admin.reset') }}</button>
             </div>
-            <AdminSearchInput v-model="logQuery" class="mb-vt-4" :placeholder="t('admin.search.placeholder.logs')" :label="t('admin.search.label')" :clear-label="t('admin.search.clear')" />
+            <SearchInput v-model="logQuery" class="mb-vt-4" :placeholder="t('admin.search.placeholder.logs')" :label="t('admin.search.label')" :clear-label="t('admin.search.clear')" />
             <p v-if="logs.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.logs.empty') }}</p>
             <p v-else-if="filteredLogs.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.search.empty', { q: logQuery.trim() }) }}</p>
             <div v-else class="overflow-x-auto">
@@ -146,11 +146,12 @@
           </div>
         </section>
 
-        <!-- Tab 3：逐字稿管理（留白） -->
+        <!-- Tab 3：逐字稿管理（真實資料，與公開列表頁共用 TranscriptionManager） -->
         <section v-show="activeTab === 'transcripts'">
-          <div class="admin-card flex min-h-[16rem] flex-col items-center justify-center text-center">
-            <h2 class="mb-vt-2 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.transcripts.title') }}</h2>
-            <p class="max-w-md text-vt-sm text-vt-fg-3">{{ t('admin.transcripts.placeholder') }}</p>
+          <div class="admin-card">
+            <h2 class="mb-vt-1 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.transcripts.title') }}</h2>
+            <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.transcripts.hint') }}</p>
+            <TranscriptionManager manage :user="user" :user-data="userData" />
           </div>
         </section>
       </div>
@@ -199,9 +200,25 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import AdminSearchInput from '../components/AdminSearchInput.vue'
+import SearchInput from '../components/SearchInput.vue'
+import TranscriptionManager from '../components/TranscriptionManager.vue'
 
 const { t } = useI18n()
+
+// tab 1 / tab 2 為偽資料樣稿；tab 3 的逐字稿管理走真實 API，需要登入資訊
+interface AuthUserData {
+  uid?: string
+  isAdmin?: boolean
+  isSuperAdmin?: boolean
+}
+
+withDefaults(
+  defineProps<{
+    user?: unknown
+    userData?: AuthUserData | null
+  }>(),
+  { user: undefined, userData: null }
+)
 
 // ── 型別 ──────────────────────────────────────────────
 type RoleKey = 'superAdmin' | 'admin' | 'editor' | 'member'
