@@ -6,6 +6,7 @@ import { useI18n } from 'vue-i18n'
 import Footer from './components/Footer.vue'
 import GoogleLogin from './components/GoogleLogin.vue'
 import NavBar from './components/NavBar.vue'
+import { authClient } from './client/authClient'
 import { getFirebaseServices } from './lib/firebase'
 import { detectPreferredLocale, isSupportedLocale, localeKey, persistLocale, supportedLocales, type SupportedLocale } from './i18n'
 
@@ -14,6 +15,7 @@ const showLoginModal = ref(false)
 const isInApp = ref(false)
 const user = ref<AuthenticatedUser | null>(null)
 const userData = ref<UserData | null>(null)
+const betterAuthUser = ref<AuthenticatedUser | null>(null)
 let unsubscribeAuth: (() => void) | undefined
 
 interface AuthenticatedUser {
@@ -51,6 +53,7 @@ provide(localeKey, { locale, supportedLocales, setLocale })
 // 待掛載完成後（僅瀏覽器端）再依使用者偏好切換，避免 hydration mismatch。
 onMounted(() => {
   isInApp.value = /\b(FBAN|FBAV|Instagram|Line)\b/i.test(navigator.userAgent)
+  void loadBetterAuthSession()
   void watchAuthState()
 
   const preferred = detectPreferredLocale()
@@ -79,16 +82,43 @@ function publicUser(firebaseUser: User): AuthenticatedUser {
   }
 }
 
+function publicBetterAuthUser(betterAuthUser: { id: string; name: string | null; email: string | null; image?: string | null }): AuthenticatedUser {
+  return {
+    uid: betterAuthUser.id,
+    displayName: betterAuthUser.name,
+    email: betterAuthUser.email,
+    photoURL: betterAuthUser.image ?? null,
+  }
+}
+
+async function loadBetterAuthSession() {
+  try {
+    const { data } = await authClient.getSession()
+    if (!data?.user) return
+
+    betterAuthUser.value = publicBetterAuthUser(data.user)
+    user.value = betterAuthUser.value
+    userData.value = null
+    handleLoginSuccess()
+  } catch (error) {
+    console.error('Failed to load Better Auth session:', error)
+  }
+}
+
 async function watchAuthState() {
   try {
     const { auth, onAuthStateChanged } = await getFirebaseServices()
     unsubscribeAuth = onAuthStateChanged(auth, async firebaseUser => {
-      user.value = firebaseUser ? publicUser(firebaseUser) : null
+      if (firebaseUser) {
+        user.value = publicUser(firebaseUser)
+      } else if (!betterAuthUser.value) {
+        user.value = null
+      }
 
       if (firebaseUser) {
         showLoginModal.value = false
         await loadOrCreateUserData(firebaseUser)
-      } else {
+      } else if (!betterAuthUser.value) {
         userData.value = null
       }
     })
@@ -129,6 +159,19 @@ async function loadOrCreateUserData(firebaseUser: User) {
 }
 
 async function handleLogout() {
+  try {
+    const { error } = await authClient.signOut()
+    if (error) {
+      console.error('Better Auth logout error:', error)
+    } else if (betterAuthUser.value) {
+      betterAuthUser.value = null
+      user.value = null
+      userData.value = null
+    }
+  } catch (error) {
+    console.error('Better Auth logout error:', error)
+  }
+
   try {
     const { auth, signOut } = await getFirebaseServices()
     await signOut(auth)
