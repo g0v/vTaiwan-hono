@@ -2,7 +2,7 @@
   <div>
     <!-- 上傳區域（僅管理模式；需登入） -->
     <template v-if="manage">
-      <div v-if="user" class="mb-8 rounded-lg bg-white p-6 shadow-md">
+      <div v-if="canUpdateTranscriptions" class="mb-8 rounded-lg bg-white p-6 shadow-md">
         <h2 class="mb-4 text-xl font-semibold">{{ t('transcriptions.upload.title') }}</h2>
         <p class="text-gray-600">{{ t('transcriptions.upload.description') }}</p>
         <div class="space-y-4">
@@ -27,7 +27,7 @@
       </div>
 
       <!-- 未登入提示 -->
-      <div v-else class="mb-8 rounded-lg border border-yellow-200 bg-yellow-50 p-6">
+      <div v-else-if="!authSession" class="mb-8 rounded-lg border border-yellow-200 bg-yellow-50 p-6">
         <div class="flex items-center">
           <svg class="mr-2 h-5 w-5 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
             <path
@@ -89,7 +89,7 @@
       :meeting-id="currentOutlineItem.meeting_id"
       :outline="currentOutlineItem.outline"
       :show-edit="canShowEdit"
-      :allow-edit="isAdmin"
+      :allow-edit="canUpdateTranscriptions"
       @close="currentOutlineItem = null"
       @save="saveOutline"
     />
@@ -99,16 +99,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { hasPermission, type AuthSession } from '../client/auth-session'
 import SearchInput from './SearchInput.vue'
 import TranscriptionCard from './TranscriptionCard.vue'
 import TranscriptionOutlineModal from './TranscriptionOutlineModal.vue'
 import { extractMeetingIdFromFilename, formatMeetingId, matchesTranscriptionQuery, type Transcription } from '../lib/transcription-format'
-
-interface UserData {
-  uid?: string
-  isAdmin?: boolean
-  isSuperAdmin?: boolean
-}
 
 const { t } = useI18n()
 
@@ -116,14 +111,13 @@ const props = withDefaults(
   defineProps<{
     /** true 時開放上傳與大綱編輯（管理後台 tab 3）；false 為唯讀瀏覽（公開列表頁） */
     manage?: boolean
-    user?: unknown
-    userData?: UserData | null
+    authSession?: AuthSession | null
   }>(),
-  { manage: false, user: undefined, userData: null }
+  { manage: false, authSession: null }
 )
 
-const isAdmin = computed(() => props.manage && (props.userData?.isAdmin === true || props.userData?.isSuperAdmin === true))
-const canShowEdit = computed(() => props.manage && Boolean(props.userData?.uid))
+const canUpdateTranscriptions = computed(() => props.manage && hasPermission(props.authSession, 'transcription.update'))
+const canShowEdit = computed(() => canUpdateTranscriptions.value)
 
 const transcriptions = ref<Transcription[]>([])
 const loading = ref(true)
@@ -175,7 +169,7 @@ async function uploadTranscription() {
     return
   }
   if (checkMeetingExists(meetingId)) {
-    if (!isAdmin.value) {
+    if (!canUpdateTranscriptions.value) {
       alert(t('transcriptions.messages.existsRequireAdmin'))
       return
     }

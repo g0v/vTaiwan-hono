@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { createAuth } from '../server/lib/createAuth'
+import { getAuthContext } from '../server/lib/authorization'
 import type { AppEnv } from './types'
 
 export const app = new Hono<AppEnv>()
@@ -10,11 +11,9 @@ app.on(['GET', 'POST'], '/api/auth/*', c => {
 })
 
 app.get('/api/me', async c => {
-  const auth = createAuth(c.env)
-  const session = await auth.api.getSession({ headers: c.req.raw.headers })
-
-  if (!session) return c.json({ error: 'Unauthorized' }, 401)
-  return c.json({ user: session.user })
+  const context = await getAuthContext(c.env, c.req.raw.headers)
+  if (!context) return c.json({ error: 'Unauthorized' }, 401)
+  return c.json(context)
 })
 
 export default app

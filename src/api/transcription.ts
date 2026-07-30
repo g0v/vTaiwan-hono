@@ -3,6 +3,7 @@ import { readAudioToText } from '../lib/transcribe'
 import { generateOutline } from '../lib/ai-summarize'
 import { splitTranscriptionIntoChunks, TRANSCRIPTION_MAX_BYTES, utf8ByteLength } from '../lib/transcription-storage'
 import { stripHtmlFromMarkdown } from '../lib/html-sanitizer'
+import { getAuthContext, hasPermission, hasSameOrigin } from '../server/lib/authorization'
 import type { App } from './types'
 
 const LANG_MAP: Record<string, string> = {
@@ -44,6 +45,11 @@ export function registerTranscriptionApi(app: App) {
   // POST /api/upload-transcription — 上傳逐字稿 .txt 至 D1 + R2，並生成 AI 大綱
   app.use('/api/upload-transcription', corsFor(['POST']))
   app.post('/api/upload-transcription', async c => {
+    if (!hasSameOrigin(c.req.url, c.req.header('Origin'))) return c.json({ error: 'Forbidden' }, 403)
+    const context = await getAuthContext(c.env, c.req.raw.headers)
+    if (!context) return c.json({ error: 'Unauthorized' }, 401)
+    if (!hasPermission(context, 'transcription.update')) return c.json({ error: 'Forbidden' }, 403)
+
     let formData: FormData
     try {
       formData = await c.req.formData()
@@ -109,6 +115,11 @@ export function registerTranscriptionApi(app: App) {
   // POST /api/update-outline — 手動更新大綱
   app.use('/api/update-outline', corsFor(['POST']))
   app.post('/api/update-outline', async c => {
+    if (!hasSameOrigin(c.req.url, c.req.header('Origin'))) return c.json({ error: 'Forbidden' }, 403)
+    const context = await getAuthContext(c.env, c.req.raw.headers)
+    if (!context) return c.json({ error: 'Unauthorized' }, 401)
+    if (!hasPermission(context, 'transcription.update')) return c.json({ error: 'Forbidden' }, 403)
+
     const { meeting_id, outline } = await c.req.json<{ meeting_id: unknown; outline: unknown }>()
     if (typeof meeting_id !== 'string' || !/^\d{8}$/.test(meeting_id) || typeof outline !== 'string') {
       return c.json({ error: '大綱資料格式不正確', code: 'INVALID_OUTLINE' }, 400)

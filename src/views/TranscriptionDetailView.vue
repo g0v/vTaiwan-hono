@@ -80,18 +80,13 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { formatMeetingId } from '../lib/transcription-format'
+import type { AuthSession } from '../client/auth-session'
 
 const { t } = useI18n()
 const route = useRoute()
 
-interface UserData {
-  name?: string | null
-  photoURL?: string | null
-}
-
 const props = defineProps<{
-  user?: unknown
-  userData?: UserData | null
+  authSession?: AuthSession | null
 }>()
 
 // 從路由參數取得會議 ID
@@ -118,8 +113,8 @@ function dropSpeakerAndDateTime(message: string): string {
 }
 
 function getPhotoURL(speaker: string): string {
-  if (props.userData?.name === speaker.replace(/\s+/g, '')) {
-    return props.userData.photoURL ?? ''
+  if (props.authSession?.user.name === speaker.replace(/\s+/g, '')) {
+    return props.authSession.user.image ?? ''
   }
   return ''
 }

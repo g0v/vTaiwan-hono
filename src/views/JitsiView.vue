@@ -10,7 +10,7 @@
           <input v-model="joinMeetingName" class="mb-4 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-jade-green focus:outline-hidden" placeholder="請輸入您的名字" />
           <button @click="joinMeeting" class="rounded-lg bg-jade-green px-6 py-3 text-white transition-colors hover:bg-jade-green/90">加入會議</button>
           <br />
-          <p v-if="!userData || !userData.uid" class="text-sm text-gray-600">如欲加入會議並啟用完整逐字稿功能，請先登入</p>
+          <p v-if="!authUserData.uid" class="text-sm text-gray-600">如欲加入會議並啟用完整逐字稿功能，請先登入</p>
         </div>
       </div>
       <div v-show="hasJoined" ref="jitsiContainer" class="w-full" style="height: calc(100% - 50px)" :key="jitsiKey"></div>
@@ -20,7 +20,7 @@
     <div v-if="showTranscript && !isMobile" class="h-full w-[62%] md:w-[38%]">
       <TranscriptPanel
         @close="hideTranscript"
-        :user-data="userData"
+        :user-data="authUserData"
         :transcript-data="transcriptData"
         :is-recorder="isRecorder"
         :selected-date="selectedDate"
@@ -48,7 +48,7 @@
         </div>
         <TranscriptPanel
           @close="hideTranscript"
-          :user-data="userData"
+          :user-data="authUserData"
           :transcript-data="transcriptData"
           :is-recorder="isRecorder"
           :selected-date="selectedDate"
@@ -169,7 +169,7 @@
     <div class="fixed right-6 bottom-16 z-50 flex flex-col space-y-3">
       <div class="relative">
         <button
-          v-if="isMobile && userData && userData.uid"
+          v-if="isMobile && authUserData.uid"
           @click="toggleAudioSettings"
           class="flex items-center justify-center rounded-full border border-gray-300 bg-white p-4 text-gray-600 shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-50 hover:text-gray-800"
           :title="$t('transcript.audioSettings')"
@@ -183,7 +183,7 @@
 
       <div class="relative">
         <button
-          v-if="userData && userData.uid"
+          v-if="authUserData.uid"
           @click="toggleAudioRecording"
           :class="[
             'relative rounded-full p-4 shadow-lg transition-all duration-300',
@@ -218,7 +218,7 @@
         </div>
 
         <button
-          v-if="!isMobile && userData && userData.uid"
+          v-if="!isMobile && authUserData.uid"
           @click="toggleAudioSettings"
           class="audio-settings-button absolute -top-1 -right-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 shadow-lg transition-all duration-200 hover:scale-110 hover:bg-gray-50 hover:text-gray-700"
           :title="$t('transcript.audioSettings')"
@@ -231,7 +231,7 @@
       </div>
 
       <button
-        v-if="userData && userData.uid"
+        v-if="authUserData.uid"
         @click="toggleTranscript"
         :class="[
           'rounded-full p-4 shadow-lg transition-all duration-300',
@@ -272,7 +272,7 @@ export default {
   components: { TranscriptPanel, IconWrapper, TranscriptLanguageSwitcher },
 
   props: {
-    userData: { type: Object, required: false, default: () => ({}) },
+    authSession: { type: Object, required: false, default: null },
   },
 
   setup() {
@@ -359,6 +359,17 @@ export default {
   },
 
   computed: {
+    authUserData() {
+      const user = this.authSession?.user
+      if (!user) return {}
+      return {
+        uid: user.id,
+        name: user.name,
+        email: user.email,
+        photoURL: user.image,
+        isAdmin: this.authSession.permissions.includes('meeting.moderate'),
+      }
+    },
     fullRoomName() {
       return `${this.appId}/${this.room}`
     },
@@ -388,7 +399,7 @@ export default {
     this.drawerWidth = Math.min(window.innerWidth * 0.9, 400)
     this.updateViewportState()
     this.loadJitsiTipBanner()
-    this.joinMeetingName = (this.userData || {}).name || 'Guest'
+    this.joinMeetingName = this.authUserData.name || 'Guest'
 
     // 錄音計時器，每秒觸發 recordingDuration 重新計算
     this.recordingTimerInterval = setInterval(() => {
@@ -458,10 +469,10 @@ export default {
   },
 
   watch: {
-    userData: {
+    authSession: {
       handler() {
-        this.isRecorder = this.meetingData.recorder == (this.userData || {}).uid
-        this.joinMeetingName = (this.userData || {}).name || 'Guest'
+        this.isRecorder = this.meetingData.recorder == this.authUserData.uid
+        this.joinMeetingName = this.authUserData.name || 'Guest'
       },
     },
     jwt(newJwt, oldJwt) {
@@ -490,16 +501,21 @@ export default {
     },
 
     async getJwt() {
-      const user_id = (this.userData || {}).uid || 'Guest'
+      const user_id = this.authUserData.uid || 'Guest'
       if (user_id === 'Guest') {
         window.alert('請先登入，方可加入會議')
         return
       }
-      const user_name = this.joinMeetingName
-      const user_email = this.userData.email || 'guest@vtaiwan.tw'
-      const isAdmin = this.userData.isAdmin || false
-      // 使用同源相對路徑，取代舊的外部 jaas-worker 網域
-      const res = await fetch(`/api/jitsi-token?room=vtaiwan&user_id=${user_id}&user_name=${user_name}&user_email=${user_email}&user_moderator=${isAdmin}`)
+      // 身分與 moderator 權限由後端 Better Auth session 決定。
+      const res = await fetch('/api/jitsi-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room: this.room }),
+      })
+      if (!res.ok) {
+        window.alert('無法取得會議權杖')
+        return
+      }
       const json = await res.json()
       this.jwt = json.token
     },
@@ -635,7 +651,7 @@ export default {
     toggleRecorder() {
       this.isRecorder = !this.isRecorder
       if (this.isRecorder) {
-        this.meetingData.recorder = (this.userData || {}).uid
+        this.meetingData.recorder = this.authUserData.uid
       } else {
         this.meetingData.recorder = ''
       }
@@ -847,7 +863,7 @@ export default {
         this.audioMediaRecorder.start()
         this.isRecordingAudio = true
 
-        const speakerName = (this.userData || {}).name || '未知說話者'
+        const speakerName = this.authUserData.name || '未知說話者'
         this.meetingData.recordingStartTime = Date.now()
         this.meetingData.recordingSpeaker = speakerName
         this.syncRecordingStatus()
@@ -917,7 +933,7 @@ export default {
         this.addTranscriptData({
           id: 'audio_' + Date.now(),
           timestamp: Date.now(),
-          speaker: (this.userData || {}).name || '未知說話者',
+          speaker: this.authUserData.name || '未知說話者',
           text: result,
         })
       }
@@ -1092,7 +1108,7 @@ export default {
           if (snap.exists()) {
             this.meetingData = snap.val()
             this.transcriptData = (this.meetingData || {}).transcripts || {}
-            this.isRecorder = this.meetingData.recorder == (this.userData || {}).uid
+            this.isRecorder = this.meetingData.recorder == this.authUserData.uid
           } else {
             this.meetingData = { recorder: '', transcripts: {} }
             this.transcriptData = {}

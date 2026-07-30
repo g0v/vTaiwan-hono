@@ -19,7 +19,7 @@ import TranscriptionManager from '../components/TranscriptionManager.vue'
 
 const { t } = useI18n()
 
-// RouterView 會傳入 user / userData / inApp 等 props；本頁只做瀏覽不需要，
+// RouterView 會傳入 authSession / inApp 等 props；本頁只做瀏覽不需要，
 // 關閉 attrs 繼承避免它們變成根元素上的 DOM 屬性。
 defineOptions({ inheritAttrs: false })
 </script>

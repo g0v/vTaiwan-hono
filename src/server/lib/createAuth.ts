@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth'
 import type { AppBindings } from '../../api/types'
 import { admin } from 'better-auth/plugins'
+import { adminAc, userAc } from 'better-auth/plugins/admin/access'
 
 export function createAuth(env: AppBindings) {
   return betterAuth({
@@ -18,6 +19,15 @@ export function createAuth(env: AppBindings) {
         clientSecret: env.GITHUB_CLIENT_SECRET,
       },
     },
-    plugins: [admin()],
+    plugins: [
+      admin({
+        adminRoles: ['super-admin'],
+        roles: {
+          user: userAc,
+          admin: userAc,
+          'super-admin': adminAc,
+        },
+      }),
+    ],
   })
 }

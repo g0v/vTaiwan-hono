@@ -2,7 +2,7 @@
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import GoogleLogin from '../components/GoogleLogin.vue'
-import { getFirebaseServices } from '../lib/firebase'
+import { authClient } from '../client/authClient'
 
 interface AuthenticatedUser {
   uid: string
@@ -11,25 +11,17 @@ interface AuthenticatedUser {
   photoURL: string | null
 }
 
-interface UserData {
-  name: string | null
-  photoURL: string | null
-}
-
 const props = withDefaults(
   defineProps<{
     user?: AuthenticatedUser | null
-    userData?: UserData | null
     inApp?: boolean
   }>(),
   {
     user: null,
-    userData: null,
     inApp: false,
   }
 )
 const emit = defineEmits<{
-  'login-success': []
   logout: []
   'profile-updated': [displayName: string]
 }>()
@@ -39,8 +31,8 @@ const updating = ref(false)
 const editForm = reactive({ displayName: '' })
 
 const hasChanges = computed(() => editForm.displayName.trim() !== (props.user?.displayName ?? ''))
-const profileName = computed(() => props.userData?.name || props.user?.displayName || t('profile.notSet'))
-const profilePhotoUrl = computed(() => props.userData?.photoURL || props.user?.photoURL)
+const profileName = computed(() => props.user?.displayName || t('profile.notSet'))
+const profilePhotoUrl = computed(() => props.user?.photoURL)
 
 watch(
   () => props.user,
@@ -66,15 +58,8 @@ async function saveProfile() {
   try {
     updating.value = true
     const displayName = editForm.displayName.trim()
-    const { auth, database, databaseRef, databaseUpdate, updateProfile } = await getFirebaseServices()
-
-    if (!auth.currentUser) return
-
-    await updateProfile(auth.currentUser, { displayName })
-    await databaseUpdate(databaseRef(database, `users/${props.user.uid}`), {
-      name: displayName,
-      updatedAt: new Date().toISOString(),
-    })
+    const { error } = await authClient.updateUser({ name: displayName })
+    if (error) throw error
     emit('profile-updated', displayName)
     editing.value = false
   } catch (error) {
@@ -93,7 +78,7 @@ async function saveProfile() {
 
       <div v-if="!user" class="py-8 text-center">
         <p class="mb-5 text-vt-fg-2">{{ t('profile.loginRequired') }}</p>
-        <GoogleLogin :in-app="inApp" @login-success="emit('login-success')" />
+        <GoogleLogin :in-app="inApp" />
       </div>
 
       <div v-else-if="!editing" class="space-y-8">

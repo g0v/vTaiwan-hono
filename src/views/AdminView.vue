@@ -151,7 +151,7 @@
           <div class="admin-card">
             <h2 class="mb-vt-1 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.transcripts.title') }}</h2>
             <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.transcripts.hint') }}</p>
-            <TranscriptionManager manage :user="user" :user-data="userData" />
+            <TranscriptionManager manage :auth-session="props.authSession" />
           </div>
         </section>
       </div>
@@ -200,24 +200,18 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
+import type { AuthSession } from '../client/auth-session'
 import SearchInput from '../components/SearchInput.vue'
 import TranscriptionManager from '../components/TranscriptionManager.vue'
 
 const { t } = useI18n()
 
-// tab 1 / tab 2 為偽資料樣稿；tab 3 的逐字稿管理走真實 API，需要登入資訊
-interface AuthUserData {
-  uid?: string
-  isAdmin?: boolean
-  isSuperAdmin?: boolean
-}
-
-withDefaults(
+// tab 1 / tab 2 為偽資料樣稿；tab 3 的逐字稿管理走真實 API，需要 Better Auth session。
+const props = withDefaults(
   defineProps<{
-    user?: unknown
-    userData?: AuthUserData | null
+    authSession?: AuthSession | null
   }>(),
-  { user: undefined, userData: null }
+  { authSession: null }
 )
 
 // ── 型別 ──────────────────────────────────────────────

@@ -10,21 +10,14 @@ interface AuthenticatedUser {
   photoURL: string | null
 }
 
-interface UserData {
-  name: string | null
-  photoURL: string | null
-}
-
 const props = withDefaults(
   defineProps<{
     current?: string
     user?: AuthenticatedUser | null
-    userData?: UserData | null
   }>(),
   {
     current: '',
     user: null,
-    userData: null,
   }
 )
 const emit = defineEmits<{ 'show-login': []; logout: [] }>()
@@ -35,8 +28,8 @@ const mobileOpen = ref(false)
 // 導覽連結對齊至 vue.vTaiwan-neo 專案項目；label 由 i18n 提供（資料源自 nav-links.ts）
 
 const activeKey = computed(() => props.current ?? '')
-const profileName = computed(() => props.userData?.name || props.user?.displayName || t('common.profile'))
-const profilePhotoUrl = computed(() => props.userData?.photoURL || props.user?.photoURL)
+const profileName = computed(() => props.user?.displayName || t('common.profile'))
+const profilePhotoUrl = computed(() => props.user?.photoURL)
 
 const { locale } = useI18n()
 const isJapanese = computed(() => locale.value === 'ja')
