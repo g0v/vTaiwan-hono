@@ -1,4 +1,5 @@
 import { Hono } from 'hono'
+import { csrf } from 'hono/csrf'
 import { registerDiscourseTopicIdApi } from './api/discourse_topic_id'
 import { registerDiscourseTopicsApi } from './api/discourse_topics'
 import { registerHelloApi } from './api/hello'
@@ -8,7 +9,25 @@ import { registerProxyApi } from './api/proxy'
 import { registerTranscriptionApi } from './api/transcription'
 import type { AppEnv } from './api/types'
 import auth from './api/auth'
+import { getAuthContext, isAdminRole } from './server/lib/authorization'
 import { renderPage } from './ssr/render'
+
+// /admin（含子路徑）需管理員以上；此為真正的授權邊界（robots.txt 只是 crawler 提示）。
+// 前端 NavBar/AdminView 的顯示守衛只是 UX，直接打 /admin 一律在 Worker 端把關。
+function isAdminPath(pathname: string): boolean {
+  return pathname === '/admin' || pathname.startsWith('/admin/')
+}
+
+// 回傳非管理員是否應被擋下。session 讀取失敗（例如綁定缺失）時保守視為未授權。
+async function isAdminRequest(env: AppEnv['Bindings'], headers: Headers): Promise<boolean> {
+  try {
+    const context = await getAuthContext(env, headers)
+    return context !== null && isAdminRole(context.role)
+  } catch (error) {
+    console.error('Failed to resolve admin auth context:', error)
+    return false
+  }
+}
 
 const app = new Hono<AppEnv>()
 
@@ -38,6 +57,22 @@ app.use('*', async (c, next) => {
   c.header('X-Frame-Options', 'SAMEORIGIN')
 })
 
+// 跨站請求偽造防護：所有 /api/* 端點統一由 hono/csrf 把關（取代先前逐端點自行做的
+// 同源檢查）。csrf() 針對非安全方法、且屬瀏覽器表單可直接送出的 content-type
+//（x-www-form-urlencoded／multipart/form-data／text/plain）比對 Sec-Fetch-Site
+// 與 Origin，非同源一律 403。application/json 請求不在其列，但跨站送不出預檢通過的
+// 帶憑證請求（corsFor 未開 credentials、session cookie 為 SameSite=Lax），到端點時
+// 一律無 session → 401。/api/auth/* 另有 Better Auth 自己的 trustedOrigins 檢查。
+// 必須註冊在下方各 API 之前。
+//
+// ⚠️ 行為變更：缺 Content-Type 的請求會被當成 text/plain 檢查，且無 Origin／無
+// Sec-Fetch-Site 一律視為不通過——即「非瀏覽器請求豁免」已取消。受影響的是
+// /api/create-table 與 /api/test-ai 這兩個腳本／curl 用的端點（見 transcription.ts）。
+// ⚠️ 未來新增 OAuth provider 時注意：Better Auth 的 /callback/:id 同時收 GET 與 POST，
+// 走 form_post 回傳模式的 provider（如 Apple）其跨站 POST callback 會被這道 csrf 擋下；
+// 目前的 Google／GitHub 是 GET query 模式，不受影響。
+app.use('/api/*', csrf())
+
 // 純 JSON / 文字 API：直接回傳，不走 SSR
 app.route('/', auth)
 registerHelloApi(app)
@@ -59,6 +94,13 @@ app.get('*', async c => {
   }
 
   const rendered = await renderPage(`${url.pathname}${url.search}${url.hash}`, url.origin, c.get('cspNonce'))
+
+  // /admin 路由守衛：非管理員一律回 403（HTML 殼不變，僅覆寫狀態碼，避免 hydration mismatch；
+  // 前端 AdminView 於 client 端顯示對應的 403 畫面）。
+  if (isAdminPath(url.pathname) && !(await isAdminRequest(c.env, c.req.raw.headers))) {
+    return c.html(rendered.html, 403)
+  }
+
   return c.html(rendered.html, rendered.status)
 })
 

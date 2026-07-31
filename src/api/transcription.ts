@@ -3,7 +3,7 @@ import { readAudioToText } from '../lib/transcribe'
 import { generateOutline } from '../lib/ai-summarize'
 import { splitTranscriptionIntoChunks, TRANSCRIPTION_MAX_BYTES, utf8ByteLength } from '../lib/transcription-storage'
 import { stripHtmlFromMarkdown } from '../lib/html-sanitizer'
-import { getAuthContext, hasPermission, hasSameOrigin } from '../server/lib/authorization'
+import { getAuthContext, hasPermission } from '../server/lib/authorization'
 import type { App } from './types'
 
 const LANG_MAP: Record<string, string> = {
@@ -44,8 +44,8 @@ export function registerTranscriptionApi(app: App) {
 
   // POST /api/upload-transcription — 上傳逐字稿 .txt 至 D1 + R2，並生成 AI 大綱
   app.use('/api/upload-transcription', corsFor(['POST']))
+  // 同源檢查由 index.ts 的全域 csrf() 統一負責（multipart/form-data 屬其涵蓋範圍）。
   app.post('/api/upload-transcription', async c => {
-    if (!hasSameOrigin(c.req.url, c.req.header('Origin'))) return c.json({ error: 'Forbidden' }, 403)
     const context = await getAuthContext(c.env, c.req.raw.headers)
     if (!context) return c.json({ error: 'Unauthorized' }, 401)
     if (!hasPermission(context, 'transcription.update')) return c.json({ error: 'Forbidden' }, 403)
@@ -114,8 +114,8 @@ export function registerTranscriptionApi(app: App) {
 
   // POST /api/update-outline — 手動更新大綱
   app.use('/api/update-outline', corsFor(['POST']))
+  // 同源檢查由 index.ts 的全域 csrf() 統一負責（本端點吃 JSON，跨站無 session 會落在 401）。
   app.post('/api/update-outline', async c => {
-    if (!hasSameOrigin(c.req.url, c.req.header('Origin'))) return c.json({ error: 'Forbidden' }, 403)
     const context = await getAuthContext(c.env, c.req.raw.headers)
     if (!context) return c.json({ error: 'Unauthorized' }, 401)
     if (!hasPermission(context, 'transcription.update')) return c.json({ error: 'Forbidden' }, 403)
@@ -140,6 +140,8 @@ export function registerTranscriptionApi(app: App) {
   })
 
   // POST /api/create-table — 建立 D1 資料表（idempotent；本地 D1 bootstrap 用）
+  // ⚠️ 受全域 csrf() 影響：curl 呼叫要帶 `-H 'Content-Type: application/json'`，
+  // 否則會被當成 text/plain 表單請求、因缺 Origin 而回 403。
   app.use('/api/create-table', corsFor(['POST']))
   app.post('/api/create-table', async c => {
     const db = c.env.DB
@@ -152,6 +154,8 @@ export function registerTranscriptionApi(app: App) {
   })
 
   // POST /api/test-ai — 測試 AI 摘要（前端未使用；為介面完整性保留）
+  // ⚠️ 受全域 csrf() 影響：吃 multipart/form-data，curl／Postman 這類無 Origin 的
+  // 呼叫一律 403，只剩同源瀏覽器請求打得到。要留給腳本用需另行豁免（先與使用者確認）。
   app.use('/api/test-ai', corsFor(['POST']))
   app.post('/api/test-ai', async c => {
     let formData: FormData

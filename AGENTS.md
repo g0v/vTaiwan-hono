@@ -277,46 +277,47 @@ vp run lemma:check
 
 **Better Auth（後端認證與授權）**
 
-| 區塊               | 狀態              | 落地位置 / 說明                                                                                                | issue    |
-| ------------------ | ----------------- | ------------------------------------------------------------------------------------------------------------- | -------- |
-| Auth 端點          | ✅ 已進 branch    | `/api/auth/*`（Better Auth handler）+ `/api/me`（回 `AuthContext`），見 `src/api/auth.ts`                       | #64 已關 |
-| 專用 D1 資料庫     | ✅ 已進 branch    | 綁定 `DB_AUTH`（`vtaiwan-auth`）、migrations 於 `./migrations/auth`；建表 SQL 為 user/session/account/verification | #63 已關 |
-| 本機設定範本       | ✅ 已進 branch    | `.dev.vars.example` 補齊 `BETTER_AUTH_URL`／`GOOGLE_*`／`GITHUB_*`（含警語與建立步驟）                          | #65 已關 |
-| Social 登入        | 🚧 code 進、待實測 | `createAuth.ts` 設 Google + GitHub provider；client 端 Google 登入（`GoogleLogin.vue`、`authClient.ts`、`App.vue`） | #66 open |
-| 角色／權限模型     | 🚧 code 進、待實測 | `authorization.ts`：`AppRole`(user/admin/super-admin)、`Permission`、`resolveRole`（未知角色降級 user）、`hasPermission` | #67 open |
-| Same-origin 防護   | 🚧 code 進、待實測 | `hasSameOrigin`：拒跨站 mutation、放行無 Origin 的非瀏覽器請求                                                 | #67 open |
-| 端點權限強制       | 🚧 部分            | 已套用於 `jitsi-token`（`meeting.join`／`meeting.moderate`）、`transcription` 更新（`transcription.update`）    | #67 open |
-| Jitsi 防偽造       | 🚧 code 進、待實測 | Jitsi token 改 **POST**、moderator claim 由 session 建立，不再接受前端傳入身分／角色（原可用 query string 偽造） | #67 open |
-| Profile 去 Firebase | 🚧 code 進、待實測 | Profile 名稱改用 Better Auth `updateUser()`，移除 Firebase Profile／Realtime DB 寫入                          | #67 open |
-| capabilities 導向 UI | 🚧 code 進、待實測 | TopicDiscussion 管理入口、逐字稿管理 UI、NavBar 管理旗標改依 Better Auth capabilities 顯示（去 Firebase `userData`） | #67 open |
-| `topic.manage`     | ⛔ 未做           | 權限已定義於 `authorization.ts`，但**尚無任何端點實際檢查**——議題管理端點補上時才算落地                        | —        |
-| 單元測試           | 🚧 部分            | `authorization.test.ts` 覆蓋角色降級／權限集合／same-origin；尚無端點層級（401/403 流程）整合測試              | #67 open |
+| 區塊                 | 狀態               | 落地位置 / 說明                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | issue    |
+| -------------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| Auth 端點            | ✅ 已進 branch     | `/api/auth/*`（Better Auth handler）+ `/api/me`（回 `AuthContext`），見 `src/api/auth.ts`                                                                                                                                                                                                                                                                                                                                                                                                     | #64 已關 |
+| 專用 D1 資料庫       | ✅ 已進 branch     | 綁定 `DB_AUTH`（`vtaiwan-auth`）、migrations 於 `./migrations/auth`；建表 SQL 為 user/session/account/verification                                                                                                                                                                                                                                                                                                                                                                            | #63 已關 |
+| 本機設定範本         | ✅ 已進 branch     | `.dev.vars.example` 補齊 `BETTER_AUTH_URL`／`GOOGLE_*`／`GITHUB_*`（含警語與建立步驟）                                                                                                                                                                                                                                                                                                                                                                                                        | #65 已關 |
+| Social 登入          | 🚧 code 進、待實測 | `createAuth.ts` 設 Google + GitHub provider；client 端 Google 登入（`GoogleLogin.vue`、`authClient.ts`、`App.vue`）                                                                                                                                                                                                                                                                                                                                                                           | #66 open |
+| 角色／權限模型       | 🚧 code 進、待實測 | `authorization.ts`：`AppRole`(user/admin/super-admin)、`Permission`、`resolveRole`（未知角色降級 user）、`hasPermission`                                                                                                                                                                                                                                                                                                                                                                      | #67 open |
+| 跨站（CSRF）防護     | 🚧 code 進、待實測 | 全域 `app.use('/api/*', csrf())`（`hono/csrf`，見 `src/index.ts`）——**唯一**的同源把關點，逐端點的 `hasSameOrigin` 已移除；`/api/auth/*` 另有 Better Auth 自身的 `trustedOrigins` 檢查。⚠️ 無 Origin／無 Sec-Fetch-Site 的表單型請求現在一律 403（非瀏覽器請求不再豁免），受影響者為 `/api/create-table`（curl 要帶 `Content-Type: application/json`）與 `/api/test-ai`（multipart，僅剩同源瀏覽器打得到）；未來加 `form_post` 模式的 OAuth provider（如 Apple）其跨站 POST callback 也會被擋 | #67 open |
+| 端點權限強制         | 🚧 部分            | 已套用於 `jitsi-token`（`meeting.join`／`meeting.moderate`）、`transcription` 更新（`transcription.update`）；Better Auth admin plugin 端點 `/api/auth/admin/*`（list-users／set-role／ban-user…）由 plugin 自身強制（未登入 401、權限不足 403），設定單一來源為 `createAuth.ts` 的 `adminRoleAccess`，Worker 端不再疊平行守衛                                                                                                                                                                | #67 open |
+| Jitsi 防偽造         | 🚧 code 進、待實測 | Jitsi token 改 **POST**、moderator claim 由 session 建立，不再接受前端傳入身分／角色（原可用 query string 偽造）                                                                                                                                                                                                                                                                                                                                                                              | #67 open |
+| Profile 去 Firebase  | 🚧 code 進、待實測 | Profile 名稱改用 Better Auth `updateUser()`，移除 Firebase Profile／Realtime DB 寫入                                                                                                                                                                                                                                                                                                                                                                                                          | #67 open |
+| capabilities 導向 UI | 🚧 code 進、待實測 | TopicDiscussion 管理入口、逐字稿管理 UI、Profile 管理入口改依 Better Auth capabilities 顯示（去 Firebase `userData`）                                                                                                                                                                                                                                                                                                                                                                         | #67 open |
+| `topic.manage`       | ⛔ 未做            | 權限已定義於 `authorization.ts`，但**尚無任何端點實際檢查**——議題管理端點補上時才算落地                                                                                                                                                                                                                                                                                                                                                                                                       | —        |
+| 單元測試             | 🚧 部分            | `authorization.test.ts` 覆蓋角色降級／權限集合／`adminRoleAccess`（管理端點只有 super-admin 過得去）；`api-csrf.test.ts` 以真實 Hono app 驗 `/api/*` 跨站防護；尚無帶 session 的端點層級（401/403 流程）整合測試                                                                                                                                                                                                                                                                              | #67 open |
 
 **Admin 介面**
 
-| 區塊               | 狀態      | 落地位置 / 說明                                                                          | issue    |
-| ------------------ | --------- | --------------------------------------------------------------------------------------- | -------- |
-| 版面樣稿           | ✅ 已做   | `AdminView.vue`：tab（成員／權限／日誌）、關鍵字搜尋（`SearchInput`）、角色下拉、權限矩陣 | #62 已關 |
-| i18n               | ✅ 已做   | `admin.*` key 三檔同步                                                                   | #62 已關 |
-| robots 遮蔽        | ✅ 已做   | `public/robots.txt` `Disallow: /admin`（**僅 crawler 提示，非安全邊界**——真正把關靠路由守衛） | #62 已關 |
-| mock + localStorage | ✅ 已做（樣稿刻意範圍） | `seedMembers()` mock 資料 + `resetData()`；#62 明訂樣稿階段先用偽資料摹擬變更           | #62 已關 |
-| 真實資料串接       | ⛔ 未做（#43 中期）| 換成 Better Auth admin API（列使用者／改角色／停權）；屬 #43 中期「管理員介面」          | #43      |
-| 權限矩陣可寫       | ⛔ 未做（#43 中期）| 權限矩陣 checkbox 目前 `disabled`（唯讀展示），尚未接後端變更；屬 #43 中期「權限管理」   | #43      |
-| 變更日誌落地       | ⛔ 未做（#43 中期）| 日誌 tab 目前為 mock；接真實變更事件屬 #43 中期「變更日誌」                              | #43      |
-| `/admin` 路由守衛  | ⛔ 未做（安全底線）| `/admin` 為 client-only 頁面，**無 route-level 守衛**；robots 擋不住直接存取，須補授權   | —        |
+| 區塊                | 狀態                              | 落地位置 / 說明                                                                                                                                                             | issue    |
+| ------------------- | --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 版面樣稿            | ✅ 已做                           | `AdminView.vue`：tab（成員／權限／日誌）、關鍵字搜尋（`SearchInput`）、角色下拉、權限矩陣                                                                                   | #62 已關 |
+| i18n                | ✅ 已做                           | `admin.*` key 三檔同步                                                                                                                                                      | #62 已關 |
+| robots 遮蔽         | ✅ 已做                           | `public/robots.txt` `Disallow: /admin`（**僅 crawler 提示，非安全邊界**——真正把關靠路由守衛）                                                                               | #62 已關 |
+| mock + localStorage | ✅ 樣稿階段已做；成員 mock 已退役 | 成員 tab 已改真實 API；日誌 tab 仍保留 mock seed（見 #71）                                                                                                                  | #62 已關 |
+| 真實資料串接        | ✅ 已做（成員／角色）             | `AdminView` 成員 tab 改接 Better Auth `listUsers`／`setRole`（僅 `super-admin`）；已移除成員 mock／localStorage。停權見 #70、真實日誌見 #71                                 | #43      |
+| 權限矩陣可寫        | ⛔ 未做（刻意唯讀）               | 權限由 `AppRole` 推導，checkbox 維持唯讀；改角色即改權限。逐權限可寫不在現階段範圍                                                                                          | #43      |
+| 變更日誌落地        | ⛔ 未做（#71）                    | 日誌 tab 目前仍為 mock；接真實變更事件見 [#71](https://github.com/g0v/vTaiwan-hono/issues/71)                                                                               | #71      |
+| 停權（ban／unban）  | ⛔ 未做（#70）                    | UI 僅唯讀顯示 `banned` 狀態；操作介面見 [#70](https://github.com/g0v/vTaiwan-hono/issues/70)                                                                                | #70      |
+| `/admin` 路由守衛   | ✅ 已做（安全底線）               | Worker 端對 `/admin`（含子路徑）讀 session，非 admin 回 **403**（`src/index.ts`）；前端於 `/profile` 依角色顯示入口、AdminView 顯示 403 守衛頁（顯示層 UX）——前後端雙重把關 | #68 open |
 
 ### B. 專屬驗收檢查（改 admin/auth 必跑）
 
 除了「驗證流程」章節的通用檢查，動到本工作線時額外把關以下項目：
 
-| 改動類型                                              | 額外必跑 / 必查                                                                                             |
-| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `authorization.ts`（角色／權限）                      | `vp test`（`authorization.test.ts` 綠燈）；新增 `Permission` 一定要同步「哪個端點檢查它」，否則掛 `topic.manage` 這種孤兒權限 |
-| 新增受保護端點                                        | 三道關卡齊全：`hasSameOrigin` → `getAuthContext`（401）→ `hasPermission`（403）；缺一即為授權破口          |
-| `createAuth.ts`（provider／plugin）                   | `.dev.vars.example` 同步新憑證 key；`vp check` + `vp run build`；別把密鑰寫進 tracked 檔                    |
-| D1 schema（`migrations/auth/*.sql`）                  | schema 由 `auth-cli.ts` 經 Better Auth CLI 生成——**改欄位改源頭重生，勿手改 SQL**；確認 `wrangler.jsonc` 的 `DB_AUTH` migrations_dir 對得上 |
-| `AdminView.vue`                                       | `vp check` + `vp test`（SSR 煙霧測試不得誤觸瀏覽器 API）；接真實 API 後，非 admin 角色須拿不到管理資料        |
-| client 授權（`auth-session.ts`／`GoogleLogin.vue`）   | client 權限判斷**只是 UX**，不可當安全邊界——真正把關一律在 Worker 端；SSR 路徑不得讀 `document`／`localStorage` |
+| 改動類型                                            | 額外必跑 / 必查                                                                                                                                                                                                                      |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `authorization.ts`（角色／權限）                    | `vp test`（`authorization.test.ts` 綠燈）；新增 `Permission` 一定要同步「哪個端點檢查它」，否則掛 `topic.manage` 這種孤兒權限                                                                                                        |
+| 新增受保護端點                                      | 三道關卡齊全：全域 `csrf()`（掛在 `/api/*`，**不要**在端點內自己再寫同源檢查）→ `getAuthContext`（401）→ `hasPermission`（403）；缺一即為授權破口                                                                                    |
+| `createAuth.ts`（provider／plugin）                 | `.dev.vars.example` 同步新憑證 key；`vp check` + `vp run build`；別把密鑰寫進 tracked 檔。**動到 `adminRoleAccess` 必跑 `vp test`**——`authorization.test.ts` 釘住「admin 端點只有 super-admin 過得去」，那是管理端點唯一的授權設定點 |
+| D1 schema（`migrations/auth/*.sql`）                | schema 由 `auth-cli.ts` 經 Better Auth CLI 生成——**改欄位改源頭重生，勿手改 SQL**；確認 `wrangler.jsonc` 的 `DB_AUTH` migrations_dir 對得上                                                                                          |
+| `AdminView.vue`                                     | `vp check` + `vp test`（SSR 煙霧測試不得誤觸瀏覽器 API）；接真實 API 後，非 admin 角色須拿不到管理資料                                                                                                                               |
+| client 授權（`auth-session.ts`／`GoogleLogin.vue`） | client 權限判斷**只是 UX**，不可當安全邊界——真正把關一律在 Worker 端；SSR 路徑不得讀 `document`／`localStorage`                                                                                                                      |
 
 > **鐵則**：授權判斷的真實邊界永遠在 **Worker 端**（`getAuthContext` + `hasPermission`）。client（`auth-session.ts`、頁面 `v-if`）只做顯示層取捨，任何「client 擋住就好」的做法都是漏洞。
 
@@ -328,15 +329,15 @@ vp run lemma:check
 
 1. **#66／#67 實測** — Google 登入、權限復刻於本機 `.dev.vars` + 真實 D1 跑通登入→取 session→端點授權全鏈路；驗收後關 issue。
 2. **端點權限補齊（安全底線）** — 為 `topic.manage` 等已定義未強制的權限接上實際端點檢查，補端點層級（401／403）整合測試。
-3. **`/admin` 路由守衛（安全底線）** — 加 route-level 授權（非 admin 導向登入／404），與資料層雙重把關；robots 只是 crawler 提示，擋不住直接存取。
+3. **`/admin` 路由守衛（安全底線）** — ✅ 已做（#68）：Worker 端對 `/admin` 讀 session，非 admin 回 403（`src/index.ts`）；前端於 `/profile` 依角色顯示入口、AdminView 顯示 403 守衛頁，前後端雙重把關。robots 只是 crawler 提示，擋不住直接存取。
 
 > 短期兩道**安全底線**（2、3）要先於中期的 admin 資料寫入功能落地，避免功能先於授權開出破口。
 
 **中期（#43 中期目標）**
 
-4. **Admin 真實資料串接** — `AdminView.vue` 由 `seedMembers()` mock 換成 Better Auth admin API（列使用者／改角色／停權），漸進替換不中斷。
-5. **權限管理可寫** — 解除唯讀 checkbox，接後端角色／權限變更並回寫。
-6. **變更日誌落地** — 日誌 tab 由 mock 換成真實變更事件來源。
+4. **Admin 真實資料串接** — ✅ 已做（成員列表／`setRole`）；停權見 [#70](https://github.com/g0v/vTaiwan-hono/issues/70)。
+5. **權限管理可寫** — 以改角色達成（權限矩陣維持唯讀對齊 `authorization.ts`）；逐權限 checkbox 可寫不在現階段。
+6. **變更日誌落地** — 日誌 tab 仍為 mock；真實變更事件見 [#71](https://github.com/g0v/vTaiwan-hono/issues/71)。
 7. **GitHub 登入** — provider 已在 `createAuth.ts` 備妥，補 client 入口與實測。
 
 **長期（#43 長期目標，屬 Milestone 4 深水區——動工前先與使用者確認）**

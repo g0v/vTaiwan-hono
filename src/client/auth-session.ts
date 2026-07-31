@@ -22,3 +22,14 @@ export async function loadAuthSession(): Promise<AuthSession | null> {
 export function hasPermission(session: AuthSession | null | undefined, permission: Permission): boolean {
   return session?.permissions.includes(permission) ?? false
 }
+
+// 是否為管理員（含超級管理員）——/profile 管理入口與 AdminView 守衛的顯示層判定。
+// 注意：這只是 UX 取捨，真正的安全邊界一律在 Worker 端（見 index.ts /admin 守衛與受保護端點）。
+export function isAdminSession(session: AuthSession | null | undefined): boolean {
+  return session?.role === 'admin' || session?.role === 'super-admin'
+}
+
+// Better Auth admin plugin（listUsers／setRole）僅限 super-admin（見 createAuth.ts adminRoles）。
+export function isSuperAdminSession(session: AuthSession | null | undefined): boolean {
+  return session?.role === 'super-admin'
+}
