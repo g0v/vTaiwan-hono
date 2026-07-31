@@ -288,7 +288,7 @@ vp run lemma:check
 | 端點權限強制         | 🚧 部分            | 已套用於 `jitsi-token`（`meeting.join`／`meeting.moderate`）、`transcription` 更新（`transcription.update`）；Better Auth admin plugin 端點 `/api/auth/admin/*`（list-users／set-role／ban-user…）以 `requireAdmin` 中介層於 Worker 端擋掉非管理員（`src/server/lib/admin-guard.ts`，#68） | #67 open |
 | Jitsi 防偽造         | 🚧 code 進、待實測 | Jitsi token 改 **POST**、moderator claim 由 session 建立，不再接受前端傳入身分／角色（原可用 query string 偽造）                                                                                                                                                                           | #67 open |
 | Profile 去 Firebase  | 🚧 code 進、待實測 | Profile 名稱改用 Better Auth `updateUser()`，移除 Firebase Profile／Realtime DB 寫入                                                                                                                                                                                                       | #67 open |
-| capabilities 導向 UI | 🚧 code 進、待實測 | TopicDiscussion 管理入口、逐字稿管理 UI、NavBar 管理旗標改依 Better Auth capabilities 顯示（去 Firebase `userData`）                                                                                                                                                                       | #67 open |
+| capabilities 導向 UI | 🚧 code 進、待實測 | TopicDiscussion 管理入口、逐字稿管理 UI、Profile 管理入口改依 Better Auth capabilities 顯示（去 Firebase `userData`）                                                                                                                                                                      | #67 open |
 | `topic.manage`       | ⛔ 未做            | 權限已定義於 `authorization.ts`，但**尚無任何端點實際檢查**——議題管理端點補上時才算落地                                                                                                                                                                                                    | —        |
 | 單元測試             | 🚧 部分            | `authorization.test.ts` 覆蓋角色降級／權限集合／same-origin；尚無端點層級（401/403 流程）整合測試                                                                                                                                                                                          | #67 open |
 
@@ -303,7 +303,7 @@ vp run lemma:check
 | 真實資料串接        | ⛔ 未做（#43 中期）     | 換成 Better Auth admin API（列使用者／改角色／停權）；屬 #43 中期「管理員介面」                                                                                       | #43      |
 | 權限矩陣可寫        | ⛔ 未做（#43 中期）     | 權限矩陣 checkbox 目前 `disabled`（唯讀展示），尚未接後端變更；屬 #43 中期「權限管理」                                                                                | #43      |
 | 變更日誌落地        | ⛔ 未做（#43 中期）     | 日誌 tab 目前為 mock；接真實變更事件屬 #43 中期「變更日誌」                                                                                                           | #43      |
-| `/admin` 路由守衛   | ✅ 已做（安全底線）     | Worker 端對 `/admin`（含子路徑）讀 session，非 admin 回 **403**（`src/index.ts`）；前端 NavBar 依角色顯示入口、AdminView 顯示 403 守衛頁（顯示層 UX）——前後端雙重把關 | #68 open |
+| `/admin` 路由守衛   | ✅ 已做（安全底線）     | Worker 端對 `/admin`（含子路徑）讀 session，非 admin 回 **403**（`src/index.ts`）；前端於 `/profile` 依角色顯示入口、AdminView 顯示 403 守衛頁（顯示層 UX）——前後端雙重把關 | #68 open |
 
 ### B. 專屬驗收檢查（改 admin/auth 必跑）
 
@@ -328,7 +328,7 @@ vp run lemma:check
 
 1. **#66／#67 實測** — Google 登入、權限復刻於本機 `.dev.vars` + 真實 D1 跑通登入→取 session→端點授權全鏈路；驗收後關 issue。
 2. **端點權限補齊（安全底線）** — 為 `topic.manage` 等已定義未強制的權限接上實際端點檢查，補端點層級（401／403）整合測試。
-3. **`/admin` 路由守衛（安全底線）** — ✅ 已做（#68）：Worker 端對 `/admin` 讀 session，非 admin 回 403（`src/index.ts`）；前端 NavBar 依角色顯示入口、AdminView 顯示 403 守衛頁，前後端雙重把關。robots 只是 crawler 提示，擋不住直接存取。
+3. **`/admin` 路由守衛（安全底線）** — ✅ 已做（#68）：Worker 端對 `/admin` 讀 session，非 admin 回 403（`src/index.ts`）；前端於 `/profile` 依角色顯示入口、AdminView 顯示 403 守衛頁，前後端雙重把關。robots 只是 crawler 提示，擋不住直接存取。
 
 > 短期兩道**安全底線**（2、3）要先於中期的 admin 資料寫入功能落地，避免功能先於授權開出破口。
 

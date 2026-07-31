@@ -23,7 +23,7 @@ describe('NavBar 連結', () => {
   }
 })
 
-describe('NavBar 管理入口', () => {
+describe('管理後台入口（/profile）', () => {
   it(`${adminNavLink.key}: "${adminNavLink.href}" 解析到已定義的 route`, () => {
     expect(isLive(adminNavLink.href)).toBe(true)
   })

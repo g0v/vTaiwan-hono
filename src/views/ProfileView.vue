@@ -3,6 +3,7 @@ import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import GoogleLogin from '../components/GoogleLogin.vue'
 import { authClient } from '../client/authClient'
+import { adminNavLink } from '../router/nav-links'
 
 interface AuthenticatedUser {
   uid: string
@@ -15,10 +16,13 @@ const props = withDefaults(
   defineProps<{
     user?: AuthenticatedUser | null
     inApp?: boolean
+    /** 管理員才顯示後台入口；僅顯示層取捨，真正把關在 Worker 端。 */
+    isAdmin?: boolean
   }>(),
   {
     user: null,
     inApp: false,
+    isAdmin: false,
   }
 )
 const emit = defineEmits<{
@@ -110,6 +114,9 @@ async function saveProfile() {
           <button type="button" class="vt-btn vt-btn-primary" @click="startEdit">
             {{ t('common.edit') }}
           </button>
+          <RouterLink v-if="isAdmin" :to="adminNavLink.href" class="vt-btn rounded-vt-md border border-vt-border text-vt-fg-1 hover:bg-vt-bg-2">
+            {{ t(adminNavLink.labelKey) }}
+          </RouterLink>
           <button type="button" class="vt-btn rounded-vt-md border border-democratic-red text-democratic-red hover:bg-vt-red-tint" @click="emit('logout')">
             {{ t('common.logout') }}
           </button>

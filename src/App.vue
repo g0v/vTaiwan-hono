@@ -18,7 +18,7 @@ const authSession = ref<AuthSession | null>(null)
 // SSR 與首次 hydration 一律為 false，待瀏覽器端載入 session 後才轉 true，避免 hydration mismatch。
 const authReady = ref(false)
 
-// 管理員（含超級管理員）——決定 NavBar 是否顯示管理入口。僅顯示層取捨，安全邊界在 Worker。
+// 管理員（含超級管理員）——決定 /profile 是否顯示管理後台入口。僅顯示層取捨，安全邊界在 Worker。
 const isAdmin = computed(() => isAdminSession(authSession.value))
 
 interface AuthenticatedUser {
@@ -119,7 +119,6 @@ const activeNavKey = computed(() => {
     { prefix: '/intro', key: 'about' },
     { prefix: '/about', key: 'about' },
     { prefix: '/contributors', key: 'contributors' },
-    { prefix: '/admin', key: 'admin' },
   ]
 
   return map.find(item => path.startsWith(item.prefix))?.key
@@ -137,9 +136,9 @@ watch(
 
 <template>
   <div class="flex min-h-screen flex-col font-serif">
-    <NavBar :current="activeNavKey" :user="user" :is-admin="isAdmin" @show-login="showLoginModal = true" @logout="handleLogout" />
+    <NavBar :current="activeNavKey" :user="user" @show-login="showLoginModal = true" @logout="handleLogout" />
     <div class="flex-1">
-      <RouterView :user="user" :auth-session="authSession" :auth-ready="authReady" :in-app="isInApp" @logout="handleLogout" @profile-updated="handleProfileUpdated" />
+      <RouterView :user="user" :auth-session="authSession" :auth-ready="authReady" :is-admin="isAdmin" :in-app="isInApp" @logout="handleLogout" @profile-updated="handleProfileUpdated" />
     </div>
     <Footer />
 
