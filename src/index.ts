@@ -57,20 +57,6 @@ app.use('*', async (c, next) => {
   c.header('X-Frame-Options', 'SAMEORIGIN')
 })
 
-// 跨站請求偽造防護：所有 /api/* 端點統一由 hono/csrf 把關（取代先前逐端點自行做的
-// 同源檢查）。csrf() 針對非安全方法、且屬瀏覽器表單可直接送出的 content-type
-//（x-www-form-urlencoded／multipart/form-data／text/plain）比對 Sec-Fetch-Site
-// 與 Origin，非同源一律 403。application/json 請求不在其列，但跨站送不出預檢通過的
-// 帶憑證請求（corsFor 未開 credentials、session cookie 為 SameSite=Lax），到端點時
-// 一律無 session → 401。/api/auth/* 另有 Better Auth 自己的 trustedOrigins 檢查。
-// 必須註冊在下方各 API 之前。
-//
-// ⚠️ 行為變更：缺 Content-Type 的請求會被當成 text/plain 檢查，且無 Origin／無
-// Sec-Fetch-Site 一律視為不通過——即「非瀏覽器請求豁免」已取消。受影響的是
-// /api/create-table 與 /api/test-ai 這兩個腳本／curl 用的端點（見 transcription.ts）。
-// ⚠️ 未來新增 OAuth provider 時注意：Better Auth 的 /callback/:id 同時收 GET 與 POST，
-// 走 form_post 回傳模式的 provider（如 Apple）其跨站 POST callback 會被這道 csrf 擋下；
-// 目前的 Google／GitHub 是 GET query 模式，不受影響。
 app.use('/api/*', csrf())
 
 // 純 JSON / 文字 API：直接回傳，不走 SSR

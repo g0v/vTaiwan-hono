@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from './LanguageSwitcher.vue'
-import { navLinks } from '../router/nav-links'
+import { navLinks as links } from '../router/nav-links'
 
 interface AuthenticatedUser {
   displayName: string | null
@@ -21,8 +21,6 @@ const props = withDefaults(
   }
 )
 
-// 導覽列對管理員與一般使用者相同（含電子報）；管理後台入口改放 /profile（見 ProfileView）。
-const links = navLinks
 const emit = defineEmits<{ 'show-login': []; logout: [] }>()
 const route = useRoute()
 const { t } = useI18n()
