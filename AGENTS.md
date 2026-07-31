@@ -277,20 +277,20 @@ vp run lemma:check
 
 **Better Auth（後端認證與授權）**
 
-| 區塊                 | 狀態               | 落地位置 / 說明                                                                                                          | issue    |
-| -------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------ | -------- |
-| Auth 端點            | ✅ 已進 branch     | `/api/auth/*`（Better Auth handler）+ `/api/me`（回 `AuthContext`），見 `src/api/auth.ts`                                | #64 已關 |
-| 專用 D1 資料庫       | ✅ 已進 branch     | 綁定 `DB_AUTH`（`vtaiwan-auth`）、migrations 於 `./migrations/auth`；建表 SQL 為 user/session/account/verification       | #63 已關 |
-| 本機設定範本         | ✅ 已進 branch     | `.dev.vars.example` 補齊 `BETTER_AUTH_URL`／`GOOGLE_*`／`GITHUB_*`（含警語與建立步驟）                                   | #65 已關 |
-| Social 登入          | 🚧 code 進、待實測 | `createAuth.ts` 設 Google + GitHub provider；client 端 Google 登入（`GoogleLogin.vue`、`authClient.ts`、`App.vue`）      | #66 open |
-| 角色／權限模型       | 🚧 code 進、待實測 | `authorization.ts`：`AppRole`(user/admin/super-admin)、`Permission`、`resolveRole`（未知角色降級 user）、`hasPermission` | #67 open |
-| Same-origin 防護     | 🚧 code 進、待實測 | `hasSameOrigin`：拒跨站 mutation、放行無 Origin 的非瀏覽器請求                                                           | #67 open |
-| 端點權限強制         | 🚧 部分            | 已套用於 `jitsi-token`（`meeting.join`／`meeting.moderate`）、`transcription` 更新（`transcription.update`）             | #67 open |
-| Jitsi 防偽造         | 🚧 code 進、待實測 | Jitsi token 改 **POST**、moderator claim 由 session 建立，不再接受前端傳入身分／角色（原可用 query string 偽造）         | #67 open |
-| Profile 去 Firebase  | 🚧 code 進、待實測 | Profile 名稱改用 Better Auth `updateUser()`，移除 Firebase Profile／Realtime DB 寫入                                     | #67 open |
-| capabilities 導向 UI | 🚧 code 進、待實測 | TopicDiscussion 管理入口、逐字稿管理 UI、NavBar 管理旗標改依 Better Auth capabilities 顯示（去 Firebase `userData`）     | #67 open |
-| `topic.manage`       | ⛔ 未做            | 權限已定義於 `authorization.ts`，但**尚無任何端點實際檢查**——議題管理端點補上時才算落地                                  | —        |
-| 單元測試             | 🚧 部分            | `authorization.test.ts` 覆蓋角色降級／權限集合／same-origin；尚無端點層級（401/403 流程）整合測試                        | #67 open |
+| 區塊                 | 狀態               | 落地位置 / 說明                                                                                                                                                                                                                                                                            | issue    |
+| -------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
+| Auth 端點            | ✅ 已進 branch     | `/api/auth/*`（Better Auth handler）+ `/api/me`（回 `AuthContext`），見 `src/api/auth.ts`                                                                                                                                                                                                  | #64 已關 |
+| 專用 D1 資料庫       | ✅ 已進 branch     | 綁定 `DB_AUTH`（`vtaiwan-auth`）、migrations 於 `./migrations/auth`；建表 SQL 為 user/session/account/verification                                                                                                                                                                         | #63 已關 |
+| 本機設定範本         | ✅ 已進 branch     | `.dev.vars.example` 補齊 `BETTER_AUTH_URL`／`GOOGLE_*`／`GITHUB_*`（含警語與建立步驟）                                                                                                                                                                                                     | #65 已關 |
+| Social 登入          | 🚧 code 進、待實測 | `createAuth.ts` 設 Google + GitHub provider；client 端 Google 登入（`GoogleLogin.vue`、`authClient.ts`、`App.vue`）                                                                                                                                                                        | #66 open |
+| 角色／權限模型       | 🚧 code 進、待實測 | `authorization.ts`：`AppRole`(user/admin/super-admin)、`Permission`、`resolveRole`（未知角色降級 user）、`hasPermission`                                                                                                                                                                   | #67 open |
+| Same-origin 防護     | 🚧 code 進、待實測 | `hasSameOrigin`：拒跨站 mutation、放行無 Origin 的非瀏覽器請求                                                                                                                                                                                                                             | #67 open |
+| 端點權限強制         | 🚧 部分            | 已套用於 `jitsi-token`（`meeting.join`／`meeting.moderate`）、`transcription` 更新（`transcription.update`）；Better Auth admin plugin 端點 `/api/auth/admin/*`（list-users／set-role／ban-user…）以 `requireAdmin` 中介層於 Worker 端擋掉非管理員（`src/server/lib/admin-guard.ts`，#68） | #67 open |
+| Jitsi 防偽造         | 🚧 code 進、待實測 | Jitsi token 改 **POST**、moderator claim 由 session 建立，不再接受前端傳入身分／角色（原可用 query string 偽造）                                                                                                                                                                           | #67 open |
+| Profile 去 Firebase  | 🚧 code 進、待實測 | Profile 名稱改用 Better Auth `updateUser()`，移除 Firebase Profile／Realtime DB 寫入                                                                                                                                                                                                       | #67 open |
+| capabilities 導向 UI | 🚧 code 進、待實測 | TopicDiscussion 管理入口、逐字稿管理 UI、NavBar 管理旗標改依 Better Auth capabilities 顯示（去 Firebase `userData`）                                                                                                                                                                       | #67 open |
+| `topic.manage`       | ⛔ 未做            | 權限已定義於 `authorization.ts`，但**尚無任何端點實際檢查**——議題管理端點補上時才算落地                                                                                                                                                                                                    | —        |
+| 單元測試             | 🚧 部分            | `authorization.test.ts` 覆蓋角色降級／權限集合／same-origin；尚無端點層級（401/403 流程）整合測試                                                                                                                                                                                          | #67 open |
 
 **Admin 介面**
 

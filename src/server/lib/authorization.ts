@@ -42,6 +42,20 @@ export function hasSameOrigin(requestUrl: string, origin: string | undefined): b
   return origin === undefined || origin === new URL(requestUrl).origin
 }
 
+// 管理專用 API 的存取判定（純函式，可單元測試）：一般使用者一律擋下。
+// 順序：變更類請求先做同源檢查（擋 CSRF）→ 必須已登入（401）→ 必須為管理員（403）。
+// GET/HEAD 等安全方法不強制同源（跨站也讀不到需登入的回應），但仍要求管理員身分。
+export type AdminAccessOutcome = { ok: true } | { ok: false; status: 401 | 403 }
+
+export function evaluateAdminAccess(params: { method: string; url: string; origin: string | undefined; context: AuthContext | null }): AdminAccessOutcome {
+  const { method, url, origin, context } = params
+  const isSafeMethod = method === 'GET' || method === 'HEAD'
+  if (!isSafeMethod && !hasSameOrigin(url, origin)) return { ok: false, status: 403 }
+  if (!context) return { ok: false, status: 401 }
+  if (!isAdminRole(context.role)) return { ok: false, status: 403 }
+  return { ok: true }
+}
+
 export async function getAuthContext(env: AppBindings, headers: Headers): Promise<AuthContext | null> {
   const auth = createAuth(env)
   const session = await auth.api.getSession({ headers })

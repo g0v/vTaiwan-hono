@@ -1,5 +1,16 @@
 import { describe, expect, it } from 'vite-plus/test'
-import { hasSameOrigin, isAdminRole, permissionsForRole, resolveRole } from '../server/lib/authorization'
+import { evaluateAdminAccess, hasSameOrigin, isAdminRole, permissionsForRole, resolveRole, type AppRole, type AuthContext } from '../server/lib/authorization'
+
+// 測試用 AuthContext 工廠：只有 role 影響 evaluateAdminAccess 判定。
+function contextWithRole(role: AppRole): AuthContext {
+  return {
+    user: { id: 'u1', name: 'Tester', email: 't@example.com', image: null },
+    role,
+    permissions: permissionsForRole(role),
+  }
+}
+
+const ADMIN_URL = 'https://vtaiwan.tw/api/auth/admin/list-users'
 
 describe('Better Auth 業務權限', () => {
   it('將未知或缺少的角色降級為 user', () => {
@@ -30,5 +41,28 @@ describe('Better Auth 業務權限', () => {
     expect(hasSameOrigin(url, 'https://vtaiwan.tw')).toBe(true)
     expect(hasSameOrigin(url, 'https://attacker.example')).toBe(false)
     expect(hasSameOrigin(url, undefined)).toBe(true)
+  })
+})
+
+describe('管理端點存取守衛 evaluateAdminAccess', () => {
+  it('未登入者打 GET（取用戶清單）→ 401', () => {
+    expect(evaluateAdminAccess({ method: 'GET', url: ADMIN_URL, origin: undefined, context: null })).toEqual({ ok: false, status: 401 })
+  })
+
+  it('一般使用者打 GET（取用戶清單）→ 403', () => {
+    expect(evaluateAdminAccess({ method: 'GET', url: ADMIN_URL, origin: undefined, context: contextWithRole('user') })).toEqual({ ok: false, status: 403 })
+  })
+
+  it('一般使用者打 POST（變更）→ 403', () => {
+    expect(evaluateAdminAccess({ method: 'POST', url: ADMIN_URL, origin: 'https://vtaiwan.tw', context: contextWithRole('user') })).toEqual({ ok: false, status: 403 })
+  })
+
+  it('跨站 POST 在驗身分前就先被同源檢查擋下 → 403', () => {
+    expect(evaluateAdminAccess({ method: 'POST', url: ADMIN_URL, origin: 'https://attacker.example', context: contextWithRole('super-admin') })).toEqual({ ok: false, status: 403 })
+  })
+
+  it('admin / super-admin 同源請求放行', () => {
+    expect(evaluateAdminAccess({ method: 'GET', url: ADMIN_URL, origin: 'https://vtaiwan.tw', context: contextWithRole('admin') })).toEqual({ ok: true })
+    expect(evaluateAdminAccess({ method: 'POST', url: ADMIN_URL, origin: 'https://vtaiwan.tw', context: contextWithRole('super-admin') })).toEqual({ ok: true })
   })
 })
