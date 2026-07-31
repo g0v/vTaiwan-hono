@@ -294,15 +294,16 @@ vp run lemma:check
 
 **Admin 介面**
 
-| 區塊                | 狀態                    | 落地位置 / 說明                                                                                                                                                       | issue    |
-| ------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
-| 版面樣稿            | ✅ 已做                 | `AdminView.vue`：tab（成員／權限／日誌）、關鍵字搜尋（`SearchInput`）、角色下拉、權限矩陣                                                                             | #62 已關 |
-| i18n                | ✅ 已做                 | `admin.*` key 三檔同步                                                                                                                                                | #62 已關 |
-| robots 遮蔽         | ✅ 已做                 | `public/robots.txt` `Disallow: /admin`（**僅 crawler 提示，非安全邊界**——真正把關靠路由守衛）                                                                         | #62 已關 |
-| mock + localStorage | ✅ 已做（樣稿刻意範圍） | `seedMembers()` mock 資料 + `resetData()`；#62 明訂樣稿階段先用偽資料摹擬變更                                                                                         | #62 已關 |
-| 真實資料串接        | ⛔ 未做（#43 中期）     | 換成 Better Auth admin API（列使用者／改角色／停權）；屬 #43 中期「管理員介面」                                                                                       | #43      |
-| 權限矩陣可寫        | ⛔ 未做（#43 中期）     | 權限矩陣 checkbox 目前 `disabled`（唯讀展示），尚未接後端變更；屬 #43 中期「權限管理」                                                                                | #43      |
-| 變更日誌落地        | ⛔ 未做（#43 中期）     | 日誌 tab 目前為 mock；接真實變更事件屬 #43 中期「變更日誌」                                                                                                           | #43      |
+| 區塊                | 狀態                    | 落地位置 / 說明                                                                                                                                                             | issue    |
+| ------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
+| 版面樣稿            | ✅ 已做                 | `AdminView.vue`：tab（成員／權限／日誌）、關鍵字搜尋（`SearchInput`）、角色下拉、權限矩陣                                                                                   | #62 已關 |
+| i18n                | ✅ 已做                 | `admin.*` key 三檔同步                                                                                                                                                      | #62 已關 |
+| robots 遮蔽         | ✅ 已做                 | `public/robots.txt` `Disallow: /admin`（**僅 crawler 提示，非安全邊界**——真正把關靠路由守衛）                                                                               | #62 已關 |
+| mock + localStorage | ✅ 樣稿階段已做；成員 mock 已退役 | 成員 tab 已改真實 API；日誌 tab 仍保留 mock seed（見 #71）                                                                                                                 | #62 已關 |
+| 真實資料串接        | ✅ 已做（成員／角色）   | `AdminView` 成員 tab 改接 Better Auth `listUsers`／`setRole`（僅 `super-admin`）；已移除成員 mock／localStorage。停權見 #70、真實日誌見 #71                                 | #43      |
+| 權限矩陣可寫        | ⛔ 未做（刻意唯讀）     | 權限由 `AppRole` 推導，checkbox 維持唯讀；改角色即改權限。逐權限可寫不在現階段範圍                                                                                          | #43      |
+| 變更日誌落地        | ⛔ 未做（#71）          | 日誌 tab 目前仍為 mock；接真實變更事件見 [#71](https://github.com/g0v/vTaiwan-hono/issues/71)                                                                               | #71      |
+| 停權（ban／unban）  | ⛔ 未做（#70）          | UI 僅唯讀顯示 `banned` 狀態；操作介面見 [#70](https://github.com/g0v/vTaiwan-hono/issues/70)                                                                                | #70      |
 | `/admin` 路由守衛   | ✅ 已做（安全底線）     | Worker 端對 `/admin`（含子路徑）讀 session，非 admin 回 **403**（`src/index.ts`）；前端於 `/profile` 依角色顯示入口、AdminView 顯示 403 守衛頁（顯示層 UX）——前後端雙重把關 | #68 open |
 
 ### B. 專屬驗收檢查（改 admin/auth 必跑）
@@ -334,9 +335,9 @@ vp run lemma:check
 
 **中期（#43 中期目標）**
 
-4. **Admin 真實資料串接** — `AdminView.vue` 由 `seedMembers()` mock 換成 Better Auth admin API（列使用者／改角色／停權），漸進替換不中斷。
-5. **權限管理可寫** — 解除唯讀 checkbox，接後端角色／權限變更並回寫。
-6. **變更日誌落地** — 日誌 tab 由 mock 換成真實變更事件來源。
+4. **Admin 真實資料串接** — ✅ 已做（成員列表／`setRole`）；停權見 [#70](https://github.com/g0v/vTaiwan-hono/issues/70)。
+5. **權限管理可寫** — 以改角色達成（權限矩陣維持唯讀對齊 `authorization.ts`）；逐權限 checkbox 可寫不在現階段。
+6. **變更日誌落地** — 日誌 tab 仍為 mock；真實變更事件見 [#71](https://github.com/g0v/vTaiwan-hono/issues/71)。
 7. **GitHub 登入** — provider 已在 `createAuth.ts` 備妥，補 client 入口與實測。
 
 **長期（#43 長期目標，屬 Milestone 4 深水區——動工前先與使用者確認）**

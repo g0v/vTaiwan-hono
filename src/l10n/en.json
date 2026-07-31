@@ -95,7 +95,7 @@
     },
     "admin": {
       "title": "Admin Console",
-      "description": "vTaiwan admin console prototype (internal discussion only)."
+      "description": "vTaiwan admin console for member roles and transcript management."
     }
   },
   "即將開始": "Upcoming",
@@ -991,10 +991,8 @@
       "forbiddenDesc": "This page is restricted to administrators. If you believe this is a mistake, please contact a site administrator.",
       "backHome": "Back to home"
     },
-    "badge": "Prototype",
     "title": "Admin Console",
-    "subtitle": "An interface prototype using mock data; all changes are synced only to your browser's localStorage, for feature discussion.",
-    "reset": "Reset mock data",
+    "subtitle": "Member list and role changes use real account data (super-admin only). The change log remains a prototype.",
     "search": {
       "label": "Keyword search",
       "clear": "Clear search",
@@ -1015,6 +1013,11 @@
       "countFiltered": "Showing {n} of {total} members",
       "showDetails": "View full details for {name}",
       "detailsTitle": "{name}'s member details",
+      "loading": "Loading members…",
+      "empty": "No members yet",
+      "loadFailed": "Failed to load members. Please try again later.",
+      "roleUpdateFailed": "Failed to update role. Please try again later.",
+      "needSuperAdmin": "Listing members and changing roles requires a super-admin. Regular admins can still use the Transcripts tab.",
       "col": {
         "name": "Name",
         "email": "Email",
@@ -1025,30 +1028,36 @@
     },
     "status": {
       "active": "Active",
-      "invited": "Invited",
-      "suspended": "Suspended"
+      "banned": "Banned"
     },
     "roles": {
       "superAdmin": "Super Admin",
       "admin": "Admin",
-      "editor": "Editor",
-      "member": "Member",
+      "user": "User",
       "confirm": "Change {member}'s role to \"{role}\"?"
     },
     "perms": {
-      "title": "Member Permission Management",
-      "hint": "Permissions are determined by the role above and update automatically when it changes.",
+      "title": "Permission Overview",
+      "hint": "Permissions are determined by role (read-only). Changing the role above updates the mapping. Ban/unban is not implemented yet.",
       "col": {
         "member": "Member"
       },
-      "manageRoles": "Manage Roles",
-      "uploadTranscripts": "Upload Transcripts",
-      "updateTranscripts": "Update Transcripts",
-      "updateOutline": "Update Outline",
-      "viewLogs": "View Logs"
+      "meeting": {
+        "join": "Join meetings",
+        "moderate": "Moderate meetings"
+      },
+      "transcription": {
+        "update": "Update transcripts"
+      },
+      "topic": {
+        "manage": "Manage topics"
+      }
     },
     "logs": {
       "title": "Change Log",
+      "mockBadge": "Mock",
+      "mockHint": "This tab is still a UI prototype and is not wired to real change events.",
+      "reset": "Reset mock log",
       "empty": "No changes recorded yet",
       "col": {
         "time": "Time",
@@ -1064,7 +1073,7 @@
     },
     "transcripts": {
       "title": "Transcript Management",
-      "hint": "This tab uses real data (not mock data): sign in to upload transcripts; overwriting an existing transcript or editing AI outlines requires admin privileges."
+      "hint": "This tab uses real data: sign in to upload transcripts; overwriting an existing transcript or editing AI outlines requires admin privileges."
     }
   }
 }

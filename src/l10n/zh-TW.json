@@ -95,7 +95,7 @@
     },
     "admin": {
       "title": "管理員後台",
-      "description": "vTaiwan 管理員後台樣稿（僅供內部討論）。"
+      "description": "vTaiwan 管理員後台：成員角色與逐字稿管理。"
     }
   },
   "common": {
@@ -991,10 +991,8 @@
       "forbiddenDesc": "此頁面僅限管理員存取。若你認為這是誤判，請聯絡網站管理員。",
       "backHome": "返回首頁"
     },
-    "badge": "樣稿 Prototype",
     "title": "管理員後台",
-    "subtitle": "此為使用偽資料的介面樣稿，所有變更僅同步至瀏覽器 localStorage，供後續功能討論。",
-    "reset": "重設偽資料",
+    "subtitle": "成員清單與角色變更使用真實帳號資料（僅超級管理員可操作）；變更日誌仍為樣稿。",
     "search": {
       "label": "關鍵字搜尋",
       "clear": "清除搜尋",
@@ -1015,6 +1013,11 @@
       "countFiltered": "顯示 {n} / 共 {total} 位成員",
       "showDetails": "查看 {name} 的完整資料",
       "detailsTitle": "{name} 的成員資料",
+      "loading": "正在載入成員…",
+      "empty": "尚無成員資料",
+      "loadFailed": "無法載入成員清單，請稍後再試。",
+      "roleUpdateFailed": "角色更新失敗，請稍後再試。",
+      "needSuperAdmin": "成員清單與角色變更僅限超級管理員（super-admin）操作。一般管理員仍可使用逐字稿管理分頁。",
       "col": {
         "name": "姓名",
         "email": "電子郵件",
@@ -1025,30 +1028,36 @@
     },
     "status": {
       "active": "啟用",
-      "invited": "已邀請",
-      "suspended": "停用"
+      "banned": "已停權"
     },
     "roles": {
       "superAdmin": "超級管理員",
       "admin": "管理員",
-      "editor": "編輯",
-      "member": "成員",
+      "user": "一般使用者",
       "confirm": "確定要將 {member} 的角色變更為「{role}」嗎？"
     },
     "perms": {
-      "title": "成員權限管理",
-      "hint": "權限由上方角色決定；變更角色後會自動更新。",
+      "title": "成員權限一覽",
+      "hint": "權限由角色決定（唯讀）；變更上方角色後會自動對應。停權功能尚未實作。",
       "col": {
         "member": "成員"
       },
-      "manageRoles": "管理角色",
-      "uploadTranscripts": "上傳逐字稿",
-      "updateTranscripts": "更新逐字稿",
-      "updateOutline": "更新大綱",
-      "viewLogs": "檢視日誌"
+      "meeting": {
+        "join": "加入會議",
+        "moderate": "主持會議"
+      },
+      "transcription": {
+        "update": "更新逐字稿"
+      },
+      "topic": {
+        "manage": "管理議題"
+      }
     },
     "logs": {
       "title": "變更日誌記錄",
+      "mockBadge": "偽資料",
+      "mockHint": "此分頁目前為介面樣稿，尚未串接真實變更事件。",
+      "reset": "重設樣稿日誌",
       "empty": "尚無變更記錄",
       "col": {
         "time": "時間",
@@ -1064,7 +1073,7 @@
     },
     "transcripts": {
       "title": "逐字稿管理",
-      "hint": "此分頁使用真實資料（非偽資料）：登入後即可上傳逐字稿；覆蓋既有逐字稿與編輯 AI 大綱需管理員權限。"
+      "hint": "此分頁使用真實資料：登入後即可上傳逐字稿；覆蓋既有逐字稿與編輯 AI 大綱需管理員權限。"
     }
   }
 }

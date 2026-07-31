@@ -28,3 +28,8 @@ export function hasPermission(session: AuthSession | null | undefined, permissio
 export function isAdminSession(session: AuthSession | null | undefined): boolean {
   return session?.role === 'admin' || session?.role === 'super-admin'
 }
+
+// Better Auth admin plugin（listUsers／setRole）僅限 super-admin（見 createAuth.ts adminRoles）。
+export function isSuperAdminSession(session: AuthSession | null | undefined): boolean {
+  return session?.role === 'super-admin'
+}

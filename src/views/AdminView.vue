@@ -26,9 +26,6 @@
         <header class="mb-vt-6">
           <div class="flex flex-wrap items-center gap-vt-3">
             <h1 class="text-vt-3xl font-bold text-vt-fg-1">{{ t('admin.title') }}</h1>
-            <span class="rounded-full bg-vt-yellow-tint px-vt-3 py-vt-1 text-vt-xs font-semibold text-vt-wheat-yellow">
-              {{ t('admin.badge') }}
-            </span>
           </div>
           <p class="mt-vt-2 text-vt-base text-vt-fg-2">{{ t('admin.subtitle') }}</p>
         </header>
@@ -48,96 +45,118 @@
           </button>
         </div>
 
-        <!-- Tab 1：成員與權限 -->
+        <!-- Tab 1：成員與權限（真實 Better Auth 資料；僅 super-admin 可列／改角色） -->
         <section v-show="activeTab === 'members'" class="space-y-vt-6">
-          <!-- 關鍵字搜尋：同時套用到下方兩張表 -->
-          <SearchInput v-model="memberQuery" :placeholder="t('admin.search.placeholder.members')" :label="t('admin.search.label')" :clear-label="t('admin.search.clear')" />
+          <p v-if="!isSuperAdmin" class="rounded-vt-md border border-vt-border bg-vt-bg-1 p-vt-4 text-vt-sm text-vt-fg-2">
+            {{ t('admin.members.needSuperAdmin') }}
+          </p>
 
-          <!-- 功能 1：成員清單 -->
-          <div class="admin-card">
-            <div class="mb-vt-4 flex flex-wrap items-center justify-between gap-vt-2">
-              <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.members.listTitle') }}</h2>
-              <span class="text-vt-sm text-vt-fg-3">
-                {{ memberQuery.trim() ? t('admin.members.countFiltered', { n: filteredMembers.length, total: members.length }) : t('admin.members.count', { n: members.length }) }}
-              </span>
-            </div>
-            <p v-if="filteredMembers.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.search.empty', { q: memberQuery.trim() }) }}</p>
-            <div v-else class="overflow-x-auto">
-              <table class="w-full text-left text-vt-sm">
-                <thead>
-                  <tr class="border-b border-vt-border text-vt-fg-3">
-                    <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.name') }}</th>
-                    <th class="hidden px-vt-3 py-vt-2 font-medium md:table-cell">{{ t('admin.members.col.email') }}</th>
-                    <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.role') }}</th>
-                    <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.joinedAt') }}</th>
-                    <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.status') }}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="m in filteredMembers" :key="m.id" class="border-b border-vt-border/60">
-                    <td class="px-vt-3 py-vt-3 font-medium text-vt-fg-1">
-                      <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: m.name })" @click="showMember(m)">{{ m.name }}</button>
-                    </td>
-                    <td class="hidden px-vt-3 py-vt-3 text-vt-fg-2 md:table-cell">{{ m.email }}</td>
-                    <td class="px-vt-3 py-vt-3">
-                      <select
-                        :value="m.role"
-                        :disabled="!canManageRole(m)"
-                        class="rounded-md border border-vt-border bg-vt-bg-1 px-vt-2 py-vt-1 text-vt-sm text-vt-fg-1"
-                        @change="onRoleChange(m, $event)"
-                      >
-                        <option v-for="r in availableRolesFor(m)" :key="r" :value="r">{{ t('admin.roles.' + r) }}</option>
-                      </select>
-                    </td>
-                    <td class="px-vt-3 py-vt-3 text-vt-fg-2">{{ m.joinedAt }}</td>
-                    <td class="px-vt-3 py-vt-3">
-                      <span class="rounded-full px-vt-2 py-vt-0_5 text-vt-xs font-medium" :class="statusClass(m.status)">
-                        {{ t('admin.status.' + m.status) }}
-                      </span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
+          <template v-else>
+            <SearchInput v-model="memberQuery" :placeholder="t('admin.search.placeholder.members')" :label="t('admin.search.label')" :clear-label="t('admin.search.clear')" />
 
-          <!-- 功能 2：成員權限管理 -->
-          <div class="admin-card">
-            <h2 class="mb-vt-1 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.perms.title') }}</h2>
-            <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.perms.hint') }}</p>
-            <p v-if="filteredMembers.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.search.empty', { q: memberQuery.trim() }) }}</p>
-            <div v-else class="overflow-x-auto">
-              <table class="w-full text-left text-vt-sm">
-                <thead>
-                  <tr class="border-b border-vt-border text-vt-fg-3">
-                    <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.perms.col.member') }}</th>
-                    <th v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-2 text-center font-medium">
-                      {{ t('admin.perms.' + p) }}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="m in filteredMembers" :key="m.id" class="border-b border-vt-border/60">
-                    <td class="px-vt-3 py-vt-3 font-medium text-vt-fg-1">
-                      <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: m.name })" @click="showMember(m)">{{ m.name }}</button>
-                    </td>
-                    <td v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-3 text-center">
-                      <input type="checkbox" class="admin-checkbox" :checked="rolePermissions[m.role][p]" :aria-label="t('admin.perms.' + p) + ' — ' + m.name" disabled />
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="admin-card">
+              <div class="mb-vt-4 flex flex-wrap items-center justify-between gap-vt-2">
+                <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.members.listTitle') }}</h2>
+                <span class="text-vt-sm text-vt-fg-3">
+                  {{ memberQuery.trim() ? t('admin.members.countFiltered', { n: filteredMembers.length, total: members.length }) : t('admin.members.count', { n: members.length }) }}
+                </span>
+              </div>
+
+              <p v-if="membersLoading" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.members.loading') }}</p>
+              <p v-else-if="membersError" class="py-vt-6 text-center text-vt-sm text-vt-democratic-red">{{ membersError }}</p>
+              <p v-else-if="filteredMembers.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">
+                {{ memberQuery.trim() ? t('admin.search.empty', { q: memberQuery.trim() }) : t('admin.members.empty') }}
+              </p>
+              <div v-else class="overflow-x-auto">
+                <table class="w-full text-left text-vt-sm">
+                  <thead>
+                    <tr class="border-b border-vt-border text-vt-fg-3">
+                      <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.name') }}</th>
+                      <th class="hidden px-vt-3 py-vt-2 font-medium md:table-cell">{{ t('admin.members.col.email') }}</th>
+                      <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.role') }}</th>
+                      <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.joinedAt') }}</th>
+                      <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.status') }}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="m in filteredMembers" :key="m.id" class="border-b border-vt-border/60">
+                      <td class="px-vt-3 py-vt-3 font-medium text-vt-fg-1">
+                        <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: m.name })" @click="showMember(m)">
+                          {{ m.name }}
+                        </button>
+                      </td>
+                      <td class="hidden px-vt-3 py-vt-3 text-vt-fg-2 md:table-cell">{{ m.email }}</td>
+                      <td class="px-vt-3 py-vt-3">
+                        <select
+                          :value="m.role"
+                          :disabled="!canManageRole(m) || updatingRoleId === m.id"
+                          class="rounded-md border border-vt-border bg-vt-bg-1 px-vt-2 py-vt-1 text-vt-sm text-vt-fg-1 disabled:cursor-not-allowed disabled:opacity-60"
+                          @change="onRoleChange(m, $event)"
+                        >
+                          <option v-for="r in availableRolesFor(m)" :key="r" :value="r">{{ t(roleLabelKey(r)) }}</option>
+                        </select>
+                      </td>
+                      <td class="px-vt-3 py-vt-3 text-vt-fg-2">{{ m.joinedAt }}</td>
+                      <td class="px-vt-3 py-vt-3">
+                        <span class="rounded-full px-vt-2 py-vt-0_5 text-vt-xs font-medium" :class="statusClass(m.status)">
+                          {{ t('admin.status.' + m.status) }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
+
+            <!-- 權限矩陣：依角色唯讀展示（對齊 authorization.ts）；改角色即改權限 -->
+            <div class="admin-card">
+              <h2 class="mb-vt-1 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.perms.title') }}</h2>
+              <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.perms.hint') }}</p>
+              <p v-if="membersLoading" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.members.loading') }}</p>
+              <p v-else-if="filteredMembers.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">
+                {{ memberQuery.trim() ? t('admin.search.empty', { q: memberQuery.trim() }) : t('admin.members.empty') }}
+              </p>
+              <div v-else class="overflow-x-auto">
+                <table class="w-full text-left text-vt-sm">
+                  <thead>
+                    <tr class="border-b border-vt-border text-vt-fg-3">
+                      <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.perms.col.member') }}</th>
+                      <th v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-2 text-center font-medium">
+                        {{ t('admin.perms.' + p) }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="m in filteredMembers" :key="m.id" class="border-b border-vt-border/60">
+                      <td class="px-vt-3 py-vt-3 font-medium text-vt-fg-1">
+                        <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: m.name })" @click="showMember(m)">
+                          {{ m.name }}
+                        </button>
+                      </td>
+                      <td v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-3 text-center">
+                        <input type="checkbox" class="admin-checkbox" :checked="roleHasPermission(m.role, p)" :aria-label="t('admin.perms.' + p) + ' — ' + m.name" disabled />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </template>
         </section>
 
-        <!-- Tab 2：變更日誌 -->
+        <!-- Tab 2：變更日誌（仍為偽資料樣稿；真實日誌另開 issue） -->
         <section v-show="activeTab === 'logs'">
           <div class="admin-card">
             <div class="mb-vt-4 flex flex-wrap items-center justify-between gap-vt-2">
-              <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.logs.title') }}</h2>
-              <button type="button" class="admin-btn-ghost" @click="resetData">{{ t('admin.reset') }}</button>
+              <div class="flex flex-wrap items-center gap-vt-2">
+                <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.logs.title') }}</h2>
+                <span class="rounded-full bg-vt-yellow-tint px-vt-3 py-vt-1 text-vt-xs font-semibold text-vt-wheat-yellow">
+                  {{ t('admin.logs.mockBadge') }}
+                </span>
+              </div>
+              <button type="button" class="admin-btn-ghost" @click="resetLogs">{{ t('admin.logs.reset') }}</button>
             </div>
+            <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.logs.mockHint') }}</p>
             <SearchInput v-model="logQuery" class="mb-vt-4" :placeholder="t('admin.search.placeholder.logs')" :label="t('admin.search.label')" :clear-label="t('admin.search.clear')" />
             <p v-if="logs.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.logs.empty') }}</p>
             <p v-else-if="filteredLogs.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.search.empty', { q: logQuery.trim() }) }}</p>
@@ -153,11 +172,7 @@
                 <tbody>
                   <tr v-for="log in filteredLogs" :key="log.id" class="border-b border-vt-border/60">
                     <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-3">{{ log.time }}</td>
-                    <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-2">
-                      <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: actorName(log.actor) })" @click="showActor(log.actor)">
-                        {{ actorName(log.actor) }}
-                      </button>
-                    </td>
+                    <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-2">{{ log.actor }}</td>
                     <td class="px-vt-3 py-vt-3 text-vt-fg-1">{{ describeLog(log) }}</td>
                   </tr>
                 </tbody>
@@ -201,7 +216,7 @@
           </div>
           <div>
             <dt class="text-vt-fg-3">{{ t('admin.members.col.role') }}</dt>
-            <dd class="text-vt-fg-1">{{ t('admin.roles.' + selectedMember.role) }}</dd>
+            <dd class="text-vt-fg-1">{{ t(roleLabelKey(selectedMember.role)) }}</dd>
           </div>
           <div>
             <dt class="text-vt-fg-3">{{ t('admin.members.col.joinedAt') }}</dt>
@@ -218,15 +233,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { isAdminSession, type AuthSession } from '../client/auth-session'
+import { authClient } from '../client/authClient'
+import { isAdminSession, isSuperAdminSession, type AppRole, type AuthSession, type Permission } from '../client/auth-session'
 import SearchInput from '../components/SearchInput.vue'
 import TranscriptionManager from '../components/TranscriptionManager.vue'
 
 const { t } = useI18n()
 
-// tab 1 / tab 2 為偽資料樣稿；tab 3 的逐字稿管理走真實 API，需要 Better Auth session。
+// tab 1 成員／角色：Better Auth admin API（僅 super-admin）；tab 2 日誌仍為偽資料；tab 3 逐字稿為真實 API。
 // authReady：session 是否已載入完成（App.vue 提供）——區分「確認中」與「非管理員」。
 const props = withDefaults(
   defineProps<{
@@ -236,40 +252,39 @@ const props = withDefaults(
   { authSession: null, authReady: false }
 )
 
-// 只有 admin/super-admin 能看到管理內容；其餘顯示 403 守衛頁。顯示層取捨，真正把關在 Worker。
 const isAdmin = computed(() => isAdminSession(props.authSession))
+const isSuperAdmin = computed(() => isSuperAdminSession(props.authSession))
 
 // ── 型別 ──────────────────────────────────────────────
-type RoleKey = 'superAdmin' | 'admin' | 'editor' | 'member'
-type StatusKey = 'active' | 'invited' | 'suspended'
-type PermKey = 'manageRoles' | 'uploadTranscripts' | 'updateTranscripts' | 'updateOutline' | 'viewLogs'
+type StatusKey = 'active' | 'banned'
 
 interface Member {
   id: string
   name: string
   email: string
-  role: RoleKey
+  role: AppRole
   joinedAt: string
   status: StatusKey
 }
 
-// 變更日誌以結構化資料儲存，顯示時再依當前語系翻譯（不寫死句子）
+// 變更日誌（偽資料）以結構化資料儲存，顯示時再依當前語系翻譯
 interface LogEntry {
   id: string
   time: string
   actor: string
   type: 'role' | 'member'
   member: string
-  role?: RoleKey
+  role?: AppRole
 }
 
-const roleKeys: RoleKey[] = ['superAdmin', 'admin', 'editor', 'member']
-const permKeys: PermKey[] = ['manageRoles', 'uploadTranscripts', 'updateTranscripts', 'updateOutline', 'viewLogs']
-const rolePermissions: Record<RoleKey, Record<PermKey, boolean>> = {
-  superAdmin: { manageRoles: true, uploadTranscripts: true, updateTranscripts: true, updateOutline: true, viewLogs: true },
-  admin: { manageRoles: true, uploadTranscripts: true, updateTranscripts: true, updateOutline: true, viewLogs: true },
-  editor: { manageRoles: false, uploadTranscripts: true, updateTranscripts: false, updateOutline: false, viewLogs: true },
-  member: { manageRoles: false, uploadTranscripts: false, updateTranscripts: false, updateOutline: false, viewLogs: false },
+const ALL_ROLES: AppRole[] = ['user', 'admin', 'super-admin']
+const permKeys: Permission[] = ['meeting.join', 'meeting.moderate', 'transcription.update', 'topic.manage']
+
+// 與 src/server/lib/authorization.ts 的 permissionsByRole 對齊（顯示用；安全邊界在 Worker）。
+const permissionsByRole: Record<AppRole, Permission[]> = {
+  user: ['meeting.join'],
+  admin: ['meeting.join', 'meeting.moderate', 'transcription.update', 'topic.manage'],
+  'super-admin': ['meeting.join', 'meeting.moderate', 'transcription.update', 'topic.manage'],
 }
 
 const tabs = [
@@ -280,179 +295,167 @@ const tabs = [
 
 const activeTab = ref<'members' | 'logs' | 'transcripts'>('members')
 
-// ── 偽資料 seed（必須完全靜態，SSR 與首次 client render 一致，避免 hydration mismatch）──
-// 角色矩陣已變更，使用新版本避免舊版 admin/editor 資料套到錯誤層級。
-const STORAGE_KEY = 'vtaiwan_admin_v2'
-const CURRENT_ACTOR = 'admin@example.com'
-// TODO(MVP): 一般成員登入時改顯示權限不足，並禁止進入管理員介面。
+// ── 真實成員（SSR／首次 hydration 維持空陣列，掛載後再抓）────────
+const members = ref<Member[]>([])
+const membersLoading = ref(false)
+const membersError = ref<string | null>(null)
+const updatingRoleId = ref<string | null>(null)
+const selectedMember = ref<Member | null>(null)
+const memberQuery = ref('')
 
-function seedMembers(): Member[] {
-  return [
-    { id: 'u1', name: '管擬園', email: 'admin@example.com', role: 'superAdmin', joinedAt: '2024-01-15', status: 'active' },
-    { id: 'u2', name: '陳小明', email: 'ming@example.com', role: 'admin', joinedAt: '2024-03-02', status: 'active' },
-    { id: 'u3', name: '林美玲', email: 'meiling@example.com', role: 'editor', joinedAt: '2024-05-20', status: 'active' },
-    { id: 'u4', name: '王大衛', email: 'david@example.com', role: 'member', joinedAt: '2024-08-11', status: 'invited' },
-    { id: 'u5', name: '張雅婷', email: 'yating@example.com', role: 'member', joinedAt: '2023-11-30', status: 'suspended' },
-  ]
-}
-
+// ── 偽資料日誌（不與真實角色變更混寫，避免混淆）────────────────
 function seedLogs(): LogEntry[] {
   return [
-    { id: 'l1', time: '2024-08-11 09:20', actor: CURRENT_ACTOR, type: 'member', member: '王大衛' },
-    { id: 'l2', time: '2024-06-01 14:05', actor: CURRENT_ACTOR, type: 'role', member: '林美玲', role: 'editor' },
+    { id: 'l1', time: '2024-08-11 09:20', actor: 'admin@example.com', type: 'member', member: '範例使用者' },
+    { id: 'l2', time: '2024-06-01 14:05', actor: 'admin@example.com', type: 'role', member: '範例管理員', role: 'admin' },
   ]
 }
 
-const members = ref<Member[]>(seedMembers())
 const logs = ref<LogEntry[]>(seedLogs())
-const selectedMember = ref<Member | null>(null)
-
-// ── 關鍵字搜尋（tab 1 / tab 2；純顯示狀態，不寫入 localStorage）──
-const memberQuery = ref('')
 const logQuery = ref('')
 
-// 以「使用者看得到的字」為比對範圍：翻譯後的標籤與原始 key 都納入
 function matches(query: string, fields: string[]): boolean {
   const q = query.trim().toLowerCase()
   if (!q) return true
   return fields.some(field => field.toLowerCase().includes(q))
 }
 
-const filteredMembers = computed(() =>
-  members.value.filter(m => matches(memberQuery.value, [m.name, m.email, m.role, t('admin.roles.' + m.role), m.status, t('admin.status.' + m.status), m.joinedAt]))
+const filteredMembers = computed(() => members.value.filter(m => matches(memberQuery.value, [m.name, m.email, m.role, t(roleLabelKey(m.role)), m.status, t('admin.status.' + m.status), m.joinedAt])))
+
+const filteredLogs = computed(() => logs.value.filter(log => matches(logQuery.value, [log.time, log.actor, describeLog(log)])))
+
+function roleLabelKey(role: AppRole): string {
+  // i18n key 避開連字號（vue-i18n 會把 super-admin 拆成路徑）
+  return role === 'super-admin' ? 'admin.roles.superAdmin' : `admin.roles.${role}`
+}
+
+function roleHasPermission(role: AppRole, permission: Permission): boolean {
+  return permissionsByRole[role].includes(permission)
+}
+
+function resolveRole(raw: string | null | undefined): AppRole {
+  return raw === 'admin' || raw === 'super-admin' ? raw : 'user'
+}
+
+function formatJoinedAt(value: Date | string | null | undefined): string {
+  if (value == null) return '—'
+  const d = typeof value === 'string' || typeof value === 'number' ? new Date(value) : value
+  if (!(d instanceof Date) || Number.isNaN(d.getTime())) return '—'
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+}
+
+function mapUserToMember(user: { id: string; name: string; email: string; role?: string | null; banned?: boolean | null; createdAt?: Date | string | null }): Member {
+  return {
+    id: user.id,
+    name: user.name || user.email,
+    email: user.email,
+    role: resolveRole(user.role),
+    joinedAt: formatJoinedAt(user.createdAt),
+    status: user.banned ? 'banned' : 'active',
+  }
+}
+
+async function loadMembers() {
+  if (typeof window === 'undefined' || !isSuperAdmin.value) return
+
+  membersLoading.value = true
+  membersError.value = null
+  try {
+    const { data, error } = await authClient.admin.listUsers({
+      query: {
+        limit: 100,
+        offset: 0,
+        sortBy: 'createdAt',
+        sortDirection: 'desc',
+      },
+    })
+    if (error) throw error
+    const users = data?.users ?? []
+    members.value = users.map(mapUserToMember)
+  } catch (error) {
+    console.error('Failed to list users:', error)
+    membersError.value = t('admin.members.loadFailed')
+    members.value = []
+  } finally {
+    membersLoading.value = false
+  }
+}
+
+watch(
+  () => [props.authReady, isSuperAdmin.value] as const,
+  ([ready, superAdmin]) => {
+    if (ready && superAdmin) void loadMembers()
+  },
+  { immediate: true }
 )
 
-const filteredLogs = computed(() => logs.value.filter(log => matches(logQuery.value, [log.time, log.actor, actorName(log.actor), describeLog(log)])))
-
-// ── localStorage 同步（僅瀏覽器端；SSR 期間不執行）──────────
-function persist() {
-  if (typeof window === 'undefined') return
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ members: members.value, logs: logs.value }))
-  } catch {
-    // localStorage 不可用時忽略（樣稿不阻斷）
-  }
-}
-
-function load() {
-  if (typeof window === 'undefined') return
-  const stored = localStorage.getItem(STORAGE_KEY)
-  if (!stored) {
-    persist()
-    return
-  }
-  try {
-    const parsed = JSON.parse(stored) as { members?: Member[]; logs?: LogEntry[] }
-    if (parsed.members) {
-      members.value = parsed.members.map(member => {
-        const storedRole = member.role as string
-        return {
-          ...member,
-          role: roleKeys.includes(storedRole as RoleKey) ? (storedRole as RoleKey) : 'member',
-        }
-      })
-    }
-    if (parsed.logs) logs.value = parsed.logs.filter(log => log.type === 'role' || log.type === 'member')
-    persist()
-  } catch {
-    // 解析失敗：重置為 seed 並覆寫，避免對著壞資料渲染
-    members.value = seedMembers()
-    logs.value = seedLogs()
-    persist()
-  }
-}
-
-onMounted(load)
-
-// ── 互動：以 localStorage 同步摹擬變更，並自動寫入變更日誌 ──
-function nowStamp(): string {
-  // 事件處理器只在瀏覽器端執行，可安全使用 Date
-  const d = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
-
-function nextId(): string {
-  return 'l' + (logs.value.length + 1) + '-' + nowStamp().replace(/\D/g, '')
-}
-
-function addLog(entry: Omit<LogEntry, 'id' | 'time' | 'actor'>) {
-  logs.value.unshift({ id: nextId(), time: nowStamp(), actor: CURRENT_ACTOR, ...entry })
-}
-
-function currentActorRole(): RoleKey {
-  return members.value.find(member => member.email === CURRENT_ACTOR)?.role ?? 'member'
+function superAdminCount(): number {
+  return members.value.filter(m => m.role === 'super-admin').length
 }
 
 function canManageRole(member: Member): boolean {
-  const actorRole = currentActorRole()
-  if (member.role === 'superAdmin') return false
-  if (actorRole === 'superAdmin') return true
-  return actorRole === 'admin' && member.id !== 'u1' && member.role !== 'admin'
+  if (!isSuperAdmin.value) return false
+  if (member.id === props.authSession?.user.id) return false
+  // 最後一位 super-admin 不可被降級（避免鎖死管理能力）
+  if (member.role === 'super-admin' && superAdminCount() <= 1) return false
+  return true
 }
 
-function availableRolesFor(member: Member): RoleKey[] {
+function availableRolesFor(member: Member): AppRole[] {
   if (!canManageRole(member)) return [member.role]
-  return currentActorRole() === 'superAdmin' ? ['admin', 'editor', 'member'] : ['editor', 'member']
+  return ALL_ROLES
 }
 
 function showMember(member: Member) {
   selectedMember.value = member
 }
 
-function actorMember(actor: string): Member | undefined {
-  return members.value.find(member => member.id === actor || member.email === actor)
-}
-
-function actorName(actor: string): string {
-  return actorMember(actor)?.name ?? actor
-}
-
-function showActor(actor: string) {
-  const member = actorMember(actor)
-  if (member) showMember(member)
-}
-
-function onRoleChange(m: Member, event: Event) {
+async function onRoleChange(m: Member, event: Event) {
   const select = event.target as HTMLSelectElement
-  const nextRole = select.value as RoleKey
+  const nextRole = resolveRole(select.value)
 
-  if (!availableRolesFor(m).includes(nextRole)) {
+  if (!availableRolesFor(m).includes(nextRole) || nextRole === m.role) {
     select.value = m.role
     return
   }
 
-  if (!window.confirm(t('admin.roles.confirm', { member: m.name, role: t('admin.roles.' + nextRole) }))) {
+  if (!window.confirm(t('admin.roles.confirm', { member: m.name, role: t(roleLabelKey(nextRole)) }))) {
     select.value = m.role
     return
   }
 
-  m.role = nextRole
-  addLog({ type: 'role', member: m.name, role: nextRole })
-  persist()
+  updatingRoleId.value = m.id
+  try {
+    const { error } = await authClient.admin.setRole({
+      userId: m.id,
+      role: nextRole,
+    })
+    if (error) throw error
+    m.role = nextRole
+    if (selectedMember.value?.id === m.id) {
+      selectedMember.value = { ...selectedMember.value, role: nextRole }
+    }
+  } catch (error) {
+    console.error('Failed to set role:', error)
+    select.value = m.role
+    window.alert(t('admin.members.roleUpdateFailed'))
+  } finally {
+    updatingRoleId.value = null
+  }
 }
 
-function resetData() {
-  members.value = seedMembers()
+function resetLogs() {
   logs.value = seedLogs()
-  persist()
 }
 
-// ── 顯示輔助 ───────────────────────────────────────────
 function statusClass(status: StatusKey): string {
-  switch (status) {
-    case 'active':
-      return 'bg-vt-green-tint text-vt-jade-green'
-    case 'invited':
-      return 'bg-vt-yellow-tint text-vt-wheat-yellow'
-    case 'suspended':
-      return 'bg-vt-red-tint text-vt-democratic-red'
-  }
+  return status === 'banned' ? 'bg-vt-red-tint text-vt-democratic-red' : 'bg-vt-green-tint text-vt-jade-green'
 }
 
 function describeLog(log: LogEntry): string {
   if (log.type === 'role') {
-    return t('admin.logs.role.changed', { member: log.member, role: t('admin.roles.' + (log.role ?? 'member')) })
+    return t('admin.logs.role.changed', { member: log.member, role: t(roleLabelKey(log.role ?? 'user')) })
   }
   return t('admin.logs.member.added', { member: log.member })
 }
