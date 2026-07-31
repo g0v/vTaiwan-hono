@@ -269,33 +269,41 @@ vp run lemma:check
 
 ## Admin 介面與 Better Auth 開發 checkpoints
 
-本章追蹤 **Better Auth 登入／授權** 與 **管理員（Admin）介面** 兩條平行工作線的落地狀態，屬 Milestone 4（從 Firebase 搬移到全 Cloudflare）的前期成果，主要落在 `feat/better-auth` 分支。動工續作前先讀本章對照現況，改完後回來更新狀態；**別憑 commit 訊息臆測完成度，以下欄位以實際程式碼為準**。
+本章追蹤 **Better Auth 登入／授權** 與 **管理員（Admin）介面** 兩條平行工作線的落地狀態，屬 Milestone 4（從 Firebase 搬移到全 Cloudflare）的前期成果，主要落在 `feat/better-auth` 分支。**主計畫（single source of truth）是 [#43「管理後台與登入系統長程計畫」](https://github.com/g0v/vTaiwan-hono/issues/43)**，本章是它的落地對照。動工續作前先讀本章與 #43 對照現況；**別憑 commit 訊息或 issue 開關狀態臆測完成度——程式碼是否進 branch、issue 是否驗收（實測）是兩件事，以下逐欄註明**。
+
+> **完成度落差提醒**：#66（Google 登入）、#67（權限復刻）的**程式碼已進 `feat/better-auth` 分支，但兩張 issue 仍 open**——依 #43，短期目標最後一項「實測」尚未做。續作者別把「commit 已 merge」當成「已驗收」。
 
 ### A. 現況盤點（已做 / 未做）
 
 **Better Auth（後端認證與授權）**
 
-| 區塊             | 狀態      | 落地位置 / 說明                                                                                                | issue |
-| ---------------- | --------- | ------------------------------------------------------------------------------------------------------------- | ----- |
-| Auth 端點        | ✅ 已做   | `/api/auth/*`（Better Auth handler）+ `/api/me`（回 `AuthContext`），見 `src/api/auth.ts`                       | #64   |
-| 專用 D1 資料庫   | ✅ 已做   | 綁定 `DB_AUTH`（`vtaiwan-auth`）、migrations 於 `./migrations/auth`；建表 SQL 為 user/session/account/verification | #63   |
-| Social 登入      | ✅ 已做   | `createAuth.ts` 設 Google + GitHub provider；client 端 Google 登入（`GoogleLogin.vue`、`authClient.ts`、`App.vue`） | #66   |
-| 本機設定範本     | ✅ 已做   | `.dev.vars.example` 補齊 `BETTER_AUTH_URL`／`GOOGLE_*`／`GITHUB_*`                                              | #65   |
-| 角色／權限模型   | ✅ 已做   | `authorization.ts`：`AppRole`(user/admin/super-admin)、`Permission`、`resolveRole`（未知角色降級 user）、`hasPermission` | #67   |
-| Same-origin 防護 | ✅ 已做   | `hasSameOrigin`：拒跨站 mutation、放行無 Origin 的非瀏覽器請求                                                 | #67   |
-| 端點權限強制     | 🚧 部分   | 已套用於 `jitsi-token`（`meeting.join`／`meeting.moderate`）、`transcription` 更新（`transcription.update`）    | #67   |
-| `topic.manage`   | ⛔ 未做   | 權限已定義於 `authorization.ts`，但**尚無任何端點實際檢查**——議題管理端點補上時才算落地                        | —     |
-| 單元測試         | 🚧 部分   | `authorization.test.ts` 覆蓋角色降級／權限集合／same-origin；尚無端點層級（401/403 流程）整合測試              | #67   |
+| 區塊               | 狀態              | 落地位置 / 說明                                                                                                | issue    |
+| ------------------ | ----------------- | ------------------------------------------------------------------------------------------------------------- | -------- |
+| Auth 端點          | ✅ 已進 branch    | `/api/auth/*`（Better Auth handler）+ `/api/me`（回 `AuthContext`），見 `src/api/auth.ts`                       | #64 已關 |
+| 專用 D1 資料庫     | ✅ 已進 branch    | 綁定 `DB_AUTH`（`vtaiwan-auth`）、migrations 於 `./migrations/auth`；建表 SQL 為 user/session/account/verification | #63 已關 |
+| 本機設定範本       | ✅ 已進 branch    | `.dev.vars.example` 補齊 `BETTER_AUTH_URL`／`GOOGLE_*`／`GITHUB_*`（含警語與建立步驟）                          | #65 已關 |
+| Social 登入        | 🚧 code 進、待實測 | `createAuth.ts` 設 Google + GitHub provider；client 端 Google 登入（`GoogleLogin.vue`、`authClient.ts`、`App.vue`） | #66 open |
+| 角色／權限模型     | 🚧 code 進、待實測 | `authorization.ts`：`AppRole`(user/admin/super-admin)、`Permission`、`resolveRole`（未知角色降級 user）、`hasPermission` | #67 open |
+| Same-origin 防護   | 🚧 code 進、待實測 | `hasSameOrigin`：拒跨站 mutation、放行無 Origin 的非瀏覽器請求                                                 | #67 open |
+| 端點權限強制       | 🚧 部分            | 已套用於 `jitsi-token`（`meeting.join`／`meeting.moderate`）、`transcription` 更新（`transcription.update`）    | #67 open |
+| Jitsi 防偽造       | 🚧 code 進、待實測 | Jitsi token 改 **POST**、moderator claim 由 session 建立，不再接受前端傳入身分／角色（原可用 query string 偽造） | #67 open |
+| Profile 去 Firebase | 🚧 code 進、待實測 | Profile 名稱改用 Better Auth `updateUser()`，移除 Firebase Profile／Realtime DB 寫入                          | #67 open |
+| capabilities 導向 UI | 🚧 code 進、待實測 | TopicDiscussion 管理入口、逐字稿管理 UI、NavBar 管理旗標改依 Better Auth capabilities 顯示（去 Firebase `userData`） | #67 open |
+| `topic.manage`     | ⛔ 未做           | 權限已定義於 `authorization.ts`，但**尚無任何端點實際檢查**——議題管理端點補上時才算落地                        | —        |
+| 單元測試           | 🚧 部分            | `authorization.test.ts` 覆蓋角色降級／權限集合／same-origin；尚無端點層級（401/403 流程）整合測試              | #67 open |
 
 **Admin 介面**
 
-| 區塊               | 狀態      | 落地位置 / 說明                                                                          | issue |
-| ------------------ | --------- | --------------------------------------------------------------------------------------- | ----- |
-| 版面樣稿           | ✅ 已做   | `AdminView.vue`：tab（成員／權限／日誌）、關鍵字搜尋（`SearchInput`）、角色下拉、權限矩陣 | #62   |
-| i18n               | ✅ 已做   | `admin.*` key 三檔同步                                                                   | #62   |
-| 真實資料串接       | ⛔ 未做   | 目前用 `seedMembers()` **mock 資料** + `resetData()`；未接 Better Auth admin API（列使用者／改角色／停權） | —     |
-| 權限矩陣可寫       | ⛔ 未做   | 權限矩陣 checkbox 目前 `disabled`（唯讀展示），尚未接後端變更                            | —     |
-| `/admin` 路由守衛  | ⛔ 未做   | `/admin` 為 client-only 頁面，**無 route-level 守衛**；非 admin 目前仍可載入頁殼（僅資料層擋） | —     |
+| 區塊               | 狀態      | 落地位置 / 說明                                                                          | issue    |
+| ------------------ | --------- | --------------------------------------------------------------------------------------- | -------- |
+| 版面樣稿           | ✅ 已做   | `AdminView.vue`：tab（成員／權限／日誌）、關鍵字搜尋（`SearchInput`）、角色下拉、權限矩陣 | #62 已關 |
+| i18n               | ✅ 已做   | `admin.*` key 三檔同步                                                                   | #62 已關 |
+| robots 遮蔽        | ✅ 已做   | `public/robots.txt` `Disallow: /admin`（**僅 crawler 提示，非安全邊界**——真正把關靠路由守衛） | #62 已關 |
+| mock + localStorage | ✅ 已做（樣稿刻意範圍） | `seedMembers()` mock 資料 + `resetData()`；#62 明訂樣稿階段先用偽資料摹擬變更           | #62 已關 |
+| 真實資料串接       | ⛔ 未做（#43 中期）| 換成 Better Auth admin API（列使用者／改角色／停權）；屬 #43 中期「管理員介面」          | #43      |
+| 權限矩陣可寫       | ⛔ 未做（#43 中期）| 權限矩陣 checkbox 目前 `disabled`（唯讀展示），尚未接後端變更；屬 #43 中期「權限管理」   | #43      |
+| 變更日誌落地       | ⛔ 未做（#43 中期）| 日誌 tab 目前為 mock；接真實變更事件屬 #43 中期「變更日誌」                              | #43      |
+| `/admin` 路由守衛  | ⛔ 未做（安全底線）| `/admin` 為 client-only 頁面，**無 route-level 守衛**；robots 擋不住直接存取，須補授權   | —        |
 
 ### B. 專屬驗收檢查（改 admin/auth 必跑）
 
@@ -314,13 +322,30 @@ vp run lemma:check
 
 ### C. 里程碑子步驟（checkpoint commit 界線）
 
-續作本工作線時，每完成一個「`vp check` + `vp test` 綠燈」的子步驟就打一筆 checkpoint commit（Conventional Commits，見「Git / Commit 慣例」）。建議切分：
+子步驟切分**對齊主計畫 #43 的短／中／長期目標**，勿另立平行路線。續作時每完成一個「`vp check` + `vp test` 綠燈」的子步驟就打一筆 checkpoint commit（Conventional Commits，見「Git / Commit 慣例」）。
 
-1. **端點權限補齊** — 為 `topic.manage` 等已定義但未強制的權限接上實際端點檢查，補端點層級整合測試。
-2. **`/admin` 路由守衛** — 加上 route-level 授權（非 admin 導向登入／404），與資料層雙重把關。
-3. **Admin 真實資料串接** — `AdminView.vue` 由 `seedMembers()` mock 換成 Better Auth admin API（列使用者／改角色／停權），逐步替換不中斷。
-4. **權限矩陣可寫** — 解除唯讀 checkbox，接後端角色／權限變更並回寫。
-5. **端點層級授權整合測試** — 針對 401／403 流程補自動測試（屬「實作自動測試」milestone，動工前先與使用者確認範圍）。
+**短期（收尾 #43 短期目標——只差實測）**
+
+1. **#66／#67 實測** — Google 登入、權限復刻於本機 `.dev.vars` + 真實 D1 跑通登入→取 session→端點授權全鏈路；驗收後關 issue。
+2. **端點權限補齊（安全底線）** — 為 `topic.manage` 等已定義未強制的權限接上實際端點檢查，補端點層級（401／403）整合測試。
+3. **`/admin` 路由守衛（安全底線）** — 加 route-level 授權（非 admin 導向登入／404），與資料層雙重把關；robots 只是 crawler 提示，擋不住直接存取。
+
+> 短期兩道**安全底線**（2、3）要先於中期的 admin 資料寫入功能落地，避免功能先於授權開出破口。
+
+**中期（#43 中期目標）**
+
+4. **Admin 真實資料串接** — `AdminView.vue` 由 `seedMembers()` mock 換成 Better Auth admin API（列使用者／改角色／停權），漸進替換不中斷。
+5. **權限管理可寫** — 解除唯讀 checkbox，接後端角色／權限變更並回寫。
+6. **變更日誌落地** — 日誌 tab 由 mock 換成真實變更事件來源。
+7. **GitHub 登入** — provider 已在 `createAuth.ts` 備妥，補 client 入口與實測。
+
+**長期（#43 長期目標，屬 Milestone 4 深水區——動工前先與使用者確認）**
+
+8. **既有 Firebase admin → Better Auth 角色遷移** — 受控把現行 Firebase 管理員對應到 `admin`／`super-admin`（#67 已標示此遷移待辦）。
+9. **即時逐字稿去 Firebase** — 用 Cloudflare Durable Object + WebSocket 取代 Firebase `onValue`，達成即時呈現／校對。
+10. **資料庫自 Firebase 無痛遷移** — 後端全面轉 D1／R2，強化後端 API 路由的權限明析化。
+
+> 端點層級授權的自動化整合測試屬「實作自動測試」milestone，範圍未定——動工前先與使用者確認。
 
 > 子步驟有依賴：先有 **1（端點強制齊全）** 與 **2（路由守衛）** 這兩道安全底線，再往 **3／4** 的 admin 資料寫入功能推進，避免功能先於授權落地而開出破口。
 
