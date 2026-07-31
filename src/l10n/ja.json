@@ -140,6 +140,7 @@
     "transcriptions": "書き起こし管理",
     "faq": "よくある質問",
     "contributors": "貢献者",
+    "admin": "管理画面",
     "openMenu": "メニューを開く"
   },
   "about": {
@@ -984,6 +985,12 @@
     }
   },
   "admin": {
+    "guard": {
+      "checking": "権限を確認しています…",
+      "forbiddenTitle": "アクセス権限がありません",
+      "forbiddenDesc": "このページは管理者のみアクセスできます。誤りだと思われる場合はサイト管理者にお問い合わせください。",
+      "backHome": "ホームに戻る"
+    },
     "badge": "試作 Prototype",
     "title": "管理者コンソール",
     "subtitle": "モックデータを使用したUI試作です。すべての変更はブラウザの localStorage にのみ同期され、機能検討のためのものです。",

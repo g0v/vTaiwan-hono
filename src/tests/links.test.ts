@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vite-plus/test'
 import { createRouter, createMemoryHistory } from 'vue-router'
 import { routes } from '#routes-runtime'
-import { navLinks, footerInternalLinks } from '../router/nav-links'
+import { navLinks, adminNavLink, footerInternalLinks } from '../router/nav-links'
 
 // 使用真實路由表建立 router——router.resolve() 才能正確判斷 dynamic segment
 const router = createRouter({ history: createMemoryHistory(), routes })
@@ -21,6 +21,12 @@ describe('NavBar 連結', () => {
       expect(isLive(link.href)).toBe(true)
     })
   }
+})
+
+describe('NavBar 管理入口', () => {
+  it(`${adminNavLink.key}: "${adminNavLink.href}" 解析到已定義的 route`, () => {
+    expect(isLive(adminNavLink.href)).toBe(true)
+  })
 })
 
 describe('Footer 站內連結', () => {

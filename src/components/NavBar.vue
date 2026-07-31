@@ -3,7 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from './LanguageSwitcher.vue'
-import { navLinks as links } from '../router/nav-links'
+import { navLinks, adminNavLink } from '../router/nav-links'
 
 interface AuthenticatedUser {
   displayName: string | null
@@ -14,12 +14,18 @@ const props = withDefaults(
   defineProps<{
     current?: string
     user?: AuthenticatedUser | null
+    isAdmin?: boolean
   }>(),
   {
     current: '',
     user: null,
+    isAdmin: false,
   }
 )
+
+// 管理員登入時，於導覽列擠掉「電子報」欄位改放「管理後台」入口（issue #68）；
+// 一般使用者維持原樣、看不到入口。顯示層守衛而已——真正把關在 Worker 端。
+const links = computed(() => (props.isAdmin ? navLinks.map(l => (l.key === 'newsletters' ? adminNavLink : l)) : navLinks))
 const emit = defineEmits<{ 'show-login': []; logout: [] }>()
 const route = useRoute()
 const { t } = useI18n()

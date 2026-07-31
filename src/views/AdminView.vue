@@ -1,6 +1,26 @@
 <template>
   <div class="vt-under-navbar min-h-screen bg-vt-bg-2 pt-20">
-    <div class="container mx-auto mt-10 px-vt-4">
+    <!-- 確認權限中：SSR 與首次 hydration 一律落此狀態（authReady=false），避免洩漏管理版面或造成 mismatch -->
+    <div v-if="!authReady" class="container mx-auto flex min-h-[50vh] items-center justify-center px-vt-4">
+      <p class="text-vt-base text-vt-fg-3">{{ t('admin.guard.checking') }}</p>
+    </div>
+
+    <!-- 非管理員：前端顯示層守衛（真正 403 由 Worker 端把關，見 index.ts） -->
+    <div v-else-if="!isAdmin" class="container mx-auto flex min-h-[50vh] items-center justify-center px-vt-4">
+      <div class="mx-auto max-w-md rounded-vt-lg border border-vt-border bg-vt-bg-1 p-vt-8 text-center shadow-vt-sm">
+        <p class="text-vt-4xl font-bold text-vt-democratic-red">403</p>
+        <h1 class="mt-vt-3 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.guard.forbiddenTitle') }}</h1>
+        <p class="mt-vt-2 text-vt-sm text-vt-fg-2">{{ t('admin.guard.forbiddenDesc') }}</p>
+        <RouterLink
+          to="/"
+          class="px-vt-5 mt-vt-6 inline-flex items-center justify-center rounded-full bg-ink py-vt-2 text-vt-sm font-medium text-vt-fg-inverse transition-colors hover:bg-democratic-red"
+        >
+          {{ t('admin.guard.backHome') }}
+        </RouterLink>
+      </div>
+    </div>
+
+    <div v-else class="container mx-auto mt-10 px-vt-4">
       <div class="mx-auto max-w-6xl">
         <!-- 頁首 -->
         <header class="mb-vt-6">
@@ -200,19 +220,24 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import type { AuthSession } from '../client/auth-session'
+import { isAdminSession, type AuthSession } from '../client/auth-session'
 import SearchInput from '../components/SearchInput.vue'
 import TranscriptionManager from '../components/TranscriptionManager.vue'
 
 const { t } = useI18n()
 
 // tab 1 / tab 2 為偽資料樣稿；tab 3 的逐字稿管理走真實 API，需要 Better Auth session。
+// authReady：session 是否已載入完成（App.vue 提供）——區分「確認中」與「非管理員」。
 const props = withDefaults(
   defineProps<{
     authSession?: AuthSession | null
+    authReady?: boolean
   }>(),
-  { authSession: null }
+  { authSession: null, authReady: false }
 )
+
+// 只有 admin/super-admin 能看到管理內容；其餘顯示 403 守衛頁。顯示層取捨，真正把關在 Worker。
+const isAdmin = computed(() => isAdminSession(props.authSession))
 
 // ── 型別 ──────────────────────────────────────────────
 type RoleKey = 'superAdmin' | 'admin' | 'editor' | 'member'

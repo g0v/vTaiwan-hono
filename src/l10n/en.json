@@ -140,6 +140,7 @@
     "transcriptions": "Transcriptions",
     "faq": "FAQ",
     "contributors": "Contributors",
+    "admin": "Admin",
     "openMenu": "Open menu"
   },
   "about": {
@@ -984,6 +985,12 @@
     }
   },
   "admin": {
+    "guard": {
+      "checking": "Checking permissions…",
+      "forbiddenTitle": "Access denied",
+      "forbiddenDesc": "This page is restricted to administrators. If you believe this is a mistake, please contact a site administrator.",
+      "backHome": "Back to home"
+    },
     "badge": "Prototype",
     "title": "Admin Console",
     "subtitle": "An interface prototype using mock data; all changes are synced only to your browser's localStorage, for feature discussion.",

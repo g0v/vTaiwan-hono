@@ -6,7 +6,7 @@ import Footer from './components/Footer.vue'
 import GoogleLogin from './components/GoogleLogin.vue'
 import NavBar from './components/NavBar.vue'
 import { authClient } from './client/authClient'
-import { loadAuthSession, type AuthSession } from './client/auth-session'
+import { loadAuthSession, isAdminSession, type AuthSession } from './client/auth-session'
 import { detectPreferredLocale, isSupportedLocale, localeKey, persistLocale, supportedLocales, type SupportedLocale } from './i18n'
 
 const route = useRoute()
@@ -14,6 +14,12 @@ const showLoginModal = ref(false)
 const isInApp = ref(false)
 const user = ref<AuthenticatedUser | null>(null)
 const authSession = ref<AuthSession | null>(null)
+// session 是否已載入完成（成功或未登入皆算完成）——AdminView 用來區分「確認中」與「非管理員」。
+// SSR 與首次 hydration 一律為 false，待瀏覽器端載入 session 後才轉 true，避免 hydration mismatch。
+const authReady = ref(false)
+
+// 管理員（含超級管理員）——決定 NavBar 是否顯示管理入口。僅顯示層取捨，安全邊界在 Worker。
+const isAdmin = computed(() => isAdminSession(authSession.value))
 
 interface AuthenticatedUser {
   uid: string
@@ -68,6 +74,9 @@ async function loadBetterAuthSession() {
     handleLoginSuccess()
   } catch (error) {
     console.error('Failed to load Better Auth session:', error)
+  } finally {
+    // 無論成功、未登入或失敗，都標記為已完成，讓守衛頁面可從「確認中」進入判定。
+    authReady.value = true
   }
 }
 
@@ -110,6 +119,7 @@ const activeNavKey = computed(() => {
     { prefix: '/intro', key: 'about' },
     { prefix: '/about', key: 'about' },
     { prefix: '/contributors', key: 'contributors' },
+    { prefix: '/admin', key: 'admin' },
   ]
 
   return map.find(item => path.startsWith(item.prefix))?.key
@@ -127,9 +137,9 @@ watch(
 
 <template>
   <div class="flex min-h-screen flex-col font-serif">
-    <NavBar :current="activeNavKey" :user="user" @show-login="showLoginModal = true" @logout="handleLogout" />
+    <NavBar :current="activeNavKey" :user="user" :is-admin="isAdmin" @show-login="showLoginModal = true" @logout="handleLogout" />
     <div class="flex-1">
-      <RouterView :user="user" :auth-session="authSession" :in-app="isInApp" @logout="handleLogout" @profile-updated="handleProfileUpdated" />
+      <RouterView :user="user" :auth-session="authSession" :auth-ready="authReady" :in-app="isInApp" @logout="handleLogout" @profile-updated="handleProfileUpdated" />
     </div>
     <Footer />
 

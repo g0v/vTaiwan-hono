@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vite-plus/test'
-import { hasSameOrigin, permissionsForRole, resolveRole } from '../server/lib/authorization'
+import { hasSameOrigin, isAdminRole, permissionsForRole, resolveRole } from '../server/lib/authorization'
 
 describe('Better Auth 業務權限', () => {
   it('將未知或缺少的角色降級為 user', () => {
@@ -17,6 +17,12 @@ describe('Better Auth 業務權限', () => {
 
   it('一般使用者僅能加入會議', () => {
     expect(permissionsForRole('user')).toEqual(['meeting.join'])
+  })
+
+  it('僅 admin/super-admin 視為管理員（/admin 守衛與管理入口的判定）', () => {
+    expect(isAdminRole('admin')).toBe(true)
+    expect(isAdminRole('super-admin')).toBe(true)
+    expect(isAdminRole('user')).toBe(false)
   })
 
   it('拒絕跨站 mutation，但允許無 Origin 的非瀏覽器請求', () => {

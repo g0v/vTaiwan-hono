@@ -8,7 +8,25 @@ import { registerProxyApi } from './api/proxy'
 import { registerTranscriptionApi } from './api/transcription'
 import type { AppEnv } from './api/types'
 import auth from './api/auth'
+import { getAuthContext, isAdminRole } from './server/lib/authorization'
 import { renderPage } from './ssr/render'
+
+// /admin（含子路徑）需管理員以上；此為真正的授權邊界（robots.txt 只是 crawler 提示）。
+// 前端 NavBar/AdminView 的顯示守衛只是 UX，直接打 /admin 一律在 Worker 端把關。
+function isAdminPath(pathname: string): boolean {
+  return pathname === '/admin' || pathname.startsWith('/admin/')
+}
+
+// 回傳非管理員是否應被擋下。session 讀取失敗（例如綁定缺失）時保守視為未授權。
+async function isAdminRequest(env: AppEnv['Bindings'], headers: Headers): Promise<boolean> {
+  try {
+    const context = await getAuthContext(env, headers)
+    return context !== null && isAdminRole(context.role)
+  } catch (error) {
+    console.error('Failed to resolve admin auth context:', error)
+    return false
+  }
+}
 
 const app = new Hono<AppEnv>()
 
@@ -59,6 +77,13 @@ app.get('*', async c => {
   }
 
   const rendered = await renderPage(`${url.pathname}${url.search}${url.hash}`, url.origin, c.get('cspNonce'))
+
+  // /admin 路由守衛：非管理員一律回 403（HTML 殼不變，僅覆寫狀態碼，避免 hydration mismatch；
+  // 前端 AdminView 於 client 端顯示對應的 403 畫面）。
+  if (isAdminPath(url.pathname) && !(await isAdminRequest(c.env, c.req.raw.headers))) {
+    return c.html(rendered.html, 403)
+  }
+
   return c.html(rendered.html, rendered.status)
 })
 

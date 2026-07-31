@@ -12,6 +12,10 @@ export const navLinks = [
   { key: 'contributors', labelKey: 'header.contributors', href: '/contributors' },
 ] as const
 
+// 管理後台入口——僅在使用者為 admin/super-admin 時顯示（見 NavBar.vue）。
+// 依 issue #68 決議：於 NavBar 擠掉管理員一般不會用的「電子報」欄位，改放此入口。
+export const adminNavLink = { key: 'admin', labelKey: 'header.admin', href: '/admin' } as const
+
 // ── Footer 型別 ────────────────────────────────────────────────────────────────
 
 // 外部連結（純 href，label 為固定字串）

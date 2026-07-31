@@ -25,6 +25,11 @@ export function resolveRole(role: string | null | undefined): AppRole {
   return role === 'admin' || role === 'super-admin' ? role : 'user'
 }
 
+// 管理員（含超級管理員）判定——/admin 路由守衛與管理入口顯示的單一來源。
+export function isAdminRole(role: AppRole): boolean {
+  return role === 'admin' || role === 'super-admin'
+}
+
 export function permissionsForRole(role: AppRole): Permission[] {
   return permissionsByRole[role]
 }

@@ -135,6 +135,7 @@
     "transcriptions": "逐字稿管理",
     "faq": "常見問答",
     "contributors": "貢獻者",
+    "admin": "管理後台",
     "openMenu": "開啟選單"
   },
   "about": {
@@ -984,6 +985,12 @@
   "送交院會": "送交院會",
   "歷史案件": "歷史案件",
   "admin": {
+    "guard": {
+      "checking": "正在確認權限…",
+      "forbiddenTitle": "沒有存取權限",
+      "forbiddenDesc": "此頁面僅限管理員存取。若你認為這是誤判，請聯絡網站管理員。",
+      "backHome": "返回首頁"
+    },
     "badge": "樣稿 Prototype",
     "title": "管理員後台",
     "subtitle": "此為使用偽資料的介面樣稿，所有變更僅同步至瀏覽器 localStorage，供後續功能討論。",
