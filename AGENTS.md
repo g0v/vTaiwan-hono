@@ -267,6 +267,63 @@ vp run lemma:check
 
 > Milestone 有嚴格前後依賴：打樣 → MVP → 完整功能 → 自動測試 → 從 Firebase 搬移到全 Cloudflare。
 
+## Admin 介面與 Better Auth 開發 checkpoints
+
+本章追蹤 **Better Auth 登入／授權** 與 **管理員（Admin）介面** 兩條平行工作線的落地狀態，屬 Milestone 4（從 Firebase 搬移到全 Cloudflare）的前期成果，主要落在 `feat/better-auth` 分支。動工續作前先讀本章對照現況，改完後回來更新狀態；**別憑 commit 訊息臆測完成度，以下欄位以實際程式碼為準**。
+
+### A. 現況盤點（已做 / 未做）
+
+**Better Auth（後端認證與授權）**
+
+| 區塊             | 狀態      | 落地位置 / 說明                                                                                                | issue |
+| ---------------- | --------- | ------------------------------------------------------------------------------------------------------------- | ----- |
+| Auth 端點        | ✅ 已做   | `/api/auth/*`（Better Auth handler）+ `/api/me`（回 `AuthContext`），見 `src/api/auth.ts`                       | #64   |
+| 專用 D1 資料庫   | ✅ 已做   | 綁定 `DB_AUTH`（`vtaiwan-auth`）、migrations 於 `./migrations/auth`；建表 SQL 為 user/session/account/verification | #63   |
+| Social 登入      | ✅ 已做   | `createAuth.ts` 設 Google + GitHub provider；client 端 Google 登入（`GoogleLogin.vue`、`authClient.ts`、`App.vue`） | #66   |
+| 本機設定範本     | ✅ 已做   | `.dev.vars.example` 補齊 `BETTER_AUTH_URL`／`GOOGLE_*`／`GITHUB_*`                                              | #65   |
+| 角色／權限模型   | ✅ 已做   | `authorization.ts`：`AppRole`(user/admin/super-admin)、`Permission`、`resolveRole`（未知角色降級 user）、`hasPermission` | #67   |
+| Same-origin 防護 | ✅ 已做   | `hasSameOrigin`：拒跨站 mutation、放行無 Origin 的非瀏覽器請求                                                 | #67   |
+| 端點權限強制     | 🚧 部分   | 已套用於 `jitsi-token`（`meeting.join`／`meeting.moderate`）、`transcription` 更新（`transcription.update`）    | #67   |
+| `topic.manage`   | ⛔ 未做   | 權限已定義於 `authorization.ts`，但**尚無任何端點實際檢查**——議題管理端點補上時才算落地                        | —     |
+| 單元測試         | 🚧 部分   | `authorization.test.ts` 覆蓋角色降級／權限集合／same-origin；尚無端點層級（401/403 流程）整合測試              | #67   |
+
+**Admin 介面**
+
+| 區塊               | 狀態      | 落地位置 / 說明                                                                          | issue |
+| ------------------ | --------- | --------------------------------------------------------------------------------------- | ----- |
+| 版面樣稿           | ✅ 已做   | `AdminView.vue`：tab（成員／權限／日誌）、關鍵字搜尋（`SearchInput`）、角色下拉、權限矩陣 | #62   |
+| i18n               | ✅ 已做   | `admin.*` key 三檔同步                                                                   | #62   |
+| 真實資料串接       | ⛔ 未做   | 目前用 `seedMembers()` **mock 資料** + `resetData()`；未接 Better Auth admin API（列使用者／改角色／停權） | —     |
+| 權限矩陣可寫       | ⛔ 未做   | 權限矩陣 checkbox 目前 `disabled`（唯讀展示），尚未接後端變更                            | —     |
+| `/admin` 路由守衛  | ⛔ 未做   | `/admin` 為 client-only 頁面，**無 route-level 守衛**；非 admin 目前仍可載入頁殼（僅資料層擋） | —     |
+
+### B. 專屬驗收檢查（改 admin/auth 必跑）
+
+除了「驗證流程」章節的通用檢查，動到本工作線時額外把關以下項目：
+
+| 改動類型                                              | 額外必跑 / 必查                                                                                             |
+| ----------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| `authorization.ts`（角色／權限）                      | `vp test`（`authorization.test.ts` 綠燈）；新增 `Permission` 一定要同步「哪個端點檢查它」，否則掛 `topic.manage` 這種孤兒權限 |
+| 新增受保護端點                                        | 三道關卡齊全：`hasSameOrigin` → `getAuthContext`（401）→ `hasPermission`（403）；缺一即為授權破口          |
+| `createAuth.ts`（provider／plugin）                   | `.dev.vars.example` 同步新憑證 key；`vp check` + `vp run build`；別把密鑰寫進 tracked 檔                    |
+| D1 schema（`migrations/auth/*.sql`）                  | schema 由 `auth-cli.ts` 經 Better Auth CLI 生成——**改欄位改源頭重生，勿手改 SQL**；確認 `wrangler.jsonc` 的 `DB_AUTH` migrations_dir 對得上 |
+| `AdminView.vue`                                       | `vp check` + `vp test`（SSR 煙霧測試不得誤觸瀏覽器 API）；接真實 API 後，非 admin 角色須拿不到管理資料        |
+| client 授權（`auth-session.ts`／`GoogleLogin.vue`）   | client 權限判斷**只是 UX**，不可當安全邊界——真正把關一律在 Worker 端；SSR 路徑不得讀 `document`／`localStorage` |
+
+> **鐵則**：授權判斷的真實邊界永遠在 **Worker 端**（`getAuthContext` + `hasPermission`）。client（`auth-session.ts`、頁面 `v-if`）只做顯示層取捨，任何「client 擋住就好」的做法都是漏洞。
+
+### C. 里程碑子步驟（checkpoint commit 界線）
+
+續作本工作線時，每完成一個「`vp check` + `vp test` 綠燈」的子步驟就打一筆 checkpoint commit（Conventional Commits，見「Git / Commit 慣例」）。建議切分：
+
+1. **端點權限補齊** — 為 `topic.manage` 等已定義但未強制的權限接上實際端點檢查，補端點層級整合測試。
+2. **`/admin` 路由守衛** — 加上 route-level 授權（非 admin 導向登入／404），與資料層雙重把關。
+3. **Admin 真實資料串接** — `AdminView.vue` 由 `seedMembers()` mock 換成 Better Auth admin API（列使用者／改角色／停權），逐步替換不中斷。
+4. **權限矩陣可寫** — 解除唯讀 checkbox，接後端角色／權限變更並回寫。
+5. **端點層級授權整合測試** — 針對 401／403 流程補自動測試（屬「實作自動測試」milestone，動工前先與使用者確認範圍）。
+
+> 子步驟有依賴：先有 **1（端點強制齊全）** 與 **2（路由守衛）** 這兩道安全底線，再往 **3／4** 的 admin 資料寫入功能推進，避免功能先於授權落地而開出破口。
+
 ## Migration 基本原則
 
 從 `vue.vTaiwan-neo`（及其搭配的後端 workers）搬移功能時，遵守以下原則：
