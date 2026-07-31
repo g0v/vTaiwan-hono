@@ -1,16 +1,6 @@
 import { describe, expect, it } from 'vite-plus/test'
-import { evaluateAdminAccess, hasSameOrigin, isAdminRole, permissionsForRole, resolveRole, type AppRole, type AuthContext } from '../server/lib/authorization'
-
-// 測試用 AuthContext 工廠：只有 role 影響 evaluateAdminAccess 判定。
-function contextWithRole(role: AppRole): AuthContext {
-  return {
-    user: { id: 'u1', name: 'Tester', email: 't@example.com', image: null },
-    role,
-    permissions: permissionsForRole(role),
-  }
-}
-
-const ADMIN_URL = 'https://vtaiwan.tw/api/auth/admin/list-users'
+import { isAdminRole, permissionsForRole, resolveRole } from '../server/lib/authorization'
+import { adminRoleAccess } from '../server/lib/createAuth'
 
 describe('Better Auth 業務權限', () => {
   it('將未知或缺少的角色降級為 user', () => {
@@ -35,34 +25,28 @@ describe('Better Auth 業務權限', () => {
     expect(isAdminRole('super-admin')).toBe(true)
     expect(isAdminRole('user')).toBe(false)
   })
-
-  it('拒絕跨站 mutation，但允許無 Origin 的非瀏覽器請求', () => {
-    const url = 'https://vtaiwan.tw/api/jitsi-token'
-    expect(hasSameOrigin(url, 'https://vtaiwan.tw')).toBe(true)
-    expect(hasSameOrigin(url, 'https://attacker.example')).toBe(false)
-    expect(hasSameOrigin(url, undefined)).toBe(true)
-  })
 })
 
-describe('管理端點存取守衛 evaluateAdminAccess', () => {
-  it('未登入者打 GET（取用戶清單）→ 401', () => {
-    expect(evaluateAdminAccess({ method: 'GET', url: ADMIN_URL, origin: undefined, context: null })).toEqual({ ok: false, status: 401 })
+// 管理端點（/api/auth/admin/*）的授權完全交給 Better Auth admin plugin，
+// 而 plugin 是拿 roles[role].authorize(...) 判定的（has-permission.mjs）。
+// 這組測試直接釘住那份設定：設定一旦回歸（例如誤把 admin 指到 adminAc），
+// 這裡會紅燈——取代先前 Worker 端 requireAdmin() 的縱深防禦角色。
+describe('管理端點角色設定 adminRoleAccess', () => {
+  it('一般使用者拿不到任何管理權限', () => {
+    expect(adminRoleAccess.user.authorize({ user: ['list'] }).success).toBe(false)
+    expect(adminRoleAccess.user.authorize({ user: ['set-role'] }).success).toBe(false)
+    expect(adminRoleAccess.user.authorize({ user: ['ban'] }).success).toBe(false)
   })
 
-  it('一般使用者打 GET（取用戶清單）→ 403', () => {
-    expect(evaluateAdminAccess({ method: 'GET', url: ADMIN_URL, origin: undefined, context: contextWithRole('user') })).toEqual({ ok: false, status: 403 })
+  it('admin 角色目前不得取用管理端點（僅 super-admin 可管理成員）', () => {
+    expect(adminRoleAccess.admin.authorize({ user: ['list'] }).success).toBe(false)
+    expect(adminRoleAccess.admin.authorize({ user: ['set-role'] }).success).toBe(false)
+    expect(adminRoleAccess.admin.authorize({ user: ['ban'] }).success).toBe(false)
   })
 
-  it('一般使用者打 POST（變更）→ 403', () => {
-    expect(evaluateAdminAccess({ method: 'POST', url: ADMIN_URL, origin: 'https://vtaiwan.tw', context: contextWithRole('user') })).toEqual({ ok: false, status: 403 })
-  })
-
-  it('跨站 POST 在驗身分前就先被同源檢查擋下 → 403', () => {
-    expect(evaluateAdminAccess({ method: 'POST', url: ADMIN_URL, origin: 'https://attacker.example', context: contextWithRole('super-admin') })).toEqual({ ok: false, status: 403 })
-  })
-
-  it('admin / super-admin 同源請求放行', () => {
-    expect(evaluateAdminAccess({ method: 'GET', url: ADMIN_URL, origin: 'https://vtaiwan.tw', context: contextWithRole('admin') })).toEqual({ ok: true })
-    expect(evaluateAdminAccess({ method: 'POST', url: ADMIN_URL, origin: 'https://vtaiwan.tw', context: contextWithRole('super-admin') })).toEqual({ ok: true })
+  it('super-admin 可列表／改角色／停權', () => {
+    expect(adminRoleAccess['super-admin'].authorize({ user: ['list'] }).success).toBe(true)
+    expect(adminRoleAccess['super-admin'].authorize({ user: ['set-role'] }).success).toBe(true)
+    expect(adminRoleAccess['super-admin'].authorize({ user: ['ban'] }).success).toBe(true)
   })
 })
