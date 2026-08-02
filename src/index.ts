@@ -18,7 +18,10 @@ function isAdminPath(pathname: string): boolean {
   return pathname === '/admin' || pathname.startsWith('/admin/')
 }
 
-// 回傳非管理員是否應被擋下。session 讀取失敗（例如綁定缺失）時保守視為未授權。
+// session 讀取失敗（例如綁定缺失）時保守視為未授權。
+// 此處只看角色、不看 session 新鮮度：管理員但 session 已不新鮮時仍回 200，
+// 讓 /admin 能顯示二次驗證畫面（回 403 會連重新登入的入口都看不到）。
+// 後台真正的資料與寫入端點（/api/auth/admin/*、逐字稿寫入）另有新鮮度把關，見 step-up.ts。
 async function isAdminRequest(env: AppEnv['Bindings'], headers: Headers): Promise<boolean> {
   try {
     const context = await getAuthContext(env, headers)
@@ -82,7 +85,7 @@ app.get('*', async c => {
   const rendered = await renderPage(`${url.pathname}${url.search}${url.hash}`, url.origin, c.get('cspNonce'))
 
   // /admin 路由守衛：非管理員一律回 403（HTML 殼不變，僅覆寫狀態碼，避免 hydration mismatch；
-  // 前端 AdminView 於 client 端顯示對應的 403 畫面）。
+  // 前端 AdminView 於 client 端顯示 403／二次驗證畫面）。
   if (isAdminPath(url.pathname) && !(await isAdminRequest(c.env, c.req.raw.headers))) {
     return c.html(rendered.html, 403)
   }

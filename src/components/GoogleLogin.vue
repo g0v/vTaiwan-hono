@@ -1,12 +1,26 @@
 <script setup lang="ts">
-import { nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
+import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { authClient } from '../client/authClient'
+import { STEP_UP_PURPOSE } from '../client/auth-session'
 
-const props = withDefaults(defineProps<{ inApp?: boolean }>(), {
-  inApp: false,
-})
+const props = withDefaults(
+  defineProps<{
+    inApp?: boolean
+    /** OAuth 完成後導回的站內路徑；預設回到發起登入的當前頁面 */
+    callbackUrl?: string
+    /** 敏感操作二次驗證：於 OAuth state 標記意圖，回調時才會簽發 step-up cookie（見 server/lib/step-up.ts） */
+    forStepUp?: boolean
+  }>(),
+  { inApp: false, forStepUp: false }
+)
 const { t } = useI18n()
+const route = useRoute()
+
+// 記住是從哪個路由發起登入：OAuth 回跳後導回原頁，不要一律掉回首頁
+//（Better Auth 未給 callbackURL 時會退回 baseURL）。相對路徑受 trustedOrigins 允許。
+const callbackTarget = computed(() => props.callbackUrl || route.fullPath)
 const betterAuthLoading = ref(false)
 
 async function handleBetterAuthGoogleLogin() {
@@ -18,7 +32,12 @@ async function handleBetterAuthGoogleLogin() {
   try {
     betterAuthLoading.value = true
     await nextTick()
-    const { error } = await authClient.signIn.social({ provider: 'google' })
+
+    const { error } = await authClient.signIn.social({
+      provider: 'google',
+      callbackURL: callbackTarget.value,
+      ...(props.forStepUp ? { additionalData: { purpose: STEP_UP_PURPOSE } } : {}),
+    })
     if (error) {
       console.error('Better Auth Google login error:', error)
       window.alert(t('auth.loginFailed'))

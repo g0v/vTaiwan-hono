@@ -989,7 +989,11 @@
       "checking": "Checking permissions…",
       "forbiddenTitle": "Access denied",
       "forbiddenDesc": "This page is restricted to administrators. If you believe this is a mistake, please contact a site administrator.",
-      "backHome": "Back to home"
+      "backHome": "Back to home",
+      "reauthTitle": "Re-authentication required",
+      "reauthDesc": "Opening the admin console is a sensitive action. Even though you are signed in, please verify with Google once more; access is then granted for a limited time.",
+      "sessionRemaining": "{time} left in this session",
+      "sessionRemainingAria": "Time remaining for elevated access"
     },
     "title": "Admin Console",
     "subtitle": "Member list and role changes use real account data (super-admin only). The change log remains a prototype.",

@@ -989,7 +989,11 @@
       "checking": "正在確認權限…",
       "forbiddenTitle": "沒有存取權限",
       "forbiddenDesc": "此頁面僅限管理員存取。若你認為這是誤判，請聯絡網站管理員。",
-      "backHome": "返回首頁"
+      "backHome": "返回首頁",
+      "reauthTitle": "需要二次驗證身分",
+      "reauthDesc": "進入管理後台屬敏感操作。即使你已登入，仍需再以 Google 驗證一次；通過後有一段限時的操作時間。",
+      "sessionRemaining": "本次驗證剩餘 {time}",
+      "sessionRemainingAria": "敏感操作授權剩餘時間"
     },
     "title": "管理員後台",
     "subtitle": "成員清單與角色變更使用真實帳號資料（僅超級管理員可操作）；變更日誌仍為樣稿。",

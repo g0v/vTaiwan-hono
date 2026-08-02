@@ -4,6 +4,7 @@ import { generateOutline } from '../lib/ai-summarize'
 import { splitTranscriptionIntoChunks, TRANSCRIPTION_MAX_BYTES, utf8ByteLength } from '../lib/transcription-storage'
 import { stripHtmlFromMarkdown } from '../lib/html-sanitizer'
 import { getAuthContext, hasPermission } from '../server/lib/authorization'
+import { sessionNotFreshBody } from '../server/lib/step-up'
 import type { App } from './types'
 
 const LANG_MAP: Record<string, string> = {
@@ -79,6 +80,13 @@ export function registerTranscriptionApi(app: App) {
     const chunks = splitTranscriptionIntoChunks(transcription)
     const isChunked = chunks.length > 1
 
+    const db = c.env.DB
+    if (!db) return c.json({ error: 'DB binding not configured' }, 500)
+
+    const existing = await db.prepare('SELECT meeting_id FROM transcriptions WHERE meeting_id = ?').bind(meeting_id).first()
+    // 覆蓋已上傳逐字稿屬敏感操作，需二次驗證（新建不要求）；在寫 R2／呼叫 AI 前擋下。
+    if (existing && !context.fresh) return c.json(sessionNotFreshBody(), 403)
+
     if (c.env.R2) {
       await c.env.R2.put(`${meeting_id}.txt`, transcription, {
         httpMetadata: { contentType: 'text/plain; charset=utf-8' },
@@ -86,11 +94,6 @@ export function registerTranscriptionApi(app: App) {
     }
 
     const outline = stripHtmlFromMarkdown(await generateOutline(transcription, c.env))
-
-    const db = c.env.DB
-    if (!db) return c.json({ error: 'DB binding not configured' }, 500)
-
-    const existing = await db.prepare('SELECT meeting_id FROM transcriptions WHERE meeting_id = ?').bind(meeting_id).first()
     const storedTranscription = isChunked ? '' : transcription
     const saveMain = existing
       ? db.prepare('UPDATE transcriptions SET transcription = ?, outline = ? WHERE meeting_id = ?').bind(storedTranscription, outline, meeting_id)
@@ -117,6 +120,7 @@ export function registerTranscriptionApi(app: App) {
     const context = await getAuthContext(c.env, c.req.raw.headers)
     if (!context) return c.json({ error: 'Unauthorized' }, 401)
     if (!hasPermission(context, 'transcription.update')) return c.json({ error: 'Forbidden' }, 403)
+    if (!context.fresh) return c.json(sessionNotFreshBody(), 403)
 
     const { meeting_id, outline } = await c.req.json<{ meeting_id: unknown; outline: unknown }>()
     if (typeof meeting_id !== 'string' || !/^\d{8}$/.test(meeting_id) || typeof outline !== 'string') {

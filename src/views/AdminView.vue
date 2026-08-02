@@ -1,6 +1,6 @@
 <template>
   <div class="vt-under-navbar min-h-screen bg-vt-bg-2 pt-20">
-    <!-- 確認權限中：SSR 與首次 hydration 一律落此狀態（authReady=false），避免洩漏管理版面或造成 mismatch -->
+    <!-- 確認權限中：SSR 與首次 hydration 一律落此狀態，避免洩漏管理版面或造成 mismatch -->
     <div v-if="!authReady" class="container mx-auto flex min-h-[50vh] items-center justify-center px-vt-4">
       <p class="text-vt-base text-vt-fg-3">{{ t('admin.guard.checking') }}</p>
     </div>
@@ -20,12 +20,28 @@
       </div>
     </div>
 
+    <!-- 管理員但 session 已不新鮮：整個後台換成二次驗證畫面（重新登入即恢復） -->
+    <div v-else-if="needsStepUp" class="container mx-auto flex min-h-[50vh] items-center justify-center px-vt-4">
+      <StepUpAuth :title="t('admin.guard.reauthTitle')" :description="t('admin.guard.reauthDesc')" />
+    </div>
+
     <div v-else class="container mx-auto mt-10 px-vt-4">
       <div class="mx-auto max-w-6xl">
         <!-- 頁首 -->
         <header class="mb-vt-6">
-          <div class="flex flex-wrap items-center gap-vt-3">
+          <div class="flex flex-wrap items-center justify-between gap-vt-3">
             <h1 class="text-vt-3xl font-bold text-vt-fg-1">{{ t('admin.title') }}</h1>
+
+            <!-- 二次驗證剩餘時間：歸零即自動退回二次驗證畫面 -->
+            <p
+              v-if="stepUpRemainingLabel"
+              class="rounded-full border border-vt-border bg-vt-bg-1 px-vt-3 py-vt-1 text-vt-sm text-vt-fg-2 tabular-nums"
+              :class="stepUpExpiringSoon ? 'border-vt-democratic-red text-vt-democratic-red' : ''"
+              role="status"
+              :aria-label="t('admin.guard.sessionRemainingAria')"
+            >
+              {{ t('admin.guard.sessionRemaining', { time: stepUpRemainingLabel }) }}
+            </p>
           </div>
           <p class="mt-vt-2 text-vt-base text-vt-fg-2">{{ t('admin.subtitle') }}</p>
         </header>
@@ -186,7 +202,7 @@
           <div class="admin-card">
             <h2 class="mb-vt-1 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.transcripts.title') }}</h2>
             <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.transcripts.hint') }}</p>
-            <TranscriptionManager manage :auth-session="props.authSession" />
+            <TranscriptionManager manage :auth-session="props.authSession" @step-up-required="requireStepUp" />
           </div>
         </section>
       </div>
@@ -233,11 +249,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { authClient } from '../client/authClient'
-import { isAdminSession, isSuperAdminSession, type AppRole, type AuthSession, type Permission } from '../client/auth-session'
+import { isAdminSession, isSessionNotFreshPayload, isSuperAdminSession, type AppRole, type AuthSession, type Permission } from '../client/auth-session'
 import SearchInput from '../components/SearchInput.vue'
+import StepUpAuth from '../components/StepUpAuth.vue'
 import TranscriptionManager from '../components/TranscriptionManager.vue'
 
 const { t } = useI18n()
@@ -254,6 +271,49 @@ const props = withDefaults(
 
 const isAdmin = computed(() => isAdminSession(props.authSession))
 const isSuperAdmin = computed(() => isSuperAdminSession(props.authSession))
+
+// 二次驗證：進入後台本身即為敏感操作，未通過就整頁換成再驗證畫面。
+// staleSession 補上「伺服器已判定過期、但 props.authSession 仍是載入當下舊值」的情形。
+const staleSession = ref(false)
+
+// 倒數計時：now 於 SSR／首次渲染為 0，掛載後才開始跳動（不得在 SSR 讀時間造成 mismatch）
+const now = ref(0)
+let ticker: ReturnType<typeof setInterval> | undefined
+
+onMounted(() => {
+  now.value = Date.now()
+  ticker = setInterval(() => {
+    now.value = Date.now()
+  }, 1000)
+})
+
+onUnmounted(() => {
+  if (ticker) clearInterval(ticker)
+})
+
+const stepUpExpiresAt = computed(() => props.authSession?.stepUpExpiresAt ?? null)
+const stepUpRemainingMs = computed(() => {
+  const expiresAt = stepUpExpiresAt.value
+  if (expiresAt === null || now.value === 0) return 0
+  return Math.max(0, expiresAt - now.value)
+})
+const stepUpExpired = computed(() => now.value > 0 && stepUpExpiresAt.value !== null && stepUpRemainingMs.value === 0)
+const stepUpExpiringSoon = computed(() => stepUpRemainingMs.value > 0 && stepUpRemainingMs.value <= 60_000)
+const stepUpRemainingLabel = computed(() => (stepUpRemainingMs.value > 0 ? formatRemaining(stepUpRemainingMs.value) : ''))
+
+// 到期即自動退回二次驗證畫面（顯示層；端點仍各自以 cookie 把關）
+const needsStepUp = computed(() => !props.authSession?.fresh || staleSession.value || stepUpExpired.value)
+
+function formatRemaining(ms: number): string {
+  const totalSeconds = Math.ceil(ms / 1000)
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+  return `${minutes}:${String(seconds).padStart(2, '0')}`
+}
+
+function requireStepUp() {
+  staleSession.value = true
+}
 
 // ── 型別 ──────────────────────────────────────────────
 type StatusKey = 'active' | 'banned'
@@ -357,7 +417,8 @@ function mapUserToMember(user: { id: string; name: string; email: string; role?:
 }
 
 async function loadMembers() {
-  if (typeof window === 'undefined' || !isSuperAdmin.value) return
+  // session 不新鮮時 /api/auth/admin/* 會回 403，先別發請求（否則二次驗證畫面後面會留一則錯誤）
+  if (typeof window === 'undefined' || !isSuperAdmin.value || needsStepUp.value) return
 
   membersLoading.value = true
   membersError.value = null
@@ -383,9 +444,9 @@ async function loadMembers() {
 }
 
 watch(
-  () => [props.authReady, isSuperAdmin.value] as const,
-  ([ready, superAdmin]) => {
-    if (ready && superAdmin) void loadMembers()
+  () => [props.authReady, isSuperAdmin.value, needsStepUp.value] as const,
+  ([ready, superAdmin, stepUp]) => {
+    if (ready && superAdmin && !stepUp) void loadMembers()
   },
   { immediate: true }
 )
@@ -439,7 +500,13 @@ async function onRoleChange(m: Member, event: Event) {
   } catch (error) {
     console.error('Failed to set role:', error)
     select.value = m.role
-    window.alert(t('admin.members.roleUpdateFailed'))
+    // 變更權限屬敏感操作：session 在頁面開著時過期即回 SESSION_NOT_FRESH（見 api/auth.ts），
+    // 換成二次驗證畫面。此處不預先擋——props.authSession 是載入當下的舊值，判不出中途過期。
+    if (isSessionNotFreshPayload(error)) {
+      requireStepUp()
+    } else {
+      window.alert(t('admin.members.roleUpdateFailed'))
+    }
   } finally {
     updatingRoleId.value = null
   }

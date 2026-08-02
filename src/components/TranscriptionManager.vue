@@ -99,7 +99,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { hasPermission, type AuthSession } from '../client/auth-session'
+import { hasPermission, responseRequiresStepUp, type AuthSession } from '../client/auth-session'
 import SearchInput from './SearchInput.vue'
 import TranscriptionCard from './TranscriptionCard.vue'
 import TranscriptionOutlineModal from './TranscriptionOutlineModal.vue'
@@ -115,6 +115,10 @@ const props = withDefaults(
   }>(),
   { manage: false, authSession: null }
 )
+
+// 敏感操作（覆蓋既有逐字稿／修改大綱）需 session 新鮮，由伺服器判定並回 SESSION_NOT_FRESH；
+// 收到就通知外層（AdminView）換上二次驗證畫面，這裡不自行彈窗，避免同一 UX 實作兩份。
+const emit = defineEmits<{ stepUpRequired: [] }>()
 
 const canUpdateTranscriptions = computed(() => props.manage && hasPermission(props.authSession, 'transcription.update'))
 const canShowEdit = computed(() => canUpdateTranscriptions.value)
@@ -181,6 +185,11 @@ async function uploadTranscription() {
     const formData = new FormData()
     formData.append('file', selectedFile.value)
     const response = await fetch('/api/upload-transcription', { method: 'POST', body: formData })
+    // 覆蓋既有逐字稿屬敏感操作：session 不新鮮時伺服器會在寫 R2／算大綱前回 SESSION_NOT_FRESH
+    if (await responseRequiresStepUp(response)) {
+      emit('stepUpRequired')
+      return
+    }
     if (!response.ok) throw new Error(`上傳失敗: ${response.status}`)
     alert(t('transcriptions.messages.uploadSuccess'))
     await loadTranscriptions()
@@ -207,6 +216,10 @@ async function saveOutline(outline: string) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ meeting_id: meetingId, outline }),
     })
+    if (await responseRequiresStepUp(response)) {
+      emit('stepUpRequired')
+      return
+    }
     if (response.ok) {
       const item = transcriptions.value.find(entry => entry.meeting_id === meetingId)
       if (item) item.outline = outline

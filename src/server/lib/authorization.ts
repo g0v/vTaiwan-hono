@@ -1,5 +1,6 @@
 import { createAuth } from './createAuth'
 import type { AppBindings } from '../../api/types'
+import { readStepUpExpiry } from './step-up'
 
 export type AppRole = 'user' | 'admin' | 'super-admin'
 export type Permission = 'meeting.join' | 'meeting.moderate' | 'transcription.update' | 'topic.manage'
@@ -13,6 +14,13 @@ export interface AuthContext {
   }
   role: AppRole
   permissions: Permission[]
+  /**
+   * 是否已通過敏感操作二次驗證——見 step-up.ts。
+   * 一般登入（含登出後重新登入）不會為 true，必須刻意走一次二次驗證登入。
+   */
+  fresh: boolean
+  /** 二次驗證的到期時間（epoch 毫秒）；未通過時為 null。供前端顯示剩餘時間 */
+  stepUpExpiresAt: number | null
 }
 
 const permissionsByRole: Record<AppRole, Permission[]> = {
@@ -44,6 +52,7 @@ export async function getAuthContext(env: AppBindings, headers: Headers): Promis
   if (!session) return null
 
   const role = resolveRole(session.user.role)
+  const stepUpExpiresAt = await readStepUpExpiry(headers.get('cookie'), session.session.id, env.BETTER_AUTH_SECRET)
   return {
     user: {
       id: session.user.id,
@@ -53,5 +62,7 @@ export async function getAuthContext(env: AppBindings, headers: Headers): Promis
     },
     role,
     permissions: permissionsForRole(role),
+    fresh: stepUpExpiresAt !== null,
+    stepUpExpiresAt,
   }
 }
