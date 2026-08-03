@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vite-plus/test'
 import app from '../index'
-import { isSessionNotFreshPayload, SESSION_NOT_FRESH_CODE, STEP_UP_PURPOSE } from '../client/auth-session'
+import { isSessionNotFreshPayload, isWrongAccountAfterStepUp, SESSION_NOT_FRESH_CODE, STEP_UP_PURPOSE, type AppRole, type AuthSession } from '../client/auth-session'
 import { readStepUpExpiry, requiresStepUp, sealStepUpToken, sessionNotFreshBody, STEP_UP_PURPOSE as SERVER_STEP_UP_PURPOSE, STEP_UP_TTL_SECONDS } from '../server/lib/step-up'
 
 describe('敏感操作二次驗證（step-up cookie）', () => {
@@ -57,6 +57,33 @@ describe('敏感操作二次驗證（step-up cookie）', () => {
     expect(requiresStepUp('/api/auth/callback/github')).toBe(false)
     expect(requiresStepUp('/api/auth/get-session')).toBe(false)
     expect(requiresStepUp('/api/me')).toBe(false)
+  })
+
+  // 社群帳號 email 與管理員帳號不同時，Better Auth 會新建一個角色為 user 的帳號並換掉 session；
+  // 「通過二次驗證卻不是管理員」是一般訪客到不了的狀態，AdminView 據此提示並導回首頁。
+  describe('二次驗證後身分被換掉（isWrongAccountAfterStepUp）', () => {
+    const sessionWith = (role: AppRole, fresh: boolean): AuthSession => ({
+      user: { id: 'u1', name: '測試', email: 'someone@example.com', image: null },
+      role,
+      permissions: [],
+      fresh,
+      stepUpExpiresAt: fresh ? Date.UTC(2026, 7, 2, 0, 15, 0) : null,
+    })
+
+    it('通過二次驗證卻非管理員：判定為換到別的帳號', () => {
+      expect(isWrongAccountAfterStepUp(sessionWith('user', true))).toBe(true)
+    })
+
+    it('管理員通過二次驗證：正常流程，不得誤判', () => {
+      expect(isWrongAccountAfterStepUp(sessionWith('admin', true))).toBe(false)
+      expect(isWrongAccountAfterStepUp(sessionWith('super-admin', true))).toBe(false)
+    })
+
+    it('未通過二次驗證的一般使用者：只是無權限的訪客，維持原本的 403 畫面', () => {
+      expect(isWrongAccountAfterStepUp(sessionWith('user', false))).toBe(false)
+      expect(isWrongAccountAfterStepUp(null)).toBe(false)
+      expect(isWrongAccountAfterStepUp(undefined)).toBe(false)
+    })
   })
 
   it('sessionNotFreshBody 帶前後端共用的錯誤碼', () => {

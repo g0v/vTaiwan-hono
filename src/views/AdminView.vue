@@ -260,9 +260,19 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { authClient } from '../client/authClient'
-import { isAdminSession, isSessionNotFreshPayload, isSuperAdminSession, responseRequiresStepUp, type AppRole, type AuthSession, type Permission } from '../client/auth-session'
+import {
+  isAdminSession,
+  isSessionNotFreshPayload,
+  isSuperAdminSession,
+  isWrongAccountAfterStepUp,
+  responseRequiresStepUp,
+  type AppRole,
+  type AuthSession,
+  type Permission,
+} from '../client/auth-session'
 import { auditActionLabelKey, AUDIT_LOG_LIMIT, restoreCommandFor, type AuditEntry } from '../lib/audit-log'
 import SearchInput from '../components/SearchInput.vue'
 import StepUpAuth from '../components/StepUpAuth.vue'
@@ -314,6 +324,23 @@ const stepUpRemainingLabel = computed(() => (stepUpRemainingMs.value > 0 ? forma
 
 // 到期即自動退回二次驗證畫面（顯示層；端點仍各自以 cookie 把關）
 const needsStepUp = computed(() => !props.authSession?.fresh || staleSession.value || stepUpExpired.value)
+
+// 死路：二次驗證通過了、帳號卻沒有管理權限——多半是社群帳號的 email 與管理員帳號不同，
+// 被 Better Auth 當成新使用者建立並換了身分（見 auth-session.ts 的 isWrongAccountAfterStepUp）。
+// 停在 403 頁只會讓人不明所以，故提示一次再導回首頁；用 replace 避免上一頁又彈一次。
+const router = useRouter()
+const wrongAccountHandled = ref(false)
+
+watch(
+  () => [props.authReady, isWrongAccountAfterStepUp(props.authSession)] as const,
+  ([ready, wrongAccount]) => {
+    if (typeof window === 'undefined' || !ready || !wrongAccount || wrongAccountHandled.value) return
+    wrongAccountHandled.value = true
+    window.alert(t('admin.guard.wrongAccountAlert', { email: props.authSession?.user.email ?? '' }))
+    void router.replace('/')
+  },
+  { immediate: true }
+)
 
 function formatRemaining(ms: number): string {
   const totalSeconds = Math.ceil(ms / 1000)

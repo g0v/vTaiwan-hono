@@ -1010,6 +1010,7 @@
       "checking": "Checking permissions…",
       "forbiddenTitle": "Access denied",
       "forbiddenDesc": "This page is restricted to administrators. If you believe this is a mistake, please contact a site administrator.",
+      "wrongAccountAlert": "You are now signed in as a different account ({email}), and it has no admin rights. If the social account you just used has a different email from your admin account, it is treated as a new account. Please sign out and sign in again with your admin account's email. Returning to the home page.",
       "backHome": "Back to home",
       "reauthTitle": "Re-authentication required",
       "reauthDesc": "Opening the admin console is a sensitive action. Even though you are signed in, please verify with Google or GitHub once more; access is then granted for a limited time.",

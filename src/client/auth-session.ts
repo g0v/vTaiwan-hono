@@ -41,6 +41,23 @@ export function isSuperAdminSession(session: AuthSession | null | undefined): bo
 }
 
 /**
+ * 「通過了二次驗證，帳號卻沒有管理權限」——一般訪客到不了的狀態，代表登入的是另一個帳號。
+ *
+ * step-up cookie 只由「OAuth state 帶 purpose=step-up」的回調簽發，且綁定該次登入建立的
+ * session（見 server/lib/step-up.ts）。因此 `fresh` 為 true 就表示使用者剛刻意完成二次驗證；
+ * 此時角色仍非管理員，最可能是社群帳號的 email 與管理員帳號不同，Better Auth 依 email 找不到
+ * 既有使用者而**新建了一個角色為 `user` 的帳號**，並簽發該新帳號的 session——等於被靜默換了身分。
+ *
+ * 少數情況也可能是管理員在持有有效 cookie 期間被降級／停權，故文案以「目前帳號無權限」為主述。
+ *
+ * 用 `fresh`（伺服器在載入當下的判定）而非 `needsStepUp`：後者摻入了前端倒數過期，
+ * 停留過久就會漏判。
+ */
+export function isWrongAccountAfterStepUp(session: AuthSession | null | undefined): boolean {
+  return !!session && !isAdminSession(session) && session.fresh
+}
+
+/**
  * 是否為「需要二次驗證」的錯誤內容。
  * 直接 fetch 得到的是 `{ code }`；Better Auth client（authClient.admin.*）會把回應
  * 內容包成 `{ error: { code } }`，故兩層都認。
