@@ -54,6 +54,7 @@ describe('敏感操作二次驗證（step-up cookie）', () => {
     // 二次驗證要走的登入／回調路徑若被擋住，使用者將永遠無法取得 step-up cookie
     expect(requiresStepUp('/api/auth/sign-in/social')).toBe(false)
     expect(requiresStepUp('/api/auth/callback/google')).toBe(false)
+    expect(requiresStepUp('/api/auth/callback/github')).toBe(false)
     expect(requiresStepUp('/api/auth/get-session')).toBe(false)
     expect(requiresStepUp('/api/me')).toBe(false)
   })

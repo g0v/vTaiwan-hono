@@ -1012,7 +1012,7 @@
       "forbiddenDesc": "此頁面僅限管理員存取。若你認為這是誤判，請聯絡網站管理員。",
       "backHome": "返回首頁",
       "reauthTitle": "需要二次驗證身分",
-      "reauthDesc": "進入管理後台屬敏感操作。即使你已登入，仍需再以 Google 驗證一次；通過後有一段限時的操作時間。",
+      "reauthDesc": "進入管理後台屬敏感操作。即使你已登入，仍需再以 Google 或 GitHub 驗證一次；通過後有一段限時的操作時間。",
       "sessionRemaining": "本次驗證剩餘 {time}",
       "sessionRemainingAria": "敏感操作授權剩餘時間"
     },

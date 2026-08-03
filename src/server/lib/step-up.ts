@@ -5,7 +5,7 @@
  * 因此 session 的新舊（`createdAt`）不足以承載此語意：登出再登入的 session 一樣是新的，
  * 但那只是一般登入，不該直接開通後台。
  *
- * 流程：StepUpAuth 發起的 Google 登入會在 OAuth state 帶 `purpose=step-up`；
+ * 流程：StepUpAuth 發起的社群登入（Google／GitHub 皆可）會在 OAuth state 帶 `purpose=step-up`；
  * Better Auth callback 完成後（見 createAuth.ts 的 after hook）簽發一枚短效 httpOnly cookie，
  * 內容為 `exp.sessionId.sig`（HMAC-SHA256，密鑰為 `BETTER_AUTH_SECRET`）。
  *
@@ -13,8 +13,10 @@
  * - 登出（session 失效）後再登入 ⇒ session id 不同 ⇒ 舊 cookie 自動失效，需重新二次驗證；
  * - cookie 被單獨竊取也無法搭配他人 session 使用。
  *
- * 侷限（已知並接受）：Google 若仍在登入狀態，再次登入是零點擊轉跳。這擋得住「只偷到本站
- * session cookie」的攻擊者（他沒有受害者的 Google 帳號），但擋不住「借用已解鎖的裝置」。
+ * 侷限（已知並接受）：provider（Google／GitHub）若仍在登入狀態，再次登入是零點擊轉跳。這擋得住
+ * 「只偷到本站 session cookie」的攻擊者（他沒有受害者的社群帳號），但擋不住「借用已解鎖的裝置」。
+ * 另：驗證的是「控制其中一個已連結的 provider」，不必然是當初建立 session 的那一個——與一般登入
+ * 的信任模型一致（帳號以 email 連結，見 createAuth.ts 的 accountLinking）。
  */
 
 export const STEP_UP_COOKIE_NAME = 'vtaiwan.step_up'

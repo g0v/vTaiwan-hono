@@ -1012,7 +1012,7 @@
       "forbiddenDesc": "This page is restricted to administrators. If you believe this is a mistake, please contact a site administrator.",
       "backHome": "Back to home",
       "reauthTitle": "Re-authentication required",
-      "reauthDesc": "Opening the admin console is a sensitive action. Even though you are signed in, please verify with Google once more; access is then granted for a limited time.",
+      "reauthDesc": "Opening the admin console is a sensitive action. Even though you are signed in, please verify with Google or GitHub once more; access is then granted for a limited time.",
       "sessionRemaining": "{time} left in this session",
       "sessionRemainingAria": "Time remaining for elevated access"
     },

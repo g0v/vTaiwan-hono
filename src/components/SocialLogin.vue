@@ -25,7 +25,9 @@ const route = useRoute()
 //（Better Auth 未給 callbackURL 時會退回 baseURL）。相對路徑受 trustedOrigins 允許。
 const callbackTarget = computed(() => props.callbackUrl || route.fullPath)
 const loadingProvider = ref<SocialProvider | null>(null)
-const socialProviders = computed<SocialProvider[]>(() => (props.forStepUp ? ['google'] : ['google', 'github']))
+// 二次驗證與一般登入提供同一組 provider：`purpose=step-up` 是寫進 OAuth state 的
+// （Better Auth `/sign-in/social` 共用流程，與 provider 無關），任一 provider 回調都能簽發 cookie。
+const socialProviders: SocialProvider[] = ['google', 'github']
 
 async function handleBetterAuthSocialLogin(provider: SocialProvider) {
   if (props.inApp) {
