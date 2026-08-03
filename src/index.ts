@@ -7,9 +7,10 @@ import { registerJitsiTokenApi } from './api/jitsi_token'
 import { registerMastodonApi } from './api/mastodon'
 import { registerProxyApi } from './api/proxy'
 import { registerTranscriptionApi } from './api/transcription'
+import { registerAdminApi } from './api/admin'
 import type { AppEnv } from './api/types'
 import auth from './api/auth'
-import { getAuthContext, isAdminRole } from './server/lib/authorization'
+import { isAdminRole, tryGetAuthContext } from './server/lib/authorization'
 import { renderPage } from './ssr/render'
 
 // /admin（含子路徑）需管理員以上；此為真正的授權邊界（robots.txt 只是 crawler 提示）。
@@ -23,13 +24,8 @@ function isAdminPath(pathname: string): boolean {
 // 讓 /admin 能顯示二次驗證畫面（回 403 會連重新登入的入口都看不到）。
 // 後台真正的資料與寫入端點（/api/auth/admin/*、逐字稿寫入）另有新鮮度把關，見 step-up.ts。
 async function isAdminRequest(env: AppEnv['Bindings'], headers: Headers): Promise<boolean> {
-  try {
-    const context = await getAuthContext(env, headers)
-    return context !== null && isAdminRole(context.role)
-  } catch (error) {
-    console.error('Failed to resolve admin auth context:', error)
-    return false
-  }
+  const context = await tryGetAuthContext(env, headers)
+  return context !== null && isAdminRole(context.role)
 }
 
 const app = new Hono<AppEnv>()
@@ -71,6 +67,7 @@ registerDiscourseTopicsApi(app)
 registerDiscourseTopicIdApi(app)
 registerJitsiTokenApi(app)
 registerTranscriptionApi(app)
+registerAdminApi(app)
 
 // 其他 GET 請求：靜態檔交給 ASSETS，其餘交給 Vue SSR + vue-router。
 app.get('*', async c => {

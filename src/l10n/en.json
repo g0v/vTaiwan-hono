@@ -1016,7 +1016,7 @@
       "sessionRemainingAria": "Time remaining for elevated access"
     },
     "title": "Admin Console",
-    "subtitle": "Member list and role changes use real account data (super-admin only). The change log remains a prototype.",
+    "subtitle": "Member list, role changes, and the change log all use real data (super-admin only).",
     "search": {
       "label": "Keyword search",
       "clear": "Clear search",
@@ -1079,20 +1079,26 @@
     },
     "logs": {
       "title": "Change Log",
-      "mockBadge": "Mock",
-      "mockHint": "This tab is still a UI prototype and is not wired to real change events.",
-      "reset": "Reset mock log",
+      "hint": "Backend change events: member role and ban changes, transcript uploads/overwrites, and outline edits. Showing the most recent {n} entries only.",
+      "needSuperAdmin": "The change log is visible to super-admins only.",
+      "refresh": "Refresh",
+      "loading": "Loading change log…",
+      "loadFailed": "Failed to load the change log, please try again later.",
       "empty": "No changes recorded yet",
       "col": {
         "time": "Time",
         "actor": "Actor",
         "action": "Action"
       },
-      "role": {
-        "changed": "Changed {member}'s role to {role}"
-      },
-      "member": {
-        "added": "Added member {member}"
+      "action": {
+        "userRoleSet": "Changed {target}'s role from {from} to {to}",
+        "userBan": "Banned member {target}",
+        "userUnban": "Unbanned member {target}",
+        "userRemove": "Removed member {target}",
+        "transcriptionCreate": "Added the transcript for {target} (version {version})",
+        "transcriptionReplace": "Replaced the transcript for {target} (version {version})",
+        "transcriptionOutlineUpdate": "Edited the transcript outline for {target}",
+        "unknown": "Unknown change event"
       }
     },
     "transcripts": {

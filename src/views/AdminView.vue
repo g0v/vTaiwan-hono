@@ -160,21 +160,23 @@
           </template>
         </section>
 
-        <!-- Tab 2：變更日誌（仍為偽資料樣稿；真實日誌另開 issue） -->
+        <!-- Tab 2：變更日誌（真實事件：角色／停權變更 + 逐字稿與大綱異動） -->
         <section v-show="activeTab === 'logs'">
-          <div class="admin-card">
-            <div class="mb-vt-4 flex flex-wrap items-center justify-between gap-vt-2">
-              <div class="flex flex-wrap items-center gap-vt-2">
-                <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.logs.title') }}</h2>
-                <span class="rounded-full bg-vt-yellow-tint px-vt-3 py-vt-1 text-vt-xs font-semibold text-vt-wheat-yellow">
-                  {{ t('admin.logs.mockBadge') }}
-                </span>
-              </div>
-              <button type="button" class="admin-btn-ghost" @click="resetLogs">{{ t('admin.logs.reset') }}</button>
+          <p v-if="!isSuperAdmin" class="rounded-vt-md border border-vt-border bg-vt-bg-1 p-vt-4 text-vt-sm text-vt-fg-2">
+            {{ t('admin.logs.needSuperAdmin') }}
+          </p>
+
+          <div v-else class="admin-card">
+            <div class="mb-vt-1 flex flex-wrap items-center justify-between gap-vt-2">
+              <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.logs.title') }}</h2>
+              <button type="button" class="admin-btn-ghost" :disabled="logsLoading" @click="loadLogs">{{ t('admin.logs.refresh') }}</button>
             </div>
-            <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.logs.mockHint') }}</p>
+            <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.logs.hint', { n: AUDIT_LOG_LIMIT }) }}</p>
             <SearchInput v-model="logQuery" class="mb-vt-4" :placeholder="t('admin.search.placeholder.logs')" :label="t('admin.search.label')" :clear-label="t('admin.search.clear')" />
-            <p v-if="logs.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.logs.empty') }}</p>
+
+            <p v-if="logsLoading" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.logs.loading') }}</p>
+            <p v-else-if="logsError" class="py-vt-6 text-center text-vt-sm text-vt-democratic-red">{{ logsError }}</p>
+            <p v-else-if="logs.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.logs.empty') }}</p>
             <p v-else-if="filteredLogs.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.search.empty', { q: logQuery.trim() }) }}</p>
             <div v-else class="overflow-x-auto">
               <table class="w-full text-left text-vt-sm">
@@ -187,8 +189,8 @@
                 </thead>
                 <tbody>
                   <tr v-for="log in filteredLogs" :key="log.id" class="border-b border-vt-border/60">
-                    <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-3">{{ log.time }}</td>
-                    <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-2">{{ log.actor }}</td>
+                    <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-3">{{ formatLogTime(log.createdAt) }}</td>
+                    <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-2">{{ log.actor.email || log.actor.name }}</td>
                     <td class="px-vt-3 py-vt-3 text-vt-fg-1">{{ describeLog(log) }}</td>
                   </tr>
                 </tbody>
@@ -253,6 +255,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { authClient } from '../client/authClient'
 import { isAdminSession, isSessionNotFreshPayload, isSuperAdminSession, type AppRole, type AuthSession, type Permission } from '../client/auth-session'
+import { auditActionLabelKey, AUDIT_LOG_LIMIT, type AuditEntry } from '../lib/audit-log'
 import SearchInput from '../components/SearchInput.vue'
 import StepUpAuth from '../components/StepUpAuth.vue'
 import TranscriptionManager from '../components/TranscriptionManager.vue'
@@ -327,16 +330,6 @@ interface Member {
   status: StatusKey
 }
 
-// 變更日誌（偽資料）以結構化資料儲存，顯示時再依當前語系翻譯
-interface LogEntry {
-  id: string
-  time: string
-  actor: string
-  type: 'role' | 'member'
-  member: string
-  role?: AppRole
-}
-
 const ALL_ROLES: AppRole[] = ['user', 'admin', 'super-admin']
 const permKeys: Permission[] = ['meeting.join', 'meeting.moderate', 'transcription.update', 'topic.manage']
 
@@ -363,15 +356,10 @@ const updatingRoleId = ref<string | null>(null)
 const selectedMember = ref<Member | null>(null)
 const memberQuery = ref('')
 
-// ── 偽資料日誌（不與真實角色變更混寫，避免混淆）────────────────
-function seedLogs(): LogEntry[] {
-  return [
-    { id: 'l1', time: '2024-08-11 09:20', actor: 'admin@example.com', type: 'member', member: '範例使用者' },
-    { id: 'l2', time: '2024-06-01 14:05', actor: 'admin@example.com', type: 'role', member: '範例管理員', role: 'admin' },
-  ]
-}
-
-const logs = ref<LogEntry[]>(seedLogs())
+// ── 真實變更日誌（#71；SSR／首次 hydration 維持空陣列，切到該分頁才抓）────
+const logs = ref<AuditEntry[]>([])
+const logsLoading = ref(false)
+const logsError = ref<string | null>(null)
 const logQuery = ref('')
 
 function matches(query: string, fields: string[]): boolean {
@@ -382,7 +370,7 @@ function matches(query: string, fields: string[]): boolean {
 
 const filteredMembers = computed(() => members.value.filter(m => matches(memberQuery.value, [m.name, m.email, m.role, t(roleLabelKey(m.role)), m.status, t('admin.status.' + m.status), m.joinedAt])))
 
-const filteredLogs = computed(() => logs.value.filter(log => matches(logQuery.value, [log.time, log.actor, describeLog(log)])))
+const filteredLogs = computed(() => logs.value.filter(log => matches(logQuery.value, [formatLogTime(log.createdAt), log.actor.name, log.actor.email, describeLog(log)])))
 
 function roleLabelKey(role: AppRole): string {
   // i18n key 避開連字號（vue-i18n 會把 super-admin 拆成路徑）
@@ -443,10 +431,40 @@ async function loadMembers() {
   }
 }
 
+async function loadLogs() {
+  // 與成員列表同樣的前提：/api/admin/audit-log 僅 super-admin 且需 session 新鮮
+  if (typeof window === 'undefined' || !isSuperAdmin.value || needsStepUp.value) return
+
+  logsLoading.value = true
+  logsError.value = null
+  try {
+    const response = await fetch('/api/admin/audit-log')
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+    const data = (await response.json()) as { entries: AuditEntry[] }
+    logs.value = data.entries
+  } catch (error) {
+    console.error('Failed to load audit log:', error)
+    logsError.value = t('admin.logs.loadFailed')
+    logs.value = []
+  } finally {
+    logsLoading.value = false
+  }
+}
+
 watch(
   () => [props.authReady, isSuperAdmin.value, needsStepUp.value] as const,
   ([ready, superAdmin, stepUp]) => {
     if (ready && superAdmin && !stepUp) void loadMembers()
+  },
+  { immediate: true }
+)
+
+// 日誌在切到該分頁時才抓，並且每次切入都重抓——剛在成員分頁改完角色就切過來，
+// 必須看得到那筆紀錄（#71 驗收條件），不能沿用進站時的舊資料。
+watch(
+  () => [props.authReady, isSuperAdmin.value, needsStepUp.value, activeTab.value] as const,
+  ([ready, superAdmin, stepUp, tab]) => {
+    if (ready && superAdmin && !stepUp && tab === 'logs') void loadLogs()
   },
   { immediate: true }
 )
@@ -512,19 +530,27 @@ async function onRoleChange(m: Member, event: Event) {
   }
 }
 
-function resetLogs() {
-  logs.value = seedLogs()
-}
-
 function statusClass(status: StatusKey): string {
   return status === 'banned' ? 'bg-vt-red-tint text-vt-democratic-red' : 'bg-vt-green-tint text-vt-jade-green'
 }
 
-function describeLog(log: LogEntry): string {
-  if (log.type === 'role') {
-    return t('admin.logs.role.changed', { member: log.member, role: t(roleLabelKey(log.role ?? 'user')) })
-  }
-  return t('admin.logs.member.added', { member: log.member })
+// 時間只在瀏覽器端格式化：now 之外的本地時區資訊不得進入 SSR 輸出（會造成 hydration mismatch），
+// 而日誌本身就是掛載後才抓的，SSR 期間不會走到這裡。
+function formatLogTime(epochMs: number): string {
+  const date = new Date(epochMs)
+  const pad = (n: number) => String(n).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
+// target.label 是寫入當下的快照（成員姓名／格式化後的會議日期），直接顯示即可。
+// 角色缺值時顯示破折號，不臆測成「一般使用者」。
+function describeLog(log: AuditEntry): string {
+  return t(auditActionLabelKey(log.action), {
+    target: log.target.label,
+    from: log.detail.fromRole ? t(roleLabelKey(resolveRole(log.detail.fromRole))) : '—',
+    to: log.detail.toRole ? t(roleLabelKey(resolveRole(log.detail.toRole))) : '—',
+    version: log.detail.versionId ?? '—',
+  })
 }
 </script>
 
@@ -604,5 +630,11 @@ function describeLog(log: LogEntry): string {
 
 .admin-btn-ghost:hover {
   background-color: var(--color-vt-red-tint);
+}
+
+.admin-btn-ghost:disabled {
+  color: var(--color-vt-fg-3);
+  cursor: not-allowed;
+  background-color: transparent;
 }
 </style>

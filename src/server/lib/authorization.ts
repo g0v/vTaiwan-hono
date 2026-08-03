@@ -38,6 +38,13 @@ export function isAdminRole(role: AppRole): boolean {
   return role === 'admin' || role === 'super-admin'
 }
 
+// 超級管理員判定——成員資料等級的存取（成員列表、變更日誌）用它把關。
+// 刻意不做成 Permission：Permission 是「業務權限」，admin 與 super-admin 一致；
+// 成員管理層級的差異單一來源在 createAuth.ts 的 adminRoleAccess 與此函式。
+export function isSuperAdminRole(role: AppRole): boolean {
+  return role === 'super-admin'
+}
+
 export function permissionsForRole(role: AppRole): Permission[] {
   return permissionsByRole[role]
 }

@@ -1016,7 +1016,7 @@
       "sessionRemainingAria": "敏感操作授權剩餘時間"
     },
     "title": "管理員後台",
-    "subtitle": "成員清單與角色變更使用真實帳號資料（僅超級管理員可操作）；變更日誌仍為樣稿。",
+    "subtitle": "成員清單、角色變更與變更日誌皆使用真實資料（僅超級管理員可操作）。",
     "search": {
       "label": "關鍵字搜尋",
       "clear": "清除搜尋",
@@ -1079,20 +1079,26 @@
     },
     "logs": {
       "title": "變更日誌記錄",
-      "mockBadge": "偽資料",
-      "mockHint": "此分頁目前為介面樣稿，尚未串接真實變更事件。",
-      "reset": "重設樣稿日誌",
+      "hint": "後台的變更事件：成員角色與停權異動、逐字稿上傳／覆蓋、大綱編輯。僅顯示最近 {n} 筆。",
+      "needSuperAdmin": "變更日誌僅限超級管理員（super-admin）檢視。",
+      "refresh": "重新整理",
+      "loading": "正在載入變更日誌…",
+      "loadFailed": "無法載入變更日誌，請稍後再試。",
       "empty": "尚無變更記錄",
       "col": {
         "time": "時間",
         "actor": "操作者",
         "action": "動作"
       },
-      "role": {
-        "changed": "將 {member} 的角色變更為 {role}"
-      },
-      "member": {
-        "added": "新增成員 {member}"
+      "action": {
+        "userRoleSet": "將 {target} 的角色由 {from} 變更為 {to}",
+        "userBan": "停權成員 {target}",
+        "userUnban": "恢復成員 {target} 的權限",
+        "userRemove": "移除成員 {target}",
+        "transcriptionCreate": "新增 {target} 的逐字稿（版本 {version}）",
+        "transcriptionReplace": "覆蓋 {target} 的逐字稿（版本 {version}）",
+        "transcriptionOutlineUpdate": "編輯 {target} 的逐字稿大綱",
+        "unknown": "未知的變更事件"
       }
     },
     "transcripts": {

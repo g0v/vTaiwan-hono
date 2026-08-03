@@ -5,6 +5,8 @@ import { splitTranscriptionIntoChunks, TRANSCRIPTION_MAX_BYTES, utf8ByteLength }
 import { formatVersionId, isValidMeetingId, isValidVersionId, parseVersionId, versionIdFromKey, versionObjectKey, versionsPrefix, type TranscriptionVersion } from '../lib/transcription-versions'
 import { stripHtmlFromMarkdown } from '../lib/html-sanitizer'
 import { getAuthContext, hasPermission, tryGetAuthContext } from '../server/lib/authorization'
+import { recordAudit } from '../server/lib/audit-log'
+import { formatMeetingId } from '../lib/transcription-format'
 import { sessionNotFreshBody } from '../server/lib/step-up'
 import type { App } from './types'
 
@@ -117,6 +119,16 @@ export function registerTranscriptionApi(app: App) {
     }
 
     await db.batch(statements)
+
+    // 變更日誌（#71）：逐字稿的新增與覆蓋同樣是後台變更事件，與角色變更寫進同一份日誌
+    await recordAudit(
+      c.env,
+      context.user,
+      existing ? 'transcription.replace' : 'transcription.create',
+      { type: 'transcription', id: meeting_id, label: formatMeetingId(meeting_id) },
+      { versionId: version_id ?? undefined, bytes: transcriptionBytes }
+    )
+
     return c.json({
       message: existing ? 'Transcription updated successfully' : 'Transcription created successfully',
       meeting_id,
@@ -142,6 +154,10 @@ export function registerTranscriptionApi(app: App) {
     const db = c.env.DB
     if (!db) return c.json({ error: 'DB binding not configured' }, 500)
     await db.prepare('UPDATE transcriptions SET outline = ? WHERE meeting_id = ?').bind(stripHtmlFromMarkdown(outline), meeting_id).run()
+
+    // 變更日誌（#71）：大綱是逐字稿頁面對外呈現的內容，改動一律留痕
+    await recordAudit(c.env, context.user, 'transcription.outline.update', { type: 'transcription', id: meeting_id, label: formatMeetingId(meeting_id) })
+
     return c.json({ message: 'Outline updated successfully' })
   })
 
@@ -162,6 +178,11 @@ export function registerTranscriptionApi(app: App) {
     await db.batch([
       db.prepare('CREATE TABLE IF NOT EXISTS transcriptions (meeting_id TEXT, transcription TEXT, outline TEXT)'),
       db.prepare('CREATE TABLE IF NOT EXISTS transcription_chunks (meeting_id TEXT NOT NULL, chunk_index INTEGER NOT NULL, content TEXT NOT NULL, PRIMARY KEY (meeting_id, chunk_index))'),
+      // 與 migrations/0002_add_admin_audit_log.sql 同步；改欄位兩邊都要動
+      db.prepare(
+        'CREATE TABLE IF NOT EXISTS admin_audit_log (id INTEGER PRIMARY KEY AUTOINCREMENT, created_at INTEGER NOT NULL, actor_id TEXT NOT NULL, actor_name TEXT NOT NULL, actor_email TEXT NOT NULL, action TEXT NOT NULL, target_type TEXT NOT NULL, target_id TEXT NOT NULL, target_label TEXT NOT NULL, detail TEXT)'
+      ),
+      db.prepare('CREATE INDEX IF NOT EXISTS admin_audit_log_created_at_idx ON admin_audit_log (created_at DESC)'),
     ])
     return c.json({ message: 'Table created successfully' })
   })

@@ -1016,7 +1016,7 @@
       "sessionRemainingAria": "機密操作の残り時間"
     },
     "title": "管理者コンソール",
-    "subtitle": "メンバー一覧とロール変更は実アカウントデータを使用します（スーパー管理者のみ）。変更履歴は試作のままです。",
+    "subtitle": "メンバー一覧、ロール変更、変更履歴はいずれも実データを使用します（スーパー管理者のみ）。",
     "search": {
       "label": "キーワード検索",
       "clear": "検索をクリア",
@@ -1079,20 +1079,26 @@
     },
     "logs": {
       "title": "変更履歴",
-      "mockBadge": "モック",
-      "mockHint": "このタブはまだUI試作で、実際の変更イベントには接続されていません。",
-      "reset": "モック履歴をリセット",
+      "hint": "管理画面の変更イベント：メンバーのロール・利用停止の変更、逐語録のアップロード／上書き、アウトラインの編集。直近 {n} 件のみ表示します。",
+      "needSuperAdmin": "変更履歴はスーパー管理者（super-admin）のみ閲覧できます。",
+      "refresh": "再読み込み",
+      "loading": "変更履歴を読み込み中…",
+      "loadFailed": "変更履歴の読み込みに失敗しました。しばらくしてから再試行してください。",
       "empty": "まだ変更はありません",
       "col": {
         "time": "日時",
         "actor": "操作者",
         "action": "操作"
       },
-      "role": {
-        "changed": "{member} のロールを {role} に変更"
-      },
-      "member": {
-        "added": "メンバー {member} を追加"
+      "action": {
+        "userRoleSet": "{target} のロールを {from} から {to} に変更",
+        "userBan": "メンバー {target} を利用停止",
+        "userUnban": "メンバー {target} の利用停止を解除",
+        "userRemove": "メンバー {target} を削除",
+        "transcriptionCreate": "{target} の逐語録を追加（バージョン {version}）",
+        "transcriptionReplace": "{target} の逐語録を上書き（バージョン {version}）",
+        "transcriptionOutlineUpdate": "{target} の逐語録アウトラインを編集",
+        "unknown": "不明な変更イベント"
       }
     },
     "transcripts": {
