@@ -30,6 +30,7 @@
   ],
   "r2_buckets": [
     {
+      "remote": true,
       "binding": "R2",
       "bucket_name": "vtaiwan-meeting-files",
       "preview_bucket_name": "vtaiwan-meeting-files-preview",
