@@ -6,7 +6,18 @@
 export const AUDIT_LOG_LIMIT = 200
 
 /** 記錄的變更事件；不只角色變更，逐字稿與大綱的異動同樣入帳 */
-export type AuditAction = 'user.role.set' | 'user.ban' | 'user.unban' | 'user.remove' | 'transcription.create' | 'transcription.replace' | 'transcription.outline.update'
+export type AuditAction =
+  | 'user.role.set'
+  | 'user.ban'
+  | 'user.unban'
+  | 'user.remove'
+  | 'user.update'
+  | 'user.impersonate'
+  | 'user.password.set'
+  | 'user.sessions.revoke'
+  | 'transcription.create'
+  | 'transcription.replace'
+  | 'transcription.outline.update'
 
 export type AuditTargetType = 'user' | 'transcription'
 
@@ -39,13 +50,23 @@ export interface AuditEntry {
 
 /**
  * Better Auth admin plugin 中「會改變狀態」的端點 → 事件種類。
- * 只列真的有寫入的動作：list-users 等查詢不是變更，不入帳。
+ * 查詢類（list-users／get-user／has-permission）不是變更，不入帳。
+ *
+ * ⚠️ 尚未涵蓋（body 形狀不同，需另外處理才記得到操作對象）：
+ * - `create-user`：request 沒有 userId，要解析回應才拿得到新帳號 id
+ * - `revoke-user-session`：以 `sessionToken` 指定，對不回使用者
+ * 補這兩個之前，它們的操作不會留痕——列在此處以免被誤讀成「全部都記了」。
  */
 const ADMIN_PATH_ACTIONS: Record<string, AuditAction> = {
   '/api/auth/admin/set-role': 'user.role.set',
   '/api/auth/admin/ban-user': 'user.ban',
   '/api/auth/admin/unban-user': 'user.unban',
   '/api/auth/admin/remove-user': 'user.remove',
+  '/api/auth/admin/update-user': 'user.update',
+  // 冒用他人身分是審計上最不能漏的一項
+  '/api/auth/admin/impersonate-user': 'user.impersonate',
+  '/api/auth/admin/set-user-password': 'user.password.set',
+  '/api/auth/admin/revoke-user-sessions': 'user.sessions.revoke',
 }
 
 export function auditActionForAdminPath(pathname: string): AuditAction | null {
@@ -58,6 +79,10 @@ const ACTION_LABEL_KEYS: Record<AuditAction, string> = {
   'user.ban': 'admin.logs.action.userBan',
   'user.unban': 'admin.logs.action.userUnban',
   'user.remove': 'admin.logs.action.userRemove',
+  'user.update': 'admin.logs.action.userUpdate',
+  'user.impersonate': 'admin.logs.action.userImpersonate',
+  'user.password.set': 'admin.logs.action.userPasswordSet',
+  'user.sessions.revoke': 'admin.logs.action.userSessionsRevoke',
   'transcription.create': 'admin.logs.action.transcriptionCreate',
   'transcription.replace': 'admin.logs.action.transcriptionReplace',
   'transcription.outline.update': 'admin.logs.action.transcriptionOutlineUpdate',

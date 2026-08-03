@@ -254,7 +254,7 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { authClient } from '../client/authClient'
-import { isAdminSession, isSessionNotFreshPayload, isSuperAdminSession, type AppRole, type AuthSession, type Permission } from '../client/auth-session'
+import { isAdminSession, isSessionNotFreshPayload, isSuperAdminSession, responseRequiresStepUp, type AppRole, type AuthSession, type Permission } from '../client/auth-session'
 import { auditActionLabelKey, AUDIT_LOG_LIMIT, type AuditEntry } from '../lib/audit-log'
 import SearchInput from '../components/SearchInput.vue'
 import StepUpAuth from '../components/StepUpAuth.vue'
@@ -439,6 +439,12 @@ async function loadLogs() {
   logsError.value = null
   try {
     const response = await fetch('/api/admin/audit-log')
+    // session 在頁面開著時失效（例如在另一個分頁登出換了 session id），倒數還沒歸零，
+    // 但伺服器已回 SESSION_NOT_FRESH——換成二次驗證畫面，不要顯示成一般載入錯誤。
+    if (await responseRequiresStepUp(response)) {
+      requireStepUp()
+      return
+    }
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
     const data = (await response.json()) as { entries: AuditEntry[] }
     logs.value = data.entries

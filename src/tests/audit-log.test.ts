@@ -3,7 +3,19 @@ import app from '../index'
 import zhTW from '../l10n/zh-TW.json'
 import { auditActionForAdminPath, auditActionLabelKey, parseAuditDetail, readAdminActionBody, serializeAuditDetail, type AuditAction } from '../lib/audit-log'
 
-const ALL_ACTIONS: AuditAction[] = ['user.role.set', 'user.ban', 'user.unban', 'user.remove', 'transcription.create', 'transcription.replace', 'transcription.outline.update']
+const ALL_ACTIONS: AuditAction[] = [
+  'user.role.set',
+  'user.ban',
+  'user.unban',
+  'user.remove',
+  'user.update',
+  'user.impersonate',
+  'user.password.set',
+  'user.sessions.revoke',
+  'transcription.create',
+  'transcription.replace',
+  'transcription.outline.update',
+]
 
 function lookup(path: string): unknown {
   return path.split('.').reduce<unknown>((node, key) => (node && typeof node === 'object' ? (node as Record<string, unknown>)[key] : undefined), zhTW)
@@ -15,10 +27,19 @@ describe('變更日誌事件對應（#71）', () => {
     expect(auditActionForAdminPath('/api/auth/admin/ban-user')).toBe('user.ban')
     expect(auditActionForAdminPath('/api/auth/admin/unban-user')).toBe('user.unban')
     expect(auditActionForAdminPath('/api/auth/admin/remove-user')).toBe('user.remove')
+    expect(auditActionForAdminPath('/api/auth/admin/update-user')).toBe('user.update')
+    expect(auditActionForAdminPath('/api/auth/admin/set-user-password')).toBe('user.password.set')
+    expect(auditActionForAdminPath('/api/auth/admin/revoke-user-sessions')).toBe('user.sessions.revoke')
+  })
+
+  // 冒用他人身分而不留痕是審計上最嚴重的漏洞，單獨釘一條
+  it('impersonate-user 一定入帳', () => {
+    expect(auditActionForAdminPath('/api/auth/admin/impersonate-user')).toBe('user.impersonate')
   })
 
   it('查詢類與登入流程不算變更事件', () => {
     expect(auditActionForAdminPath('/api/auth/admin/list-users')).toBeNull()
+    expect(auditActionForAdminPath('/api/auth/admin/has-permission')).toBeNull()
     expect(auditActionForAdminPath('/api/auth/callback/google')).toBeNull()
     expect(auditActionForAdminPath('/api/me')).toBeNull()
   })

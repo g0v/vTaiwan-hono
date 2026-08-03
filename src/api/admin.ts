@@ -20,6 +20,14 @@ export function registerAdminApi(app: App) {
     const db = c.env.DB
     if (!db) return c.json({ error: 'DB binding not configured' }, 500)
 
-    return c.json({ entries: await listAudit(c.env, AUDIT_LOG_LIMIT) })
+    try {
+      return c.json({ entries: await listAudit(c.env, AUDIT_LOG_LIMIT) })
+    } catch (error) {
+      // 最常見的原因是 admin_audit_log 這張表還沒建（migrations/0002 未套用，
+      // 或該 D1 只用 /api/create-table bootstrap 過）——前端只看得到「載入失敗」，
+      // 這行 log 是唯一能分辨「表不存在」與「真的壞了」的線索。
+      console.error('Failed to list audit log (是否已套用 migrations/0002_add_admin_audit_log.sql？):', error)
+      return c.json({ error: 'Failed to read audit log', code: 'AUDIT_LOG_UNAVAILABLE' }, 500)
+    }
   })
 }

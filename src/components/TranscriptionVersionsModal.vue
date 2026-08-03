@@ -34,7 +34,8 @@
               <tr v-for="(version, index) in versions" :key="version.version_id" class="border-b border-gray-100">
                 <td class="px-3 py-3 whitespace-nowrap text-gray-900">
                   {{ formatUploadedAt(version.uploaded_at) }}
-                  <span v-if="index === 0" class="ml-2 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                  <!-- 被截斷時排在最前的未必真的是最新版本（R2 list 由舊往新掃），此時不掛標籤 -->
+                  <span v-if="index === 0 && !truncated" class="ml-2 rounded-full bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
                     {{ t('transcriptions.versions.latest') }}
                   </span>
                 </td>
