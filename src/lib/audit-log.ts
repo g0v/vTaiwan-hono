@@ -17,7 +17,10 @@ export type AuditAction =
   | 'user.sessions.revoke'
   | 'transcription.create'
   | 'transcription.replace'
+  | 'transcription.delete'
+  | 'transcription.restore'
   | 'transcription.outline.update'
+  | 'transcription.outline.restore'
 
 export type AuditTargetType = 'user' | 'transcription'
 
@@ -31,8 +34,16 @@ export interface AuditDetail {
   toRole?: string
   /** 停權理由（ban-user） */
   reason?: string
-  /** 逐字稿上傳保留的版本（#73）；R2 未設定時不會有值 */
+  /** 此變更產生／採用的版本（#73）；R2 未設定時不會有值 */
   versionId?: string
+  /**
+   * **變更前**狀態的版本——變更日誌「回復到變更前版本」按鈕的回復目標。
+   * 逐字稿事件指向逐字稿版本，大綱事件指向大綱快照；沒有值代表這筆變更無法回復
+   *（例如新增，或 #73 版本功能上線前就存在、且來不及保留舊內容的逐字稿）。
+   */
+  previousVersionId?: string
+  /** 刪除逐字稿時一併保留的大綱快照，讓「回復刪除」能連大綱一起救回 */
+  previousOutlineVersionId?: string
   /** 逐字稿位元組數 */
   bytes?: number
 }
@@ -85,7 +96,10 @@ const ACTION_LABEL_KEYS: Record<AuditAction, string> = {
   'user.sessions.revoke': 'admin.logs.action.userSessionsRevoke',
   'transcription.create': 'admin.logs.action.transcriptionCreate',
   'transcription.replace': 'admin.logs.action.transcriptionReplace',
+  'transcription.delete': 'admin.logs.action.transcriptionDelete',
+  'transcription.restore': 'admin.logs.action.transcriptionRestore',
   'transcription.outline.update': 'admin.logs.action.transcriptionOutlineUpdate',
+  'transcription.outline.restore': 'admin.logs.action.transcriptionOutlineRestore',
 }
 
 export function auditActionLabelKey(action: AuditAction): string {
@@ -114,6 +128,39 @@ export function serializeAuditDetail(detail: AuditDetail): string | null {
   return entries.length === 0 ? null : JSON.stringify(Object.fromEntries(entries))
 }
 
+/**
+ * 變更日誌「管理操作」欄要送出的指令；`null` 代表該列不顯示按鈕。
+ *
+ * 只有逐字稿與大綱的變更可回復——角色／停權那類事件沒有「內容版本」可回到。
+ * 這是前端顯示與後端呼叫的單一來源，避免兩邊各判一次而漂移。
+ */
+export type RestoreCommand =
+  | { kind: 'transcription'; meetingId: string; versionId: string; outlineVersionId?: string }
+  | { kind: 'outline'; meetingId: string; versionId: string }
+  | { kind: 'delete'; meetingId: string }
+
+export function restoreCommandFor(entry: AuditEntry): RestoreCommand | null {
+  if (entry.target.type !== 'transcription') return null
+  const meetingId = entry.target.id
+  const versionId = entry.detail.previousVersionId
+
+  switch (entry.action) {
+    // 新增之前根本沒有內容，「回到變更前」＝這份逐字稿不存在
+    case 'transcription.create':
+      return { kind: 'delete', meetingId }
+    // 覆蓋／刪除／回復都是換掉整份逐字稿，回得去的前提是變更前那版還在
+    case 'transcription.replace':
+    case 'transcription.delete':
+    case 'transcription.restore':
+      return versionId ? { kind: 'transcription', meetingId, versionId, outlineVersionId: entry.detail.previousOutlineVersionId } : null
+    case 'transcription.outline.update':
+    case 'transcription.outline.restore':
+      return versionId ? { kind: 'outline', meetingId, versionId } : null
+    default:
+      return null
+  }
+}
+
 /** 讀取端一律經過此函式：資料庫內容視為外部資料，型別不符的欄位直接丟棄 */
 export function parseAuditDetail(raw: unknown): AuditDetail {
   if (typeof raw !== 'string' || raw === '') return {}
@@ -127,7 +174,7 @@ export function parseAuditDetail(raw: unknown): AuditDetail {
 
   const record = parsed as Record<string, unknown>
   const detail: AuditDetail = {}
-  for (const key of ['fromRole', 'toRole', 'reason', 'versionId'] as const) {
+  for (const key of ['fromRole', 'toRole', 'reason', 'versionId', 'previousVersionId', 'previousOutlineVersionId'] as const) {
     if (typeof record[key] === 'string') detail[key] = record[key]
   }
   if (typeof record.bytes === 'number' && Number.isFinite(record.bytes)) detail.bytes = record.bytes

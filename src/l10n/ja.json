@@ -1088,7 +1088,8 @@
       "col": {
         "time": "日時",
         "actor": "操作者",
-        "action": "操作"
+        "action": "操作",
+        "manage": "管理操作"
       },
       "action": {
         "userRoleSet": "{target} のロールを {from} から {to} に変更",
@@ -1101,9 +1102,21 @@
         "userSessionsRevoke": "メンバー {target} の全セッションを失効",
         "transcriptionCreate": "{target} の逐語録を追加（バージョン {version}）",
         "transcriptionReplace": "{target} の逐語録を上書き（バージョン {version}）",
+        "transcriptionDelete": "{target} の逐語録を削除",
+        "transcriptionRestore": "{target} の逐語録をバージョン {version} に復元",
         "transcriptionOutlineUpdate": "{target} の逐語録アウトラインを編集",
+        "transcriptionOutlineRestore": "{target} のアウトラインをバージョン {version} に復元",
         "unknown": "不明な変更イベント"
-      }
+      },
+      "restore": "変更前のバージョンに復元",
+      "restoring": "処理中…",
+      "restoreConfirm": "{target} をこの変更（{time}）より前のバージョンに復元しますか？現在の内容は上書きされます（バージョンとしては保持されます）。",
+      "restoreSuccess": "変更前のバージョンに復元しました。",
+      "restoreFailed": "操作に失敗しました。しばらくしてから再試行してください。",
+      "restoreUnavailable": "この変更には復元できる前のバージョンがありません",
+      "deleteButton": "この逐語録を削除",
+      "deleteConfirm": "この変更は逐語録の「追加」です。変更前に戻すことは {target} の逐語録を削除することを意味します。バージョンは保持され、後でこの履歴から復元できます。削除しますか？",
+      "deleteSuccess": "逐語録を削除しました（バージョンは保持されます）。"
     },
     "transcripts": {
       "title": "逐語録管理",

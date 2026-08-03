@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vite-plus/test'
 import app from '../index'
 import zhTW from '../l10n/zh-TW.json'
-import { auditActionForAdminPath, auditActionLabelKey, parseAuditDetail, readAdminActionBody, serializeAuditDetail, type AuditAction } from '../lib/audit-log'
+import { auditActionForAdminPath, auditActionLabelKey, parseAuditDetail, readAdminActionBody, restoreCommandFor, serializeAuditDetail, type AuditAction, type AuditEntry } from '../lib/audit-log'
 
 const ALL_ACTIONS: AuditAction[] = [
   'user.role.set',
@@ -14,8 +14,22 @@ const ALL_ACTIONS: AuditAction[] = [
   'user.sessions.revoke',
   'transcription.create',
   'transcription.replace',
+  'transcription.delete',
+  'transcription.restore',
   'transcription.outline.update',
+  'transcription.outline.restore',
 ]
+
+function entry(action: AuditAction, detail: AuditEntry['detail'] = {}, targetType: AuditEntry['target']['type'] = 'transcription'): AuditEntry {
+  return {
+    id: 1,
+    createdAt: 0,
+    actor: { id: 'u1', name: 'Admin', email: 'admin@example.com' },
+    action,
+    target: { type: targetType, id: '20260803', label: '2026-08-03' },
+    detail,
+  }
+}
 
 function lookup(path: string): unknown {
   return path.split('.').reduce<unknown>((node, key) => (node && typeof node === 'object' ? (node as Record<string, unknown>)[key] : undefined), zhTW)
@@ -87,11 +101,82 @@ describe('事件附加資料（detail）序列化', () => {
   })
 })
 
+describe('變更日誌的「管理操作」回復指令', () => {
+  it('逐字稿覆蓋／刪除／回復都回到前一份逐字稿版本', () => {
+    for (const action of ['transcription.replace', 'transcription.delete', 'transcription.restore'] as const) {
+      expect(restoreCommandFor(entry(action, { previousVersionId: '20260803T091500123Z' }))).toEqual({
+        kind: 'transcription',
+        meetingId: '20260803',
+        versionId: '20260803T091500123Z',
+        outlineVersionId: undefined,
+      })
+    }
+  })
+
+  it('刪除事件連大綱快照一起帶上，救回時才不會只剩空大綱', () => {
+    const command = restoreCommandFor(entry('transcription.delete', { previousVersionId: '20260803T091500123Z', previousOutlineVersionId: '20260803T091500999Z' }))
+    expect(command).toEqual({
+      kind: 'transcription',
+      meetingId: '20260803',
+      versionId: '20260803T091500123Z',
+      outlineVersionId: '20260803T091500999Z',
+    })
+  })
+
+  it('大綱變更回到大綱快照', () => {
+    for (const action of ['transcription.outline.update', 'transcription.outline.restore'] as const) {
+      expect(restoreCommandFor(entry(action, { previousVersionId: '20260803T091500123Z' }))).toEqual({
+        kind: 'outline',
+        meetingId: '20260803',
+        versionId: '20260803T091500123Z',
+      })
+    }
+  })
+
+  // 使用者選定的語意：新增之前不存在，因此「回到變更前」＝刪除該逐字稿
+  it('新增逐字稿的回復動作是刪除', () => {
+    expect(restoreCommandFor(entry('transcription.create', { versionId: '20260803T091500123Z' }))).toEqual({ kind: 'delete', meetingId: '20260803' })
+  })
+
+  it('沒有變更前版本就不給按鈕（例如 #73 上線前的舊資料）', () => {
+    expect(restoreCommandFor(entry('transcription.replace'))).toBeNull()
+    expect(restoreCommandFor(entry('transcription.outline.update'))).toBeNull()
+  })
+
+  it('成員類事件一律沒有回復按鈕', () => {
+    for (const action of ['user.role.set', 'user.ban', 'user.remove', 'user.impersonate'] as const) {
+      expect(restoreCommandFor(entry(action, { previousVersionId: '20260803T091500123Z' }, 'user'))).toBeNull()
+    }
+  })
+})
+
 // 測試環境沒有 Cloudflare 綁定，因此只驗未登入這道關卡；
 // 已登入但非 super-admin（403）與 session 不新鮮（403 + SESSION_NOT_FRESH）留待實測（見 AGENTS.md）。
 describe('變更日誌端點的授權關卡', () => {
   it('未登入拿不到變更日誌', async () => {
     const res = await app.request('https://vtaiwan.tw/api/admin/audit-log', { headers: { origin: 'https://vtaiwan.tw' } })
+    expect(res.status).toBe(401)
+  })
+})
+
+describe('回復／刪除端點的授權關卡', () => {
+  const headers = { origin: 'https://vtaiwan.tw', 'content-type': 'application/json' }
+
+  it('未登入不得回復逐字稿', async () => {
+    const res = await app.request('https://vtaiwan.tw/api/restore-transcription', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ meeting_id: '20260803', target: 'transcription', version_id: '20260803T091500123Z' }),
+    })
+    expect(res.status).toBe(401)
+  })
+
+  it('未登入不得刪除逐字稿', async () => {
+    const res = await app.request('https://vtaiwan.tw/api/delete-transcription', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ meeting_id: '20260803' }),
+    })
     expect(res.status).toBe(401)
   })
 })

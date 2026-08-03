@@ -1088,7 +1088,8 @@
       "col": {
         "time": "Time",
         "actor": "Actor",
-        "action": "Action"
+        "action": "Action",
+        "manage": "Actions"
       },
       "action": {
         "userRoleSet": "Changed {target}'s role from {from} to {to}",
@@ -1101,9 +1102,21 @@
         "userSessionsRevoke": "Revoked all sessions of member {target}",
         "transcriptionCreate": "Added the transcript for {target} (version {version})",
         "transcriptionReplace": "Replaced the transcript for {target} (version {version})",
+        "transcriptionDelete": "Deleted the transcript for {target}",
+        "transcriptionRestore": "Restored the transcript for {target} to version {version}",
         "transcriptionOutlineUpdate": "Edited the transcript outline for {target}",
+        "transcriptionOutlineRestore": "Restored the outline for {target} to version {version}",
         "unknown": "Unknown change event"
-      }
+      },
+      "restore": "Restore pre-change version",
+      "restoring": "Working…",
+      "restoreConfirm": "Restore {target} to the version from before this change ({time})? The current content will be overwritten (but kept as a version).",
+      "restoreSuccess": "Restored to the pre-change version.",
+      "restoreFailed": "The operation failed, please try again later.",
+      "restoreUnavailable": "This change has no previous version to restore",
+      "deleteButton": "Delete this transcript",
+      "deleteConfirm": "This change added a transcript, so going back means deleting the transcript for {target}. Versions are kept and it can be restored from this log later. Delete it?",
+      "deleteSuccess": "Transcript deleted (versions are kept)."
     },
     "transcripts": {
       "title": "Transcript Management",

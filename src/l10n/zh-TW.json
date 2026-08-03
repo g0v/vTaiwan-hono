@@ -1088,7 +1088,8 @@
       "col": {
         "time": "時間",
         "actor": "操作者",
-        "action": "動作"
+        "action": "動作",
+        "manage": "管理操作"
       },
       "action": {
         "userRoleSet": "將 {target} 的角色由 {from} 變更為 {to}",
@@ -1101,9 +1102,21 @@
         "userSessionsRevoke": "登出成員 {target} 的所有工作階段",
         "transcriptionCreate": "新增 {target} 的逐字稿（版本 {version}）",
         "transcriptionReplace": "覆蓋 {target} 的逐字稿（版本 {version}）",
+        "transcriptionDelete": "刪除 {target} 的逐字稿",
+        "transcriptionRestore": "將 {target} 的逐字稿回復到版本 {version}",
         "transcriptionOutlineUpdate": "編輯 {target} 的逐字稿大綱",
+        "transcriptionOutlineRestore": "將 {target} 的大綱回復到版本 {version}",
         "unknown": "未知的變更事件"
-      }
+      },
+      "restore": "回復到變更前版本",
+      "restoring": "處理中…",
+      "restoreConfirm": "確定要把 {target} 回復到這筆變更（{time}）之前的版本嗎？現行內容會被覆蓋（但仍會保留為歷史版本）。",
+      "restoreSuccess": "已回復到變更前版本。",
+      "restoreFailed": "操作失敗，請稍後再試。",
+      "restoreUnavailable": "此變更沒有可回復的前一版本",
+      "deleteButton": "刪除此逐字稿",
+      "deleteConfirm": "這筆變更是「新增逐字稿」，回到變更前等於刪除 {target} 的逐字稿。歷史版本會保留、之後仍可由本日誌救回。確定要刪除嗎？",
+      "deleteSuccess": "已刪除逐字稿（歷史版本仍保留）。"
     },
     "transcripts": {
       "title": "逐字稿管理",

@@ -3,6 +3,9 @@
 // R2 佈局：
 //   `<meeting_id>.txt`                          目前版本（既有 key，維持不變）
 //   `versions/<meeting_id>/<versionId>.txt`     每次上傳保留的獨立版本
+//   `outlines/<meeting_id>/<versionId>.md`      大綱快照（供變更日誌回復大綱）
+//
+// 逐字稿與大綱刻意分兩個頂層前綴，列版本時不會互相掃到。
 //
 // versionId 採 `YYYYMMDDThhmmssSSSZ`（UTC，毫秒），字典序即時間序，
 // 讓 R2 list 的結果不必另外解析時間就能排序。
@@ -43,6 +46,16 @@ export function versionsPrefix(meetingId: string): string {
 /** 單一版本的 R2 key；meetingId / versionId 需先驗過格式 */
 export function versionObjectKey(meetingId: string, versionId: string): string {
   return `${versionsPrefix(meetingId)}${versionId}.txt`
+}
+
+/** 某場會議所有大綱快照的 R2 key 前綴 */
+export function outlineVersionsPrefix(meetingId: string): string {
+  return `outlines/${meetingId}/`
+}
+
+/** 單一大綱快照的 R2 key；meetingId / versionId 需先驗過格式 */
+export function outlineVersionObjectKey(meetingId: string, versionId: string): string {
+  return `${outlineVersionsPrefix(meetingId)}${versionId}.md`
 }
 
 /** R2 key → 版本識別碼；不屬於該會議或格式不符回 null */

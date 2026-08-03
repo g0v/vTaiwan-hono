@@ -185,6 +185,7 @@
                     <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.logs.col.time') }}</th>
                     <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.logs.col.actor') }}</th>
                     <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.logs.col.action') }}</th>
+                    <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.logs.col.manage') }}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -192,6 +193,13 @@
                     <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-3">{{ formatLogTime(log.createdAt) }}</td>
                     <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-2">{{ log.actor.email || log.actor.name }}</td>
                     <td class="px-vt-3 py-vt-3 text-vt-fg-1">{{ describeLog(log) }}</td>
+                    <td class="px-vt-3 py-vt-3 whitespace-nowrap">
+                      <!-- 只有逐字稿與大綱的變更回得去；其餘事件顯示破折號 -->
+                      <button v-if="restoreCommandFor(log)" type="button" class="admin-btn-ghost" :disabled="restoringLogId !== null" @click="runRestore(log)">
+                        {{ restoringLogId === log.id ? t('admin.logs.restoring') : t(restoreButtonKey(log)) }}
+                      </button>
+                      <span v-else class="text-vt-fg-3" :title="t('admin.logs.restoreUnavailable')">—</span>
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -255,7 +263,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { authClient } from '../client/authClient'
 import { isAdminSession, isSessionNotFreshPayload, isSuperAdminSession, responseRequiresStepUp, type AppRole, type AuthSession, type Permission } from '../client/auth-session'
-import { auditActionLabelKey, AUDIT_LOG_LIMIT, type AuditEntry } from '../lib/audit-log'
+import { auditActionLabelKey, AUDIT_LOG_LIMIT, restoreCommandFor, type AuditEntry } from '../lib/audit-log'
 import SearchInput from '../components/SearchInput.vue'
 import StepUpAuth from '../components/StepUpAuth.vue'
 import TranscriptionManager from '../components/TranscriptionManager.vue'
@@ -361,6 +369,7 @@ const logs = ref<AuditEntry[]>([])
 const logsLoading = ref(false)
 const logsError = ref<string | null>(null)
 const logQuery = ref('')
+const restoringLogId = ref<number | null>(null)
 
 function matches(query: string, fields: string[]): boolean {
   const q = query.trim().toLowerCase()
@@ -533,6 +542,56 @@ async function onRoleChange(m: Member, event: Event) {
     }
   } finally {
     updatingRoleId.value = null
+  }
+}
+
+// 「新增」的變更前狀態是「不存在」，按鈕字樣與確認語都要說清楚是刪除，不能包裝成回復
+function restoreButtonKey(log: AuditEntry): string {
+  return restoreCommandFor(log)?.kind === 'delete' ? 'admin.logs.deleteButton' : 'admin.logs.restore'
+}
+
+async function runRestore(log: AuditEntry) {
+  const command = restoreCommandFor(log)
+  if (!command || restoringLogId.value !== null) return
+
+  const target = log.target.label
+  const confirmMessage = command.kind === 'delete' ? t('admin.logs.deleteConfirm', { target }) : t('admin.logs.restoreConfirm', { target, time: formatLogTime(log.createdAt) })
+  if (!window.confirm(confirmMessage)) return
+
+  restoringLogId.value = log.id
+  try {
+    const response =
+      command.kind === 'delete'
+        ? await fetch('/api/delete-transcription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ meeting_id: command.meetingId }),
+          })
+        : await fetch('/api/restore-transcription', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              meeting_id: command.meetingId,
+              target: command.kind,
+              version_id: command.versionId,
+              outline_version_id: command.kind === 'transcription' ? command.outlineVersionId : undefined,
+            }),
+          })
+
+    if (await responseRequiresStepUp(response)) {
+      requireStepUp()
+      return
+    }
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
+
+    window.alert(command.kind === 'delete' ? t('admin.logs.deleteSuccess') : t('admin.logs.restoreSuccess'))
+    // 回復本身也是一筆變更事件，重抓才看得到（也才拿得到它自己的回復目標）
+    await loadLogs()
+  } catch (error) {
+    console.error('Failed to restore from audit log:', error)
+    window.alert(t('admin.logs.restoreFailed'))
+  } finally {
+    restoringLogId.value = null
   }
 }
 
