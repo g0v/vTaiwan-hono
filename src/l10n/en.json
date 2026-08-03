@@ -179,6 +179,7 @@
   "auth": {
     "loginTitle": "Login",
     "loginWithGoogle": "Login with Google",
+    "loginWithGithub": "Login with GitHub",
     "loggingIn": "Logging in...",
     "loginFailed": "Login failed, please try again",
     "logoutConfirm": "Are you sure you want to logout?",

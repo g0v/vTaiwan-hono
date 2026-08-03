@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import GoogleLogin from '../components/GoogleLogin.vue'
+import SocialLogin from '../components/SocialLogin.vue'
 import { authClient } from '../client/authClient'
 import { adminNavLink } from '../router/nav-links'
 
@@ -82,7 +82,7 @@ async function saveProfile() {
 
       <div v-if="!user" class="py-8 text-center">
         <p class="mb-5 text-vt-fg-2">{{ t('profile.loginRequired') }}</p>
-        <GoogleLogin :in-app="inApp" />
+        <SocialLogin :in-app="inApp" />
       </div>
 
       <div v-else-if="!editing" class="space-y-8">

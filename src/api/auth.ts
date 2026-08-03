@@ -28,7 +28,7 @@ app.on(['GET', 'POST'], '/api/auth/*', async c => {
     ? readAdminActionBody(
         await c.req.raw
           .clone()
-          .json<unknown>()
+          .json()
           .catch(() => null)
       )
     : null

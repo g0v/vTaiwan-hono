@@ -3,7 +3,7 @@ import { computed, onMounted, provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import Footer from './components/Footer.vue'
-import GoogleLogin from './components/GoogleLogin.vue'
+import SocialLogin from './components/SocialLogin.vue'
 import NavBar from './components/NavBar.vue'
 import { authClient } from './client/authClient'
 import { loadAuthSession, isAdminSession, type AuthSession } from './client/auth-session'
@@ -163,7 +163,7 @@ watch(
           </button>
         </div>
 
-        <GoogleLogin :in-app="isInApp" />
+        <SocialLogin :in-app="isInApp" />
 
         <div class="mt-5 text-center">
           <button type="button" class="font-sans text-vt-sm text-vt-fg-2 hover:text-vt-fg-1" @click="showLoginModal = false">

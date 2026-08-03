@@ -179,6 +179,7 @@
   "auth": {
     "loginTitle": "ログイン",
     "loginWithGoogle": "Googleでログイン",
+    "loginWithGithub": "GitHubでログイン",
     "loggingIn": "ログイン中...",
     "loginFailed": "ログインに失敗しました。再度お試しください。",
     "logoutConfirm": "ログアウトしてもよろしいですか？",
