@@ -31,6 +31,10 @@
         <button @click="emit('copy-link', item.meeting_id)" class="rounded-md bg-gray-600 px-3 py-1 text-sm text-white hover:bg-gray-700">
           {{ t('transcriptions.list.copyLink') }}
         </button>
+        <!-- 歷史版本僅管理模式顯示：舊版本可能含後續被修正的內容，不隨公開列表一起露出 -->
+        <button v-if="manage" @click="emit('show-versions', item.meeting_id)" class="rounded-md bg-amber-600 px-3 py-1 text-sm text-white hover:bg-amber-700">
+          {{ t('transcriptions.versions.button') }}
+        </button>
       </div>
     </div>
 
@@ -47,13 +51,19 @@ const { t } = useI18n()
 // 這場會議是逐字稿功能的樣稿資料，列表上以標籤標示
 const PROTOTYPE_MEETING_ID = '20250621'
 
-defineProps<{
-  item: Transcription
-}>()
+withDefaults(
+  defineProps<{
+    item: Transcription
+    /** true 時顯示管理專用操作（目前為歷史版本）；公開列表頁為 false */
+    manage?: boolean
+  }>(),
+  { manage: false }
+)
 
 const emit = defineEmits<{
   'show-outline': [item: Transcription]
   download: [meetingId: string]
   'copy-link': [meetingId: string]
+  'show-versions': [meetingId: string]
 }>()
 </script>

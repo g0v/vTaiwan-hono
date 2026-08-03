@@ -71,9 +71,11 @@
           v-for="item in filteredTranscriptions"
           :key="item.meeting_id"
           :item="item"
+          :manage="canUpdateTranscriptions"
           @show-outline="showOutline"
           @download="downloadTranscription"
           @copy-link="copyTranscriptionLink"
+          @show-versions="showVersions"
         />
       </div>
     </div>
@@ -82,6 +84,9 @@
     <div v-if="!loading && transcriptions.length === 0" class="py-12 text-center">
       <p class="text-gray-500">{{ t('transcriptions.list.empty') }}</p>
     </div>
+
+    <!-- 歷史版本彈出視窗（僅管理模式） -->
+    <TranscriptionVersionsModal v-if="versionsMeetingId" :meeting-id="versionsMeetingId" @close="versionsMeetingId = null" />
 
     <!-- 大綱彈出視窗 -->
     <TranscriptionOutlineModal
@@ -103,6 +108,7 @@ import { hasPermission, responseRequiresStepUp, type AuthSession } from '../clie
 import SearchInput from './SearchInput.vue'
 import TranscriptionCard from './TranscriptionCard.vue'
 import TranscriptionOutlineModal from './TranscriptionOutlineModal.vue'
+import TranscriptionVersionsModal from './TranscriptionVersionsModal.vue'
 import { extractMeetingIdFromFilename, formatMeetingId, matchesTranscriptionQuery, type Transcription } from '../lib/transcription-format'
 
 const { t } = useI18n()
@@ -131,6 +137,7 @@ const selectedFile = ref<File | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const search = ref('')
 const currentOutlineItem = ref<Transcription | null>(null)
+const versionsMeetingId = ref<string | null>(null)
 
 const filteredTranscriptions = computed(() => transcriptions.value.filter(item => matchesTranscriptionQuery(item, search.value)).sort((a, b) => a.meeting_id.localeCompare(b.meeting_id)))
 
@@ -205,6 +212,10 @@ async function uploadTranscription() {
 
 function showOutline(item: Transcription) {
   currentOutlineItem.value = item
+}
+
+function showVersions(meetingId: string) {
+  versionsMeetingId.value = meetingId
 }
 
 async function saveOutline(outline: string) {

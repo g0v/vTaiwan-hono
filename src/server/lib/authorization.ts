@@ -46,6 +46,19 @@ export function hasPermission(context: AuthContext, permission: Permission): boo
   return context.permissions.includes(permission)
 }
 
+/**
+ * 讀 session，但把例外（例如缺 D1 綁定、Better Auth 初始化失敗）壓成「未登入」。
+ * 授權判斷寧可誤判為未登入回 401，也不要讓例外冒泡成 500 而看起來像端點壞掉。
+ */
+export async function tryGetAuthContext(env: AppBindings, headers: Headers): Promise<AuthContext | null> {
+  try {
+    return await getAuthContext(env, headers)
+  } catch (error) {
+    console.error('Failed to resolve auth context:', error)
+    return null
+  }
+}
+
 export async function getAuthContext(env: AppBindings, headers: Headers): Promise<AuthContext | null> {
   const auth = createAuth(env)
   const session = await auth.api.getSession({ headers })

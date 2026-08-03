@@ -744,6 +744,26 @@
       "copyLinkSuccess": "逐字稿連結已複製到剪貼簿",
       "copyLinkError": "複製逐字稿連結失敗，請稍後再試"
     },
+    "versions": {
+      "button": "歷史版本",
+      "title": "逐字稿歷史版本",
+      "hint": "每次上傳都會保留一份獨立版本；可下載任一版本，再以上傳功能還原。",
+      "loading": "正在載入版本…",
+      "empty": "尚無歷史版本（此逐字稿在版本功能上線前上傳）",
+      "loadError": "載入版本失敗，請稍後再試",
+      "download": "下載",
+      "downloading": "下載中…",
+      "downloadError": "下載版本失敗，請稍後再試",
+      "close": "關閉",
+      "latest": "最新",
+      "truncated": "版本數量過多，僅顯示最舊的 {n} 筆",
+      "col": {
+        "uploadedAt": "上傳時間",
+        "uploadedBy": "上傳者",
+        "size": "大小",
+        "action": "操作"
+      }
+    },
     "outline": {
       "title": "會議大綱",
       "close": "關閉",

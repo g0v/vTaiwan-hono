@@ -749,6 +749,26 @@
       "copyLinkSuccess": "Transcription link copied to clipboard",
       "copyLinkError": "Copy failed, please try again later"
     },
+    "versions": {
+      "button": "Versions",
+      "title": "Transcript Versions",
+      "hint": "Every upload is kept as a separate version. Download any version and re-upload it to restore.",
+      "loading": "Loading versions…",
+      "empty": "No versions yet (this transcript was uploaded before versioning was enabled)",
+      "loadError": "Failed to load versions, please try again later",
+      "download": "Download",
+      "downloading": "Downloading…",
+      "downloadError": "Failed to download this version, please try again later",
+      "close": "Close",
+      "latest": "Latest",
+      "truncated": "Too many versions; showing the {n} oldest only",
+      "col": {
+        "uploadedAt": "Uploaded at",
+        "uploadedBy": "Uploaded by",
+        "size": "Size",
+        "action": "Action"
+      }
+    },
     "outline": {
       "title": "Meeting Outline",
       "close": "Close",

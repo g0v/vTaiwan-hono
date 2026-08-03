@@ -2,10 +2,14 @@ import { corsFor } from './cors'
 import { readAudioToText } from '../lib/transcribe'
 import { generateOutline } from '../lib/ai-summarize'
 import { splitTranscriptionIntoChunks, TRANSCRIPTION_MAX_BYTES, utf8ByteLength } from '../lib/transcription-storage'
+import { formatVersionId, isValidMeetingId, isValidVersionId, parseVersionId, versionIdFromKey, versionObjectKey, versionsPrefix, type TranscriptionVersion } from '../lib/transcription-versions'
 import { stripHtmlFromMarkdown } from '../lib/html-sanitizer'
-import { getAuthContext, hasPermission } from '../server/lib/authorization'
+import { getAuthContext, hasPermission, tryGetAuthContext } from '../server/lib/authorization'
 import { sessionNotFreshBody } from '../server/lib/step-up'
 import type { App } from './types'
+
+// 單場會議的版本上限（R2 list 單次最多 1000）；超過即回報 truncated，不靜默截斷。
+const VERSION_LIST_LIMIT = 1000
 
 const LANG_MAP: Record<string, string> = {
   'zh-TW': 'zh',
@@ -87,7 +91,15 @@ export function registerTranscriptionApi(app: App) {
     // 覆蓋已上傳逐字稿屬敏感操作，需二次驗證（新建不要求）；在寫 R2／呼叫 AI 前擋下。
     if (existing && !context.fresh) return c.json(sessionNotFreshBody(), 403)
 
+    // 版本保留（#73）：每次上傳都額外寫一份不會被覆蓋的版本，供管理員下載回復。
+    // 刻意排在產生大綱之前——AI 失敗時寧可留下孤兒版本，也不要漏存使用者剛覆蓋掉的內容。
+    let version_id: string | null = null
     if (c.env.R2) {
+      version_id = formatVersionId(Date.now())
+      await c.env.R2.put(versionObjectKey(meeting_id, version_id), transcription, {
+        httpMetadata: { contentType: 'text/plain; charset=utf-8' },
+        customMetadata: { uploadedBy: context.user.email, sourceFilename: file.name },
+      })
       await c.env.R2.put(`${meeting_id}.txt`, transcription, {
         httpMetadata: { contentType: 'text/plain; charset=utf-8' },
       })
@@ -109,6 +121,7 @@ export function registerTranscriptionApi(app: App) {
       message: existing ? 'Transcription updated successfully' : 'Transcription created successfully',
       meeting_id,
       r2_key: `${meeting_id}.txt`,
+      version_id,
       storage: isChunked ? 'chunked' : 'inline',
       chunk_count: isChunked ? chunks.length : 0,
     })
@@ -191,6 +204,71 @@ export function registerTranscriptionApi(app: App) {
         'Content-Type': 'text/plain; charset=utf-8',
         'Content-Disposition': `attachment; filename="transcript-${meeting_id}.txt"`,
         'X-Content-Type-Options': 'nosniff',
+      },
+    })
+  })
+
+  // GET /api/transcriptions/:meeting_id/versions — 列出歷史版本（#73）
+  // 僅管理員：舊版本可能含後續被修正／下架的內容，不隨現行逐字稿一起公開。
+  app.get('/api/transcriptions/:meeting_id/versions', async c => {
+    const meeting_id = c.req.param('meeting_id')
+    if (!isValidMeetingId(meeting_id)) return c.json({ error: '會議 ID 格式不正確', code: 'INVALID_MEETING_ID' }, 400)
+
+    const context = await tryGetAuthContext(c.env, c.req.raw.headers)
+    if (!context) return c.json({ error: 'Unauthorized' }, 401)
+    if (!hasPermission(context, 'transcription.update')) return c.json({ error: 'Forbidden' }, 403)
+    if (!c.env.R2) return c.json({ error: 'R2 binding not configured' }, 500)
+
+    const listed = await c.env.R2.list({
+      prefix: versionsPrefix(meeting_id),
+      include: ['customMetadata'],
+      limit: VERSION_LIST_LIMIT,
+    })
+
+    const versions: TranscriptionVersion[] = listed.objects
+      .map(object => {
+        const version_id = versionIdFromKey(object.key, meeting_id)
+        if (!version_id) return null
+        return {
+          version_id,
+          uploaded_at: parseVersionId(version_id) ?? object.uploaded.getTime(),
+          size: object.size,
+          uploaded_by: object.customMetadata?.uploadedBy ?? '',
+          source_filename: object.customMetadata?.sourceFilename ?? '',
+        }
+      })
+      .filter((version): version is TranscriptionVersion => version !== null)
+      .sort((a, b) => b.version_id.localeCompare(a.version_id))
+
+    // R2 list 由舊到新掃描，超過上限時被截掉的是最新的版本——如實回報，不假裝列完了。
+    return c.json({ meeting_id, versions, truncated: listed.truncated })
+  })
+
+  // GET /api/transcriptions/:meeting_id/versions/:version_id/text — 下載指定版本（#73）
+  app.get('/api/transcriptions/:meeting_id/versions/:version_id/text', async c => {
+    const meeting_id = c.req.param('meeting_id')
+    const version_id = c.req.param('version_id')
+    if (!isValidMeetingId(meeting_id) || !isValidVersionId(version_id)) {
+      return c.json({ error: '版本識別碼格式不正確', code: 'INVALID_VERSION_ID' }, 400)
+    }
+
+    const context = await tryGetAuthContext(c.env, c.req.raw.headers)
+    if (!context) return c.json({ error: 'Unauthorized' }, 401)
+    if (!hasPermission(context, 'transcription.update')) return c.json({ error: 'Forbidden' }, 403)
+    if (!c.env.R2) return c.json({ error: 'R2 binding not configured' }, 500)
+
+    const object = await c.env.R2.get(versionObjectKey(meeting_id, version_id))
+    if (!object) return c.json({ error: '找不到指定版本', code: 'VERSION_NOT_FOUND' }, 404)
+
+    // 直接串流回應，不把整份逐字稿讀進 Worker 記憶體；
+    // 轉型是為了吸收 @cloudflare/workers-types 與 DOM lib 兩套 ReadableStream 定義的落差。
+    return new Response(object.body as unknown as BodyInit, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Content-Disposition': `attachment; filename="transcript-${meeting_id}-${version_id}.txt"`,
+        'X-Content-Type-Options': 'nosniff',
+        'Cache-Control': 'no-store',
       },
     })
   })
