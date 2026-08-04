@@ -3,6 +3,7 @@ import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from './LanguageSwitcher.vue'
+import UserAvatar from './UserAvatar.vue'
 import { navLinks as links } from '../router/nav-links'
 
 interface AuthenticatedUser {
@@ -78,8 +79,7 @@ function logout() {
         <LanguageSwitcher />
         <span class="hidden h-5 w-px bg-vt-border sm:block" />
         <RouterLink v-if="user" to="/profile" class="hidden items-center gap-2 rounded-full px-2 py-1 transition-colors hover:bg-vt-bg-2 sm:inline-flex" :title="t('common.profile')">
-          <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="profileName" class="h-8 w-8 rounded-vt-full border border-vt-border object-cover" />
-          <span v-else class="flex h-8 w-8 items-center justify-center rounded-vt-full bg-vt-bg-2 text-vt-fg-2" aria-hidden="true">👤</span>
+          <UserAvatar :src="profilePhotoUrl" :alt="profileName" class="h-8 w-8 rounded-vt-full border border-vt-border" />
           <span class="hidden max-w-24 truncate text-vt-sm text-vt-fg-1 xl:block">{{ profileName }}</span>
         </RouterLink>
         <button

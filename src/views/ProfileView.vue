@@ -2,6 +2,7 @@
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import SocialLogin from '../components/SocialLogin.vue'
+import UserAvatar from '../components/UserAvatar.vue'
 import { authClient } from '../client/authClient'
 import { adminNavLink } from '../router/nav-links'
 
@@ -87,8 +88,7 @@ async function saveProfile() {
 
       <div v-else-if="!editing" class="space-y-8">
         <div class="flex items-center gap-4">
-          <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="t('profile.avatarAlt')" class="h-16 w-16 rounded-vt-full border border-vt-border object-cover" />
-          <div v-else class="flex h-16 w-16 items-center justify-center rounded-vt-full bg-vt-bg-2 text-vt-fg-2" aria-hidden="true">👤</div>
+          <UserAvatar :src="profilePhotoUrl" :alt="t('profile.avatarAlt')" class="h-16 w-16 rounded-vt-full border border-vt-border" />
           <div>
             <h2 class="font-sans text-vt-xl font-semibold">{{ profileName }}</h2>
             <p class="text-vt-fg-2">{{ user.email }}</p>
@@ -125,8 +125,7 @@ async function saveProfile() {
 
       <div v-else class="space-y-6">
         <div class="flex items-center gap-4">
-          <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="t('profile.avatarAlt')" class="h-16 w-16 rounded-vt-full border border-vt-border object-cover" />
-          <div v-else class="flex h-16 w-16 items-center justify-center rounded-vt-full bg-vt-bg-2 text-vt-fg-2" aria-hidden="true">👤</div>
+          <UserAvatar :src="profilePhotoUrl" :alt="t('profile.avatarAlt')" class="h-16 w-16 rounded-vt-full border border-vt-border" />
           <div>
             <h2 class="font-sans text-vt-xl font-semibold">{{ t('profile.title') }}</h2>
             <p class="text-vt-fg-2">{{ user.email }}</p>

@@ -7,10 +7,7 @@ describe('OAuth 頭像同步', () => {
   })
 
   it('OAuth 回調只保留供應商頭像的更新，避免覆寫本地名稱與 email', () => {
-    const result = limitOAuthProfileSyncToAvatar(
-      { image: 'https://example.com/avatar-new.png', name: '供應商名稱', email: 'provider@example.com', emailVerified: true },
-      '/callback/google'
-    )
+    const result = limitOAuthProfileSyncToAvatar({ image: 'https://example.com/avatar-new.png', name: '供應商名稱', email: 'provider@example.com', emailVerified: true }, '/callback/google')
 
     expect(result).toEqual({ data: { name: undefined, email: undefined, emailVerified: undefined } })
   })
