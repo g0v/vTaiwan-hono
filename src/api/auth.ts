@@ -17,6 +17,7 @@ app.on(['GET', 'POST'], '/api/auth/*', async c => {
   if (requiresStepUp(pathname)) {
     context = await tryGetAuthContext(c.env, c.req.raw.headers)
     if (!context) return c.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, 401)
+    if (context.banned) return c.json({ error: 'Account banned', code: 'ACCOUNT_BANNED' }, 403)
     if (!context.fresh) return c.json(sessionNotFreshBody(), 403)
   }
 

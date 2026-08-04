@@ -169,7 +169,7 @@
     <div class="fixed right-6 bottom-16 z-50 flex flex-col space-y-3">
       <div class="relative">
         <button
-          v-if="isMobile && authUserData.uid"
+          v-if="isMobile && canUseMeetingFeatures"
           @click="toggleAudioSettings"
           class="flex items-center justify-center rounded-full border border-gray-300 bg-white p-4 text-gray-600 shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-50 hover:text-gray-800"
           :title="$t('transcript.audioSettings')"
@@ -183,7 +183,7 @@
 
       <div class="relative">
         <button
-          v-if="authUserData.uid"
+          v-if="canUseMeetingFeatures"
           @click="toggleAudioRecording"
           :class="[
             'relative rounded-full p-4 shadow-lg transition-all duration-300',
@@ -218,7 +218,7 @@
         </div>
 
         <button
-          v-if="!isMobile && authUserData.uid"
+          v-if="!isMobile && canUseMeetingFeatures"
           @click="toggleAudioSettings"
           class="audio-settings-button absolute -top-1 -right-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 shadow-lg transition-all duration-200 hover:scale-110 hover:bg-gray-50 hover:text-gray-700"
           :title="$t('transcript.audioSettings')"
@@ -265,6 +265,7 @@ import { markRaw } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { supportedLocales } from '../i18n'
 import { getFirebaseServices } from '../lib/firebase'
+import { hasPermission } from '../client/auth-session'
 
 // SSR 保護：此模組頂層不存取瀏覽器 API
 export default {
@@ -359,7 +360,11 @@ export default {
   },
 
   computed: {
+    canUseMeetingFeatures() {
+      return hasPermission(this.authSession, 'meeting.join')
+    },
     authUserData() {
+      if (!this.canUseMeetingFeatures) return {}
       const user = this.authSession?.user
       if (!user) return {}
       return {
@@ -435,8 +440,10 @@ export default {
       }
     )
 
-    this.loadAudioDevices()
-    this.loadAudioSettings()
+    if (this.canUseMeetingFeatures) {
+      this.loadAudioDevices()
+      this.loadAudioSettings()
+    }
     navigator.mediaDevices.addEventListener('devicechange', this.handleDeviceChange)
     document.addEventListener('visibilitychange', this.handleVisibilityChange)
   },
@@ -473,6 +480,15 @@ export default {
       handler() {
         this.isRecorder = this.meetingData.recorder == this.authUserData.uid
         this.joinMeetingName = this.authUserData.name || 'Guest'
+        if (this.canUseMeetingFeatures) {
+          void this.loadAudioDevices()
+          this.loadAudioSettings()
+        } else {
+          this.stopAudioTest()
+          this.cleanupAudioRecording()
+          this.stopQueueProcessing()
+          this.clearAudioQueue()
+        }
       },
     },
     jwt(newJwt, oldJwt) {
@@ -501,6 +517,10 @@ export default {
     },
 
     async getJwt() {
+      if (!this.canUseMeetingFeatures) {
+        window.alert('請先登入，方可加入會議')
+        return
+      }
       const user_id = this.authUserData.uid || 'Guest'
       if (user_id === 'Guest') {
         window.alert('請先登入，方可加入會議')
@@ -533,6 +553,10 @@ export default {
     },
 
     async joinMeeting() {
+      if (!this.canUseMeetingFeatures) {
+        window.alert('請先登入，方可加入會議')
+        return
+      }
       if (!this.jwt) await this.getJwt()
       if (!this.jwt) return
       try {
@@ -826,6 +850,7 @@ export default {
     },
 
     async toggleAudioRecording() {
+      if (!this.canUseMeetingFeatures) return
       if (this.isRecordingAudio) {
         await this.stopAudioRecording()
       } else {
@@ -835,6 +860,7 @@ export default {
     },
 
     async startAudioRecording() {
+      if (!this.canUseMeetingFeatures) return
       try {
         if (this.isRecordingAudio && this.audioMediaRecorder) {
           if (this.audioMediaRecorder.state !== 'inactive') this.audioMediaRecorder.stop()
@@ -917,6 +943,7 @@ export default {
     },
 
     async sendAudioToTranscription(audioBlob) {
+      if (!this.canUseMeetingFeatures) return
       const formData = new FormData()
       formData.append('file', audioBlob, 'recording.webm')
       const transcriptionUrl = `${this.transcriptionApiUrl}${this.transcriptionLanguage}`
@@ -959,6 +986,10 @@ export default {
     },
 
     async loadAudioDevices() {
+      if (!this.canUseMeetingFeatures) {
+        this.audioDevices = []
+        return
+      }
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         stream.getTracks().forEach(t => t.stop())
@@ -1002,6 +1033,7 @@ export default {
     },
 
     async testAudioDevice() {
+      if (!this.canUseMeetingFeatures) return
       if (!this.selectedAudioDeviceId) return
       try {
         this.isTestingAudio = true
@@ -1075,6 +1107,7 @@ export default {
     },
 
     toggleAudioSettings() {
+      if (!this.canUseMeetingFeatures) return
       this.showAudioSettings = !this.showAudioSettings
       if (this.showAudioSettings) this.loadAudioDevices()
     },
@@ -1085,6 +1118,7 @@ export default {
     },
 
     handleDeviceChange() {
+      if (!this.canUseMeetingFeatures) return
       this.loadAudioDevices()
     },
 

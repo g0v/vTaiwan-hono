@@ -13,6 +13,7 @@ export interface AuthContext {
     image: string | null
   }
   role: AppRole
+  banned: boolean
   permissions: Permission[]
   /**
    * 是否已通過敏感操作二次驗證——見 step-up.ts。
@@ -49,8 +50,16 @@ export function permissionsForRole(role: AppRole): Permission[] {
   return permissionsByRole[role]
 }
 
+export function permissionsForAccount(role: AppRole, banned: boolean): Permission[] {
+  return banned ? [] : permissionsForRole(role)
+}
+
+export function isActiveAdminRole(role: AppRole, banned: boolean): boolean {
+  return !banned && isAdminRole(role)
+}
+
 export function hasPermission(context: AuthContext, permission: Permission): boolean {
-  return context.permissions.includes(permission)
+  return !context.banned && context.permissions.includes(permission)
 }
 
 /**
@@ -72,6 +81,7 @@ export async function getAuthContext(env: AppBindings, headers: Headers): Promis
   if (!session) return null
 
   const role = resolveRole(session.user.role)
+  const banned = session.user.banned === true
   const stepUpExpiresAt = await readStepUpExpiry(headers.get('cookie'), session.session.id, env.BETTER_AUTH_SECRET)
   return {
     user: {
@@ -81,7 +91,8 @@ export async function getAuthContext(env: AppBindings, headers: Headers): Promis
       image: session.user.image ?? null,
     },
     role,
-    permissions: permissionsForRole(role),
+    banned,
+    permissions: permissionsForAccount(role, banned),
     fresh: stepUpExpiresAt !== null,
     stepUpExpiresAt,
   }
