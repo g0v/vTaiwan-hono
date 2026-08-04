@@ -11,6 +11,22 @@ export const adminRoleAccess = {
   'super-admin': adminAc,
 }
 
+// Better Auth 必須在每次 OAuth 登入取回供應商個人資料，才能得知頭像是否更新。
+// 資料庫 hook 會把這個完整覆寫限制為只同步 image，保留使用者自行修改的名稱與 email。
+export const socialProviderProfileSync = { overrideUserInfoOnSignIn: true } as const
+
+export function limitOAuthProfileSyncToAvatar(data: Record<string, unknown>, path?: string) {
+  if (!path?.startsWith('/callback/') || !('image' in data)) return
+
+  return {
+    data: {
+      name: undefined,
+      email: undefined,
+      emailVerified: undefined,
+    },
+  }
+}
+
 export function createAuth(env: AppBindings) {
   return betterAuth({
     appName: 'vTaiwan',
@@ -26,10 +42,19 @@ export function createAuth(env: AppBindings) {
       google: {
         clientId: env.GOOGLE_CLIENT_ID,
         clientSecret: env.GOOGLE_CLIENT_SECRET,
+        ...socialProviderProfileSync,
       },
       github: {
         clientId: env.GITHUB_CLIENT_ID,
         clientSecret: env.GITHUB_CLIENT_SECRET,
+        ...socialProviderProfileSync,
+      },
+    },
+    databaseHooks: {
+      user: {
+        update: {
+          before: async (data, context) => limitOAuthProfileSyncToAvatar(data, context?.path),
+        },
       },
     },
     plugins: [
