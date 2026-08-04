@@ -14,6 +14,7 @@ export function registerAdminApi(app: App) {
   app.get('/api/admin/audit-log', async c => {
     const context = await tryGetAuthContext(c.env, c.req.raw.headers)
     if (!context) return c.json({ error: 'Unauthorized' }, 401)
+    if (context.banned) return c.json({ error: 'Forbidden' }, 403)
     if (!isSuperAdminRole(context.role)) return c.json({ error: 'Forbidden' }, 403)
     if (!context.fresh) return c.json(sessionNotFreshBody(), 403)
 

@@ -65,6 +65,7 @@ describe('敏感操作二次驗證（step-up cookie）', () => {
     const sessionWith = (role: AppRole, fresh: boolean): AuthSession => ({
       user: { id: 'u1', name: '測試', email: 'someone@example.com', image: null },
       role,
+      banned: false,
       permissions: [],
       fresh,
       stepUpExpiresAt: fresh ? Date.UTC(2026, 7, 2, 0, 15, 0) : null,

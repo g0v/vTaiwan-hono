@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vite-plus/test'
-import { isAdminRole, permissionsForRole, resolveRole } from '../server/lib/authorization'
+import { isActiveAdminRole, isAdminRole, permissionsForAccount, permissionsForRole, resolveRole } from '../server/lib/authorization'
 import { adminRoleAccess } from '../server/lib/createAuth'
+import { hasPermission as clientHasPermission, isAdminSession, type AuthSession } from '../client/auth-session'
 
 describe('Better Auth 業務權限', () => {
   it('將未知或缺少的角色降級為 user', () => {
@@ -24,6 +25,30 @@ describe('Better Auth 業務權限', () => {
     expect(isAdminRole('admin')).toBe(true)
     expect(isAdminRole('super-admin')).toBe(true)
     expect(isAdminRole('user')).toBe(false)
+  })
+
+  it('停權帳號不具任何業務權限，也不視為可進入後台的管理員', () => {
+    expect(permissionsForAccount('user', true)).toEqual([])
+    expect(permissionsForAccount('admin', true)).toEqual([])
+    expect(permissionsForAccount('super-admin', true)).toEqual([])
+    expect(isActiveAdminRole('admin', true)).toBe(false)
+    expect(isActiveAdminRole('super-admin', true)).toBe(false)
+    expect(isActiveAdminRole('admin', false)).toBe(true)
+  })
+
+  it('client 即使收到殘留權限，也拒絕停權管理員進後台或使用會議功能', () => {
+    const session: AuthSession = {
+      user: { id: 'banned-admin', name: '停權管理員', email: 'banned@example.com', image: null },
+      role: 'admin',
+      banned: true,
+      permissions: permissionsForRole('admin'),
+      fresh: true,
+      stepUpExpiresAt: Date.now() + 60_000,
+    }
+
+    expect(isAdminSession(session)).toBe(false)
+    expect(clientHasPermission(session, 'meeting.join')).toBe(false)
+    expect(clientHasPermission(session, 'transcription.update')).toBe(false)
   })
 })
 

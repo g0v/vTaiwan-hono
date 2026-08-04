@@ -92,6 +92,7 @@
                       <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.role') }}</th>
                       <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.joinedAt') }}</th>
                       <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.status') }}</th>
+                      <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.actions') }}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -117,6 +118,15 @@
                         <span class="rounded-full px-vt-2 py-vt-0_5 text-vt-xs font-medium" :class="statusClass(m.status)">
                           {{ t('admin.status.' + m.status) }}
                         </span>
+                      </td>
+                      <td class="px-vt-3 py-vt-3">
+                        <button v-if="canBan(m)" type="button" class="admin-btn-ghost" @click="openBanModal(m)">
+                          {{ t('admin.ban.button') }}
+                        </button>
+                        <button v-else-if="canUnban(m)" type="button" class="admin-btn-ghost admin-btn-ghost--safe" @click="onUnban(m)">
+                          {{ t('admin.unban.button') }}
+                        </button>
+                        <span v-else class="text-vt-fg-3">—</span>
                       </td>
                     </tr>
                   </tbody>
@@ -253,6 +263,51 @@
             <dd class="text-vt-fg-1">{{ t('admin.status.' + selectedMember.status) }}</dd>
           </div>
         </dl>
+        <div v-if="canBan(selectedMember) || canUnban(selectedMember)" class="mt-vt-4 flex justify-end gap-vt-2">
+          <button v-if="canBan(selectedMember)" type="button" class="admin-btn-ghost" @click="openBanModalFromMemberDetails(selectedMember)">
+            {{ t('admin.ban.button') }}
+          </button>
+          <button v-if="canUnban(selectedMember)" type="button" class="admin-btn-ghost admin-btn-ghost--safe" @click="onUnban(selectedMember)">
+            {{ t('admin.unban.button') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 停權確認 modal（#70）：輸入理由後執行停權 -->
+    <div
+      v-if="banningMember"
+      class="fixed inset-0 z-[110] flex items-center justify-center bg-vt-black/50 p-vt-4"
+      role="dialog"
+      aria-modal="true"
+      :aria-label="t('admin.ban.title', { name: banningMember.name })"
+      @click.self="closeBanModal"
+    >
+      <div class="w-full max-w-md rounded-vt-lg bg-vt-bg-1 p-vt-6 shadow-vt-lg">
+        <div class="mb-vt-4 flex items-center justify-between gap-vt-4">
+          <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.ban.title', { name: banningMember.name }) }}</h2>
+          <button type="button" class="admin-modal-close" :aria-label="t('common.cancel')" @click="closeBanModal">×</button>
+        </div>
+        <form class="space-y-vt-4" @submit.prevent="confirmBan">
+          <div>
+            <label class="mb-vt-1 block text-vt-sm font-medium text-vt-fg-2">{{ t('admin.ban.reasonLabel') }}</label>
+            <textarea
+              v-model="banReasonInput"
+              rows="3"
+              required
+              class="w-full resize-none rounded-vt-md border border-vt-border bg-vt-bg-2 px-vt-3 py-vt-2 text-vt-sm focus:border-democratic-red focus:outline-none"
+              :placeholder="t('admin.ban.reasonPlaceholder')"
+            />
+          </div>
+          <div class="flex justify-end gap-vt-2">
+            <button type="button" class="vt-btn rounded-vt-md border border-vt-border text-vt-fg-2 hover:bg-vt-bg-2" :disabled="banSubmitting" @click="closeBanModal">
+              {{ t('common.cancel') }}
+            </button>
+            <button type="submit" class="admin-btn-ghost" :disabled="banSubmitting || !banReasonInput.trim()">
+              {{ banSubmitting ? t('admin.logs.restoring') : t('admin.ban.submit') }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -397,6 +452,13 @@ const logsLoading = ref(false)
 const logsError = ref<string | null>(null)
 const logQuery = ref('')
 const restoringLogId = ref<number | null>(null)
+
+// ── 停權 modal（#70）：state、computed、開關函式 ──────────
+const banningMemberId = ref<string | null>(null)
+const banReasonInput = ref('')
+const banSubmitting = ref(false)
+// banningMember 從 members 陣列反查，確保修改是響應式的同一個物件
+const banningMember = computed(() => (banningMemberId.value ? (members.value.find(m => m.id === banningMemberId.value) ?? null) : null))
 
 function matches(query: string, fields: string[]): boolean {
   const q = query.trim().toLowerCase()
@@ -572,6 +634,90 @@ async function onRoleChange(m: Member, event: Event) {
   }
 }
 
+// ── 停權 / 解除停權（#70）────────────────────────────────
+
+/** super-admin 可停權的條件：自己不能停；super-admin 之間不互停；僅限 active 成員 */
+function canBan(member: Member): boolean {
+  if (!isSuperAdmin.value) return false
+  if (member.id === props.authSession?.user.id) return false
+  if (member.role === 'super-admin') return false
+  return member.status === 'active'
+}
+
+function canUnban(member: Member): boolean {
+  if (!isSuperAdmin.value) return false
+  return member.status === 'banned'
+}
+
+function openBanModal(member: Member) {
+  banningMemberId.value = member.id
+  banReasonInput.value = ''
+}
+
+function openBanModalFromMemberDetails(member: Member) {
+  openBanModal(member)
+  selectedMember.value = null
+}
+
+function closeBanModal() {
+  banningMemberId.value = null
+  banReasonInput.value = ''
+}
+
+async function confirmBan() {
+  const member = banningMember.value
+  if (!member) return
+
+  const reason = banReasonInput.value.trim()
+  if (!reason) {
+    window.alert(t('admin.ban.reasonRequired'))
+    return
+  }
+
+  banSubmitting.value = true
+  try {
+    const { error } = await authClient.admin.banUser({ userId: member.id, banReason: reason })
+    if (error) throw error
+    // 同步列表狀態，不重抓（避免閃爍）
+    member.status = 'banned'
+    if (selectedMember.value?.id === member.id) {
+      selectedMember.value = { ...selectedMember.value, status: 'banned' }
+    }
+    closeBanModal()
+  } catch (error) {
+    console.error('Failed to ban user:', error)
+    if (isSessionNotFreshPayload(error)) {
+      requireStepUp()
+      closeBanModal()
+    } else {
+      window.alert(t('admin.members.banFailed'))
+    }
+  } finally {
+    banSubmitting.value = false
+  }
+}
+
+async function onUnban(member: Member) {
+  if (!window.confirm(t('admin.unban.confirm', { name: member.name }))) return
+
+  try {
+    const { error } = await authClient.admin.unbanUser({ userId: member.id })
+    if (error) throw error
+    // 同步列表狀態
+    member.status = 'active'
+    if (selectedMember.value?.id === member.id) {
+      selectedMember.value = { ...selectedMember.value, status: 'active' }
+    }
+  } catch (error) {
+    console.error('Failed to unban user:', error)
+    if (isSessionNotFreshPayload(error)) {
+      requireStepUp()
+    } else {
+      window.alert(t('admin.members.unbanFailed'))
+    }
+  }
+}
+
 // 「新增」的變更前狀態是「不存在」，按鈕字樣與確認語都要說清楚是刪除，不能包裝成回復
 function restoreButtonKey(log: AuditEntry): string {
   return restoreCommandFor(log)?.kind === 'delete' ? 'admin.logs.deleteButton' : 'admin.logs.restore'
@@ -637,6 +783,10 @@ function formatLogTime(epochMs: number): string {
 // target.label 是寫入當下的快照（成員姓名／格式化後的會議日期），直接顯示即可。
 // 角色缺值時顯示破折號，不臆測成「一般使用者」。
 function describeLog(log: AuditEntry): string {
+  // 停權事件：有理由時使用更詳細的文案（#70；不是新 AuditAction，不進 ACTION_LABEL_KEYS）
+  if (log.action === 'user.ban' && log.detail.reason) {
+    return t('admin.logs.action.userBanWithReason', { target: log.target.label, reason: log.detail.reason })
+  }
   return t(auditActionLabelKey(log.action), {
     target: log.target.label,
     from: log.detail.fromRole ? t(roleLabelKey(resolveRole(log.detail.fromRole))) : '—',
@@ -728,5 +878,13 @@ function describeLog(log: AuditEntry): string {
   color: var(--color-vt-fg-3);
   cursor: not-allowed;
   background-color: transparent;
+}
+
+.admin-btn-ghost--safe {
+  color: var(--color-vt-jade-green);
+}
+
+.admin-btn-ghost--safe:hover {
+  background-color: var(--color-vt-green-tint);
 }
 </style>

@@ -10,7 +10,7 @@ import { registerTranscriptionApi } from './api/transcription'
 import { registerAdminApi } from './api/admin'
 import type { AppEnv } from './api/types'
 import auth from './api/auth'
-import { isAdminRole, tryGetAuthContext } from './server/lib/authorization'
+import { isActiveAdminRole, tryGetAuthContext } from './server/lib/authorization'
 import { renderPage } from './ssr/render'
 
 // /admin（含子路徑）需管理員以上；此為真正的授權邊界（robots.txt 只是 crawler 提示）。
@@ -25,7 +25,7 @@ function isAdminPath(pathname: string): boolean {
 // 後台真正的資料與寫入端點（/api/auth/admin/*、逐字稿寫入）另有新鮮度把關，見 step-up.ts。
 async function isAdminRequest(env: AppEnv['Bindings'], headers: Headers): Promise<boolean> {
   const context = await tryGetAuthContext(env, headers)
-  return context !== null && isAdminRole(context.role)
+  return context !== null && isActiveAdminRole(context.role, context.banned)
 }
 
 const app = new Hono<AppEnv>()

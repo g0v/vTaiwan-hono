@@ -14,6 +14,7 @@ export interface AuthSession {
     image: string | null
   }
   role: AppRole
+  banned: boolean
   permissions: Permission[]
   /** 是否已通過敏感操作二次驗證；一般登入不會為 true */
   fresh: boolean
@@ -29,15 +30,15 @@ export async function loadAuthSession(): Promise<AuthSession | null> {
 }
 
 export function hasPermission(session: AuthSession | null | undefined, permission: Permission): boolean {
-  return session?.permissions.includes(permission) ?? false
+  return !!session && !session.banned && session.permissions.includes(permission)
 }
 
 export function isAdminSession(session: AuthSession | null | undefined): boolean {
-  return session?.role === 'admin' || session?.role === 'super-admin'
+  return !!session && !session.banned && (session.role === 'admin' || session.role === 'super-admin')
 }
 
 export function isSuperAdminSession(session: AuthSession | null | undefined): boolean {
-  return session?.role === 'super-admin'
+  return !!session && !session.banned && session.role === 'super-admin'
 }
 
 /**

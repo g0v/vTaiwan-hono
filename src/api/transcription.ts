@@ -84,6 +84,10 @@ export function registerTranscriptionApi(app: App) {
   // POST /api/transcription/:lang — 音頻檔轉文字（分軌本地錄音端點）
   app.use('/api/transcription/*', corsFor(['POST']))
   app.post('/api/transcription/:lang', async c => {
+    const context = await getAuthContext(c.env, c.req.raw.headers)
+    if (!context) return c.json({ error: 'Unauthorized' }, 401)
+    if (!hasPermission(context, 'meeting.join')) return c.json({ error: 'Forbidden' }, 403)
+
     const rawLang = c.req.param('lang') || 'zh-TW'
     const language = LANG_MAP[rawLang] ?? rawLang
 

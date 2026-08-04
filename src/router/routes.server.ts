@@ -23,6 +23,7 @@ import TranscriptionsView from '../views/TranscriptionsView.vue'
 import ContactView from '../views/ContactView.vue'
 import ProposeView from '../views/ProposeView.vue'
 import AdminView from '../views/AdminView.vue'
+import AuthErrorView from '../views/AuthErrorView.vue'
 
 const placeholderPaths = ['/404']
 
@@ -85,6 +86,7 @@ export const routes: RouteRecordRaw[] = [
     meta: { status: 200 },
   },
   { path: '/jitsi', name: 'jitsi', component: JitsiView, meta: { status: 200 } },
+  { path: '/auth/error', name: 'auth-error', component: AuthErrorView, meta: { status: 200 } },
   // 管理員後台樣稿（偽資料 + localStorage）。robots.txt 已 disallow /admin。
   { path: '/admin', name: 'admin', component: AdminView, meta: { status: 200 } },
   ...placeholderPaths.map(path => ({

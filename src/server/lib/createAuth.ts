@@ -36,6 +36,9 @@ export function createAuth(env: AppBindings) {
     advanced: {
       cookiePrefix: 'vtaiwan',
     },
+    onAPIError: {
+      errorURL: '/auth/error',
+    },
     account: {
       accountLinking: {
         trustedProviders: ['google', 'github'],
