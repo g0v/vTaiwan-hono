@@ -96,6 +96,10 @@
     "admin": {
       "title": "管理員後台",
       "description": "vTaiwan 管理員後台：成員角色與逐字稿管理。"
+    },
+    "authError": {
+      "title": "登入錯誤",
+      "description": "登入流程發生錯誤，請重新嘗試或聯絡 vTaiwan 團隊。"
     }
   },
   "common": {
@@ -181,6 +185,37 @@
     "loginError": "登入時發生錯誤，請稍後再試",
     "logoutError": "登出時發生錯誤，請稍後再試",
     "inAppBrowserNotSupported": "本系統不支援Facebook, Line等app內部瀏覽，請用一般瀏覽器開啟，方可登入，謝謝"
+  },
+  "authError": {
+    "eyebrow": "發生錯誤",
+    "title": "登入失敗",
+    "description": "您的登入執行失敗，以下是錯誤原因與錯誤代碼",
+    "reasonLabel": "錯誤原因",
+    "descriptionFallback": "未提供錯誤原因",
+    "codeLabel": "錯誤代碼",
+    "retryLogin": "重新登入",
+    "goHome": "返回首頁",
+    "helpTitle": "仍然無法登入？",
+    "helpDescription": "請保留錯誤代碼，並告訴我們你使用的登入方式與瀏覽器環境。",
+    "contact": "聯絡我們",
+    "reasons": {
+      "BANNED_USER": "此帳號已被停權，無法登入。",
+      "UNKNOWN": "系統未提供可辨識的錯誤代碼。",
+      "account_already_linked_to_different_user": "這個社群帳號已連結到另一個使用者。",
+      "email_doesn't_match": "社群帳號的電子郵件與目前登入帳號不一致。",
+      "email_not_found": "社群帳號未提供電子郵件，無法完成登入。",
+      "invalid_callback_request": "登入回調請求格式不正確，請重新登入。",
+      "invalid_code": "登入授權碼無效或已過期，請重新登入。",
+      "no_callback_url": "登入流程缺少回跳網址，請重新登入。",
+      "no_code": "登入供應商未回傳授權碼，請重新登入。",
+      "oauth_provider_not_found": "找不到指定的登入供應商。",
+      "state_generation_error": "無法建立登入驗證狀態，請稍後再試。",
+      "state_invalid": "登入驗證狀態無效，請重新登入。",
+      "state_mismatch": "登入驗證狀態不一致，請重新登入。",
+      "state_not_found": "登入驗證狀態遺失，請重新登入。",
+      "unable_to_get_user_info": "無法從登入供應商取得使用者資料。",
+      "unable_to_link_account": "無法連結這個社群帳號。"
+    }
   },
   "footer": {
     "description": "公共政策的開放協作平台",

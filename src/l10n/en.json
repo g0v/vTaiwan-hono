@@ -96,6 +96,10 @@
     "admin": {
       "title": "Admin Console",
       "description": "vTaiwan admin console for member roles and transcript management."
+    },
+    "authError": {
+      "title": "Sign-in Error",
+      "description": "A sign-in error occurred. Please try again or contact the vTaiwan team."
     }
   },
   "即將開始": "Upcoming",
@@ -186,6 +190,37 @@
     "loginError": "An error occurred during login, please try again later",
     "logoutError": "An error occurred during logout, please try again later",
     "inAppBrowserNotSupported": "This system does not support in-app browsers like Facebook or Line. Please open with a regular browser to login. Thank you."
+  },
+  "authError": {
+    "eyebrow": "An error occurred",
+    "title": "Sign-in failed",
+    "description": "Your sign-in attempt failed. Below are the error reason and error code.",
+    "reasonLabel": "Error reason",
+    "descriptionFallback": "No error reason provided",
+    "codeLabel": "Error code",
+    "retryLogin": "Try logging in again",
+    "goHome": "Go home",
+    "helpTitle": "Still unable to log in?",
+    "helpDescription": "Keep the error code and tell us which sign-in method and browser environment you used.",
+    "contact": "Contact us",
+    "reasons": {
+      "BANNED_USER": "This account has been banned and cannot sign in.",
+      "UNKNOWN": "The system did not provide a recognizable error code.",
+      "account_already_linked_to_different_user": "This social account is already linked to another user.",
+      "email_doesn't_match": "The social account email does not match the currently signed-in account.",
+      "email_not_found": "The social account did not provide an email address, so sign-in could not be completed.",
+      "invalid_callback_request": "The sign-in callback request is invalid. Please try signing in again.",
+      "invalid_code": "The authorization code is invalid or expired. Please try signing in again.",
+      "no_callback_url": "The sign-in flow is missing a callback URL. Please try signing in again.",
+      "no_code": "The sign-in provider did not return an authorization code. Please try signing in again.",
+      "oauth_provider_not_found": "The specified sign-in provider could not be found.",
+      "state_generation_error": "The sign-in verification state could not be created. Please try again later.",
+      "state_invalid": "The sign-in verification state is invalid. Please try signing in again.",
+      "state_mismatch": "The sign-in verification state does not match. Please try signing in again.",
+      "state_not_found": "The sign-in verification state is missing. Please try signing in again.",
+      "unable_to_get_user_info": "Could not retrieve user information from the sign-in provider.",
+      "unable_to_link_account": "Could not link this social account."
+    }
   },
   "footer": {
     "description": "Open collaboration platform for public policy",

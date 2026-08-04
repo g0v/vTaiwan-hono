@@ -42,6 +42,7 @@ async function handleBetterAuthSocialLogin(provider: SocialProvider) {
     const { error } = await authClient.signIn.social({
       provider,
       callbackURL: callbackTarget.value,
+      errorCallbackURL: '/auth/error',
       ...(props.forStepUp ? { additionalData: { purpose: STEP_UP_PURPOSE } } : {}),
     })
     if (error) {

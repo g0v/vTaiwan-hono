@@ -269,6 +269,16 @@ export function headForAdmin(origin: string, t: Translate): HeadConfig {
   }
 }
 
+export function headForAuthError(origin: string, t: Translate): HeadConfig {
+  const title = t('head.authError.title') + ' - ' + SITE_NAME
+  const description = t('head.authError.description')
+  return {
+    title,
+    description,
+    meta: [...buildOg(title, description, DEFAULT_OG_IMAGE, `${origin}/auth/error`), { name: 'robots', content: 'noindex,nofollow' }],
+  }
+}
+
 export function headForNotFound(origin: string, t: Translate): HeadConfig {
   const title = t('head.notFound.title') + ' - ' + SITE_NAME
   const description = t('head.notFound.description')
