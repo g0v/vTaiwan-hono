@@ -33,6 +33,9 @@ export function createAuth(env: AppBindings) {
     database: env.DB_AUTH,
     baseURL: env.BETTER_AUTH_URL,
     secret: env.BETTER_AUTH_SECRET,
+    advanced: {
+      cookiePrefix: 'vtaiwan',
+    },
     account: {
       accountLinking: {
         trustedProviders: ['google', 'github'],
