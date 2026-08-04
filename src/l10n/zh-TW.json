@@ -1043,13 +1043,16 @@
       "empty": "尚無成員資料",
       "loadFailed": "無法載入成員清單，請稍後再試。",
       "roleUpdateFailed": "角色更新失敗，請稍後再試。",
+      "banFailed": "停權失敗，請稍後再試。",
+      "unbanFailed": "解除停權失敗，請稍後再試。",
       "needSuperAdmin": "成員清單與角色變更僅限超級管理員（super-admin）操作。一般管理員仍可使用逐字稿管理分頁。",
       "col": {
         "name": "姓名",
         "email": "電子郵件",
         "role": "角色",
         "joinedAt": "加入時間",
-        "status": "狀態"
+        "status": "狀態",
+        "actions": "操作"
       }
     },
     "status": {
@@ -1064,7 +1067,7 @@
     },
     "perms": {
       "title": "成員權限一覽",
-      "hint": "權限由角色決定（唯讀）；變更上方角色後會自動對應。停權功能尚未實作。",
+      "hint": "權限由角色決定（唯讀）；變更上方角色後會自動對應。",
       "col": {
         "member": "成員"
       },
@@ -1078,6 +1081,18 @@
       "topic": {
         "manage": "管理議題"
       }
+    },
+    "ban": {
+      "button": "停權",
+      "title": "停權成員 {name}",
+      "reasonLabel": "停權理由（必填）",
+      "reasonPlaceholder": "請說明停權原因…",
+      "reasonRequired": "請填寫停權理由，不可空白。",
+      "submit": "執行停權"
+    },
+    "unban": {
+      "button": "解除停權",
+      "confirm": "確定要解除 {name} 的停權嗎？解除後該使用者可以重新登入。"
     },
     "logs": {
       "title": "變更日誌記錄",
@@ -1096,6 +1111,7 @@
       "action": {
         "userRoleSet": "將 {target} 的角色由 {from} 變更為 {to}",
         "userBan": "停權成員 {target}",
+        "userBanWithReason": "停權成員 {target}，理由：{reason}",
         "userUnban": "恢復成員 {target} 的權限",
         "userRemove": "移除成員 {target}",
         "userUpdate": "更新成員 {target} 的帳號資料",

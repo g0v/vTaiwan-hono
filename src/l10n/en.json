@@ -1043,13 +1043,16 @@
       "empty": "No members yet",
       "loadFailed": "Failed to load members. Please try again later.",
       "roleUpdateFailed": "Failed to update role. Please try again later.",
+      "banFailed": "Failed to ban the member. Please try again later.",
+      "unbanFailed": "Failed to unban the member. Please try again later.",
       "needSuperAdmin": "Listing members and changing roles requires a super-admin. Regular admins can still use the Transcripts tab.",
       "col": {
         "name": "Name",
         "email": "Email",
         "role": "Role",
         "joinedAt": "Joined",
-        "status": "Status"
+        "status": "Status",
+        "actions": "Actions"
       }
     },
     "status": {
@@ -1064,7 +1067,7 @@
     },
     "perms": {
       "title": "Permission Overview",
-      "hint": "Permissions are determined by role (read-only). Changing the role above updates the mapping. Ban/unban is not implemented yet.",
+      "hint": "Permissions are determined by role (read-only). Changing the role above updates the mapping.",
       "col": {
         "member": "Member"
       },
@@ -1078,6 +1081,18 @@
       "topic": {
         "manage": "Manage topics"
       }
+    },
+    "ban": {
+      "button": "Ban",
+      "title": "Ban member {name}",
+      "reasonLabel": "Reason for ban (required)",
+      "reasonPlaceholder": "Please state the reason for banning…",
+      "reasonRequired": "A reason is required.",
+      "submit": "Ban member"
+    },
+    "unban": {
+      "button": "Unban",
+      "confirm": "Are you sure you want to unban {name}? They will be able to sign in again."
     },
     "logs": {
       "title": "Change Log",
@@ -1096,6 +1111,7 @@
       "action": {
         "userRoleSet": "Changed {target}'s role from {from} to {to}",
         "userBan": "Banned member {target}",
+        "userBanWithReason": "Banned member {target}, reason: {reason}",
         "userUnban": "Unbanned member {target}",
         "userRemove": "Removed member {target}",
         "userUpdate": "Updated member {target}'s account data",

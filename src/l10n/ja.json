@@ -1043,13 +1043,16 @@
       "empty": "メンバーがまだいません",
       "loadFailed": "メンバー一覧を読み込めませんでした。後でもう一度お試しください。",
       "roleUpdateFailed": "ロールの更新に失敗しました。後でもう一度お試しください。",
+      "banFailed": "利用停止に失敗しました。後でもう一度お試しください。",
+      "unbanFailed": "利用停止の解除に失敗しました。後でもう一度お試しください。",
       "needSuperAdmin": "メンバー一覧とロール変更はスーパー管理者（super-admin）のみ操作できます。一般管理者は逐語録管理タブを利用できます。",
       "col": {
         "name": "氏名",
         "email": "メール",
         "role": "ロール",
         "joinedAt": "参加日",
-        "status": "ステータス"
+        "status": "ステータス",
+        "actions": "操作"
       }
     },
     "status": {
@@ -1064,7 +1067,7 @@
     },
     "perms": {
       "title": "権限一覧",
-      "hint": "権限はロールによって決まります（読み取り専用）。上部のロールを変更すると対応が更新されます。利用停止機能は未実装です。",
+      "hint": "権限はロールによって決まります（読み取り専用）。上部のロールを変更すると対応が更新されます。",
       "col": {
         "member": "メンバー"
       },
@@ -1078,6 +1081,18 @@
       "topic": {
         "manage": "トピック管理"
       }
+    },
+    "ban": {
+      "button": "利用停止",
+      "title": "メンバー {name} を利用停止",
+      "reasonLabel": "利用停止の理由（必須）",
+      "reasonPlaceholder": "利用停止の理由を入力してください…",
+      "reasonRequired": "利用停止の理由を入力してください。",
+      "submit": "利用停止する"
+    },
+    "unban": {
+      "button": "利用停止解除",
+      "confirm": "{name} の利用停止を解除しますか？解除後は再度ログインできるようになります。"
     },
     "logs": {
       "title": "変更履歴",
@@ -1096,6 +1111,7 @@
       "action": {
         "userRoleSet": "{target} のロールを {from} から {to} に変更",
         "userBan": "メンバー {target} を利用停止",
+        "userBanWithReason": "メンバー {target} を利用停止（理由：{reason}）",
         "userUnban": "メンバー {target} の利用停止を解除",
         "userRemove": "メンバー {target} を削除",
         "userUpdate": "メンバー {target} のアカウント情報を更新",
