@@ -34,7 +34,7 @@ const showImage = computed(() => !!props.src && !imgError.value)
 
 <template>
   <span v-bind="$attrs" class="inline-flex items-center justify-center overflow-hidden bg-vt-bg-2">
-    <img v-if="showImage" :src="src!" :alt="alt ?? ''" class="h-full w-full object-cover" @error="imgError = true" />
+    <img v-if="showImage" :src="src!" :alt="alt ?? ''" class="h-full w-full object-cover" @error="imgError = true" referrerpolicy="no-referrer" />
     <!-- fallback：無頭像或圖片載入失敗時顯示的靜態人像 -->
     <svg v-else viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" class="h-3/5 w-3/5 text-vt-fg-2">
       <path d="M12 12c2.761 0 5-2.239 5-5s-2.239-5-5-5-5 2.239-5 5 2.239 5 5 5zm0 2c-3.337 0-10 1.675-10 5v2h20v-2c0-3.325-6.663-5-10-5z" />
