@@ -264,15 +264,7 @@
           </div>
         </dl>
         <div v-if="canBan(selectedMember) || canUnban(selectedMember)" class="mt-vt-4 flex justify-end gap-vt-2">
-          <button
-            v-if="canBan(selectedMember)"
-            type="button"
-            class="admin-btn-ghost"
-            @click="
-              openBanModal(selectedMember)
-              selectedMember = null
-            "
-          >
+          <button v-if="canBan(selectedMember)" type="button" class="admin-btn-ghost" @click="openBanModalFromMemberDetails(selectedMember)">
             {{ t('admin.ban.button') }}
           </button>
           <button v-if="canUnban(selectedMember)" type="button" class="admin-btn-ghost admin-btn-ghost--safe" @click="onUnban(selectedMember)">
@@ -660,6 +652,11 @@ function canUnban(member: Member): boolean {
 function openBanModal(member: Member) {
   banningMemberId.value = member.id
   banReasonInput.value = ''
+}
+
+function openBanModalFromMemberDetails(member: Member) {
+  openBanModal(member)
+  selectedMember.value = null
 }
 
 function closeBanModal() {
