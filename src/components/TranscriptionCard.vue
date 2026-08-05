@@ -1,5 +1,5 @@
 <template>
-  <div class="relative rounded-lg border border-gray-200 bg-white p-6 shadow-md">
+  <div class="transcription-card relative rounded-lg border border-gray-200 bg-white p-6 shadow-md">
     <!-- 樣稿標籤 -->
     <div v-if="item.meeting_id === PROTOTYPE_MEETING_ID" class="absolute -top-2 -right-2 z-10">
       <div class="rotate-12 transform bg-yellow-400 px-3 py-1 text-xs font-bold text-black shadow-md">
@@ -7,8 +7,8 @@
       </div>
     </div>
 
-    <div class="flex items-start justify-between">
-      <div class="flex-1">
+    <div class="transcription-card__content flex items-start justify-between">
+      <div class="min-w-0 flex-1">
         <h3 class="mb-2 text-lg font-semibold text-gray-900">{{ t('transcriptions.list.meetingId') }}: {{ item.meeting_id }}</h3>
         <div class="mb-4 text-sm text-gray-600">
           <img :src="'/CC0.png'" alt="CC0" class="h-8 w-auto" />
@@ -17,22 +17,22 @@
         </div>
       </div>
 
-      <div class="ml-4 flex flex-col space-y-4">
-        <button @click="emit('show-outline', item)" class="rounded-md bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700">
+      <div class="transcription-card__actions ml-4 flex flex-col gap-3">
+        <button @click="emit('show-outline', item)" class="w-full rounded-md bg-green-600 px-3 py-1 text-sm text-white hover:bg-green-700">
           {{ t('transcriptions.list.viewOutline') }}
         </button>
         <!-- app.css 的 `.container a:not(.vt-btn)` 會把連結染成民主紅，紫底上對比不足，故以 !text-white 覆蓋 -->
-        <RouterLink :to="`/transcription_detail/${item.meeting_id}`" class="rounded-md bg-purple-600 px-3 py-1 text-center text-sm !text-white hover:bg-purple-700">
+        <RouterLink :to="`/transcription_detail/${item.meeting_id}`" class="w-full rounded-md bg-purple-600 px-3 py-1 text-center text-sm !text-white hover:bg-purple-700">
           {{ t('transcriptions.list.viewDetail') }}
         </RouterLink>
-        <button @click="emit('download', item.meeting_id)" class="rounded-md bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700">
+        <button @click="emit('download', item.meeting_id)" class="w-full rounded-md bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700">
           {{ t('transcriptions.list.download') }}
         </button>
-        <button @click="emit('copy-link', item.meeting_id)" class="rounded-md bg-gray-600 px-3 py-1 text-sm text-white hover:bg-gray-700">
+        <button @click="emit('copy-link', item.meeting_id)" class="w-full rounded-md bg-gray-600 px-3 py-1 text-sm text-white hover:bg-gray-700">
           {{ t('transcriptions.list.copyLink') }}
         </button>
         <!-- 歷史版本僅管理模式顯示：舊版本可能含後續被修正的內容，不隨公開列表一起露出 -->
-        <button v-if="manage" @click="emit('show-versions', item.meeting_id)" class="rounded-md bg-amber-600 px-3 py-1 text-sm text-white hover:bg-amber-700">
+        <button v-if="manage" @click="emit('show-versions', item.meeting_id)" class="w-full rounded-md bg-amber-600 px-3 py-1 text-sm text-white hover:bg-amber-700">
           {{ t('transcriptions.versions.button') }}
         </button>
       </div>
@@ -67,3 +67,35 @@ const emit = defineEmits<{
   'show-versions': [meetingId: string]
 }>()
 </script>
+
+<style scoped>
+.transcription-card__content {
+  gap: var(--spacing-vt-4);
+}
+
+.transcription-card__actions {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 640px) {
+  .transcription-card__content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .transcription-card__actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-vt-2);
+    margin-left: 0;
+  }
+
+  .transcription-card__actions > * {
+    min-width: 0;
+  }
+
+  .transcription-card__actions > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+</style>

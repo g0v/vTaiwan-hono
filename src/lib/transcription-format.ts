@@ -38,7 +38,9 @@ export function matchesTranscriptionQuery(item: Transcription, query: string): b
 
 /** Markdown → 已消毒的 HTML（大綱內容屬外部資料，一律經過 sanitizer） */
 export function renderMarkdown(markdown: string): string {
-  return sanitizeUntrustedHtml(marked.parse(markdown) as string)
+  const html = sanitizeUntrustedHtml(marked.parse(markdown) as string)
+  // Markdown 表格在窄螢幕不強制壓縮欄位；由容器負責水平捲動，避免撐破整張卡片。
+  return html.replace(/<table\b[^>]*>[\s\S]*?<\/table>/g, table => `<div class="transcription-table-scroll">${table}</div>`)
 }
 
 /** 列表卡片用的大綱摘要：截斷後再轉 HTML */

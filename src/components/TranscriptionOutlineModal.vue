@@ -1,6 +1,6 @@
 <template>
   <div class="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4" @click="emit('close')">
-    <div class="max-h-[80vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white" @click.stop>
+    <div class="flex max-h-[80vh] w-full max-w-4xl flex-col rounded-lg bg-white" @click.stop>
       <div class="border-b border-gray-200 p-6">
         <div class="flex items-center justify-between">
           <h3 class="text-xl font-semibold">{{ t('transcriptions.outline.title') }} - {{ meetingId }}</h3>
@@ -12,7 +12,7 @@
         </div>
       </div>
 
-      <div class="max-h-[60vh] overflow-y-auto p-6">
+      <div class="min-h-0 flex-1 overflow-y-auto p-6">
         <div class="mb-4 flex items-center">
           <img :src="'/CC0.png'" alt="CC0" class="h-8 w-auto" />
         </div>
@@ -21,7 +21,7 @@
         <textarea v-else v-model="draft" class="h-full max-h-[60vh] min-h-[200px] w-full"></textarea>
       </div>
 
-      <div class="flex flex-col items-center justify-between border-t border-gray-200 p-6 md:flex-row">
+      <div class="flex flex-wrap items-center justify-between border-t border-gray-200 p-3">
         <button @click="copyOutline" class="flex items-center space-x-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path

@@ -1,5 +1,5 @@
 <template>
-  <div class="vt-under-navbar min-h-screen bg-vt-bg-2 pt-20">
+  <div class="vt-under-navbar min-h-screen bg-vt-bg-2 pt-20 pb-12">
     <!-- 確認權限中：SSR 與首次 hydration 一律落此狀態，避免洩漏管理版面或造成 mismatch -->
     <div v-if="!authReady" class="container mx-auto flex min-h-[50vh] items-center justify-center px-vt-4">
       <p class="text-vt-base text-vt-fg-3">{{ t('admin.guard.checking') }}</p>
@@ -25,11 +25,11 @@
       <StepUpAuth :title="t('admin.guard.reauthTitle')" :description="t('admin.guard.reauthDesc')" />
     </div>
 
-    <div v-else class="container mx-auto mt-10 px-vt-4">
+    <div v-else class="container mx-auto mt-vt-6 px-vt-4 sm:mt-10">
       <div class="mx-auto max-w-6xl">
         <!-- 頁首 -->
         <header class="mb-vt-6">
-          <div class="flex flex-wrap items-center justify-between gap-vt-3">
+          <div class="flex flex-col gap-vt-3 sm:flex-row sm:items-center sm:justify-between">
             <h1 class="text-vt-3xl font-bold text-vt-fg-1">{{ t('admin.title') }}</h1>
 
             <!-- 二次驗證剩餘時間：歸零即自動退回二次驗證畫面 -->
@@ -47,7 +47,7 @@
         </header>
 
         <!-- 分頁列 -->
-        <div class="mb-vt-6 flex flex-wrap gap-vt-1 border-b border-vt-border">
+        <div class="admin-tabs mb-vt-6">
           <button
             v-for="tab in tabs"
             :key="tab.key"
@@ -83,8 +83,8 @@
               <p v-else-if="filteredMembers.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">
                 {{ memberQuery.trim() ? t('admin.search.empty', { q: memberQuery.trim() }) : t('admin.members.empty') }}
               </p>
-              <div v-else class="overflow-x-auto">
-                <table class="w-full text-left text-vt-sm">
+              <div v-else class="admin-table-scroll">
+                <table class="admin-responsive-table w-full text-left text-vt-sm">
                   <thead>
                     <tr class="border-b border-vt-border text-vt-fg-3">
                       <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.members.col.name') }}</th>
@@ -97,13 +97,13 @@
                   </thead>
                   <tbody>
                     <tr v-for="m in filteredMembers" :key="m.id" class="border-b border-vt-border/60">
-                      <td class="px-vt-3 py-vt-3 font-medium text-vt-fg-1">
+                      <td class="px-vt-3 py-vt-3 font-medium text-vt-fg-1" :data-label="t('admin.members.col.name')">
                         <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: m.name })" @click="showMember(m)">
                           {{ m.name }}
                         </button>
                       </td>
-                      <td class="hidden px-vt-3 py-vt-3 text-vt-fg-2 md:table-cell">{{ m.email }}</td>
-                      <td class="px-vt-3 py-vt-3">
+                      <td class="px-vt-3 py-vt-3 text-vt-fg-2" :data-label="t('admin.members.col.email')">{{ m.email }}</td>
+                      <td class="px-vt-3 py-vt-3" :data-label="t('admin.members.col.role')">
                         <select
                           :value="m.role"
                           :disabled="!canManageRole(m) || updatingRoleId === m.id"
@@ -113,13 +113,13 @@
                           <option v-for="r in availableRolesFor(m)" :key="r" :value="r">{{ t(roleLabelKey(r)) }}</option>
                         </select>
                       </td>
-                      <td class="px-vt-3 py-vt-3 text-vt-fg-2">{{ m.joinedAt }}</td>
-                      <td class="px-vt-3 py-vt-3">
-                        <span class="rounded-full px-vt-2 py-vt-0_5 text-vt-xs font-medium" :class="statusClass(m.status)">
+                      <td class="px-vt-3 py-vt-3 text-vt-fg-2" :data-label="t('admin.members.col.joinedAt')">{{ m.joinedAt }}</td>
+                      <td class="px-vt-3 py-vt-3" :data-label="t('admin.members.col.status')">
+                        <span class="w-fit rounded-full px-vt-2 py-vt-0_5 text-vt-xs font-medium" :class="statusClass(m.status)">
                           {{ t('admin.status.' + m.status) }}
                         </span>
                       </td>
-                      <td class="px-vt-3 py-vt-3">
+                      <td class="px-vt-3 py-vt-3" :data-label="t('admin.members.col.actions')">
                         <button v-if="canBan(m)" type="button" class="admin-btn-ghost" @click="openBanModal(m)">
                           {{ t('admin.ban.button') }}
                         </button>
@@ -138,11 +138,11 @@
             <div class="admin-card">
               <h2 class="mb-vt-1 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.perms.title') }}</h2>
               <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.perms.hint') }}</p>
-              <div class="overflow-x-auto">
-                <table class="w-full text-left text-vt-sm">
+              <div class="admin-table-scroll">
+                <table class="admin-responsive-table admin-permission-table w-full text-left text-vt-sm">
                   <thead>
-                    <tr class="border-b border-vt-border text-vt-fg-3">
-                      <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.perms.col.member') }}</th>
+                    <tr class="border-b border-vt-border text-center text-vt-fg-3">
+                      <th class="px-vt-3 py-vt-2 text-center font-medium">{{ t('admin.perms.col.member') }}</th>
                       <th v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-2 text-center font-medium">
                         {{ t('admin.perms.' + p) }}
                       </th>
@@ -150,10 +150,10 @@
                   </thead>
                   <tbody>
                     <tr v-for="role in ALL_ROLES" :key="role" class="border-b border-vt-border/60">
-                      <td class="px-vt-3 py-vt-3 font-medium text-vt-fg-1">
+                      <td class="px-vt-3 py-vt-3 text-center font-medium text-vt-fg-1" :data-label="t('admin.perms.col.member')">
                         {{ t(roleLabelKey(role)) }}
                       </td>
-                      <td v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-3 text-center">
+                      <td v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-3 text-center" :data-label="t('admin.perms.' + p)">
                         <span v-if="roleHasPermission(role, p)" class="flex justify-center" role="img" :aria-label="t('admin.perms.' + p) + ' — ' + t(roleLabelKey(role))">
                           <IconWrapper name="circle-check-big" :size="18" type="primary" aria-hidden="true" />
                         </span>
@@ -174,7 +174,7 @@
           </p>
 
           <div v-else class="admin-card">
-            <div class="mb-vt-1 flex flex-wrap items-center justify-between gap-vt-2">
+            <div class="mb-vt-1 flex flex-col gap-vt-2 sm:flex-row sm:items-center sm:justify-between">
               <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.logs.title') }}</h2>
               <button type="button" class="admin-btn-ghost" :disabled="logsLoading" @click="loadLogs">{{ t('admin.logs.refresh') }}</button>
             </div>
@@ -185,8 +185,8 @@
             <p v-else-if="logsError" class="py-vt-6 text-center text-vt-sm text-vt-democratic-red">{{ logsError }}</p>
             <p v-else-if="logs.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.logs.empty') }}</p>
             <p v-else-if="filteredLogs.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.search.empty', { q: logQuery.trim() }) }}</p>
-            <div v-else class="overflow-x-auto">
-              <table class="w-full text-left text-vt-sm">
+            <div v-else class="admin-table-scroll">
+              <table class="admin-responsive-table w-full text-left text-vt-sm">
                 <thead>
                   <tr class="border-b border-vt-border text-vt-fg-3">
                     <th class="px-vt-3 py-vt-2 font-medium">{{ t('admin.logs.col.time') }}</th>
@@ -197,10 +197,10 @@
                 </thead>
                 <tbody>
                   <tr v-for="log in filteredLogs" :key="log.id" class="border-b border-vt-border/60">
-                    <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-3">{{ formatLogTime(log.createdAt) }}</td>
-                    <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-2">{{ log.actor.email || log.actor.name }}</td>
-                    <td class="px-vt-3 py-vt-3 text-vt-fg-1">{{ describeLog(log) }}</td>
-                    <td class="px-vt-3 py-vt-3 whitespace-nowrap">
+                    <td class="px-vt-3 py-vt-3 whitespace-nowrap text-vt-fg-3" :data-label="t('admin.logs.col.time')">{{ formatLogTime(log.createdAt) }}</td>
+                    <td class="px-vt-3 py-vt-3 text-vt-fg-2" :data-label="t('admin.logs.col.actor')">{{ log.actor.email || log.actor.name }}</td>
+                    <td class="px-vt-3 py-vt-3 text-vt-fg-1" :data-label="t('admin.logs.col.action')">{{ describeLog(log) }}</td>
+                    <td class="px-vt-3 py-vt-3" :data-label="t('admin.logs.col.manage')">
                       <!-- 只有逐字稿與大綱的變更回得去；其餘事件顯示破折號 -->
                       <button v-if="restoreCommandFor(log)" type="button" class="admin-btn-ghost" :disabled="restoringLogId !== null" @click="runRestore(log)">
                         {{ restoringLogId === log.id ? t('admin.logs.restoring') : t(restoreButtonKey(log)) }}
@@ -233,7 +233,7 @@
       :aria-label="t('admin.members.detailsTitle', { name: selectedMember.name })"
       @click.self="selectedMember = null"
     >
-      <div class="w-full max-w-md rounded-vt-lg bg-vt-bg-1 p-vt-6 shadow-vt-lg">
+      <div class="admin-modal w-full max-w-md rounded-vt-lg bg-vt-bg-1 p-vt-4 shadow-vt-lg sm:p-vt-6">
         <div class="mb-vt-4 flex items-center justify-between gap-vt-4">
           <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.members.detailsTitle', { name: selectedMember.name }) }}</h2>
           <button type="button" class="admin-modal-close" :aria-label="t('common.cancel')" @click="selectedMember = null">×</button>
@@ -260,7 +260,7 @@
             <dd class="text-vt-fg-1">{{ t('admin.status.' + selectedMember.status) }}</dd>
           </div>
         </dl>
-        <div v-if="canBan(selectedMember) || canUnban(selectedMember)" class="mt-vt-4 flex justify-end gap-vt-2">
+        <div v-if="canBan(selectedMember) || canUnban(selectedMember)" class="mt-vt-4 flex flex-col gap-vt-2 sm:flex-row sm:justify-end">
           <button v-if="canBan(selectedMember)" type="button" class="admin-btn-ghost" @click="openBanModalFromMemberDetails(selectedMember)">
             {{ t('admin.ban.button') }}
           </button>
@@ -280,7 +280,7 @@
       :aria-label="t('admin.ban.title', { name: banningMember.name })"
       @click.self="closeBanModal"
     >
-      <div class="w-full max-w-md rounded-vt-lg bg-vt-bg-1 p-vt-6 shadow-vt-lg">
+      <div class="admin-modal w-full max-w-md rounded-vt-lg bg-vt-bg-1 p-vt-4 shadow-vt-lg sm:p-vt-6">
         <div class="mb-vt-4 flex items-center justify-between gap-vt-4">
           <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.ban.title', { name: banningMember.name }) }}</h2>
           <button type="button" class="admin-modal-close" :aria-label="t('common.cancel')" @click="closeBanModal">×</button>
@@ -296,7 +296,7 @@
               :placeholder="t('admin.ban.reasonPlaceholder')"
             />
           </div>
-          <div class="flex justify-end gap-vt-2">
+          <div class="flex flex-col-reverse gap-vt-2 sm:flex-row sm:justify-end">
             <button type="button" class="vt-btn rounded-vt-md border border-vt-border text-vt-fg-2 hover:bg-vt-bg-2" :disabled="banSubmitting" @click="closeBanModal">
               {{ t('common.cancel') }}
             </button>
@@ -795,13 +795,25 @@ function describeLog(log: AuditEntry): string {
 </script>
 
 <style scoped>
+.admin-tabs {
+  display: flex;
+  gap: var(--spacing-vt-1);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  box-shadow: inset 0 -1px var(--color-vt-border);
+}
+
 .admin-tab {
+  flex: 0 0 auto;
   padding: var(--spacing-vt-3) var(--spacing-vt-4);
   font-size: var(--text-vt-sm);
   font-weight: 500;
   color: var(--color-vt-fg-3);
   border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
+  margin-bottom: 0;
+  white-space: nowrap;
   transition:
     color 0.15s ease,
     border-color 0.15s ease;
@@ -821,6 +833,15 @@ function describeLog(log: AuditEntry): string {
   border: 1px solid var(--color-vt-border);
   border-radius: var(--radius-vt-lg, 12px);
   padding: var(--spacing-vt-6, 24px);
+}
+
+.admin-table-scroll {
+  overflow-x: auto;
+}
+
+.admin-modal {
+  max-height: calc(100dvh - var(--spacing-vt-8));
+  overflow-y: auto;
 }
 
 .admin-member-link {
@@ -877,5 +898,74 @@ function describeLog(log: AuditEntry): string {
 
 .admin-btn-ghost--safe:hover {
   background-color: var(--color-vt-green-tint);
+}
+
+@media (max-width: 1024px) {
+  .admin-card {
+    padding: var(--spacing-vt-4);
+  }
+
+  .admin-table-scroll {
+    overflow: visible;
+  }
+
+  .admin-responsive-table,
+  .admin-responsive-table tbody,
+  .admin-responsive-table tr,
+  .admin-responsive-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .admin-responsive-table thead {
+    display: none;
+  }
+
+  .admin-responsive-table tr {
+    padding: var(--spacing-vt-3) 0;
+  }
+
+  .admin-responsive-table tr:first-child {
+    padding-top: 0;
+  }
+
+  .admin-responsive-table tr:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .admin-responsive-table td {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: var(--spacing-vt-3);
+    padding: var(--spacing-vt-2) 0;
+    overflow-wrap: anywhere;
+  }
+
+  .admin-responsive-table td::before {
+    content: attr(data-label);
+    color: var(--color-vt-fg-3);
+    font-weight: 500;
+  }
+
+  .admin-permission-table td::before {
+    text-align: center;
+  }
+
+  .admin-responsive-table td > * {
+    min-width: 0;
+  }
+
+  .admin-responsive-table td > .admin-member-link {
+    text-align: left;
+  }
+
+  .admin-responsive-table td > span[role='img'] {
+    justify-content: center;
+  }
+
+  .admin-responsive-table td > select {
+    width: 100%;
+  }
 }
 </style>
