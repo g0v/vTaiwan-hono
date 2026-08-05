@@ -1101,10 +1101,10 @@
       "confirm": "Change {member}'s role to \"{role}\"?"
     },
     "perms": {
-      "title": "Permission Overview",
-      "hint": "Permissions are determined by role (read-only). Changing the role above updates the mapping.",
+      "title": "Role Permission Overview",
+      "hint": "Roles determine the actions users can perform. Use the member list above to change roles.",
       "col": {
-        "member": "Member"
+        "member": "Role"
       },
       "meeting": {
         "join": "Join meetings",

@@ -134,15 +134,11 @@
               </div>
             </div>
 
-            <!-- 權限矩陣：依角色唯讀展示（對齊 authorization.ts）；改角色即改權限 -->
+            <!-- 權限矩陣：依角色唯讀展示（對齊 authorization.ts）；不列出個別成員 -->
             <div class="admin-card">
               <h2 class="mb-vt-1 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.perms.title') }}</h2>
               <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.perms.hint') }}</p>
-              <p v-if="membersLoading" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">{{ t('admin.members.loading') }}</p>
-              <p v-else-if="filteredMembers.length === 0" class="py-vt-6 text-center text-vt-sm text-vt-fg-3">
-                {{ memberQuery.trim() ? t('admin.search.empty', { q: memberQuery.trim() }) : t('admin.members.empty') }}
-              </p>
-              <div v-else class="overflow-x-auto">
+              <div class="overflow-x-auto">
                 <table class="w-full text-left text-vt-sm">
                   <thead>
                     <tr class="border-b border-vt-border text-vt-fg-3">
@@ -153,14 +149,15 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="m in filteredMembers" :key="m.id" class="border-b border-vt-border/60">
+                    <tr v-for="role in ALL_ROLES" :key="role" class="border-b border-vt-border/60">
                       <td class="px-vt-3 py-vt-3 font-medium text-vt-fg-1">
-                        <button type="button" class="admin-member-link" :aria-label="t('admin.members.showDetails', { name: m.name })" @click="showMember(m)">
-                          {{ m.name }}
-                        </button>
+                        {{ t(roleLabelKey(role)) }}
                       </td>
                       <td v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-3 text-center">
-                        <input type="checkbox" class="admin-checkbox" :checked="roleHasPermission(m.role, p)" :aria-label="t('admin.perms.' + p) + ' — ' + m.name" disabled />
+                        <span v-if="roleHasPermission(role, p)" class="flex justify-center" role="img" :aria-label="t('admin.perms.' + p) + ' — ' + t(roleLabelKey(role))">
+                          <IconWrapper name="circle-check-big" :size="18" type="primary" aria-hidden="true" />
+                        </span>
+                        <span v-else aria-hidden="true">—</span>
                       </td>
                     </tr>
                   </tbody>
@@ -329,6 +326,7 @@ import {
   type Permission,
 } from '../client/auth-session'
 import { auditActionLabelKey, AUDIT_LOG_LIMIT, restoreCommandFor, type AuditEntry } from '../lib/audit-log'
+import IconWrapper from '../components/IconWrapper.vue'
 import SearchInput from '../components/SearchInput.vue'
 import StepUpAuth from '../components/StepUpAuth.vue'
 import TranscriptionManager from '../components/TranscriptionManager.vue'
@@ -823,13 +821,6 @@ function describeLog(log: AuditEntry): string {
   border: 1px solid var(--color-vt-border);
   border-radius: var(--radius-vt-lg, 12px);
   padding: var(--spacing-vt-6, 24px);
-}
-
-.admin-checkbox {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--color-vt-democratic-red);
-  cursor: not-allowed;
 }
 
 .admin-member-link {
