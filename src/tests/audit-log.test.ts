@@ -13,6 +13,8 @@ import {
   type AuditAction,
   type AuditEntry,
 } from '../lib/audit-log'
+import { isSuccessfulAuthAuditResponse, prepareAuthAudit } from '../server/lib/auth-audit'
+import type { AppBindings } from '../api/types'
 
 const ALL_ACTIONS: AuditAction[] = [
   'user.create',
@@ -134,6 +136,50 @@ describe('create-user 的操作對象（#74）', () => {
     expect(readCreatedAuditUser({ user: null })).toBeNull()
     expect(readCreatedAuditUser({ user: { id: '' } })).toBeNull()
     expect(readCreatedAuditUser({ user: { id: 42 } })).toBeNull()
+  })
+})
+
+describe('Better Auth after hook 的成功回應判定', () => {
+  it('只接受各管理端點預期的成功回傳形狀', () => {
+    expect(isSuccessfulAuthAuditResponse('user.create', { user: { id: 'u1' } })).toBe(true)
+    expect(isSuccessfulAuthAuditResponse('user.role.set', { user: { id: 'u1' } })).toBe(true)
+    expect(isSuccessfulAuthAuditResponse('user.remove', { success: true })).toBe(true)
+    expect(isSuccessfulAuthAuditResponse('user.session.revoke', { success: true })).toBe(true)
+    expect(isSuccessfulAuthAuditResponse('user.password.set', { status: true })).toBe(true)
+  })
+
+  it('錯誤或不完整回傳絕不入帳', () => {
+    expect(isSuccessfulAuthAuditResponse('user.create', { code: 'USER_ALREADY_EXISTS' })).toBe(false)
+    expect(isSuccessfulAuthAuditResponse('user.role.set', { user: { id: '' } })).toBe(false)
+    expect(isSuccessfulAuthAuditResponse('user.remove', { success: false })).toBe(false)
+    expect(isSuccessfulAuthAuditResponse('user.password.set', { status: false })).toBe(false)
+  })
+})
+
+describe('Better Auth before hook 的審計快照', () => {
+  const envWithUser = (user: { id: string; name: string; email: string; role: string }): AppBindings =>
+    ({
+      DB_AUTH: {
+        prepare: () => ({
+          bind: () => ({ first: async () => user }),
+        }),
+      },
+    }) as unknown as AppBindings
+
+  it('直接使用 Better Auth 已解析的 body，保存 role 變更前快照', async () => {
+    await expect(prepareAuthAudit(envWithUser({ id: 'u1', name: '原姓名', email: 'member@example.com', role: 'user' }), '/admin/set-role', { userId: 'u1', role: 'admin' })).resolves.toEqual({
+      action: 'user.role.set',
+      target: { type: 'user', id: 'u1', label: '原姓名' },
+      detail: { fromRole: 'user', toRole: 'admin' },
+    })
+  })
+
+  it('create-user 不讀取 request stream，也不需預先查目標使用者', async () => {
+    await expect(prepareAuthAudit({} as AppBindings, '/admin/create-user', { name: '新成員', password: 'never-log-this' })).resolves.toEqual({
+      action: 'user.create',
+      target: null,
+      detail: {},
+    })
   })
 })
 
