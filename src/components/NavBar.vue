@@ -4,7 +4,7 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 import UserAvatar from './UserAvatar.vue'
-import { navLinks as links } from '../router/nav-links'
+import { adminNavLink, navLinks as links } from '../router/nav-links'
 
 interface AuthenticatedUser {
   displayName: string | null
@@ -15,10 +15,12 @@ const props = withDefaults(
   defineProps<{
     current?: string
     user?: AuthenticatedUser | null
+    isAdmin?: boolean
   }>(),
   {
     current: '',
     user: null,
+    isAdmin: false,
   }
 )
 
@@ -133,6 +135,18 @@ function logout() {
           @click="mobileOpen = false"
         >
           {{ t('common.profile') }}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </RouterLink>
+        <RouterLink
+          v-if="isAdmin"
+          :to="adminNavLink.href"
+          class="flex items-center justify-between rounded-xl px-3.5 py-1.5 transition-colors hover:bg-vt-gray-100"
+          :class="activeKey === adminNavLink.key ? 'text-democratic-red' : 'text-vt-gray-800'"
+          @click="mobileOpen = false"
+        >
+          {{ t(adminNavLink.labelKey) }}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40">
             <path d="m9 18 6-6-6-6" />
           </svg>

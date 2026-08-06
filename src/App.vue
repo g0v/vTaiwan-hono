@@ -119,6 +119,8 @@ const activeNavKey = computed(() => {
     { prefix: '/intro', key: 'about' },
     { prefix: '/about', key: 'about' },
     { prefix: '/contributors', key: 'contributors' },
+    { prefix: '/profile', key: 'profile' },
+    { prefix: '/admin', key: 'admin' },
   ]
 
   return map.find(item => path.startsWith(item.prefix))?.key
@@ -136,7 +138,7 @@ watch(
 
 <template>
   <div class="flex min-h-screen flex-col font-serif">
-    <NavBar :current="activeNavKey" :user="user" @show-login="showLoginModal = true" @logout="handleLogout" />
+    <NavBar :current="activeNavKey" :user="user" :is-admin="isAdmin" @show-login="showLoginModal = true" @logout="handleLogout" />
     <div class="flex-1">
       <RouterView :user="user" :auth-session="authSession" :auth-ready="authReady" :is-admin="isAdmin" :in-app="isInApp" @logout="handleLogout" @profile-updated="handleProfileUpdated" />
     </div>
