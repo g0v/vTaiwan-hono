@@ -136,7 +136,7 @@ const rawCommunityContributors: Contributor[] = [
     id: '15',
     name: 'Lynn',
     contribution: 'contributors.contributions.frontendDev',
-    imgURL: '',
+    imgURL: 'https://gravatar.com/avatar/8382706c9c06d5bb9ce60ed5453f4d27d31a4c155f25414690cca8fc53376046?s=256&r=g',
   },
   {
     id: '16',
