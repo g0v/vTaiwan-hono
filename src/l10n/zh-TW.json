@@ -92,6 +92,14 @@
     "propose": {
       "title": "提出專案提案 | vTaiwan",
       "description": "如果您有值得討論的公共政策議題，歡迎提出專案建議。"
+    },
+    "admin": {
+      "title": "管理員後台",
+      "description": "vTaiwan 管理員後台：成員角色與逐字稿管理。"
+    },
+    "authError": {
+      "title": "登入錯誤",
+      "description": "登入流程發生錯誤，請重新嘗試或聯絡 vTaiwan 團隊。"
     }
   },
   "common": {
@@ -131,6 +139,7 @@
     "transcriptions": "逐字稿管理",
     "faq": "常見問答",
     "contributors": "貢獻者",
+    "admin": "管理後台",
     "openMenu": "開啟選單"
   },
   "about": {
@@ -169,12 +178,44 @@
   "auth": {
     "loginTitle": "登入",
     "loginWithGoogle": "使用 Google 登入",
+    "loginWithGithub": "使用 GitHub 登入",
     "loggingIn": "登入中...",
     "loginFailed": "登入失敗，請重試",
     "logoutConfirm": "確定要登出嗎？",
     "loginError": "登入時發生錯誤，請稍後再試",
     "logoutError": "登出時發生錯誤，請稍後再試",
     "inAppBrowserNotSupported": "本系統不支援Facebook, Line等app內部瀏覽，請用一般瀏覽器開啟，方可登入，謝謝"
+  },
+  "authError": {
+    "eyebrow": "發生錯誤",
+    "title": "登入失敗",
+    "description": "您的登入執行失敗，以下是錯誤原因與錯誤代碼",
+    "reasonLabel": "錯誤原因",
+    "descriptionFallback": "未提供錯誤原因",
+    "codeLabel": "錯誤代碼",
+    "retryLogin": "重新登入",
+    "goHome": "返回首頁",
+    "helpTitle": "仍然無法登入？",
+    "helpDescription": "請保留錯誤代碼，並告訴我們你使用的登入方式與瀏覽器環境。",
+    "contact": "聯絡我們",
+    "reasons": {
+      "BANNED_USER": "此帳號已被停權，無法登入。",
+      "UNKNOWN": "系統未提供可辨識的錯誤代碼。",
+      "account_already_linked_to_different_user": "這個社群帳號已連結到另一個使用者。",
+      "email_doesn't_match": "社群帳號的電子郵件與目前登入帳號不一致。",
+      "email_not_found": "社群帳號未提供電子郵件，無法完成登入。",
+      "invalid_callback_request": "登入回調請求格式不正確，請重新登入。",
+      "invalid_code": "登入授權碼無效或已過期，請重新登入。",
+      "no_callback_url": "登入流程缺少回跳網址，請重新登入。",
+      "no_code": "登入供應商未回傳授權碼，請重新登入。",
+      "oauth_provider_not_found": "找不到指定的登入供應商。",
+      "state_generation_error": "無法建立登入驗證狀態，請稍後再試。",
+      "state_invalid": "登入驗證狀態無效，請重新登入。",
+      "state_mismatch": "登入驗證狀態不一致，請重新登入。",
+      "state_not_found": "登入驗證狀態遺失，請重新登入。",
+      "unable_to_get_user_info": "無法從登入供應商取得使用者資料。",
+      "unable_to_link_account": "無法連結這個社群帳號。"
+    }
   },
   "footer": {
     "description": "公共政策的開放協作平台",
@@ -508,7 +549,7 @@
       "contactUs": "聯絡我們"
     },
     "jitsi": "即時會議",
-    "transcriptions": "逐字稿管理"
+    "transcriptions": "瀏覽逐字稿"
   },
   "meetupDetail": {
     "upcoming": "即將舉行",
@@ -711,7 +752,13 @@
   },
   "transcriptions": {
     "title": "逐字稿管理",
-    "description": "管理會議逐字稿，包含查詢、下載和上傳功能",
+    "description": "瀏覽會議逐字稿，可查看大綱與下載全文（上傳與大綱編輯請至管理員後台）",
+    "search": {
+      "label": "關鍵字搜尋",
+      "placeholder": "搜尋會議 ID 或大綱內容…",
+      "clearSearch": "清除搜尋",
+      "noResults": "找不到符合「{query}」的逐字稿"
+    },
     "upload": {
       "title": "上傳逐字稿",
       "description": "上傳即代表您同意以CC-BY-SA創用授權釋出，並同意由AI整理大綱，大綱以CC0釋出",
@@ -722,6 +769,7 @@
     },
     "list": {
       "title": "逐字稿列表",
+      "prototypeBadge": "樣稿",
       "meetingId": "會議 ID",
       "fileName": "檔案名稱",
       "viewOutline": "查看大綱",
@@ -731,6 +779,26 @@
       "copyLink": "複製逐字稿連結",
       "copyLinkSuccess": "逐字稿連結已複製到剪貼簿",
       "copyLinkError": "複製逐字稿連結失敗，請稍後再試"
+    },
+    "versions": {
+      "button": "歷史版本",
+      "title": "逐字稿歷史版本",
+      "hint": "每次上傳都會保留一份獨立版本；可下載任一版本，再以上傳功能還原。",
+      "loading": "正在載入版本…",
+      "empty": "尚無歷史版本（此逐字稿在版本功能上線前上傳）",
+      "loadError": "載入版本失敗，請稍後再試",
+      "download": "下載",
+      "downloading": "下載中…",
+      "downloadError": "下載版本失敗，請稍後再試",
+      "close": "關閉",
+      "latest": "最新",
+      "truncated": "版本數量過多，僅顯示最舊的 {n} 筆",
+      "col": {
+        "uploadedAt": "上傳時間",
+        "uploadedBy": "上傳者",
+        "size": "大小",
+        "action": "操作"
+      }
     },
     "outline": {
       "title": "會議大綱",
@@ -971,5 +1039,143 @@
   "意見徵集": "意見徵集",
   "研擬草案": "研擬草案",
   "送交院會": "送交院會",
-  "歷史案件": "歷史案件"
+  "歷史案件": "歷史案件",
+  "admin": {
+    "guard": {
+      "checking": "正在確認權限…",
+      "forbiddenTitle": "沒有存取權限",
+      "forbiddenDesc": "此頁面僅限管理員存取。若你認為這是誤判，請聯絡網站管理員。",
+      "wrongAccountAlert": "已切換到另一個帳號（{email}），而這個帳號沒有管理權限。若你剛才用的社群帳號電子郵件與管理員帳號不同，系統會視為新帳號。請登出後改用管理員帳號的電子郵件重新登入。即將返回首頁。",
+      "backHome": "返回首頁",
+      "reauthTitle": "需要二次驗證身分",
+      "reauthDesc": "進入管理後台屬敏感操作。即使你已登入，仍需再以 Google 或 GitHub 驗證一次；通過後有一段限時的操作時間。",
+      "sessionRemaining": "本次驗證剩餘 {time}",
+      "sessionRemainingAria": "敏感操作授權剩餘時間"
+    },
+    "title": "管理員後台",
+    "subtitle": "成員清單、角色變更與變更日誌皆使用真實資料（僅超級管理員可操作）。",
+    "search": {
+      "label": "關鍵字搜尋",
+      "clear": "清除搜尋",
+      "empty": "找不到符合「{q}」的結果",
+      "placeholder": {
+        "members": "搜尋姓名、電子郵件、角色或狀態…",
+        "logs": "搜尋時間、操作者或動作…"
+      }
+    },
+    "tabs": {
+      "members": "成員與權限",
+      "logs": "變更日誌",
+      "transcripts": "逐字稿管理"
+    },
+    "members": {
+      "listTitle": "成員清單",
+      "count": "共 {n} 位成員",
+      "countFiltered": "顯示 {n} / 共 {total} 位成員",
+      "showDetails": "查看 {name} 的完整資料",
+      "detailsTitle": "{name} 的成員資料",
+      "loading": "正在載入成員…",
+      "empty": "尚無成員資料",
+      "loadFailed": "無法載入成員清單，請稍後再試。",
+      "roleUpdateFailed": "角色更新失敗，請稍後再試。",
+      "banFailed": "停權失敗，請稍後再試。",
+      "unbanFailed": "解除停權失敗，請稍後再試。",
+      "needSuperAdmin": "成員清單與角色變更僅限超級管理員（super-admin）操作。一般管理員仍可使用逐字稿管理分頁。",
+      "col": {
+        "name": "姓名",
+        "email": "電子郵件",
+        "role": "角色",
+        "joinedAt": "加入時間",
+        "status": "狀態",
+        "actions": "操作"
+      }
+    },
+    "status": {
+      "active": "啟用",
+      "banned": "已停權"
+    },
+    "roles": {
+      "superAdmin": "超級管理員",
+      "admin": "管理員",
+      "user": "一般使用者",
+      "confirm": "確定要將 {member} 的角色變更為「{role}」嗎？"
+    },
+    "perms": {
+      "title": "角色權限一覽",
+      "hint": "角色決定可執行的操作，請透過上方成員列表調整角色。",
+      "col": {
+        "member": "角色"
+      },
+      "meeting": {
+        "join": "加入會議",
+        "moderate": "主持會議"
+      },
+      "transcription": {
+        "update": "更新逐字稿"
+      },
+      "topic": {
+        "manage": "管理議題"
+      }
+    },
+    "ban": {
+      "button": "停權",
+      "title": "停權成員 {name}",
+      "reasonLabel": "停權理由（必填）",
+      "reasonPlaceholder": "請說明停權原因…",
+      "reasonRequired": "請填寫停權理由，不可空白。",
+      "submit": "執行停權"
+    },
+    "unban": {
+      "button": "解除停權",
+      "confirm": "確定要解除 {name} 的停權嗎？解除後該使用者可以重新登入。"
+    },
+    "logs": {
+      "title": "變更日誌記錄",
+      "hint": "後台的變更事件：成員角色與停權異動、逐字稿上傳／覆蓋、大綱編輯。僅顯示最近 {n} 筆。",
+      "needSuperAdmin": "變更日誌僅限超級管理員（super-admin）檢視。",
+      "refresh": "重新整理",
+      "loading": "正在載入變更日誌…",
+      "loadFailed": "無法載入變更日誌，請稍後再試。",
+      "empty": "尚無變更記錄",
+      "col": {
+        "time": "時間",
+        "actor": "操作者",
+        "action": "動作",
+        "manage": "管理操作"
+      },
+      "action": {
+        "userCreate": "新增成員 {target}（角色：{to}）",
+        "userRoleSet": "將 {target} 的角色由 {from} 變更為 {to}",
+        "userBan": "停權成員 {target}",
+        "userBanWithReason": "停權成員 {target}，理由：{reason}",
+        "userUnban": "恢復成員 {target} 的權限",
+        "userRemove": "移除成員 {target}",
+        "userUpdate": "更新成員 {target} 的帳號資料",
+        "userImpersonate": "以成員 {target} 的身分登入（impersonate）",
+        "userPasswordSet": "重設成員 {target} 的密碼",
+        "userSessionRevokeSingle": "登出成員 {target} 的單一工作階段",
+        "userSessionsRevoke": "登出成員 {target} 的所有工作階段",
+        "transcriptionCreate": "新增 {target} 的逐字稿（版本 {version}）",
+        "transcriptionReplace": "覆蓋 {target} 的逐字稿（版本 {version}）",
+        "transcriptionDelete": "刪除 {target} 的逐字稿",
+        "transcriptionRestore": "將 {target} 的逐字稿回復到版本 {version}",
+        "transcriptionOutlineUpdate": "編輯 {target} 的逐字稿大綱",
+        "transcriptionOutlineRestore": "將 {target} 的大綱回復到版本 {version}",
+        "unknown": "未知的變更事件"
+      },
+      "restore": "回復到變更前版本",
+      "restoring": "處理中…",
+      "restoreConfirm": "確定要把 {target} 回復到這筆變更（{time}）之前的版本嗎？現行內容會被覆蓋（但仍會保留為歷史版本）。",
+      "restoreSuccess": "已回復到變更前版本。",
+      "restoreFailed": "操作失敗，請稍後再試。",
+      "restoreUnavailable": "此變更沒有可回復的前一版本",
+      "deleteButton": "刪除此逐字稿",
+      "deleteConfirm": "這筆變更是「新增逐字稿」，回到變更前等於刪除 {target} 的逐字稿。歷史版本會保留、之後仍可由本日誌救回。確定要刪除嗎？",
+      "deleteSuccess": "已刪除逐字稿（歷史版本仍保留）。"
+    },
+    "transcripts": {
+      "title": "逐字稿管理",
+      "hint": "此分頁使用真實資料：登入後即可上傳逐字稿；覆蓋既有逐字稿與編輯 AI 大綱需管理員權限。"
+    }
+  }
 }

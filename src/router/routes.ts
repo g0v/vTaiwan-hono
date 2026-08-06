@@ -1,6 +1,8 @@
 import type { RouteLocationNormalizedLoaded } from 'vue-router'
 import {
   headForAbout,
+  headForAdmin,
+  headForAuthError,
   headForBlogs,
   headForContact,
   headForContributors,
@@ -89,6 +91,10 @@ export function headForRoute(route: RouteLocationNormalizedLoaded, origin: strin
       return headForContact(origin, t)
     case 'propose':
       return headForPropose(origin, t)
+    case 'admin':
+      return headForAdmin(origin, t)
+    case 'auth-error':
+      return headForAuthError(origin, t)
     default:
       return headForNotFound(origin, t)
   }

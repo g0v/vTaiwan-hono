@@ -12,6 +12,9 @@ export const navLinks = [
   { key: 'contributors', labelKey: 'header.contributors', href: '/contributors' },
 ] as const
 
+// 管理後台入口——僅在使用者為 admin/super-admin 時，於 /profile 顯示（見 ProfileView.vue）。
+export const adminNavLink = { key: 'admin', labelKey: 'header.admin', href: '/admin' } as const
+
 // ── Footer 型別 ────────────────────────────────────────────────────────────────
 
 // 外部連結（純 href，label 為固定字串）

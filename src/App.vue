@@ -1,40 +1,31 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, provide, ref, watch } from 'vue'
-import type { User } from 'firebase/auth'
+import { computed, onMounted, provide, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import Footer from './components/Footer.vue'
-import GoogleLogin from './components/GoogleLogin.vue'
+import SocialLogin from './components/SocialLogin.vue'
 import NavBar from './components/NavBar.vue'
-import { getFirebaseServices } from './lib/firebase'
+import { authClient } from './client/authClient'
+import { loadAuthSession, isAdminSession, type AuthSession } from './client/auth-session'
 import { detectPreferredLocale, isSupportedLocale, localeKey, persistLocale, supportedLocales, type SupportedLocale } from './i18n'
 
 const route = useRoute()
 const showLoginModal = ref(false)
 const isInApp = ref(false)
 const user = ref<AuthenticatedUser | null>(null)
-const userData = ref<UserData | null>(null)
-let unsubscribeAuth: (() => void) | undefined
+const authSession = ref<AuthSession | null>(null)
+// session 是否已載入完成（成功或未登入皆算完成）——AdminView 用來區分「確認中」與「非管理員」。
+// SSR 與首次 hydration 一律為 false，待瀏覽器端載入 session 後才轉 true，避免 hydration mismatch。
+const authReady = ref(false)
+
+// 管理員（含超級管理員）——決定 /profile 是否顯示管理後台入口。僅顯示層取捨，安全邊界在 Worker。
+const isAdmin = computed(() => isAdminSession(authSession.value))
 
 interface AuthenticatedUser {
   uid: string
   displayName: string | null
   email: string | null
   photoURL: string | null
-}
-
-interface UserData {
-  uid: string
-  name: string | null
-  email: string | null
-  photoURL: string | null
-  role: string
-  createdAt: string
-  updatedAt: string
-  isAdmin: boolean
-  isSuperAdmin: boolean
-  isActive: boolean
-  isDeleted: boolean
 }
 
 // 偏好語言：以 provide / inject 將語言變數提供給所有子元件使用
@@ -51,7 +42,7 @@ provide(localeKey, { locale, supportedLocales, setLocale })
 // 待掛載完成後（僅瀏覽器端）再依使用者偏好切換，避免 hydration mismatch。
 onMounted(() => {
   isInApp.value = /\b(FBAN|FBAV|Instagram|Line)\b/i.test(navigator.userAgent)
-  void watchAuthState()
+  void loadBetterAuthSession()
 
   const preferred = detectPreferredLocale()
   if (preferred !== locale.value) {
@@ -66,74 +57,40 @@ function handleLoginSuccess() {
   showLoginModal.value = false
 }
 
-onUnmounted(() => {
-  unsubscribeAuth?.()
-})
-
-function publicUser(firebaseUser: User): AuthenticatedUser {
+function publicBetterAuthUser(betterAuthUser: AuthSession['user']): AuthenticatedUser {
   return {
-    uid: firebaseUser.uid,
-    displayName: firebaseUser.displayName,
-    email: firebaseUser.email,
-    photoURL: firebaseUser.photoURL,
+    uid: betterAuthUser.id,
+    displayName: betterAuthUser.name,
+    email: betterAuthUser.email,
+    photoURL: betterAuthUser.image ?? null,
   }
 }
 
-async function watchAuthState() {
+async function loadBetterAuthSession() {
   try {
-    const { auth, onAuthStateChanged } = await getFirebaseServices()
-    unsubscribeAuth = onAuthStateChanged(auth, async firebaseUser => {
-      user.value = firebaseUser ? publicUser(firebaseUser) : null
-
-      if (firebaseUser) {
-        showLoginModal.value = false
-        await loadOrCreateUserData(firebaseUser)
-      } else {
-        userData.value = null
-      }
-    })
+    authSession.value = await loadAuthSession()
+    user.value = authSession.value ? publicBetterAuthUser(authSession.value.user) : null
+    if (!authSession.value) return
+    handleLoginSuccess()
   } catch (error) {
-    console.error('Failed to initialize Firebase authentication:', error)
-  }
-}
-
-async function loadOrCreateUserData(firebaseUser: User) {
-  try {
-    const { database, databaseGet, databaseRef, databaseSet } = await getFirebaseServices()
-    const reference = databaseRef(database, `users/${firebaseUser.uid}`)
-    const snapshot = await databaseGet(reference)
-    const defaults: UserData = {
-      uid: firebaseUser.uid,
-      name: firebaseUser.displayName,
-      email: firebaseUser.email,
-      photoURL: firebaseUser.photoURL,
-      role: 'user',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-      isAdmin: false,
-      isSuperAdmin: false,
-      isActive: true,
-      isDeleted: false,
-    }
-
-    if (!snapshot.exists()) {
-      await databaseSet(reference, defaults)
-      userData.value = defaults
-      return
-    }
-
-    userData.value = { ...defaults, ...(snapshot.val() as Partial<UserData>) }
-  } catch (error) {
-    console.error('Failed to load Firebase user data:', error)
+    console.error('Failed to load Better Auth session:', error)
+  } finally {
+    // 無論成功、未登入或失敗，都標記為已完成，讓守衛頁面可從「確認中」進入判定。
+    authReady.value = true
   }
 }
 
 async function handleLogout() {
   try {
-    const { auth, signOut } = await getFirebaseServices()
-    await signOut(auth)
+    const { error } = await authClient.signOut()
+    if (error) {
+      console.error('Better Auth logout error:', error)
+    } else {
+      authSession.value = null
+      user.value = null
+    }
   } catch (error) {
-    console.error('Firebase logout error:', error)
+    console.error('Better Auth logout error:', error)
   }
 }
 
@@ -141,8 +98,8 @@ function handleProfileUpdated(displayName: string) {
   if (user.value) {
     user.value = { ...user.value, displayName }
   }
-  if (userData.value) {
-    userData.value = { ...userData.value, name: displayName }
+  if (authSession.value) {
+    authSession.value = { ...authSession.value, user: { ...authSession.value.user, name: displayName } }
   }
 }
 
@@ -179,9 +136,9 @@ watch(
 
 <template>
   <div class="flex min-h-screen flex-col font-serif">
-    <NavBar :current="activeNavKey" :user="user" :user-data="userData" @show-login="showLoginModal = true" @logout="handleLogout" />
+    <NavBar :current="activeNavKey" :user="user" @show-login="showLoginModal = true" @logout="handleLogout" />
     <div class="flex-1">
-      <RouterView :user="user" :user-data="userData" :in-app="isInApp" @login-success="handleLoginSuccess" @logout="handleLogout" @profile-updated="handleProfileUpdated" />
+      <RouterView :user="user" :auth-session="authSession" :auth-ready="authReady" :is-admin="isAdmin" :in-app="isInApp" @logout="handleLogout" @profile-updated="handleProfileUpdated" />
     </div>
     <Footer />
 
@@ -206,7 +163,7 @@ watch(
           </button>
         </div>
 
-        <GoogleLogin :in-app="isInApp" @login-success="handleLoginSuccess" />
+        <SocialLogin :in-app="isInApp" />
 
         <div class="mt-5 text-center">
           <button type="button" class="font-sans text-vt-sm text-vt-fg-2 hover:text-vt-fg-1" @click="showLoginModal = false">

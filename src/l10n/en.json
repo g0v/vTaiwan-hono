@@ -92,6 +92,14 @@
     "propose": {
       "title": "Propose a Project | vTaiwan",
       "description": "If you have public policy issues worth discussing, you are welcome to propose project suggestions."
+    },
+    "admin": {
+      "title": "Admin Console",
+      "description": "vTaiwan admin console for member roles and transcript management."
+    },
+    "authError": {
+      "title": "Sign-in Error",
+      "description": "A sign-in error occurred. Please try again or contact the vTaiwan team."
     }
   },
   "即將開始": "Upcoming",
@@ -136,6 +144,7 @@
     "transcriptions": "Transcriptions",
     "faq": "FAQ",
     "contributors": "Contributors",
+    "admin": "Admin",
     "openMenu": "Open menu"
   },
   "about": {
@@ -174,12 +183,44 @@
   "auth": {
     "loginTitle": "Login",
     "loginWithGoogle": "Login with Google",
+    "loginWithGithub": "Login with GitHub",
     "loggingIn": "Logging in...",
     "loginFailed": "Login failed, please try again",
     "logoutConfirm": "Are you sure you want to logout?",
     "loginError": "An error occurred during login, please try again later",
     "logoutError": "An error occurred during logout, please try again later",
     "inAppBrowserNotSupported": "This system does not support in-app browsers like Facebook or Line. Please open with a regular browser to login. Thank you."
+  },
+  "authError": {
+    "eyebrow": "An error occurred",
+    "title": "Sign-in failed",
+    "description": "Your sign-in attempt failed. Below are the error reason and error code.",
+    "reasonLabel": "Error reason",
+    "descriptionFallback": "No error reason provided",
+    "codeLabel": "Error code",
+    "retryLogin": "Try logging in again",
+    "goHome": "Go home",
+    "helpTitle": "Still unable to log in?",
+    "helpDescription": "Keep the error code and tell us which sign-in method and browser environment you used.",
+    "contact": "Contact us",
+    "reasons": {
+      "BANNED_USER": "This account has been banned and cannot sign in.",
+      "UNKNOWN": "The system did not provide a recognizable error code.",
+      "account_already_linked_to_different_user": "This social account is already linked to another user.",
+      "email_doesn't_match": "The social account email does not match the currently signed-in account.",
+      "email_not_found": "The social account did not provide an email address, so sign-in could not be completed.",
+      "invalid_callback_request": "The sign-in callback request is invalid. Please try signing in again.",
+      "invalid_code": "The authorization code is invalid or expired. Please try signing in again.",
+      "no_callback_url": "The sign-in flow is missing a callback URL. Please try signing in again.",
+      "no_code": "The sign-in provider did not return an authorization code. Please try signing in again.",
+      "oauth_provider_not_found": "The specified sign-in provider could not be found.",
+      "state_generation_error": "The sign-in verification state could not be created. Please try again later.",
+      "state_invalid": "The sign-in verification state is invalid. Please try signing in again.",
+      "state_mismatch": "The sign-in verification state does not match. Please try signing in again.",
+      "state_not_found": "The sign-in verification state is missing. Please try signing in again.",
+      "unable_to_get_user_info": "Could not retrieve user information from the sign-in provider.",
+      "unable_to_link_account": "Could not link this social account."
+    }
   },
   "footer": {
     "description": "Open collaboration platform for public policy",
@@ -498,7 +539,7 @@
       "contactUs": "Contact Us"
     },
     "jitsi": "Jitsi Meet",
-    "transcriptions": "Transcriptions"
+    "transcriptions": "Browse Transcriptions"
   },
   "meetupDetail": {
     "upcoming": "Upcoming",
@@ -716,7 +757,13 @@
   },
   "transcriptions": {
     "title": "Transcription Management",
-    "description": "Manage meeting transcriptions, including query, download, and upload functions",
+    "description": "Browse meeting transcriptions, view outlines and download full text (uploading and outline editing moved to the admin console)",
+    "search": {
+      "label": "Keyword search",
+      "placeholder": "Search meeting ID or outline…",
+      "clearSearch": "Clear search",
+      "noResults": "No transcriptions match \"{query}\""
+    },
     "upload": {
       "title": "Upload Transcription",
       "description": "By uploading, you agree to release under CC-BY-SA Creative Commons license and consent to AI-generated outlines, with outlines released under CC0",
@@ -727,6 +774,7 @@
     },
     "list": {
       "title": "Transcription List",
+      "prototypeBadge": "Prototype",
       "meetingId": "Meeting ID",
       "fileName": "File Name",
       "viewOutline": "View Outline",
@@ -736,6 +784,26 @@
       "copyLink": "Copy Transcription Link",
       "copyLinkSuccess": "Transcription link copied to clipboard",
       "copyLinkError": "Copy failed, please try again later"
+    },
+    "versions": {
+      "button": "Versions",
+      "title": "Transcript Versions",
+      "hint": "Every upload is kept as a separate version. Download any version and re-upload it to restore.",
+      "loading": "Loading versions…",
+      "empty": "No versions yet (this transcript was uploaded before versioning was enabled)",
+      "loadError": "Failed to load versions, please try again later",
+      "download": "Download",
+      "downloading": "Downloading…",
+      "downloadError": "Failed to download this version, please try again later",
+      "close": "Close",
+      "latest": "Latest",
+      "truncated": "Too many versions; showing the {n} oldest only",
+      "col": {
+        "uploadedAt": "Uploaded at",
+        "uploadedBy": "Uploaded by",
+        "size": "Size",
+        "action": "Action"
+      }
     },
     "outline": {
       "title": "Meeting Outline",
@@ -970,6 +1038,144 @@
       "checkUrl": "• Please check if the URL is correct",
       "useNavigation": "• Use the navigation menu above to browse the website",
       "contactSupport": "• Contact us if you have any questions"
+    }
+  },
+  "admin": {
+    "guard": {
+      "checking": "Checking permissions…",
+      "forbiddenTitle": "Access denied",
+      "forbiddenDesc": "This page is restricted to administrators. If you believe this is a mistake, please contact a site administrator.",
+      "wrongAccountAlert": "You are now signed in as a different account ({email}), and it has no admin rights. If the social account you just used has a different email from your admin account, it is treated as a new account. Please sign out and sign in again with your admin account's email. Returning to the home page.",
+      "backHome": "Back to home",
+      "reauthTitle": "Re-authentication required",
+      "reauthDesc": "Opening the admin console is a sensitive action. Even though you are signed in, please verify with Google or GitHub once more; access is then granted for a limited time.",
+      "sessionRemaining": "{time} left in this session",
+      "sessionRemainingAria": "Time remaining for elevated access"
+    },
+    "title": "Admin Console",
+    "subtitle": "Member list, role changes, and the change log all use real data (super-admin only).",
+    "search": {
+      "label": "Keyword search",
+      "clear": "Clear search",
+      "empty": "No results found for \"{q}\"",
+      "placeholder": {
+        "members": "Search name, email, role or status…",
+        "logs": "Search time, actor or action…"
+      }
+    },
+    "tabs": {
+      "members": "Members & Permissions",
+      "logs": "Change Log",
+      "transcripts": "Transcripts"
+    },
+    "members": {
+      "listTitle": "Member List",
+      "count": "{n} members",
+      "countFiltered": "Showing {n} of {total} members",
+      "showDetails": "View full details for {name}",
+      "detailsTitle": "{name}'s member details",
+      "loading": "Loading members…",
+      "empty": "No members yet",
+      "loadFailed": "Failed to load members. Please try again later.",
+      "roleUpdateFailed": "Failed to update role. Please try again later.",
+      "banFailed": "Failed to ban the member. Please try again later.",
+      "unbanFailed": "Failed to unban the member. Please try again later.",
+      "needSuperAdmin": "Listing members and changing roles requires a super-admin. Regular admins can still use the Transcripts tab.",
+      "col": {
+        "name": "Name",
+        "email": "Email",
+        "role": "Role",
+        "joinedAt": "Joined",
+        "status": "Status",
+        "actions": "Actions"
+      }
+    },
+    "status": {
+      "active": "Active",
+      "banned": "Banned"
+    },
+    "roles": {
+      "superAdmin": "Super Admin",
+      "admin": "Admin",
+      "user": "User",
+      "confirm": "Change {member}'s role to \"{role}\"?"
+    },
+    "perms": {
+      "title": "Role Permission Overview",
+      "hint": "Roles determine the actions users can perform. Use the member list above to change roles.",
+      "col": {
+        "member": "Role"
+      },
+      "meeting": {
+        "join": "Join meetings",
+        "moderate": "Moderate meetings"
+      },
+      "transcription": {
+        "update": "Update transcripts"
+      },
+      "topic": {
+        "manage": "Manage topics"
+      }
+    },
+    "ban": {
+      "button": "Ban",
+      "title": "Ban member {name}",
+      "reasonLabel": "Reason for ban (required)",
+      "reasonPlaceholder": "Please state the reason for banning…",
+      "reasonRequired": "A reason is required.",
+      "submit": "Ban member"
+    },
+    "unban": {
+      "button": "Unban",
+      "confirm": "Are you sure you want to unban {name}? They will be able to sign in again."
+    },
+    "logs": {
+      "title": "Change Log",
+      "hint": "Backend change events: member role and ban changes, transcript uploads/overwrites, and outline edits. Showing the most recent {n} entries only.",
+      "needSuperAdmin": "The change log is visible to super-admins only.",
+      "refresh": "Refresh",
+      "loading": "Loading change log…",
+      "loadFailed": "Failed to load the change log, please try again later.",
+      "empty": "No changes recorded yet",
+      "col": {
+        "time": "Time",
+        "actor": "Actor",
+        "action": "Action",
+        "manage": "Actions"
+      },
+      "action": {
+        "userCreate": "Created member {target} (role: {to})",
+        "userRoleSet": "Changed {target}'s role from {from} to {to}",
+        "userBan": "Banned member {target}",
+        "userBanWithReason": "Banned member {target}, reason: {reason}",
+        "userUnban": "Unbanned member {target}",
+        "userRemove": "Removed member {target}",
+        "userUpdate": "Updated member {target}'s account data",
+        "userImpersonate": "Impersonated member {target}",
+        "userPasswordSet": "Reset member {target}'s password",
+        "userSessionRevokeSingle": "Revoked a single session of member {target}",
+        "userSessionsRevoke": "Revoked all sessions of member {target}",
+        "transcriptionCreate": "Added the transcript for {target} (version {version})",
+        "transcriptionReplace": "Replaced the transcript for {target} (version {version})",
+        "transcriptionDelete": "Deleted the transcript for {target}",
+        "transcriptionRestore": "Restored the transcript for {target} to version {version}",
+        "transcriptionOutlineUpdate": "Edited the transcript outline for {target}",
+        "transcriptionOutlineRestore": "Restored the outline for {target} to version {version}",
+        "unknown": "Unknown change event"
+      },
+      "restore": "Restore pre-change version",
+      "restoring": "Working…",
+      "restoreConfirm": "Restore {target} to the version from before this change ({time})? The current content will be overwritten (but kept as a version).",
+      "restoreSuccess": "Restored to the pre-change version.",
+      "restoreFailed": "The operation failed, please try again later.",
+      "restoreUnavailable": "This change has no previous version to restore",
+      "deleteButton": "Delete this transcript",
+      "deleteConfirm": "This change added a transcript, so going back means deleting the transcript for {target}. Versions are kept and it can be restored from this log later. Delete it?",
+      "deleteSuccess": "Transcript deleted (versions are kept)."
+    },
+    "transcripts": {
+      "title": "Transcript Management",
+      "hint": "This tab uses real data: sign in to upload transcripts; overwriting an existing transcript or editing AI outlines requires admin privileges."
     }
   }
 }

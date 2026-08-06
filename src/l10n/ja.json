@@ -92,6 +92,14 @@
     "propose": {
       "title": "プロジェクト提案 | vTaiwan",
       "description": "議論に値する公共政策の課題がある場合は、プロジェクト提案を歓迎します。"
+    },
+    "admin": {
+      "title": "管理者コンソール",
+      "description": "vTaiwan管理者コンソール：メンバー役割と逐語録管理。"
+    },
+    "authError": {
+      "title": "ログインエラー",
+      "description": "ログイン処理でエラーが発生しました。もう一度お試しいただくか、vTaiwanチームまでご連絡ください。"
     }
   },
   "即將開始": "まもなく開始",
@@ -136,6 +144,7 @@
     "transcriptions": "書き起こし管理",
     "faq": "よくある質問",
     "contributors": "貢献者",
+    "admin": "管理画面",
     "openMenu": "メニューを開く"
   },
   "about": {
@@ -174,12 +183,44 @@
   "auth": {
     "loginTitle": "ログイン",
     "loginWithGoogle": "Googleでログイン",
+    "loginWithGithub": "GitHubでログイン",
     "loggingIn": "ログイン中...",
     "loginFailed": "ログインに失敗しました。再度お試しください。",
     "logoutConfirm": "ログアウトしてもよろしいですか？",
     "loginError": "ログイン中にエラーが発生しました。しばらくしてから再度お試しください。",
     "logoutError": "ログアウト中にエラーが発生しました。しばらくしてから再度お試しください。",
     "inAppBrowserNotSupported": "このシステムはFacebookやLineなどのアプリ内ブラウザをサポートしていません。通常のブラウザで開いてログインしてください。ありがとうございます。"
+  },
+  "authError": {
+    "eyebrow": "エラーが発生しました",
+    "title": "ログインに失敗しました",
+    "description": "ログインの実行に失敗しました。以下にエラー原因とエラーコードを表示します。",
+    "reasonLabel": "エラー原因",
+    "descriptionFallback": "エラー原因は提供されていません",
+    "codeLabel": "エラーコード",
+    "retryLogin": "もう一度ログイン",
+    "goHome": "ホームへ戻る",
+    "helpTitle": "まだログインできませんか？",
+    "helpDescription": "エラーコードを控え、使用したログイン方法とブラウザ環境をお知らせください。",
+    "contact": "お問い合わせ",
+    "reasons": {
+      "BANNED_USER": "このアカウントは停止されているため、ログインできません。",
+      "UNKNOWN": "システムから認識可能なエラーコードが提供されませんでした。",
+      "account_already_linked_to_different_user": "このソーシャルアカウントは別のユーザーにすでに連携されています。",
+      "email_doesn't_match": "ソーシャルアカウントのメールアドレスが現在ログイン中のアカウントと一致しません。",
+      "email_not_found": "ソーシャルアカウントからメールアドレスが提供されなかったため、ログインを完了できませんでした。",
+      "invalid_callback_request": "ログインのコールバックリクエストが正しくありません。もう一度ログインしてください。",
+      "invalid_code": "認可コードが無効または期限切れです。もう一度ログインしてください。",
+      "no_callback_url": "ログイン処理にコールバックURLがありません。もう一度ログインしてください。",
+      "no_code": "ログインプロバイダーから認可コードが返されませんでした。もう一度ログインしてください。",
+      "oauth_provider_not_found": "指定されたログインプロバイダーが見つかりません。",
+      "state_generation_error": "ログイン検証状態を作成できませんでした。しばらくしてからもう一度お試しください。",
+      "state_invalid": "ログイン検証状態が無効です。もう一度ログインしてください。",
+      "state_mismatch": "ログイン検証状態が一致しません。もう一度ログインしてください。",
+      "state_not_found": "ログイン検証状態が見つかりません。もう一度ログインしてください。",
+      "unable_to_get_user_info": "ログインプロバイダーからユーザー情報を取得できませんでした。",
+      "unable_to_link_account": "このソーシャルアカウントを連携できませんでした。"
+    }
   },
   "footer": {
     "description": "公共政策のオープンコラボレーションプラットフォーム",
@@ -498,7 +539,7 @@
       "contactUs": "お問い合わせ"
     },
     "jitsi": "Jitsiミート",
-    "transcriptions": "書き起こし管理"
+    "transcriptions": "書き起こしを閲覧"
   },
   "meetupDetail": {
     "upcoming": "開催予定",
@@ -716,7 +757,13 @@
   },
   "transcriptions": {
     "title": "書き起こし管理",
-    "description": "vTaiwanプラットフォーム上のすべての書き起こし記録。各記録は議論・合意形成・政策提案のプロセスを経ます。",
+    "description": "会議の書き起こしを閲覧し、アウトラインの確認と全文のダウンロードができます（アップロードとアウトライン編集は管理者コンソールへ移動しました）。",
+    "search": {
+      "label": "キーワード検索",
+      "placeholder": "会議 ID やアウトラインで検索…",
+      "clearSearch": "検索をクリア",
+      "noResults": "「{query}」に一致する書き起こしはありません"
+    },
     "upload": {
       "title": "書き起こしをアップロード",
       "description": "アップロードすることで、CC-BY-SAクリエイティブ・コモンズライセンスでの公開に同意し、AIによるアウトライン作成とCC0でのアウトライン公開に同意したものとみなされます",
@@ -727,6 +774,7 @@
     },
     "list": {
       "title": "文字起こし一覧",
+      "prototypeBadge": "試作",
       "meetingId": "会議 ID",
       "fileName": "ファイル名",
       "viewOutline": "アウトラインを見る",
@@ -736,6 +784,26 @@
       "copyLink": "文字起こしリンクをコピー",
       "copyLinkSuccess": "文字起こしリンクをクリップボードにコピーしました",
       "copyLinkError": "リンクのコピーに失敗しました。しばらくしてから再試行してください"
+    },
+    "versions": {
+      "button": "バージョン履歴",
+      "title": "逐語録のバージョン履歴",
+      "hint": "アップロードのたびに個別のバージョンを保存します。任意のバージョンをダウンロードし、再アップロードで復元できます。",
+      "loading": "バージョンを読み込み中…",
+      "empty": "バージョンはまだありません（バージョン管理の導入前にアップロードされた逐語録です）",
+      "loadError": "バージョンの読み込みに失敗しました。しばらくしてから再試行してください",
+      "download": "ダウンロード",
+      "downloading": "ダウンロード中…",
+      "downloadError": "バージョンのダウンロードに失敗しました。しばらくしてから再試行してください",
+      "close": "閉じる",
+      "latest": "最新",
+      "truncated": "バージョンが多すぎるため、古い方から {n} 件のみ表示しています",
+      "col": {
+        "uploadedAt": "アップロード日時",
+        "uploadedBy": "アップロード者",
+        "size": "サイズ",
+        "action": "操作"
+      }
     },
     "outline": {
       "title": "会議アウトライン",
@@ -970,6 +1038,144 @@
       "checkUrl": "• URLが正しいかご確認ください",
       "useNavigation": "• 上部のナビゲーションメニューを使用してウェブサイトを閲覧してください",
       "contactSupport": "• ご質問がある場合はお問い合わせください"
+    }
+  },
+  "admin": {
+    "guard": {
+      "checking": "権限を確認しています…",
+      "forbiddenTitle": "アクセス権限がありません",
+      "forbiddenDesc": "このページは管理者のみアクセスできます。誤りだと思われる場合はサイト管理者にお問い合わせください。",
+      "wrongAccountAlert": "別のアカウント（{email}）に切り替わっており、このアカウントには管理権限がありません。今使用したソーシャルアカウントのメールアドレスが管理者アカウントと異なる場合、新しいアカウントとして扱われます。ログアウトして、管理者アカウントのメールアドレスで再度ログインしてください。ホームページに戻ります。",
+      "backHome": "ホームに戻る",
+      "reauthTitle": "再認証が必要です",
+      "reauthDesc": "管理コンソールへの入室は機密操作です。ログイン済みでも、もう一度 Google または GitHub で認証してください。認証後は一定時間だけ操作できます。",
+      "sessionRemaining": "残り {time}",
+      "sessionRemainingAria": "機密操作の残り時間"
+    },
+    "title": "管理者コンソール",
+    "subtitle": "メンバー一覧、ロール変更、変更履歴はいずれも実データを使用します（スーパー管理者のみ）。",
+    "search": {
+      "label": "キーワード検索",
+      "clear": "検索をクリア",
+      "empty": "「{q}」に一致する結果はありません",
+      "placeholder": {
+        "members": "氏名・メール・ロール・ステータスで検索…",
+        "logs": "日時・操作者・操作で検索…"
+      }
+    },
+    "tabs": {
+      "members": "メンバーと権限",
+      "logs": "変更履歴",
+      "transcripts": "逐語録管理"
+    },
+    "members": {
+      "listTitle": "メンバー一覧",
+      "count": "計 {n} 名",
+      "countFiltered": "{total} 名中 {n} 名を表示",
+      "showDetails": "{name} の詳細を表示",
+      "detailsTitle": "{name} のメンバー情報",
+      "loading": "メンバーを読み込み中…",
+      "empty": "メンバーがまだいません",
+      "loadFailed": "メンバー一覧を読み込めませんでした。後でもう一度お試しください。",
+      "roleUpdateFailed": "ロールの更新に失敗しました。後でもう一度お試しください。",
+      "banFailed": "利用停止に失敗しました。後でもう一度お試しください。",
+      "unbanFailed": "利用停止の解除に失敗しました。後でもう一度お試しください。",
+      "needSuperAdmin": "メンバー一覧とロール変更はスーパー管理者（super-admin）のみ操作できます。一般管理者は逐語録管理タブを利用できます。",
+      "col": {
+        "name": "氏名",
+        "email": "メール",
+        "role": "ロール",
+        "joinedAt": "参加日",
+        "status": "ステータス",
+        "actions": "操作"
+      }
+    },
+    "status": {
+      "active": "有効",
+      "banned": "利用停止"
+    },
+    "roles": {
+      "superAdmin": "スーパー管理者",
+      "admin": "管理者",
+      "user": "一般ユーザー",
+      "confirm": "{member} のロールを「{role}」に変更しますか？"
+    },
+    "perms": {
+      "title": "ロール権限一覧",
+      "hint": "ロールによって実行できる操作が決まります。ロールの変更は上部のメンバー一覧から行ってください。",
+      "col": {
+        "member": "ロール"
+      },
+      "meeting": {
+        "join": "会議参加",
+        "moderate": "会議モデレート"
+      },
+      "transcription": {
+        "update": "逐語録の更新"
+      },
+      "topic": {
+        "manage": "トピック管理"
+      }
+    },
+    "ban": {
+      "button": "利用停止",
+      "title": "メンバー {name} を利用停止",
+      "reasonLabel": "利用停止の理由（必須）",
+      "reasonPlaceholder": "利用停止の理由を入力してください…",
+      "reasonRequired": "利用停止の理由を入力してください。",
+      "submit": "利用停止する"
+    },
+    "unban": {
+      "button": "利用停止解除",
+      "confirm": "{name} の利用停止を解除しますか？解除後は再度ログインできるようになります。"
+    },
+    "logs": {
+      "title": "変更履歴",
+      "hint": "管理画面の変更イベント：メンバーのロール・利用停止の変更、逐語録のアップロード／上書き、アウトラインの編集。直近 {n} 件のみ表示します。",
+      "needSuperAdmin": "変更履歴はスーパー管理者（super-admin）のみ閲覧できます。",
+      "refresh": "再読み込み",
+      "loading": "変更履歴を読み込み中…",
+      "loadFailed": "変更履歴の読み込みに失敗しました。しばらくしてから再試行してください。",
+      "empty": "まだ変更はありません",
+      "col": {
+        "time": "日時",
+        "actor": "操作者",
+        "action": "操作",
+        "manage": "管理操作"
+      },
+      "action": {
+        "userCreate": "メンバー {target} を追加（ロール：{to}）",
+        "userRoleSet": "{target} のロールを {from} から {to} に変更",
+        "userBan": "メンバー {target} を利用停止",
+        "userBanWithReason": "メンバー {target} を利用停止（理由：{reason}）",
+        "userUnban": "メンバー {target} の利用停止を解除",
+        "userRemove": "メンバー {target} を削除",
+        "userUpdate": "メンバー {target} のアカウント情報を更新",
+        "userImpersonate": "メンバー {target} になりすましてログイン（impersonate）",
+        "userPasswordSet": "メンバー {target} のパスワードをリセット",
+        "userSessionRevokeSingle": "メンバー {target} の単一セッションを失効",
+        "userSessionsRevoke": "メンバー {target} の全セッションを失効",
+        "transcriptionCreate": "{target} の逐語録を追加（バージョン {version}）",
+        "transcriptionReplace": "{target} の逐語録を上書き（バージョン {version}）",
+        "transcriptionDelete": "{target} の逐語録を削除",
+        "transcriptionRestore": "{target} の逐語録をバージョン {version} に復元",
+        "transcriptionOutlineUpdate": "{target} の逐語録アウトラインを編集",
+        "transcriptionOutlineRestore": "{target} のアウトラインをバージョン {version} に復元",
+        "unknown": "不明な変更イベント"
+      },
+      "restore": "変更前のバージョンに復元",
+      "restoring": "処理中…",
+      "restoreConfirm": "{target} をこの変更（{time}）より前のバージョンに復元しますか？現在の内容は上書きされます（バージョンとしては保持されます）。",
+      "restoreSuccess": "変更前のバージョンに復元しました。",
+      "restoreFailed": "操作に失敗しました。しばらくしてから再試行してください。",
+      "restoreUnavailable": "この変更には復元できる前のバージョンがありません",
+      "deleteButton": "この逐語録を削除",
+      "deleteConfirm": "この変更は逐語録の「追加」です。変更前に戻すことは {target} の逐語録を削除することを意味します。バージョンは保持され、後でこの履歴から復元できます。削除しますか？",
+      "deleteSuccess": "逐語録を削除しました（バージョンは保持されます）。"
+    },
+    "transcripts": {
+      "title": "逐語録管理",
+      "hint": "このタブは実データを使用します：ログインすれば逐語録をアップロードできます。既存の逐語録の上書きと AI アウトラインの編集には管理者権限が必要です。"
     }
   }
 }

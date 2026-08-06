@@ -8,9 +8,13 @@ import TopicSlide from '../components/TopicSlide.vue'
 import TopicTimeline from '../components/TopicTimeline.vue'
 import TopicDiscussion from '../components/TopicDiscussion.vue'
 import discourseApi, { type FormattedTopicData } from '../lib/discourse'
+import type { AuthSession } from '../client/auth-session'
 
 const route = useRoute()
 const { t } = useI18n()
+const props = withDefaults(defineProps<{ authSession?: AuthSession | null }>(), {
+  authSession: null,
+})
 
 const topic = ref<FormattedTopicData | null>(null)
 const loading = ref(true)
@@ -111,7 +115,7 @@ onMounted(() => {
               <TopicTimeline :topic-id="realTopicId" />
             </div>
             <div v-if="activeTab === 'discussion' && realTopicId && showDiscussionTab">
-              <TopicDiscussion :topic-id="realTopicId" />
+              <TopicDiscussion :topic-id="realTopicId" :auth-session="props.authSession" />
             </div>
           </div>
 

@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, reactive, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import GoogleLogin from '../components/GoogleLogin.vue'
-import { getFirebaseServices } from '../lib/firebase'
+import SocialLogin from '../components/SocialLogin.vue'
+import UserAvatar from '../components/UserAvatar.vue'
+import { authClient } from '../client/authClient'
+import { adminNavLink } from '../router/nav-links'
 
 interface AuthenticatedUser {
   uid: string
@@ -11,25 +13,20 @@ interface AuthenticatedUser {
   photoURL: string | null
 }
 
-interface UserData {
-  name: string | null
-  photoURL: string | null
-}
-
 const props = withDefaults(
   defineProps<{
     user?: AuthenticatedUser | null
-    userData?: UserData | null
     inApp?: boolean
+    /** 管理員才顯示後台入口；僅顯示層取捨，真正把關在 Worker 端。 */
+    isAdmin?: boolean
   }>(),
   {
     user: null,
-    userData: null,
     inApp: false,
+    isAdmin: false,
   }
 )
 const emit = defineEmits<{
-  'login-success': []
   logout: []
   'profile-updated': [displayName: string]
 }>()
@@ -39,8 +36,8 @@ const updating = ref(false)
 const editForm = reactive({ displayName: '' })
 
 const hasChanges = computed(() => editForm.displayName.trim() !== (props.user?.displayName ?? ''))
-const profileName = computed(() => props.userData?.name || props.user?.displayName || t('profile.notSet'))
-const profilePhotoUrl = computed(() => props.userData?.photoURL || props.user?.photoURL)
+const profileName = computed(() => props.user?.displayName || t('profile.notSet'))
+const profilePhotoUrl = computed(() => props.user?.photoURL)
 
 watch(
   () => props.user,
@@ -66,15 +63,8 @@ async function saveProfile() {
   try {
     updating.value = true
     const displayName = editForm.displayName.trim()
-    const { auth, database, databaseRef, databaseUpdate, updateProfile } = await getFirebaseServices()
-
-    if (!auth.currentUser) return
-
-    await updateProfile(auth.currentUser, { displayName })
-    await databaseUpdate(databaseRef(database, `users/${props.user.uid}`), {
-      name: displayName,
-      updatedAt: new Date().toISOString(),
-    })
+    const { error } = await authClient.updateUser({ name: displayName })
+    if (error) throw error
     emit('profile-updated', displayName)
     editing.value = false
   } catch (error) {
@@ -93,13 +83,12 @@ async function saveProfile() {
 
       <div v-if="!user" class="py-8 text-center">
         <p class="mb-5 text-vt-fg-2">{{ t('profile.loginRequired') }}</p>
-        <GoogleLogin :in-app="inApp" @login-success="emit('login-success')" />
+        <SocialLogin :in-app="inApp" />
       </div>
 
       <div v-else-if="!editing" class="space-y-8">
         <div class="flex items-center gap-4">
-          <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="t('profile.avatarAlt')" class="h-16 w-16 rounded-vt-full border border-vt-border object-cover" />
-          <div v-else class="flex h-16 w-16 items-center justify-center rounded-vt-full bg-vt-bg-2 text-vt-fg-2" aria-hidden="true">👤</div>
+          <UserAvatar :src="profilePhotoUrl" :alt="t('profile.avatarAlt')" class="h-16 w-16 rounded-vt-full border border-vt-border" />
           <div>
             <h2 class="font-sans text-vt-xl font-semibold">{{ profileName }}</h2>
             <p class="text-vt-fg-2">{{ user.email }}</p>
@@ -125,6 +114,9 @@ async function saveProfile() {
           <button type="button" class="vt-btn vt-btn-primary" @click="startEdit">
             {{ t('common.edit') }}
           </button>
+          <RouterLink v-if="isAdmin" :to="adminNavLink.href" class="vt-btn rounded-vt-md border border-vt-border text-vt-fg-1 hover:bg-vt-bg-2">
+            {{ t(adminNavLink.labelKey) }}
+          </RouterLink>
           <button type="button" class="vt-btn rounded-vt-md border border-democratic-red text-democratic-red hover:bg-vt-red-tint" @click="emit('logout')">
             {{ t('common.logout') }}
           </button>
@@ -133,8 +125,7 @@ async function saveProfile() {
 
       <div v-else class="space-y-6">
         <div class="flex items-center gap-4">
-          <img v-if="profilePhotoUrl" :src="profilePhotoUrl" :alt="t('profile.avatarAlt')" class="h-16 w-16 rounded-vt-full border border-vt-border object-cover" />
-          <div v-else class="flex h-16 w-16 items-center justify-center rounded-vt-full bg-vt-bg-2 text-vt-fg-2" aria-hidden="true">👤</div>
+          <UserAvatar :src="profilePhotoUrl" :alt="t('profile.avatarAlt')" class="h-16 w-16 rounded-vt-full border border-vt-border" />
           <div>
             <h2 class="font-sans text-vt-xl font-semibold">{{ t('profile.title') }}</h2>
             <p class="text-vt-fg-2">{{ user.email }}</p>

@@ -10,7 +10,7 @@
           <input v-model="joinMeetingName" class="mb-4 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-jade-green focus:outline-hidden" placeholder="請輸入您的名字" />
           <button @click="joinMeeting" class="rounded-lg bg-jade-green px-6 py-3 text-white transition-colors hover:bg-jade-green/90">加入會議</button>
           <br />
-          <p v-if="!userData || !userData.uid" class="text-sm text-gray-600">如欲加入會議並啟用完整逐字稿功能，請先登入</p>
+          <p v-if="!authUserData.uid" class="text-sm text-gray-600">如欲加入會議並啟用完整逐字稿功能，請先登入</p>
         </div>
       </div>
       <div v-show="hasJoined" ref="jitsiContainer" class="w-full" style="height: calc(100% - 50px)" :key="jitsiKey"></div>
@@ -20,7 +20,7 @@
     <div v-if="showTranscript && !isMobile" class="h-full w-[62%] md:w-[38%]">
       <TranscriptPanel
         @close="hideTranscript"
-        :user-data="userData"
+        :user-data="authUserData"
         :transcript-data="transcriptData"
         :is-recorder="isRecorder"
         :selected-date="selectedDate"
@@ -48,7 +48,7 @@
         </div>
         <TranscriptPanel
           @close="hideTranscript"
-          :user-data="userData"
+          :user-data="authUserData"
           :transcript-data="transcriptData"
           :is-recorder="isRecorder"
           :selected-date="selectedDate"
@@ -169,7 +169,7 @@
     <div class="fixed right-6 bottom-16 z-50 flex flex-col space-y-3">
       <div class="relative">
         <button
-          v-if="isMobile && userData && userData.uid"
+          v-if="isMobile && canUseMeetingFeatures"
           @click="toggleAudioSettings"
           class="flex items-center justify-center rounded-full border border-gray-300 bg-white p-4 text-gray-600 shadow-lg transition-all duration-300 hover:scale-105 hover:bg-gray-50 hover:text-gray-800"
           :title="$t('transcript.audioSettings')"
@@ -183,7 +183,7 @@
 
       <div class="relative">
         <button
-          v-if="userData && userData.uid"
+          v-if="canUseMeetingFeatures"
           @click="toggleAudioRecording"
           :class="[
             'relative rounded-full p-4 shadow-lg transition-all duration-300',
@@ -218,7 +218,7 @@
         </div>
 
         <button
-          v-if="!isMobile && userData && userData.uid"
+          v-if="!isMobile && canUseMeetingFeatures"
           @click="toggleAudioSettings"
           class="audio-settings-button absolute -top-1 -right-1 z-10 flex h-7 w-7 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-500 shadow-lg transition-all duration-200 hover:scale-110 hover:bg-gray-50 hover:text-gray-700"
           :title="$t('transcript.audioSettings')"
@@ -231,7 +231,7 @@
       </div>
 
       <button
-        v-if="userData && userData.uid"
+        v-if="authUserData.uid"
         @click="toggleTranscript"
         :class="[
           'rounded-full p-4 shadow-lg transition-all duration-300',
@@ -261,10 +261,9 @@
 import TranscriptPanel from '../components/TranscriptPanel.vue'
 import IconWrapper from '../components/IconWrapper.vue'
 import TranscriptLanguageSwitcher from '../components/TranscriptLanguageSwitcher.vue'
-import { markRaw } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { supportedLocales } from '../i18n'
-import { getFirebaseServices } from '../lib/firebase'
+import { hasPermission } from '../client/auth-session'
 
 // SSR 保護：此模組頂層不存取瀏覽器 API
 export default {
@@ -272,7 +271,7 @@ export default {
   components: { TranscriptPanel, IconWrapper, TranscriptLanguageSwitcher },
 
   props: {
-    userData: { type: Object, required: false, default: () => ({}) },
+    authSession: { type: Object, required: false, default: null },
   },
 
   setup() {
@@ -282,8 +281,12 @@ export default {
 
   data() {
     return {
-      // Firebase 服務（瀏覽器端 mounted 後才取得）
-      firebaseServices: null,
+      // WebSocket 連線（瀏覽器端 mounted 後才建立）
+      ws: null,
+      // WS 尚未 open 時暫存的寫入訊息，open 後一次沖出
+      wsPendingMessages: [],
+      // 今日日期（created 設定後固定不變），用於判斷是否為歷史日期
+      realToday: '',
 
       isRecorder: false,
       isTranscripting: false,
@@ -294,9 +297,6 @@ export default {
       selectedDate: '',
       meetingData: { recordingStartTime: null, recordingSpeaker: null },
       transcriptData: {},
-      // Firebase lazy 初始化期間產生的逐字稿，待服務可用後再依條目寫入。
-      pendingTranscriptChanges: {},
-      firebaseUnsubscribe: null,
 
       appId: 'vpaas-magic-cookie-7c142b7a730e4478878703f86c03d5a1',
       room: 'vtaiwan',
@@ -359,6 +359,21 @@ export default {
   },
 
   computed: {
+    canUseMeetingFeatures() {
+      return hasPermission(this.authSession, 'meeting.join')
+    },
+    authUserData() {
+      if (!this.canUseMeetingFeatures) return {}
+      const user = this.authSession?.user
+      if (!user) return {}
+      return {
+        uid: user.id,
+        name: user.name,
+        email: user.email,
+        photoURL: user.image,
+        isAdmin: this.authSession.permissions.includes('meeting.moderate'),
+      }
+    },
     fullRoomName() {
       return `${this.appId}/${this.room}`
     },
@@ -371,24 +386,29 @@ export default {
       void this.recordingTimer // 讓 computed 依賴此響應變數，每秒觸發更新
       return Math.floor((Date.now() - this.meetingData.recordingStartTime) / 1000)
     },
+    // 判斷是否正在查看歷史日期（非今日）
+    isHistoricalDate() {
+      return this.today !== this.realToday
+    },
   },
 
-  // created() 不呼叫任何 Firebase/瀏覽器 API；日期計算為純 JS，安全
+  // created() 不呼叫任何瀏覽器 API；日期計算為純 JS，安全
   created() {
     const now = new Date()
     const year = now.getFullYear()
     const month = String(now.getMonth() + 1).padStart(2, '0')
     const day = String(now.getDate()).padStart(2, '0')
     this.today = `${year}${month}${day}`
+    this.realToday = this.today
     this.selectedDate = `${year}-${month}-${day}`
   },
 
   mounted() {
-    // 瀏覽器端初始化：設定 drawerWidth、載入 Firebase、設定計時器
+    // 瀏覽器端初始化：設定 drawerWidth、連接會議資料流、設定計時器
     this.drawerWidth = Math.min(window.innerWidth * 0.9, 400)
     this.updateViewportState()
     this.loadJitsiTipBanner()
-    this.joinMeetingName = (this.userData || {}).name || 'Guest'
+    this.joinMeetingName = this.authUserData.name || 'Guest'
 
     // 錄音計時器，每秒觸發 recordingDuration 重新計算
     this.recordingTimerInterval = setInterval(() => {
@@ -397,22 +417,8 @@ export default {
 
     window.addEventListener('resize', this.handleResize)
 
-    // 初始化 Firebase 服務（lazy、browser-only），完成後載入會議資料
-    getFirebaseServices()
-      .then(async services => {
-        // Firebase SDK 實例含有自訂樹狀索引物件；Vue 深層 Proxy 會破壞其 prototype，
-        // 導致 Realtime Database 寫入時出現「insert is not a function」。
-        this.firebaseServices = markRaw(services)
-        try {
-          await this.flushPendingTranscriptChanges()
-        } catch (error) {
-          console.error('flushPendingTranscriptChanges failed:', error)
-        }
-        this.syncRecordingStatus()
-        await this.loadMeetingData()
-      })
-      .catch(err => console.error('Firebase init failed:', err))
-
+    // 連線到會議資料流（今日 → WebSocket；歷史 → REST）
+    this.connectToMeeting()
     this.loadTranscriptionLanguage()
 
     // 監聽 vue-i18n locale 變化，自動跟隨（若使用者未手動設定）
@@ -424,8 +430,10 @@ export default {
       }
     )
 
-    this.loadAudioDevices()
-    this.loadAudioSettings()
+    if (this.canUseMeetingFeatures) {
+      this.loadAudioDevices()
+      this.loadAudioSettings()
+    }
     navigator.mediaDevices.addEventListener('devicechange', this.handleDeviceChange)
     document.addEventListener('visibilitychange', this.handleVisibilityChange)
   },
@@ -435,10 +443,7 @@ export default {
       this.jitsiApi.dispose()
       this.jitsiApi = null
     }
-    if (this.firebaseUnsubscribe) {
-      this.firebaseUnsubscribe()
-      this.firebaseUnsubscribe = null
-    }
+    this.disconnectWs()
     this.clearTranscriptCache()
     this.cleanupAudioRecording()
     this.stopQueueProcessing()
@@ -458,10 +463,19 @@ export default {
   },
 
   watch: {
-    userData: {
+    authSession: {
       handler() {
-        this.isRecorder = this.meetingData.recorder == (this.userData || {}).uid
-        this.joinMeetingName = (this.userData || {}).name || 'Guest'
+        this.isRecorder = this.meetingData.recorder == this.authUserData.uid
+        this.joinMeetingName = this.authUserData.name || 'Guest'
+        if (this.canUseMeetingFeatures) {
+          void this.loadAudioDevices()
+          this.loadAudioSettings()
+        } else {
+          this.stopAudioTest()
+          this.cleanupAudioRecording()
+          this.stopQueueProcessing()
+          this.clearAudioQueue()
+        }
       },
     },
     jwt(newJwt, oldJwt) {
@@ -490,16 +504,25 @@ export default {
     },
 
     async getJwt() {
-      const user_id = (this.userData || {}).uid || 'Guest'
+      if (!this.canUseMeetingFeatures) {
+        window.alert('請先登入，方可加入會議')
+        return
+      }
+      const user_id = this.authUserData.uid || 'Guest'
       if (user_id === 'Guest') {
         window.alert('請先登入，方可加入會議')
         return
       }
-      const user_name = this.joinMeetingName
-      const user_email = this.userData.email || 'guest@vtaiwan.tw'
-      const isAdmin = this.userData.isAdmin || false
-      // 使用同源相對路徑，取代舊的外部 jaas-worker 網域
-      const res = await fetch(`/api/jitsi-token?room=vtaiwan&user_id=${user_id}&user_name=${user_name}&user_email=${user_email}&user_moderator=${isAdmin}`)
+      // 身分與 moderator 權限由後端 Better Auth session 決定。
+      const res = await fetch('/api/jitsi-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ room: this.room }),
+      })
+      if (!res.ok) {
+        window.alert('無法取得會議權杖')
+        return
+      }
       const json = await res.json()
       this.jwt = json.token
     },
@@ -517,6 +540,10 @@ export default {
     },
 
     async joinMeeting() {
+      if (!this.canUseMeetingFeatures) {
+        window.alert('請先登入，方可加入會議')
+        return
+      }
       if (!this.jwt) await this.getJwt()
       if (!this.jwt) return
       try {
@@ -635,7 +662,7 @@ export default {
     toggleRecorder() {
       this.isRecorder = !this.isRecorder
       if (this.isRecorder) {
-        this.meetingData.recorder = (this.userData || {}).uid
+        this.meetingData.recorder = this.authUserData.uid
       } else {
         this.meetingData.recorder = ''
       }
@@ -665,50 +692,47 @@ export default {
     },
 
     updateMeetingData() {
-      if (!this.firebaseServices) return
-      const { databaseRef, databaseUpdate, database } = this.firebaseServices
-      databaseUpdate(databaseRef(database, `/meetings/${this.today}`), {
-        recorder: this.meetingData.recorder || null,
-      }).catch(err => console.error('updateMeetingData failed:', err))
+      this.sendMeetingMessage({
+        type: 'update_meeting',
+        recorder_uid: this.meetingData.recorder || null,
+      })
     },
 
     syncRecordingStatus() {
-      if (!this.firebaseServices) return
-      const { databaseRef, databaseUpdate, database } = this.firebaseServices
-      databaseUpdate(databaseRef(database, `/meetings/${this.today}`), {
-        recordingSpeaker: this.meetingData.recordingSpeaker || null,
-        recordingStartTime: this.meetingData.recordingStartTime || null,
-      }).catch(err => console.error('syncRecordingStatus failed:', err))
+      this.sendMeetingMessage({
+        type: 'sync_recording',
+        recording_speaker: this.meetingData.recordingSpeaker || null,
+        recording_start_time: this.meetingData.recordingStartTime || null,
+      })
     },
 
     saveTranscriptEntry(entry) {
-      if (!this.firebaseServices) {
-        this.pendingTranscriptChanges[entry.timestamp] = entry
+      if (this.isHistoricalDate) {
+        fetch(`/api/meeting/${this.today}/transcript`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry),
+        }).catch(err => console.error('saveTranscriptEntry (REST) failed:', err))
         return
       }
-      const { databaseRef, databaseSet, database } = this.firebaseServices
-      databaseSet(databaseRef(database, `/meetings/${this.today}/transcripts/${entry.timestamp}`), entry).catch(err => console.error('saveTranscriptEntry failed:', err))
+      this.sendMeetingMessage({ type: 'save_entry', entry })
     },
 
     deleteTranscriptEntry(timestamp) {
-      if (!this.firebaseServices) {
-        this.pendingTranscriptChanges[timestamp] = null
+      if (this.isHistoricalDate) {
+        fetch(`/api/meeting/${this.today}/transcript/${timestamp}`, { method: 'DELETE' }).catch(err => console.error('deleteTranscriptEntry (REST) failed:', err))
         return
       }
-      const { databaseRef, databaseSet, database } = this.firebaseServices
-      databaseSet(databaseRef(database, `/meetings/${this.today}/transcripts/${timestamp}`), null).catch(err => console.error('deleteTranscriptEntry failed:', err))
+      this.sendMeetingMessage({ type: 'delete_entry', timestamp })
     },
 
-    async flushPendingTranscriptChanges() {
-      const pendingChanges = this.pendingTranscriptChanges
-      this.pendingTranscriptChanges = {}
-
-      await Promise.all(
-        Object.entries(pendingChanges).map(([timestamp, entry]) => {
-          const { databaseRef, databaseSet, database } = this.firebaseServices
-          return databaseSet(databaseRef(database, `/meetings/${this.today}/transcripts/${timestamp}`), entry)
-        })
-      )
+    // 送出 WebSocket 訊息；若連線尚未就緒則排入暫存佇列（mounted 後 open 時沖出）
+    sendMeetingMessage(msg) {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify(msg))
+      } else {
+        this.wsPendingMessages.push(msg)
+      }
     },
 
     handleResize() {
@@ -810,6 +834,7 @@ export default {
     },
 
     async toggleAudioRecording() {
+      if (!this.canUseMeetingFeatures) return
       if (this.isRecordingAudio) {
         await this.stopAudioRecording()
       } else {
@@ -819,6 +844,7 @@ export default {
     },
 
     async startAudioRecording() {
+      if (!this.canUseMeetingFeatures) return
       try {
         if (this.isRecordingAudio && this.audioMediaRecorder) {
           if (this.audioMediaRecorder.state !== 'inactive') this.audioMediaRecorder.stop()
@@ -847,7 +873,7 @@ export default {
         this.audioMediaRecorder.start()
         this.isRecordingAudio = true
 
-        const speakerName = (this.userData || {}).name || '未知說話者'
+        const speakerName = this.authUserData.name || '未知說話者'
         this.meetingData.recordingStartTime = Date.now()
         this.meetingData.recordingSpeaker = speakerName
         this.syncRecordingStatus()
@@ -901,6 +927,7 @@ export default {
     },
 
     async sendAudioToTranscription(audioBlob) {
+      if (!this.canUseMeetingFeatures) return
       const formData = new FormData()
       formData.append('file', audioBlob, 'recording.webm')
       const transcriptionUrl = `${this.transcriptionApiUrl}${this.transcriptionLanguage}`
@@ -917,7 +944,7 @@ export default {
         this.addTranscriptData({
           id: 'audio_' + Date.now(),
           timestamp: Date.now(),
-          speaker: (this.userData || {}).name || '未知說話者',
+          speaker: this.authUserData.name || '未知說話者',
           text: result,
         })
       }
@@ -943,6 +970,10 @@ export default {
     },
 
     async loadAudioDevices() {
+      if (!this.canUseMeetingFeatures) {
+        this.audioDevices = []
+        return
+      }
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
         stream.getTracks().forEach(t => t.stop())
@@ -986,6 +1017,7 @@ export default {
     },
 
     async testAudioDevice() {
+      if (!this.canUseMeetingFeatures) return
       if (!this.selectedAudioDeviceId) return
       try {
         this.isTestingAudio = true
@@ -1059,6 +1091,7 @@ export default {
     },
 
     toggleAudioSettings() {
+      if (!this.canUseMeetingFeatures) return
       this.showAudioSettings = !this.showAudioSettings
       if (this.showAudioSettings) this.loadAudioDevices()
     },
@@ -1069,38 +1102,133 @@ export default {
     },
 
     handleDeviceChange() {
+      if (!this.canUseMeetingFeatures) return
       this.loadAudioDevices()
     },
 
     onDateChange(newDate) {
       const parts = newDate.split('-')
       this.today = parts[0] + parts[1] + parts[2]
-      this.loadMeetingData()
+      this.connectToMeeting()
     },
 
-    async loadMeetingData() {
-      if (!this.firebaseServices) return
-      const { databaseRef, databaseOnValue, database } = this.firebaseServices
+    // ─── 會議連線管理 ─────────────────────────────────────────────────────────
 
-      if (this.firebaseUnsubscribe) {
-        this.firebaseUnsubscribe()
-        this.firebaseUnsubscribe = null
+    // 決定今日用 WebSocket 還是歷史用 REST，並執行連線 / 載入
+    connectToMeeting() {
+      if (this.isHistoricalDate) {
+        this.disconnectWs()
+        this.loadHistoricalData()
+      } else {
+        this.connectMeetingWs()
+      }
+    },
+
+    // 建立（或重建）WebSocket 連線到今日的 MeetingRoom DO
+    connectMeetingWs() {
+      this.disconnectWs()
+      const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
+      const ws = new WebSocket(`${protocol}//${location.host}/api/ws/meeting/${this.today}`)
+      this.ws = ws
+
+      ws.onopen = () => {
+        // 沖出在連線期間暫存的寫入訊息
+        const pending = this.wsPendingMessages.splice(0)
+        for (const msg of pending) {
+          ws.send(JSON.stringify(msg))
+        }
       }
 
-      try {
-        this.firebaseUnsubscribe = databaseOnValue(databaseRef(database, `/meetings/${this.today}`), snap => {
-          if (snap.exists()) {
-            this.meetingData = snap.val()
-            this.transcriptData = (this.meetingData || {}).transcripts || {}
-            this.isRecorder = this.meetingData.recorder == (this.userData || {}).uid
-          } else {
-            this.meetingData = { recorder: '', transcripts: {} }
-            this.transcriptData = {}
-            this.isRecorder = false
+      ws.onmessage = event => {
+        try {
+          this.handleWsMessage(JSON.parse(event.data))
+        } catch (err) {
+          console.error('[WS] 解析訊息失敗:', err)
+        }
+      }
+
+      ws.onclose = () => {
+        if (this.ws === ws) this.ws = null
+      }
+
+      ws.onerror = err => {
+        console.error('[WS] 連線錯誤:', err)
+      }
+    },
+
+    // 關閉現有的 WebSocket 連線（如有）
+    disconnectWs() {
+      if (this.ws) {
+        this.ws.onclose = null // 防止觸發重連
+        this.ws.close()
+        this.ws = null
+      }
+    },
+
+    // 處理來自 DO 的 WebSocket 訊息（差量更新 or 初始快照）
+    handleWsMessage(msg) {
+      switch (msg.type) {
+        case 'init':
+          this.meetingData = {
+            recorder: msg.meeting.recorderUid || '',
+            recordingSpeaker: msg.meeting.recordingSpeaker || null,
+            recordingStartTime: msg.meeting.recordingStartTime || null,
           }
-        })
-      } catch (error) {
-        console.error('Error loading meeting data:', error)
+          this.transcriptData = msg.transcripts || {}
+          this.isRecorder = this.meetingData.recorder === this.authUserData.uid
+          break
+
+        case 'entry_saved':
+          this.transcriptData = {
+            ...this.transcriptData,
+            [String(msg.entry.timestamp)]: msg.entry,
+          }
+          break
+
+        case 'entry_deleted':
+          // eslint-disable-next-line no-case-declarations
+          const updated = { ...this.transcriptData }
+          delete updated[String(msg.timestamp)]
+          this.transcriptData = updated
+          break
+
+        case 'meeting_updated':
+          this.meetingData = { ...this.meetingData, recorder: msg.recorder_uid || '' }
+          this.isRecorder = this.meetingData.recorder === this.authUserData.uid
+          break
+
+        case 'recording_synced':
+          this.meetingData = {
+            ...this.meetingData,
+            recordingSpeaker: msg.recording_speaker || null,
+            recordingStartTime: msg.recording_start_time || null,
+          }
+          break
+
+        case 'error':
+          console.error('[WS] 伺服器錯誤:', msg.message)
+          break
+      }
+    },
+
+    // 歷史日期：從 D1 REST API 一次性載入快照（不建 WebSocket）
+    async loadHistoricalData() {
+      try {
+        const res = await fetch(`/api/meeting/${this.today}`)
+        if (!res.ok) {
+          console.error('loadHistoricalData failed:', res.status)
+          return
+        }
+        const data = await res.json()
+        this.meetingData = {
+          recorder: data.meeting.recorderUid || '',
+          recordingSpeaker: data.meeting.recordingSpeaker || null,
+          recordingStartTime: data.meeting.recordingStartTime || null,
+        }
+        this.transcriptData = data.transcripts || {}
+        this.isRecorder = this.meetingData.recorder === this.authUserData.uid
+      } catch (err) {
+        console.error('loadHistoricalData error:', err)
       }
     },
 
