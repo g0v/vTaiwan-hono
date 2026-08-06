@@ -51,6 +51,9 @@ describe('敏感操作二次驗證（step-up cookie）', () => {
     expect(requiresStepUp('/api/auth/admin/set-role')).toBe(true)
     expect(requiresStepUp('/api/auth/admin/list-users')).toBe(true)
     expect(requiresStepUp('/api/auth/admin/ban-user')).toBe(true)
+    // 變更日誌靠這道關卡取得操作者：被審計的端點若不在此範圍內，日誌會少了 actor（#74）
+    expect(requiresStepUp('/api/auth/admin/create-user')).toBe(true)
+    expect(requiresStepUp('/api/auth/admin/revoke-user-session')).toBe(true)
     // 二次驗證要走的登入／回調路徑若被擋住，使用者將永遠無法取得 step-up cookie
     expect(requiresStepUp('/api/auth/sign-in/social')).toBe(false)
     expect(requiresStepUp('/api/auth/callback/google')).toBe(false)

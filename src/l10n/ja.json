@@ -1144,6 +1144,7 @@
         "manage": "管理操作"
       },
       "action": {
+        "userCreate": "メンバー {target} を追加（ロール：{to}）",
         "userRoleSet": "{target} のロールを {from} から {to} に変更",
         "userBan": "メンバー {target} を利用停止",
         "userBanWithReason": "メンバー {target} を利用停止（理由：{reason}）",
@@ -1152,6 +1153,7 @@
         "userUpdate": "メンバー {target} のアカウント情報を更新",
         "userImpersonate": "メンバー {target} になりすましてログイン（impersonate）",
         "userPasswordSet": "メンバー {target} のパスワードをリセット",
+        "userSessionRevokeSingle": "メンバー {target} の単一セッションを失効",
         "userSessionsRevoke": "メンバー {target} の全セッションを失効",
         "transcriptionCreate": "{target} の逐語録を追加（バージョン {version}）",
         "transcriptionReplace": "{target} の逐語録を上書き（バージョン {version}）",

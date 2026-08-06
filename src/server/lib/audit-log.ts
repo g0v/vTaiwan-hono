@@ -63,6 +63,27 @@ export async function listAudit(env: AppBindings, limit: number = AUDIT_LOG_LIMI
  * 取操作對象的快照（姓名／角色）——必須在動作執行**之前**呼叫：
  * remove-user 之後使用者就查不到了，set-role 之後也拿不到原角色。
  */
+/**
+ * 由 session token 反查所屬使用者（`revoke-user-session` 的操作對象）。
+ * **必須在動作執行之前呼叫**：session 一旦被刪除就再也對不回使用者。
+ *
+ * token 以明文存在 `session.token`（Better Auth 的 `deleteSession` 亦以此欄位比對，
+ * 且本專案未設定 secondaryStorage），故直接以等值查詢即可。
+ * 與 findAuditUserTarget 一樣不 throw：查不到就是不留痕，不能讓已成功的撤銷變成 500。
+ */
+export async function findAuditUserIdBySessionToken(env: AppBindings, sessionToken: string | null): Promise<string | null> {
+  if (!sessionToken) return null
+  try {
+    const db = env.DB_AUTH
+    if (!db) return null
+    const row = await db.prepare('SELECT "userId" FROM "session" WHERE "token" = ?').bind(sessionToken).first<{ userId: string | null }>()
+    return row?.userId || null
+  } catch (error) {
+    console.error('Failed to resolve audit target from session token:', error)
+    return null
+  }
+}
+
 export async function findAuditUserTarget(env: AppBindings, userId: string): Promise<{ label: string; role: string } | null> {
   try {
     const db = env.DB_AUTH
