@@ -34,18 +34,31 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
     <button
       type="button"
       :aria-expanded="isOpen"
-      class="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-3 py-1.5 text-vt-gray-700 transition-colors hover:bg-vt-gray-100"
+      :aria-label="current.name"
+      class="inline-flex cursor-pointer items-center gap-1.5 rounded-full px-2 py-1.5 text-vt-gray-700 transition-colors hover:bg-vt-gray-100 lg:px-3"
       :class="block ? 'w-full justify-center bg-vt-bg-2 py-3' : ''"
       @click="isOpen = !isOpen"
     >
-      <svg class="opacity-70" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <svg
+        class="opacity-70"
+        :class="block ? '' : 'hidden lg:block'"
+        width="14"
+        height="14"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
         <circle cx="12" cy="12" r="10"></circle>
         <path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path>
       </svg>
-      <span>{{ current.name }}</span>
+      <span :class="block ? 'hidden' : 'text-base lg:hidden'">{{ current.flag }}</span>
+      <span :class="block ? '' : 'hidden lg:inline'">{{ current.name }}</span>
       <svg
         class="opacity-50 transition-transform"
-        :class="{ 'rotate-180': isOpen }"
+        :class="[block ? '' : 'hidden lg:block', { 'rotate-180': isOpen }]"
         width="12"
         height="12"
         viewBox="0 0 24 24"
