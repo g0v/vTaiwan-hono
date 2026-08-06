@@ -46,5 +46,19 @@
       "enabled": true,
       "previews_enabled": false,
     },
-  ]
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "MEETING_ROOM",
+        "class_name": "MeetingRoom",
+      },
+    ],
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["MeetingRoom"],
+    },
+  ],
 }
