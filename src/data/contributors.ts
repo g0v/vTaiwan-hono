@@ -134,25 +134,37 @@ const rawCommunityContributors: Contributor[] = [
   },
   {
     id: '15',
-    name: 'Terry',
+    name: 'Lynn',
     contribution: 'contributors.contributions.frontendDev',
-    imgURL: 'https://avatars.githubusercontent.com/u/88765055',
+    imgURL: '',
   },
   {
     id: '16',
+    name: 'Terry',
+    contribution: 'contributors.contributions.frontendDev',
+    imgURL: 'https://www.gravatar.com/avatar/3be627a993a182ade60f7e3c9ed3ad2cf65f8263b7da57e10e5354d1ebab8110?s=320&r=g',
+  },
+  {
+    id: '17',
+    name: 'Terry',
+    contribution: 'contributors.contributions.backendDev',
+    imgURL: 'https://www.gravatar.com/avatar/3be627a993a182ade60f7e3c9ed3ad2cf65f8263b7da57e10e5354d1ebab8110?s=320&r=g',
+  },
+  {
+    id: '18',
     name: 'Bestian Tang',
     contribution: 'contributors.contributions.frontendDev',
     imgURL: 'https://ca.slack-edge.com/T02G2SXKM-U053N6CAQ-338c6ec3f9d7-512',
   },
   {
-    id: '17',
+    id: '19',
     name: 'Bestian Tang',
     contribution: 'contributors.contributions.backendDev',
     imgURL: 'https://ca.slack-edge.com/T02G2SXKM-U053N6CAQ-338c6ec3f9d7-512',
   },
-  { id: '18', name: 'Yi-Ting Lien', contribution: 'contributors.contributions.participation' },
-  { id: '19', name: 'Nobody', contribution: 'contributors.contributions.dataAnalysis' },
-  { id: '20', name: 'Nobody', contribution: 'contributors.contributions.translationSupport' },
+  { id: '20', name: 'Yi-Ting Lien', contribution: 'contributors.contributions.participation' },
+  { id: '21', name: 'Nobody', contribution: 'contributors.contributions.dataAnalysis' },
+  { id: '22', name: 'Nobody', contribution: 'contributors.contributions.translationSupport' },
 ]
 
 // 合併相同貢獻者的函數
