@@ -39,22 +39,10 @@ onUnmounted(() => document.removeEventListener('click', handleClickOutside))
       :class="block ? 'w-full justify-center bg-vt-bg-2 py-3' : ''"
       @click="isOpen = !isOpen"
     >
-      <svg
-        class="opacity-70"
-        :class="block ? '' : 'hidden lg:block'"
-        width="14"
-        height="14"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      >
+      <svg class="opacity-70" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"></circle>
         <path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"></path>
       </svg>
-      <span :class="block ? 'hidden' : 'text-base lg:hidden'">{{ current.flag }}</span>
       <span :class="block ? '' : 'hidden lg:inline'">{{ current.name }}</span>
       <svg
         class="opacity-50 transition-transform"

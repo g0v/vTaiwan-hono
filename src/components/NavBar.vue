@@ -101,6 +101,21 @@ function showLogin() {
 
       <div class="flex items-center gap-1 text-[13px]">
         <LanguageSwitcher />
+        <!-- 行動裝置漢堡按鈕 -->
+        <button
+          type="button"
+          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-ink transition-colors hover:bg-vt-gray-100 xl:hidden"
+          :aria-expanded="mobileOpen"
+          :aria-label="t('header.openMenu')"
+          @click="toggleMobileMenu"
+        >
+          <svg v-if="!mobileOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+          <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
         <button
           v-if="user"
           type="button"
@@ -125,22 +140,6 @@ function showLogin() {
           @click="showLogin"
         >
           {{ t('common.registerLogin') }}
-        </button>
-
-        <!-- 行動裝置漢堡按鈕 -->
-        <button
-          type="button"
-          class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-ink transition-colors hover:bg-vt-gray-100 xl:hidden"
-          :aria-expanded="mobileOpen"
-          :aria-label="t('header.openMenu')"
-          @click="toggleMobileMenu"
-        >
-          <svg v-if="!mobileOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <path d="M4 7h16M4 12h16M4 17h16" />
-          </svg>
-          <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
         </button>
       </div>
     </div>
