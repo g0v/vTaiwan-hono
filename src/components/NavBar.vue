@@ -82,8 +82,11 @@ function showLogin() {
         </RouterLink>
       </nav>
 
-      <div class="flex items-center gap-2.5 text-[13px]">
+      <div class="flex items-center gap-2 text-[13px]">
         <LanguageSwitcher />
+        <RouterLink v-if="user" to="/profile" class="inline-flex sm:hidden" :aria-label="t('common.profile')" :title="t('common.profile')">
+          <UserAvatar :src="profilePhotoUrl" :alt="profileName" class="h-9 w-9 rounded-vt-full border border-vt-border" />
+        </RouterLink>
         <span class="hidden h-5 w-px bg-vt-border sm:block" />
         <RouterLink v-if="user" to="/profile" class="hidden items-center gap-2 rounded-full px-2 py-1 transition-colors hover:bg-vt-bg-2 sm:inline-flex" :title="t('common.profile')">
           <UserAvatar :src="profilePhotoUrl" :alt="profileName" class="h-8 w-8 rounded-vt-full border border-vt-border" />
