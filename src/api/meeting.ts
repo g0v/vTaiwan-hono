@@ -7,12 +7,12 @@
  *
  * REST 端點（歷史校對）：
  *   GET    /api/meeting/:date               → 讀取指定日期的完整快照（任何人）
- *   POST   /api/meeting/:date/transcript    → 新增／覆寫逐字稿條目（需認證）
- *   DELETE /api/meeting/:date/transcript/:ts → 刪除條目（需認證）
- *   PATCH  /api/meeting/:date               → 更新會議 session 欄位（需認證）
+ *   POST   /api/meeting/:date/transcript    → 新增／覆寫逐字稿條目（需 meeting.join）
+ *   DELETE /api/meeting/:date/transcript/:ts → 刪除條目（需 meeting.join）
+ *   PATCH  /api/meeting/:date               → 更新會議 session 欄位（需 meeting.join）
  */
 
-import { tryGetAuthContext } from '../server/lib/authorization'
+import { tryGetAuthContext, hasPermission } from '../server/lib/authorization'
 import type { App } from './types'
 
 /** YYYYMMDD 格式驗證（八位數字） */
@@ -39,8 +39,9 @@ export function registerMeetingApi(app: App): void {
     }
 
     // 解析認證（非強制；失敗視為未登入）
+    // isAuthenticated = 有效 session 且擁有 meeting.join（停權帳號 permissions=[]，視為未授權）
     const authCtx = await tryGetAuthContext(c.env, c.req.raw.headers)
-    const isAuthenticated = authCtx !== null
+    const isAuthenticated = authCtx !== null && hasPermission(authCtx, 'meeting.join')
     const userId = authCtx?.user.id ?? ''
 
     // 建立指向該日期 DO 實例的 stub
@@ -104,6 +105,7 @@ export function registerMeetingApi(app: App): void {
 
     const authCtx = await tryGetAuthContext(c.env, c.req.raw.headers)
     if (!authCtx) return c.text('Unauthorized', 401)
+    if (!hasPermission(authCtx, 'meeting.join')) return c.text('Forbidden', 403)
 
     const body = await c.req.json<{ id?: string | null; timestamp: number; speaker?: string; text: string }>()
     if (typeof body.timestamp !== 'number' || !body.text) return c.text('Invalid body', 400)
@@ -124,6 +126,7 @@ export function registerMeetingApi(app: App): void {
 
     const authCtx = await tryGetAuthContext(c.env, c.req.raw.headers)
     if (!authCtx) return c.text('Unauthorized', 401)
+    if (!hasPermission(authCtx, 'meeting.join')) return c.text('Forbidden', 403)
 
     await c.env.DB.prepare('DELETE FROM meeting_transcript_entries WHERE meeting_date = ? AND ts = ?').bind(date, ts).run()
 
@@ -138,6 +141,7 @@ export function registerMeetingApi(app: App): void {
 
     const authCtx = await tryGetAuthContext(c.env, c.req.raw.headers)
     if (!authCtx) return c.text('Unauthorized', 401)
+    if (!hasPermission(authCtx, 'meeting.join')) return c.text('Forbidden', 403)
 
     const body = await c.req.json<{
       recorder_uid?: string | null

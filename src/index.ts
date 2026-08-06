@@ -52,6 +52,9 @@ app.use('*', async (c, next) => {
   const nonce = generateCspNonce()
   c.set('cspNonce', nonce)
   await next()
+  // WebSocket Upgrade（101）不加安全標頭：101 回應只需升級相關標頭，
+  // 附加 CSP 等欄位在不同 runtime 下行為不確定，也無實際防護作用。
+  if (c.res.status === 101) return
   c.header('Content-Security-Policy', contentSecurityPolicyFor(nonce))
   c.header('Referrer-Policy', 'strict-origin-when-cross-origin')
   c.header('X-Content-Type-Options', 'nosniff')
