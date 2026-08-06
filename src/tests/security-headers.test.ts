@@ -16,7 +16,7 @@ function styleNonce(policy: string): string | undefined {
 }
 
 describe('安全標頭', () => {
-  it('CSP 允許 GA 與 JaaS 實際使用的瀏覽器端來源（Firebase 已移除 #81）', async () => {
+  it('CSP 允許 GA、Cloudflare Analytics 與 JaaS 實際使用的瀏覽器端來源（Firebase 已移除 #81）', async () => {
     const response = await app.request('/api/hello')
     const policy = response.headers.get('Content-Security-Policy')
 
@@ -27,6 +27,7 @@ describe('安全標頭', () => {
     const frameSources = directiveSources(policy!, 'frame-src')
 
     expect(scriptSources).toContain('https://www.googletagmanager.com')
+    expect(scriptSources).toContain('https://static.cloudflareinsights.com')
     expect(scriptSources).not.toContain('https://apis.google.com')
     expect(scriptSources).not.toContain('https://*.firebaseio.com')
     expect(scriptSources).toContain('https://8x8.vc')
@@ -34,6 +35,7 @@ describe('安全標頭', () => {
     expect(scriptSources).not.toContain("'unsafe-inline'")
     expect(styleSources).not.toContain("'unsafe-inline'")
     expect(styleNonce(policy!)).toBeTruthy()
+    expect(connectSources).toContain("'self'")
     expect(connectSources).toContain('https://*.google-analytics.com')
     expect(connectSources).not.toContain('https://*.firebaseio.com')
     expect(connectSources).not.toContain('wss://*.firebaseio.com')
