@@ -58,7 +58,7 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_classes": ["MeetingRoom"],
+      "new_sqlite_classes": ["MeetingRoom"],
     },
   ],
 }
