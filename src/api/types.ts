@@ -1,3 +1,5 @@
+import type { MeetingRoom } from '../durable-objects/meeting-room'
+
 import type { Hono } from 'hono'
 import type { D1Database, R2Bucket, Ai } from '@cloudflare/workers-types'
 
@@ -10,6 +12,7 @@ export type AppBindings = {
   DB_AUTH: D1Database
   R2?: R2Bucket
   AI?: Ai
+  MEETING_ROOM?: DurableObjectNamespace<MeetingRoom>
 
   JAAS_APP_ID?: string
   JAAS_KEY_ID?: string

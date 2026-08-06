@@ -44,6 +44,10 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       '#routes-runtime': path.resolve(root, 'src/router/routes.server.ts'),
+      // cloudflare:workers は Node.js/Vitest 環境で利用できない → テスト用 shim で差し替え
+      ...(process.env['VITEST']
+        ? { 'cloudflare:workers': path.resolve(root, 'src/shims/cloudflare-workers.ts') }
+        : {}),
     },
   },
   define: vueI18nFlags,

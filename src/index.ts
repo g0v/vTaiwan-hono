@@ -10,6 +10,8 @@ import { registerTranscriptionApi } from './api/transcription'
 import { registerAdminApi } from './api/admin'
 import type { AppEnv } from './api/types'
 import auth from './api/auth'
+import { registerMeetingApi } from './api/meeting'
+export { MeetingRoom } from './durable-objects/meeting-room'
 import { isActiveAdminRole, tryGetAuthContext } from './server/lib/authorization'
 import { renderPage } from './ssr/render'
 
@@ -32,13 +34,12 @@ const app = new Hono<AppEnv>()
 
 // 防禦縱深：即使清洗器發生回歸，也禁止未授權的內嵌 script、style 與事件處理器執行。
 // Vite 開發伺服器注入的 Vue SFC <style> 以逐請求 nonce 精確放行，不使用
-// 'unsafe-inline'。script-src 額外允許 GA、Firebase Auth 的 gapi、Realtime
-// Database 的 long-poll script、JaaS（8x8.vc）external_api.js，以及第三方套件
-// 產生的固定 inline script（僅放行瀏覽器回報的 SHA-256）。connect-src 則允許
-// Firebase API/WebSocket、GA4 beacon 與 JaaS API／WebSocket。frame-src 另放行
-// JaaS 會議 iframe。
+// 'unsafe-inline'。script-src 額外允許 GA 的 GTM 與 JaaS（8x8.vc）external_api.js，
+// 以及第三方套件產生的固定 inline script（僅放行瀏覽器回報的 SHA-256）。
+// connect-src 允許 GA4 beacon 與 JaaS API／WebSocket。frame-src 另放行 JaaS 會議 iframe。
+// Firebase 相關 domain 已全數移除（#81：Firebase 由 DO + WebSocket 取代）。
 export function contentSecurityPolicyFor(nonce: string): string {
-  return `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-3bzWVxQE32IZQKH9eh8KzyHuhXOlMrboDVVBRd0fWTU=' https://www.googletagmanager.com https://apis.google.com https://*.firebaseio.com https://8x8.vc; style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self' https://*.firebaseio.com wss://*.firebaseio.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebasestorage.googleapis.com https://*.googleapis.com https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://8x8.vc wss://8x8.vc; frame-src https://*.firebaseapp.com https://accounts.google.com https://pol.is https://app.sli.do https://livehouse.in https://embed.livehouse.in https://form.typeform.com https://docs.google.com https://calendar.google.com https://8x8.vc; frame-ancestors 'self'; form-action 'self'`
+  return `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-3bzWVxQE32IZQKH9eh8KzyHuhXOlMrboDVVBRd0fWTU=' https://www.googletagmanager.com https://8x8.vc; style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://8x8.vc wss://8x8.vc; frame-src https://accounts.google.com https://pol.is https://app.sli.do https://livehouse.in https://embed.livehouse.in https://form.typeform.com https://docs.google.com https://calendar.google.com https://8x8.vc; frame-ancestors 'self'; form-action 'self'`
 }
 
 function generateCspNonce(): string {
@@ -69,6 +70,7 @@ registerDiscourseTopicIdApi(app)
 registerJitsiTokenApi(app)
 registerTranscriptionApi(app)
 registerAdminApi(app)
+registerMeetingApi(app)
 
 // 其他 GET 請求：靜態檔交給 ASSETS，其餘交給 Vue SSR + vue-router。
 app.get('*', async c => {

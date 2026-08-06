@@ -261,10 +261,8 @@
 import TranscriptPanel from '../components/TranscriptPanel.vue'
 import IconWrapper from '../components/IconWrapper.vue'
 import TranscriptLanguageSwitcher from '../components/TranscriptLanguageSwitcher.vue'
-import { markRaw } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { supportedLocales } from '../i18n'
-import { getFirebaseServices } from '../lib/firebase'
 import { hasPermission } from '../client/auth-session'
 
 // SSR 保護：此模組頂層不存取瀏覽器 API
@@ -283,8 +281,12 @@ export default {
 
   data() {
     return {
-      // Firebase 服務（瀏覽器端 mounted 後才取得）
-      firebaseServices: null,
+      // WebSocket 連線（瀏覽器端 mounted 後才建立）
+      ws: null,
+      // WS 尚未 open 時暫存的寫入訊息，open 後一次沖出
+      wsPendingMessages: [],
+      // 今日日期（created 設定後固定不變），用於判斷是否為歷史日期
+      realToday: '',
 
       isRecorder: false,
       isTranscripting: false,
@@ -295,9 +297,6 @@ export default {
       selectedDate: '',
       meetingData: { recordingStartTime: null, recordingSpeaker: null },
       transcriptData: {},
-      // Firebase lazy 初始化期間產生的逐字稿，待服務可用後再依條目寫入。
-      pendingTranscriptChanges: {},
-      firebaseUnsubscribe: null,
 
       appId: 'vpaas-magic-cookie-7c142b7a730e4478878703f86c03d5a1',
       room: 'vtaiwan',
@@ -387,20 +386,25 @@ export default {
       void this.recordingTimer // 讓 computed 依賴此響應變數，每秒觸發更新
       return Math.floor((Date.now() - this.meetingData.recordingStartTime) / 1000)
     },
+    // 判斷是否正在查看歷史日期（非今日）
+    isHistoricalDate() {
+      return this.today !== this.realToday
+    },
   },
 
-  // created() 不呼叫任何 Firebase/瀏覽器 API；日期計算為純 JS，安全
+  // created() 不呼叫任何瀏覽器 API；日期計算為純 JS，安全
   created() {
     const now = new Date()
     const year = now.getFullYear()
     const month = String(now.getMonth() + 1).padStart(2, '0')
     const day = String(now.getDate()).padStart(2, '0')
     this.today = `${year}${month}${day}`
+    this.realToday = this.today
     this.selectedDate = `${year}-${month}-${day}`
   },
 
   mounted() {
-    // 瀏覽器端初始化：設定 drawerWidth、載入 Firebase、設定計時器
+    // 瀏覽器端初始化：設定 drawerWidth、連接會議資料流、設定計時器
     this.drawerWidth = Math.min(window.innerWidth * 0.9, 400)
     this.updateViewportState()
     this.loadJitsiTipBanner()
@@ -413,22 +417,8 @@ export default {
 
     window.addEventListener('resize', this.handleResize)
 
-    // 初始化 Firebase 服務（lazy、browser-only），完成後載入會議資料
-    getFirebaseServices()
-      .then(async services => {
-        // Firebase SDK 實例含有自訂樹狀索引物件；Vue 深層 Proxy 會破壞其 prototype，
-        // 導致 Realtime Database 寫入時出現「insert is not a function」。
-        this.firebaseServices = markRaw(services)
-        try {
-          await this.flushPendingTranscriptChanges()
-        } catch (error) {
-          console.error('flushPendingTranscriptChanges failed:', error)
-        }
-        this.syncRecordingStatus()
-        await this.loadMeetingData()
-      })
-      .catch(err => console.error('Firebase init failed:', err))
-
+    // 連線到會議資料流（今日 → WebSocket；歷史 → REST）
+    this.connectToMeeting()
     this.loadTranscriptionLanguage()
 
     // 監聽 vue-i18n locale 變化，自動跟隨（若使用者未手動設定）
@@ -453,10 +443,7 @@ export default {
       this.jitsiApi.dispose()
       this.jitsiApi = null
     }
-    if (this.firebaseUnsubscribe) {
-      this.firebaseUnsubscribe()
-      this.firebaseUnsubscribe = null
-    }
+    this.disconnectWs()
     this.clearTranscriptCache()
     this.cleanupAudioRecording()
     this.stopQueueProcessing()
@@ -705,50 +692,47 @@ export default {
     },
 
     updateMeetingData() {
-      if (!this.firebaseServices) return
-      const { databaseRef, databaseUpdate, database } = this.firebaseServices
-      databaseUpdate(databaseRef(database, `/meetings/${this.today}`), {
-        recorder: this.meetingData.recorder || null,
-      }).catch(err => console.error('updateMeetingData failed:', err))
+      this.sendMeetingMessage({
+        type: 'update_meeting',
+        recorder_uid: this.meetingData.recorder || null,
+      })
     },
 
     syncRecordingStatus() {
-      if (!this.firebaseServices) return
-      const { databaseRef, databaseUpdate, database } = this.firebaseServices
-      databaseUpdate(databaseRef(database, `/meetings/${this.today}`), {
-        recordingSpeaker: this.meetingData.recordingSpeaker || null,
-        recordingStartTime: this.meetingData.recordingStartTime || null,
-      }).catch(err => console.error('syncRecordingStatus failed:', err))
+      this.sendMeetingMessage({
+        type: 'sync_recording',
+        recording_speaker: this.meetingData.recordingSpeaker || null,
+        recording_start_time: this.meetingData.recordingStartTime || null,
+      })
     },
 
     saveTranscriptEntry(entry) {
-      if (!this.firebaseServices) {
-        this.pendingTranscriptChanges[entry.timestamp] = entry
+      if (this.isHistoricalDate) {
+        fetch(`/api/meeting/${this.today}/transcript`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry),
+        }).catch(err => console.error('saveTranscriptEntry (REST) failed:', err))
         return
       }
-      const { databaseRef, databaseSet, database } = this.firebaseServices
-      databaseSet(databaseRef(database, `/meetings/${this.today}/transcripts/${entry.timestamp}`), entry).catch(err => console.error('saveTranscriptEntry failed:', err))
+      this.sendMeetingMessage({ type: 'save_entry', entry })
     },
 
     deleteTranscriptEntry(timestamp) {
-      if (!this.firebaseServices) {
-        this.pendingTranscriptChanges[timestamp] = null
+      if (this.isHistoricalDate) {
+        fetch(`/api/meeting/${this.today}/transcript/${timestamp}`, { method: 'DELETE' }).catch(err => console.error('deleteTranscriptEntry (REST) failed:', err))
         return
       }
-      const { databaseRef, databaseSet, database } = this.firebaseServices
-      databaseSet(databaseRef(database, `/meetings/${this.today}/transcripts/${timestamp}`), null).catch(err => console.error('deleteTranscriptEntry failed:', err))
+      this.sendMeetingMessage({ type: 'delete_entry', timestamp })
     },
 
-    async flushPendingTranscriptChanges() {
-      const pendingChanges = this.pendingTranscriptChanges
-      this.pendingTranscriptChanges = {}
-
-      await Promise.all(
-        Object.entries(pendingChanges).map(([timestamp, entry]) => {
-          const { databaseRef, databaseSet, database } = this.firebaseServices
-          return databaseSet(databaseRef(database, `/meetings/${this.today}/transcripts/${timestamp}`), entry)
-        })
-      )
+    // 送出 WebSocket 訊息；若連線尚未就緒則排入暫存佇列（mounted 後 open 時沖出）
+    sendMeetingMessage(msg) {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.ws.send(JSON.stringify(msg))
+      } else {
+        this.wsPendingMessages.push(msg)
+      }
     },
 
     handleResize() {
@@ -1125,32 +1109,126 @@ export default {
     onDateChange(newDate) {
       const parts = newDate.split('-')
       this.today = parts[0] + parts[1] + parts[2]
-      this.loadMeetingData()
+      this.connectToMeeting()
     },
 
-    async loadMeetingData() {
-      if (!this.firebaseServices) return
-      const { databaseRef, databaseOnValue, database } = this.firebaseServices
+    // ─── 會議連線管理 ─────────────────────────────────────────────────────────
 
-      if (this.firebaseUnsubscribe) {
-        this.firebaseUnsubscribe()
-        this.firebaseUnsubscribe = null
+    // 決定今日用 WebSocket 還是歷史用 REST，並執行連線 / 載入
+    connectToMeeting() {
+      if (this.isHistoricalDate) {
+        this.disconnectWs()
+        this.loadHistoricalData()
+      } else {
+        this.connectMeetingWs()
+      }
+    },
+
+    // 建立（或重建）WebSocket 連線到今日的 MeetingRoom DO
+    connectMeetingWs() {
+      this.disconnectWs()
+      const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
+      const ws = new WebSocket(`${protocol}//${location.host}/api/ws/meeting/${this.today}`)
+      this.ws = ws
+
+      ws.onopen = () => {
+        // 沖出在連線期間暫存的寫入訊息
+        const pending = this.wsPendingMessages.splice(0)
+        for (const msg of pending) {
+          ws.send(JSON.stringify(msg))
+        }
       }
 
-      try {
-        this.firebaseUnsubscribe = databaseOnValue(databaseRef(database, `/meetings/${this.today}`), snap => {
-          if (snap.exists()) {
-            this.meetingData = snap.val()
-            this.transcriptData = (this.meetingData || {}).transcripts || {}
-            this.isRecorder = this.meetingData.recorder == this.authUserData.uid
-          } else {
-            this.meetingData = { recorder: '', transcripts: {} }
-            this.transcriptData = {}
-            this.isRecorder = false
+      ws.onmessage = event => {
+        try {
+          this.handleWsMessage(JSON.parse(event.data))
+        } catch (err) {
+          console.error('[WS] 解析訊息失敗:', err)
+        }
+      }
+
+      ws.onclose = () => {
+        if (this.ws === ws) this.ws = null
+      }
+
+      ws.onerror = err => {
+        console.error('[WS] 連線錯誤:', err)
+      }
+    },
+
+    // 關閉現有的 WebSocket 連線（如有）
+    disconnectWs() {
+      if (this.ws) {
+        this.ws.onclose = null // 防止觸發重連
+        this.ws.close()
+        this.ws = null
+      }
+    },
+
+    // 處理來自 DO 的 WebSocket 訊息（差量更新 or 初始快照）
+    handleWsMessage(msg) {
+      switch (msg.type) {
+        case 'init':
+          this.meetingData = {
+            recorder: msg.meeting.recorderUid || '',
+            recordingSpeaker: msg.meeting.recordingSpeaker || null,
+            recordingStartTime: msg.meeting.recordingStartTime || null,
           }
-        })
-      } catch (error) {
-        console.error('Error loading meeting data:', error)
+          this.transcriptData = msg.transcripts || {}
+          this.isRecorder = this.meetingData.recorder === this.authUserData.uid
+          break
+
+        case 'entry_saved':
+          this.transcriptData = {
+            ...this.transcriptData,
+            [String(msg.entry.timestamp)]: msg.entry,
+          }
+          break
+
+        case 'entry_deleted':
+          // eslint-disable-next-line no-case-declarations
+          const updated = { ...this.transcriptData }
+          delete updated[String(msg.timestamp)]
+          this.transcriptData = updated
+          break
+
+        case 'meeting_updated':
+          this.meetingData = { ...this.meetingData, recorder: msg.recorder_uid || '' }
+          this.isRecorder = this.meetingData.recorder === this.authUserData.uid
+          break
+
+        case 'recording_synced':
+          this.meetingData = {
+            ...this.meetingData,
+            recordingSpeaker: msg.recording_speaker || null,
+            recordingStartTime: msg.recording_start_time || null,
+          }
+          break
+
+        case 'error':
+          console.error('[WS] 伺服器錯誤:', msg.message)
+          break
+      }
+    },
+
+    // 歷史日期：從 D1 REST API 一次性載入快照（不建 WebSocket）
+    async loadHistoricalData() {
+      try {
+        const res = await fetch(`/api/meeting/${this.today}`)
+        if (!res.ok) {
+          console.error('loadHistoricalData failed:', res.status)
+          return
+        }
+        const data = await res.json()
+        this.meetingData = {
+          recorder: data.meeting.recorderUid || '',
+          recordingSpeaker: data.meeting.recordingSpeaker || null,
+          recordingStartTime: data.meeting.recordingStartTime || null,
+        }
+        this.transcriptData = data.transcripts || {}
+        this.isRecorder = this.meetingData.recorder === this.authUserData.uid
+      } catch (err) {
+        console.error('loadHistoricalData error:', err)
       }
     },
 
