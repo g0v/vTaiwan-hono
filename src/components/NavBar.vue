@@ -125,18 +125,22 @@ function logout() {
             <path d="m9 18 6-6-6-6" />
           </svg>
         </RouterLink>
+        <RouterLink
+          v-if="user"
+          to="/profile"
+          class="flex items-center justify-between rounded-xl px-3.5 py-1.5 transition-colors hover:bg-vt-gray-100"
+          :class="activeKey === 'profile' ? 'text-democratic-red' : 'text-vt-gray-800'"
+          @click="mobileOpen = false"
+        >
+          {{ t('common.profile') }}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40">
+            <path d="m9 18 6-6-6-6" />
+          </svg>
+        </RouterLink>
         <div class="my-1.5 h-px bg-vt-border" />
         <div class="flex gap-2 px-1.5 pt-2 pb-1.5">
           <LanguageSwitcher block drop-up class="flex-1" />
           <template v-if="user">
-            <RouterLink
-              to="/profile"
-              class="inline-flex flex-1 items-center justify-center rounded-full bg-vt-bg-2 px-3 py-3 text-vt-fg-1 transition-colors hover:bg-vt-gray-100"
-              :class="{ 'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish }"
-              @click="mobileOpen = false"
-            >
-              {{ t('common.profile') }}
-            </RouterLink>
             <button type="button" class="rounded-full px-3 py-3 text-vt-sm text-vt-fg-2 transition-colors hover:bg-vt-bg-2" @click="logout">
               {{ t('common.logout') }}
             </button>
