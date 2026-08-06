@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
+import { ChevronDown } from 'lucide-vue-next'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 import UserAvatar from './UserAvatar.vue'
 import { adminNavLink, navLinks as links } from '../router/nav-links'
@@ -28,6 +29,7 @@ const emit = defineEmits<{ 'show-login': []; logout: [] }>()
 const route = useRoute()
 const { t } = useI18n()
 const mobileOpen = ref(false)
+const mobileAccountOpen = ref(false)
 
 // 導覽連結對齊至 vue.vTaiwan-neo 專案項目；label 由 i18n 提供（資料源自 nav-links.ts）
 
@@ -43,18 +45,33 @@ const isEnglish = computed(() => locale.value.includes('en'))
 watch(
   () => route.fullPath,
   () => {
-    mobileOpen.value = false
+    closeMobileMenus()
   }
 )
 
+function closeMobileMenus() {
+  mobileOpen.value = false
+  mobileAccountOpen.value = false
+}
+
+function toggleMobileMenu() {
+  mobileOpen.value = !mobileOpen.value
+  mobileAccountOpen.value = false
+}
+
+function toggleMobileAccountMenu() {
+  mobileAccountOpen.value = !mobileAccountOpen.value
+  mobileOpen.value = false
+}
+
 function logout() {
   emit('logout')
-  mobileOpen.value = false
+  closeMobileMenus()
 }
 
 function showLogin() {
   emit('show-login')
-  mobileOpen.value = false
+  closeMobileMenus()
 }
 </script>
 
@@ -82,11 +99,20 @@ function showLogin() {
         </RouterLink>
       </nav>
 
-      <div class="flex items-center gap-2 text-[13px]">
+      <div class="flex items-center gap-1 text-[13px]">
         <LanguageSwitcher />
-        <RouterLink v-if="user" to="/profile" class="inline-flex sm:hidden" :aria-label="t('common.profile')" :title="t('common.profile')">
-          <UserAvatar :src="profilePhotoUrl" :alt="profileName" class="h-9 w-9 rounded-vt-full border border-vt-border" />
-        </RouterLink>
+        <button
+          v-if="user"
+          type="button"
+          class="inline-flex items-center rounded-vt-full sm:hidden"
+          :aria-expanded="mobileAccountOpen"
+          aria-haspopup="menu"
+          :aria-label="t('header.openAccountMenu')"
+          @click="toggleMobileAccountMenu"
+        >
+          <UserAvatar :src="profilePhotoUrl" :alt="profileName" class="h-9 w-9 shrink-0 rounded-vt-full border border-vt-border" />
+          <ChevronDown aria-hidden="true" class="h-3 w-3 shrink-0 text-vt-fg-2 transition-transform" :class="mobileAccountOpen ? 'rotate-180' : ''" />
+        </button>
         <span class="hidden h-5 w-px bg-vt-border sm:block" />
         <RouterLink v-if="user" to="/profile" class="hidden items-center gap-2 rounded-full px-2 py-1 transition-colors hover:bg-vt-bg-2 sm:inline-flex" :title="t('common.profile')">
           <UserAvatar :src="profilePhotoUrl" :alt="profileName" class="h-8 w-8 rounded-vt-full border border-vt-border" />
@@ -107,7 +133,7 @@ function showLogin() {
           class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full text-ink transition-colors hover:bg-vt-gray-100 xl:hidden"
           :aria-expanded="mobileOpen"
           :aria-label="t('header.openMenu')"
-          @click="mobileOpen = !mobileOpen"
+          @click="toggleMobileMenu"
         >
           <svg v-if="!mobileOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
             <path d="M4 7h16M4 12h16M4 17h16" />
@@ -119,7 +145,39 @@ function showLogin() {
       </div>
     </div>
 
-    <div v-if="mobileOpen" class="fixed inset-0 z-10" aria-hidden="true" @click="mobileOpen = false" @touchmove.prevent @wheel.prevent />
+    <div v-if="mobileOpen || mobileAccountOpen" class="fixed inset-0 z-10" aria-hidden="true" @click="closeMobileMenus" @touchmove.prevent @wheel.prevent />
+
+    <div v-if="mobileAccountOpen && user" class="absolute right-0 z-20 mt-vt-2 w-full px-3 sm:hidden">
+      <div
+        class="mobile-account-menu vt-glass vt-glass--navbar relative z-10 ml-auto w-56 p-vt-2 backdrop-blur-vt-navbar backdrop-saturate-vt-navbar"
+        role="menu"
+        :aria-label="t('header.openAccountMenu')"
+      >
+        <RouterLink
+          to="/profile"
+          class="flex items-center rounded-vt-xl px-vt-3 py-vt-2 text-vt-sm transition-colors hover:bg-vt-bg-2"
+          :class="activeKey === 'profile' ? 'text-democratic-red' : 'text-vt-fg-1'"
+          role="menuitem"
+          @click="closeMobileMenus"
+        >
+          {{ t('common.profile') }}
+        </RouterLink>
+        <RouterLink
+          v-if="isAdmin"
+          :to="adminNavLink.href"
+          class="flex items-center rounded-vt-xl px-vt-3 py-vt-2 text-vt-sm transition-colors hover:bg-vt-bg-2"
+          :class="activeKey === adminNavLink.key ? 'text-democratic-red' : 'text-vt-fg-1'"
+          role="menuitem"
+          @click="closeMobileMenus"
+        >
+          {{ t(adminNavLink.labelKey) }}
+        </RouterLink>
+        <div class="my-vt-1 h-px bg-vt-border" role="separator" />
+        <button type="button" class="flex w-full items-center rounded-vt-xl px-vt-3 py-vt-2 text-left text-vt-sm text-vt-fg-2 transition-colors hover:bg-vt-bg-2" role="menuitem" @click="logout">
+          {{ t('common.logout') }}
+        </button>
+      </div>
+    </div>
 
     <!-- 行動選單面板 -->
     <div v-if="mobileOpen" class="absolute left-0 z-20 w-full px-3 sm:px-6 xl:hidden">
@@ -134,33 +192,9 @@ function showLogin() {
           :to="l.href"
           class="flex items-center justify-between rounded-xl px-3.5 py-1.5 transition-colors hover:bg-vt-gray-100"
           :class="activeKey === l.key ? 'text-democratic-red' : 'text-vt-gray-800'"
-          @click="mobileOpen = false"
+          @click="closeMobileMenus"
         >
           {{ t(l.labelKey) }}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </RouterLink>
-        <RouterLink
-          v-if="user"
-          to="/profile"
-          class="flex items-center justify-between rounded-xl px-3.5 py-1.5 transition-colors hover:bg-vt-gray-100"
-          :class="activeKey === 'profile' ? 'text-democratic-red' : 'text-vt-gray-800'"
-          @click="mobileOpen = false"
-        >
-          {{ t('common.profile') }}
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40">
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </RouterLink>
-        <RouterLink
-          v-if="isAdmin"
-          :to="adminNavLink.href"
-          class="flex items-center justify-between rounded-xl px-3.5 py-1.5 transition-colors hover:bg-vt-gray-100"
-          :class="activeKey === adminNavLink.key ? 'text-democratic-red' : 'text-vt-gray-800'"
-          @click="mobileOpen = false"
-        >
-          {{ t(adminNavLink.labelKey) }}
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="opacity-40">
             <path d="m9 18 6-6-6-6" />
           </svg>
@@ -168,13 +202,8 @@ function showLogin() {
         <div class="my-1.5 h-px bg-vt-border" />
         <div class="flex gap-2 px-1.5 pt-2 pb-1.5">
           <LanguageSwitcher block drop-up class="flex-1" />
-          <template v-if="user">
-            <button type="button" class="rounded-full px-3 py-3 text-vt-sm text-vt-fg-2 transition-colors hover:bg-vt-bg-2" @click="logout">
-              {{ t('common.logout') }}
-            </button>
-          </template>
           <button
-            v-else
+            v-if="!user"
             type="button"
             class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-3 py-3 text-vt-fg-inverse transition-colors hover:bg-democratic-red"
             :class="{ 'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish }"

@@ -145,7 +145,8 @@
     "faq": "FAQ",
     "contributors": "Contributors",
     "admin": "Admin",
-    "openMenu": "Open menu"
+    "openMenu": "Open menu",
+    "openAccountMenu": "Open account menu"
   },
   "about": {
     "title": "About Us",

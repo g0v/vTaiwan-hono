@@ -140,7 +140,8 @@
     "faq": "常見問答",
     "contributors": "貢獻者",
     "admin": "管理後台",
-    "openMenu": "開啟選單"
+    "openMenu": "開啟選單",
+    "openAccountMenu": "開啟帳號選單"
   },
   "about": {
     "title": "關於我們",

@@ -145,7 +145,8 @@
     "faq": "よくある質問",
     "contributors": "貢献者",
     "admin": "管理画面",
-    "openMenu": "メニューを開く"
+    "openMenu": "メニューを開く",
+    "openAccountMenu": "アカウントメニューを開く"
   },
   "about": {
     "title": "私たちについて",
