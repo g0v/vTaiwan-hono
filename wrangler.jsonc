@@ -39,4 +39,12 @@
   "ai": {
     "binding": "AI",
   },
+  "routes": [
+    {
+      "pattern": "next.vtaiwan.tw",
+      "custom_domain": true,
+      "enabled": true,
+      "previews_enabled": false,
+    },
+  ]
 }
