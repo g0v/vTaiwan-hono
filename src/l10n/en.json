@@ -1144,6 +1144,7 @@
         "manage": "Actions"
       },
       "action": {
+        "userCreate": "Created member {target} (role: {to})",
         "userRoleSet": "Changed {target}'s role from {from} to {to}",
         "userBan": "Banned member {target}",
         "userBanWithReason": "Banned member {target}, reason: {reason}",
@@ -1152,6 +1153,7 @@
         "userUpdate": "Updated member {target}'s account data",
         "userImpersonate": "Impersonated member {target}",
         "userPasswordSet": "Reset member {target}'s password",
+        "userSessionRevokeSingle": "Revoked a single session of member {target}",
         "userSessionsRevoke": "Revoked all sessions of member {target}",
         "transcriptionCreate": "Added the transcript for {target} (version {version})",
         "transcriptionReplace": "Replaced the transcript for {target} (version {version})",

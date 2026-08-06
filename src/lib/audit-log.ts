@@ -7,6 +7,7 @@ export const AUDIT_LOG_LIMIT = 200
 
 /** 記錄的變更事件；不只角色變更，逐字稿與大綱的異動同樣入帳 */
 export type AuditAction =
+  | 'user.create'
   | 'user.role.set'
   | 'user.ban'
   | 'user.unban'
@@ -14,6 +15,10 @@ export type AuditAction =
   | 'user.update'
   | 'user.impersonate'
   | 'user.password.set'
+  // ⚠️ 單數 `user.session.revoke`（撤銷指定的一個工作階段）與複數 `user.sessions.revoke`
+  // （撤銷該成員全部工作階段）只差一個字母，對應的端點也互為前綴。兩者的路徑對應
+  // 在 audit-log.test.ts 有相鄰斷言釘住，改動時別把它們調換。
+  | 'user.session.revoke'
   | 'user.sessions.revoke'
   | 'transcription.create'
   | 'transcription.replace'
@@ -60,15 +65,16 @@ export interface AuditEntry {
 }
 
 /**
- * Better Auth admin plugin 中「會改變狀態」的端點 → 事件種類。
- * 查詢類（list-users／get-user／has-permission）不是變更，不入帳。
+ * Better Auth admin plugin 中「會改變狀態」的端點 → 事件種類（#74 起已全數涵蓋）。
+ * 查詢類（list-users／get-user／has-permission／list-user-sessions）不是變更，不入帳。
  *
- * ⚠️ 尚未涵蓋（body 形狀不同，需另外處理才記得到操作對象）：
- * - `create-user`：request 沒有 userId，要解析回應才拿得到新帳號 id
- * - `revoke-user-session`：以 `sessionToken` 指定，對不回使用者
- * 補這兩個之前，它們的操作不會留痕——列在此處以免被誤讀成「全部都記了」。
+ * 其中兩個端點的操作對象不在 request body 的 `userId`，由 `src/server/lib/auth-audit.ts`
+ * 的 before / after hook 另外取得：
+ * - `create-user`：由 **成功回應**的 `{ user }` 取得新帳號 id
+ * - `revoke-user-session`：在 session 被刪掉**之前**，以 `sessionToken` 反查 userId
  */
 const ADMIN_PATH_ACTIONS: Record<string, AuditAction> = {
+  '/api/auth/admin/create-user': 'user.create',
   '/api/auth/admin/set-role': 'user.role.set',
   '/api/auth/admin/ban-user': 'user.ban',
   '/api/auth/admin/unban-user': 'user.unban',
@@ -77,6 +83,8 @@ const ADMIN_PATH_ACTIONS: Record<string, AuditAction> = {
   // 冒用他人身分是審計上最不能漏的一項
   '/api/auth/admin/impersonate-user': 'user.impersonate',
   '/api/auth/admin/set-user-password': 'user.password.set',
+  // 單數／複數是兩個不同端點：前者撤銷指定的一個工作階段，後者撤銷該成員全部工作階段
+  '/api/auth/admin/revoke-user-session': 'user.session.revoke',
   '/api/auth/admin/revoke-user-sessions': 'user.sessions.revoke',
 }
 
@@ -86,6 +94,7 @@ export function auditActionForAdminPath(pathname: string): AuditAction | null {
 
 /** i18n key 不含連字號與多層點號歧義，故以明表對應（vue-i18n 會把點號當路徑） */
 const ACTION_LABEL_KEYS: Record<AuditAction, string> = {
+  'user.create': 'admin.logs.action.userCreate',
   'user.role.set': 'admin.logs.action.userRoleSet',
   'user.ban': 'admin.logs.action.userBan',
   'user.unban': 'admin.logs.action.userUnban',
@@ -93,6 +102,9 @@ const ACTION_LABEL_KEYS: Record<AuditAction, string> = {
   'user.update': 'admin.logs.action.userUpdate',
   'user.impersonate': 'admin.logs.action.userImpersonate',
   'user.password.set': 'admin.logs.action.userPasswordSet',
+  // key 刻意不叫 userSessionRevoke——與複數的 userSessionsRevoke 只差一個字母，
+  // 一旦寫錯是「顯示了另一種事件的文案」這種不會報錯的失敗
+  'user.session.revoke': 'admin.logs.action.userSessionRevokeSingle',
   'user.sessions.revoke': 'admin.logs.action.userSessionsRevoke',
   'transcription.create': 'admin.logs.action.transcriptionCreate',
   'transcription.replace': 'admin.logs.action.transcriptionReplace',
@@ -120,6 +132,35 @@ export function readAdminActionBody(body: unknown): { userId: string | null; rol
     role: role === '' ? null : role,
     reason: typeof record.banReason === 'string' && record.banReason !== '' ? record.banReason : null,
   }
+}
+
+/**
+ * `revoke-user-session` 的操作對象藏在 `sessionToken` 裡（body 沒有 userId）。
+ * 取到 token 後要在動作生效**之前**反查 userId——session 被刪掉就對不回人了。
+ */
+export function readAdminSessionToken(body: unknown): string | null {
+  if (!body || typeof body !== 'object') return null
+  const token = (body as { sessionToken?: unknown }).sessionToken
+  return typeof token === 'string' && token !== '' ? token : null
+}
+
+/**
+ * 由 `create-user` 的成功回應（`{ user }`）取出新帳號的審計欄位。
+ * 新帳號的 id 只存在於回應中，request body 拿不到。
+ */
+export function readCreatedAuditUser(body: unknown): { id: string; label: string; role: string | null } | null {
+  if (!body || typeof body !== 'object') return null
+  const user = (body as { user?: unknown }).user
+  if (!user || typeof user !== 'object') return null
+
+  const record = user as { id?: unknown; name?: unknown; email?: unknown; role?: unknown }
+  if (typeof record.id !== 'string' || record.id === '') return null
+
+  const name = typeof record.name === 'string' ? record.name : ''
+  const email = typeof record.email === 'string' ? record.email : ''
+  // 與 findAuditUserTarget 同一套 label 規則：姓名 → 信箱 → id
+  const role = Array.isArray(record.role) ? record.role.filter(item => typeof item === 'string').join(',') : typeof record.role === 'string' ? record.role : null
+  return { id: record.id, label: name || email || record.id, role: role === '' ? null : role }
 }
 
 /** 空物件存 NULL，避免整欄塞滿沒有資訊的 `{}` */

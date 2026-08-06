@@ -1,9 +1,23 @@
 import { describe, expect, it } from 'vite-plus/test'
 import app from '../index'
 import zhTW from '../l10n/zh-TW.json'
-import { auditActionForAdminPath, auditActionLabelKey, parseAuditDetail, readAdminActionBody, restoreCommandFor, serializeAuditDetail, type AuditAction, type AuditEntry } from '../lib/audit-log'
+import {
+  auditActionForAdminPath,
+  auditActionLabelKey,
+  parseAuditDetail,
+  readAdminActionBody,
+  readAdminSessionToken,
+  readCreatedAuditUser,
+  restoreCommandFor,
+  serializeAuditDetail,
+  type AuditAction,
+  type AuditEntry,
+} from '../lib/audit-log'
+import { isSuccessfulAuthAuditResponse, prepareAuthAudit } from '../server/lib/auth-audit'
+import type { AppBindings } from '../api/types'
 
 const ALL_ACTIONS: AuditAction[] = [
+  'user.create',
   'user.role.set',
   'user.ban',
   'user.unban',
@@ -11,6 +25,7 @@ const ALL_ACTIONS: AuditAction[] = [
   'user.update',
   'user.impersonate',
   'user.password.set',
+  'user.session.revoke',
   'user.sessions.revoke',
   'transcription.create',
   'transcription.replace',
@@ -37,13 +52,20 @@ function lookup(path: string): unknown {
 
 describe('變更日誌事件對應（#71）', () => {
   it('只有真的會改變狀態的管理端點入帳', () => {
+    expect(auditActionForAdminPath('/api/auth/admin/create-user')).toBe('user.create')
     expect(auditActionForAdminPath('/api/auth/admin/set-role')).toBe('user.role.set')
     expect(auditActionForAdminPath('/api/auth/admin/ban-user')).toBe('user.ban')
     expect(auditActionForAdminPath('/api/auth/admin/unban-user')).toBe('user.unban')
     expect(auditActionForAdminPath('/api/auth/admin/remove-user')).toBe('user.remove')
     expect(auditActionForAdminPath('/api/auth/admin/update-user')).toBe('user.update')
     expect(auditActionForAdminPath('/api/auth/admin/set-user-password')).toBe('user.password.set')
+  })
+
+  // 兩個端點互為前綴、事件名只差一個字母，調換了不會報錯只會顯示錯文案——相鄰釘住（#74）
+  it('撤銷單一工作階段與撤銷全部工作階段是兩個不同事件', () => {
+    expect(auditActionForAdminPath('/api/auth/admin/revoke-user-session')).toBe('user.session.revoke')
     expect(auditActionForAdminPath('/api/auth/admin/revoke-user-sessions')).toBe('user.sessions.revoke')
+    expect(auditActionLabelKey('user.session.revoke')).not.toBe(auditActionLabelKey('user.sessions.revoke'))
   })
 
   // 冒用他人身分而不留痕是審計上最嚴重的漏洞，單獨釘一條
@@ -53,6 +75,7 @@ describe('變更日誌事件對應（#71）', () => {
 
   it('查詢類與登入流程不算變更事件', () => {
     expect(auditActionForAdminPath('/api/auth/admin/list-users')).toBeNull()
+    expect(auditActionForAdminPath('/api/auth/admin/list-user-sessions')).toBeNull()
     expect(auditActionForAdminPath('/api/auth/admin/has-permission')).toBeNull()
     expect(auditActionForAdminPath('/api/auth/callback/google')).toBeNull()
     expect(auditActionForAdminPath('/api/me')).toBeNull()
@@ -82,6 +105,95 @@ describe('管理端點請求 body 的審計欄位', () => {
     expect(readAdminActionBody(null)).toEqual({ userId: null, role: null, reason: null })
     expect(readAdminActionBody('not-json')).toEqual({ userId: null, role: null, reason: null })
     expect(readAdminActionBody({ userId: 'u1', role: 42 }).role).toBeNull()
+  })
+
+  // create-user 入帳後，這個函式也會吃到帶密碼的 body（#74）——只取白名單欄位，密碼不得外流到日誌
+  it('只取白名單欄位，create-user 的密碼不會被帶出來', () => {
+    const parsed = readAdminActionBody({ email: 'new@example.com', password: 'super-secret', name: 'New', role: 'admin' })
+    expect(parsed).toEqual({ userId: null, role: 'admin', reason: null })
+    expect(JSON.stringify(parsed)).not.toContain('super-secret')
+  })
+})
+
+describe('create-user 的操作對象（#74）', () => {
+  it('由成功回應取出新帳號的 id／顯示名稱／角色', () => {
+    expect(readCreatedAuditUser({ user: { id: 'u9', name: '新成員', email: 'new@example.com', role: 'admin' } })).toEqual({ id: 'u9', label: '新成員', role: 'admin' })
+  })
+
+  it('label 依「姓名 → 信箱 → id」遞補，與 findAuditUserTarget 同一套規則', () => {
+    expect(readCreatedAuditUser({ user: { id: 'u9', name: '', email: 'new@example.com' } })?.label).toBe('new@example.com')
+    expect(readCreatedAuditUser({ user: { id: 'u9' } })?.label).toBe('u9')
+  })
+
+  it('角色為字串陣列時與 set-role 一致以逗號串接', () => {
+    expect(readCreatedAuditUser({ user: { id: 'u9', role: ['admin', 'user'] } })?.role).toBe('admin,user')
+  })
+
+  // 拿不到 id 就沒有可指向的操作對象，寧可不留痕也不要寫一筆對不回人的日誌
+  it('回應形狀不符時回 null', () => {
+    expect(readCreatedAuditUser(null)).toBeNull()
+    expect(readCreatedAuditUser({})).toBeNull()
+    expect(readCreatedAuditUser({ user: null })).toBeNull()
+    expect(readCreatedAuditUser({ user: { id: '' } })).toBeNull()
+    expect(readCreatedAuditUser({ user: { id: 42 } })).toBeNull()
+  })
+})
+
+describe('Better Auth after hook 的成功回應判定', () => {
+  it('只接受各管理端點預期的成功回傳形狀', () => {
+    expect(isSuccessfulAuthAuditResponse('user.create', { user: { id: 'u1' } })).toBe(true)
+    expect(isSuccessfulAuthAuditResponse('user.role.set', { user: { id: 'u1' } })).toBe(true)
+    expect(isSuccessfulAuthAuditResponse('user.remove', { success: true })).toBe(true)
+    expect(isSuccessfulAuthAuditResponse('user.session.revoke', { success: true })).toBe(true)
+    expect(isSuccessfulAuthAuditResponse('user.password.set', { status: true })).toBe(true)
+  })
+
+  it('錯誤或不完整回傳絕不入帳', () => {
+    expect(isSuccessfulAuthAuditResponse('user.create', { code: 'USER_ALREADY_EXISTS' })).toBe(false)
+    expect(isSuccessfulAuthAuditResponse('user.role.set', { user: { id: '' } })).toBe(false)
+    expect(isSuccessfulAuthAuditResponse('user.remove', { success: false })).toBe(false)
+    expect(isSuccessfulAuthAuditResponse('user.password.set', { status: false })).toBe(false)
+  })
+})
+
+describe('Better Auth before hook 的審計快照', () => {
+  const envWithUser = (user: { id: string; name: string; email: string; role: string }): AppBindings =>
+    ({
+      DB_AUTH: {
+        prepare: () => ({
+          bind: () => ({ first: async () => user }),
+        }),
+      },
+    }) as unknown as AppBindings
+
+  it('直接使用 Better Auth 已解析的 body，保存 role 變更前快照', async () => {
+    await expect(prepareAuthAudit(envWithUser({ id: 'u1', name: '原姓名', email: 'member@example.com', role: 'user' }), '/admin/set-role', { userId: 'u1', role: 'admin' })).resolves.toEqual({
+      action: 'user.role.set',
+      target: { type: 'user', id: 'u1', label: '原姓名' },
+      detail: { fromRole: 'user', toRole: 'admin' },
+    })
+  })
+
+  it('create-user 不讀取 request stream，也不需預先查目標使用者', async () => {
+    await expect(prepareAuthAudit({} as AppBindings, '/admin/create-user', { name: '新成員', password: 'never-log-this' })).resolves.toEqual({
+      action: 'user.create',
+      target: null,
+      detail: {},
+    })
+  })
+})
+
+describe('revoke-user-session 的操作對象（#74）', () => {
+  it('取得 sessionToken 供動作生效前反查使用者', () => {
+    expect(readAdminSessionToken({ sessionToken: 'tok_abc' })).toBe('tok_abc')
+  })
+
+  it('缺欄位或型別不符一律回 null，不會拿空字串去查 session', () => {
+    expect(readAdminSessionToken({ sessionToken: '' })).toBeNull()
+    expect(readAdminSessionToken({ userId: 'u1' })).toBeNull()
+    expect(readAdminSessionToken(null)).toBeNull()
+    expect(readAdminSessionToken('tok_abc')).toBeNull()
+    expect(readAdminSessionToken({ sessionToken: 42 })).toBeNull()
   })
 })
 
@@ -144,7 +256,7 @@ describe('變更日誌的「管理操作」回復指令', () => {
   })
 
   it('成員類事件一律沒有回復按鈕', () => {
-    for (const action of ['user.role.set', 'user.ban', 'user.remove', 'user.impersonate'] as const) {
+    for (const action of ['user.create', 'user.role.set', 'user.ban', 'user.remove', 'user.impersonate', 'user.session.revoke'] as const) {
       expect(restoreCommandFor(entry(action, { previousVersionId: '20260803T091500123Z' }, 'user'))).toBeNull()
     }
   })
