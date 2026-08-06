@@ -3,6 +3,7 @@ import { createAuthMiddleware, getOAuthState } from 'better-auth/api'
 import type { AppBindings } from '../../api/types'
 import { admin } from 'better-auth/plugins'
 import { adminAc, userAc } from 'better-auth/plugins/admin/access'
+import { prepareAuthAudit, recordPreparedAuthAudit, type PreparedAuthAudit } from './auth-audit'
 import { sealStepUpToken, STEP_UP_COOKIE_NAME, STEP_UP_PURPOSE, STEP_UP_TTL_SECONDS } from './step-up'
 
 export const adminRoleAccess = {
@@ -28,6 +29,8 @@ export function limitOAuthProfileSyncToAvatar(data: Record<string, unknown>, pat
 }
 
 export function createAuth(env: AppBindings) {
+  const preparedAudits = new WeakMap<object, PreparedAuthAudit>()
+
   return betterAuth({
     appName: 'vTaiwan',
     database: env.DB_AUTH,
@@ -70,7 +73,15 @@ export function createAuth(env: AppBindings) {
       }),
     ],
     hooks: {
+      before: createAuthMiddleware(async ctx => {
+        const prepared = await prepareAuthAudit(env, ctx.path, ctx.body)
+        if (prepared) preparedAudits.set(ctx.context, prepared)
+      }),
       after: createAuthMiddleware(async ctx => {
+        const prepared = preparedAudits.get(ctx.context) ?? null
+        preparedAudits.delete(ctx.context)
+        await recordPreparedAuthAudit(env, ctx.context.session?.user, prepared, ctx.context.returned)
+
         const secure = !!ctx.context.authCookies.sessionToken.attributes.secure
 
         // OAuth 回調：只有「發起時就標記為二次驗證」的登入才簽發 step-up cookie，

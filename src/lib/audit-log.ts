@@ -68,9 +68,10 @@ export interface AuditEntry {
  * Better Auth admin plugin 中「會改變狀態」的端點 → 事件種類（#74 起已全數涵蓋）。
  * 查詢類（list-users／get-user／has-permission／list-user-sessions）不是變更，不入帳。
  *
- * 其中兩個端點的操作對象不在 request body 的 `userId`，由 `src/api/auth.ts` 另外取得：
- * - `create-user`：解析**成功回應**的 `{ user }` 才拿得到新帳號 id
- * - `revoke-user-session`：以 `sessionToken` 指定，須在 session 被刪掉**之前**反查 userId
+ * 其中兩個端點的操作對象不在 request body 的 `userId`，由 `src/server/lib/auth-audit.ts`
+ * 的 before / after hook 另外取得：
+ * - `create-user`：由 **成功回應**的 `{ user }` 取得新帳號 id
+ * - `revoke-user-session`：在 session 被刪掉**之前**，以 `sessionToken` 反查 userId
  */
 const ADMIN_PATH_ACTIONS: Record<string, AuditAction> = {
   '/api/auth/admin/create-user': 'user.create',
