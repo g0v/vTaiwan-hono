@@ -51,6 +51,11 @@ function logout() {
   emit('logout')
   mobileOpen.value = false
 }
+
+function showLogin() {
+  emit('show-login')
+  mobileOpen.value = false
+}
 </script>
 
 <template>
@@ -88,7 +93,7 @@ function logout() {
           v-else
           type="button"
           class="hidden rounded-full bg-ink px-4 py-2 font-medium whitespace-nowrap text-vt-fg-inverse transition-colors hover:bg-democratic-red sm:inline-flex"
-          @click="emit('show-login')"
+          @click="showLogin"
         >
           {{ t('common.registerLogin') }}
         </button>
@@ -111,9 +116,15 @@ function logout() {
       </div>
     </div>
 
+    <div v-if="mobileOpen" class="fixed inset-0 z-10" aria-hidden="true" @click="mobileOpen = false" @touchmove.prevent @wheel.prevent />
+
     <!-- 行動選單面板 -->
-    <div v-if="mobileOpen" class="absolute left-0 w-full px-3 sm:px-6 xl:hidden">
-      <div class="vt-glass vt-glass--navbar relative z-10 mx-auto mt-2 max-w-6xl p-2.5 backdrop-blur-vt-navbar backdrop-saturate-vt-navbar">
+    <div v-if="mobileOpen" class="absolute left-0 z-20 w-full px-3 sm:px-6 xl:hidden">
+      <div
+        class="mobile-menu-panel vt-glass vt-glass--navbar relative z-10 mx-auto mt-2 max-w-6xl overflow-y-auto p-2.5 backdrop-blur-vt-navbar backdrop-saturate-vt-navbar"
+        @touchmove.stop
+        @wheel.stop
+      >
         <RouterLink
           v-for="l in links"
           :key="l.key"
@@ -164,7 +175,7 @@ function logout() {
             type="button"
             class="inline-flex flex-1 items-center justify-center rounded-full bg-ink px-3 py-3 text-vt-fg-inverse transition-colors hover:bg-democratic-red"
             :class="{ 'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish }"
-            @click="emit('show-login')"
+            @click="showLogin"
           >
             {{ t('common.registerLogin') }}
           </button>
@@ -173,3 +184,16 @@ function logout() {
     </div>
   </header>
 </template>
+
+<style scoped>
+.mobile-menu-panel {
+  max-height: calc(100dvh - var(--spacing-vt-navbar-overlap) - var(--spacing-vt-2));
+  overscroll-behavior: contain;
+}
+
+@media (min-width: 40rem) {
+  .mobile-menu-panel {
+    max-height: calc(100dvh - var(--spacing-vt-navbar-overlap-sm) - var(--spacing-vt-2));
+  }
+}
+</style>
