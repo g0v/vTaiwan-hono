@@ -87,7 +87,7 @@ async function saveProfile() {
       </div>
 
       <div v-else-if="!editing" class="space-y-8">
-        <div class="flex items-center gap-4">
+        <div class="flex flex-col items-start gap-4 md:flex-row md:items-center">
           <UserAvatar :src="profilePhotoUrl" :alt="t('profile.avatarAlt')" class="h-16 w-16 rounded-vt-full border border-vt-border" />
           <div>
             <h2 class="font-sans text-vt-xl font-semibold">{{ profileName }}</h2>
