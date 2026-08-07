@@ -1,5 +1,7 @@
 export type AppRole = 'user' | 'admin' | 'super-admin'
-export type Permission = 'meeting.join' | 'meeting.moderate' | 'transcription.update' | 'topic.manage'
+// 與 server/lib/authorization.ts 的 Permission 對齊（client 端不 import server 模組）。
+// 議題內容由 talk.vtaiwan.tw 的管理員維護，本站不定義 topic.* 權限。
+export type Permission = 'meeting.join' | 'meeting.moderate' | 'transcription.update'
 
 export const SESSION_NOT_FRESH_CODE = 'SESSION_NOT_FRESH' as const
 

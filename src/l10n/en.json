@@ -1113,9 +1113,6 @@
       },
       "transcription": {
         "update": "Update transcripts"
-      },
-      "topic": {
-        "manage": "Manage topics"
       }
     },
     "ban": {

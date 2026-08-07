@@ -5,7 +5,6 @@ import IconWrapper from './IconWrapper.vue'
 import TopicDiscussionComment from './TopicDiscussionComment.vue'
 import discourseApi, { type DiscourseTopic } from '../lib/discourse'
 import { sanitizeEmbedHtml } from '../lib/html-sanitizer'
-import { hasPermission, type AuthSession } from '../client/auth-session'
 
 interface DiscourseEmbedItem {
   title: string
@@ -17,15 +16,9 @@ interface DiscussionType {
   embeder: string | DiscourseEmbedItem[]
 }
 
-const props = withDefaults(
-  defineProps<{
-    topicId: string | number
-    authSession?: AuthSession | null
-  }>(),
-  {
-    authSession: null,
-  }
-)
+const props = defineProps<{
+  topicId: string | number
+}>()
 
 const { t } = useI18n()
 
@@ -34,7 +27,6 @@ const loading = ref(true)
 const lastStep = ref('')
 const allowedEmbedHostnames = ['pol.is', 'app.sli.do', 'livehouse.in', 'embed.livehouse.in', 'form.typeform.com']
 const sanitizedEmbedder = computed(() => (typeof discussionType.value.embeder === 'string' ? sanitizeEmbedHtml(discussionType.value.embeder, allowedEmbedHostnames) : ''))
-const canManageTopic = computed(() => hasPermission(props.authSession, 'topic.manage'))
 
 const chineseSort = (a: string, b: string): number => {
   const c2n: Record<string, string> = {
@@ -210,13 +202,6 @@ onMounted(() => {
     <div v-else class="py-8 text-center">
       <IconWrapper name="message-circle" :size="48" color="#9CA3AF" class="mx-auto mb-4" />
       <p class="text-gray-500">{{ t('topics.detail.noDiscussion') }}</p>
-    </div>
-
-    <div class="mt-8 text-center">
-      <a v-if="canManageTopic" :href="`https://talk.vtaiwan.tw/t/topic/${props.topicId}`" target="_blank" rel="noopener noreferrer" class="vt-btn vt-btn-primary inline-flex items-center">
-        <IconWrapper name="message-circle" :size="20" class="mr-2" />
-        {{ t('topics.detail.participate') }}
-      </a>
     </div>
   </div>
 </template>
