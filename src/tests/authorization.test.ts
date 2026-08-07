@@ -9,8 +9,10 @@ describe('Better Auth 業務權限', () => {
     expect(resolveRole('legacy-admin')).toBe('user')
   })
 
+  // 權限集合刻意逐字釘住：每個值都必須有實際強制它的 Worker 端點，
+  // 否則就是孤兒權限（議題管理即屬此類，已移交 talk.vtaiwan.tw 而不在本站定義）。
   it('admin 擁有目前所有業務管理權限', () => {
-    expect(permissionsForRole('admin')).toEqual(['meeting.join', 'meeting.moderate', 'transcription.update', 'topic.manage'])
+    expect(permissionsForRole('admin')).toEqual(['meeting.join', 'meeting.moderate', 'transcription.update'])
   })
 
   it('super-admin 繼承 admin 的業務管理權限', () => {

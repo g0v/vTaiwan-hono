@@ -1,0 +1,398 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1680" height="2470" viewBox="0 0 1680 2470" role="img" aria-labelledby="diagram-title diagram-desc">
+  <title id="diagram-title">vTaiwan-hono｜Better Auth 登入與權限管理工程示意圖</title>
+  <desc id="diagram-desc">四個面板：A 資訊架構分層、B /admin 路由守衛資訊流、C /api/* 授權四道閘與 step-up 二次驗證、D 角色權限與端點對照。</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#505050" />
+    </marker>
+    <marker id="arrow-red" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#d80000" />
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#008888" />
+    </marker>
+    <style>
+      text { font-family: "PingFang TC","Noto Sans CJK TC","Microsoft JhengHei","Heiti TC","Hiragino Sans","Helvetica Neue",sans-serif; }
+      .mono { font-family: "SFMono-Regular",Menlo,Consolas,"Liberation Mono","PingFang TC",monospace; }
+      .h1 { font-size: 25px; font-weight: 700; fill: #000000; }
+      .h2 { font-size: 13.5px; fill: #505050; }
+      .ptitle { font-size: 17px; font-weight: 700; fill: #000000; }
+      .stitle { font-size: 13.5px; font-weight: 700; fill: #1a1a1a; }
+      .btitle { font-size: 13.5px; font-weight: 700; fill: #000000; }
+      .l { font-size: 12px; fill: #505050; }
+      .cj { font-size: 12.5px; fill: #505050; }
+      .note { font-size: 12.5px; fill: #505050; }
+      .tiny { font-size: 11.5px; fill: #a0a0a0; }
+      .lbl { font-size: 12.5px; fill: #505050; }
+      .red { fill: #d80000; }
+      .green { fill: #008888; }
+      .amber { fill: #db7700; }
+      .ink { fill: #000000; }
+      .panel { fill: #f8f8f8; stroke: #e0e0e0; stroke-width: 1; }
+      .bx-worker { fill: #ffffff; stroke: #d80000; stroke-width: 1.6; }
+      .bx-client { fill: #ffffff; stroke: #008888; stroke-width: 1.4; stroke-dasharray: 5 4; }
+      .bx-store { fill: #fffaf3; stroke: #db7700; stroke-width: 1.4; }
+      .bx-plain { fill: #ffffff; stroke: #e0e0e0; stroke-width: 1; }
+      .bx-band { fill: #ffffff; stroke: #a0a0a0; stroke-width: 1; }
+      .bx-warn { fill: #fdf3f3; stroke: #d80000; stroke-width: 1.2; }
+      .row-even { fill: #f2f2f2; }
+    </style>
+  </defs>
+
+  <!-- 底色：明確鋪滿，避免深色模式檢視器把黑字畫在黑底上 -->
+  <rect x="0" y="0" width="1680" height="2470" fill="#ffffff" />
+
+  <!-- ══════════════ 標題與圖例 ══════════════ -->
+  <text class="h1" x="40" y="52">vTaiwan-hono ｜ Better Auth 登入與權限管理　工程示意圖</text>
+  <text class="h2" x="40" y="78">資訊架構 × /admin 路由守衛 × /api/* 授權四道閘 × 敏感操作二次驗證（step-up）　—　依 main 分支原始碼繪製</text>
+
+  <rect x="1050" y="34" width="24" height="14" rx="3" class="bx-worker" />
+  <text class="lbl" x="1082" y="46">紅實線＝Worker 端強制（真正的安全邊界）</text>
+  <rect x="1050" y="60" width="24" height="14" rx="3" class="bx-client" />
+  <text class="lbl" x="1082" y="72">綠虛線＝瀏覽器端顯示層（UX，非安全邊界）</text>
+  <rect x="1420" y="34" width="24" height="14" rx="3" class="bx-store" />
+  <text class="lbl" x="1452" y="46">黃＝儲存與設定</text>
+  <text class="lbl red" x="1452" y="72">⚠＝已知風險或侷限</text>
+
+  <!-- ══════════════ Panel A：資訊架構 ══════════════ -->
+  <rect x="32" y="150" width="1616" height="690" rx="10" class="panel" />
+  <text class="ptitle" x="52" y="182">A ｜ 資訊架構：模組分層與相依方向</text>
+
+  <!-- Row 1：瀏覽器 -->
+  <rect x="52" y="200" width="132" height="112" rx="8" class="bx-band" />
+  <text class="stitle" x="118" y="248" text-anchor="middle">瀏覽器</text>
+  <text class="cj" x="118" y="268" text-anchor="middle">（hydration 後）</text>
+
+  <rect x="196" y="200" width="330" height="112" rx="8" class="bx-client" />
+  <text class="btitle mono" x="216" y="226">App.vue</text>
+  <text class="l mono" x="216" y="250">onMounted → loadAuthSession()</text>
+  <text class="l mono" x="216" y="272">GET /api/me → AuthSession</text>
+  <text class="cj" x="216" y="294">authReady ／ isAdmin → 顯示後台入口</text>
+
+  <rect x="560" y="200" width="330" height="112" rx="8" class="bx-client" />
+  <text class="btitle mono" x="580" y="226">SocialLogin.vue ／ StepUpAuth.vue</text>
+  <text class="l mono" x="580" y="250">authClient.signIn.social()</text>
+  <text class="l mono" x="580" y="272">provider: google ｜ github</text>
+  <text class="l mono" x="580" y="294">forStepUp → state purpose=step-up</text>
+
+  <rect x="924" y="200" width="330" height="112" rx="8" class="bx-client" />
+  <text class="btitle mono" x="944" y="226">AdminView.vue</text>
+  <text class="cj" x="944" y="250">分頁：成員 ｜ 日誌 ｜ 逐字稿</text>
+  <text class="cj" x="944" y="272">守衛：確認中 → 403 → 二次驗證</text>
+  <text class="l mono" x="944" y="294">authClient.admin.* ＋ /api/admin/*</text>
+
+  <rect x="1288" y="200" width="330" height="112" rx="8" class="bx-client" />
+  <text class="btitle mono" x="1308" y="226">client/auth-session.ts（純函式）</text>
+  <text class="l mono" x="1308" y="250">isAdminSession ／ isSuperAdminSession</text>
+  <text class="l mono" x="1308" y="272">hasPermission ／ responseRequiresStepUp</text>
+  <text class="l mono" x="1308" y="294">isWrongAccountAfterStepUp</text>
+
+  <line x1="890" y1="312" x2="890" y2="342" stroke="#505050" stroke-width="1.4" marker-end="url(#arrow)" />
+  <text class="lbl" x="902" y="332">同源 fetch ／ authClient（自動帶 cookie）</text>
+
+  <!-- Row 2：Hono Worker -->
+  <rect x="52" y="344" width="132" height="132" rx="8" class="bx-band" />
+  <text class="stitle" x="118" y="400" text-anchor="middle">Hono Worker</text>
+  <text class="cj mono" x="118" y="420" text-anchor="middle">src/index.ts</text>
+
+  <rect x="196" y="344" width="250" height="132" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="216" y="370">app.use('*')</text>
+  <text class="cj" x="216" y="394">CSP nonce（逐請求）</text>
+  <text class="cj" x="216" y="416">Referrer-Policy ／ nosniff</text>
+  <text class="cj" x="216" y="438">X-Frame-Options: SAMEORIGIN</text>
+  <text class="cj" x="216" y="460">101 Upgrade 不加標頭</text>
+
+  <rect x="470" y="344" width="250" height="132" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="490" y="370">app.use('/api/*', csrf())</text>
+  <text class="cj" x="490" y="394">唯一的同源把關點</text>
+  <text class="cj" x="490" y="416">端點內不再自寫檢查</text>
+  <text class="cj" x="490" y="438">無 Origin 的表單請求</text>
+  <text class="cj" x="490" y="460">一律 403（含 curl）</text>
+
+  <rect x="744" y="344" width="400" height="132" rx="8" class="bx-worker" />
+  <text class="btitle" x="764" y="370">API 路由（純 JSON ／ 文字，不走 SSR）</text>
+  <text class="l mono" x="764" y="394">/api/auth/*　・　/api/me</text>
+  <text class="l mono" x="764" y="416">/api/admin/audit-log</text>
+  <text class="l mono" x="764" y="438">/api/jitsi-token　・　/api/transcription/*</text>
+  <text class="l mono" x="764" y="460">/api/meeting/*　・　/api/ws/meeting/:date</text>
+
+  <rect x="1176" y="344" width="442" height="132" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="1196" y="370">app.get('*')　→　靜態檔 ／ SSR</text>
+  <text class="l mono" x="1196" y="394">有副檔名 → env.ASSETS.fetch()</text>
+  <text class="l mono" x="1196" y="416">renderPage(url, origin, nonce) → HTML 殼</text>
+  <text class="l mono" x="1196" y="438">isAdminPath() → isAdminRequest()</text>
+  <text class="cj red" x="1196" y="460">非管理員：同一份 HTML ＋ 403（見 Panel B）</text>
+
+  <line x1="890" y1="476" x2="890" y2="506" stroke="#d80000" stroke-width="1.4" marker-end="url(#arrow-red)" />
+  <text class="lbl" x="902" y="496">getAuthContext　・　hasPermission　・　requiresStepUp</text>
+
+  <!-- Row 3：Auth 核心 -->
+  <rect x="52" y="508" width="132" height="148" rx="8" class="bx-band" />
+  <text class="stitle" x="118" y="572" text-anchor="middle">Auth 核心</text>
+  <text class="cj mono" x="118" y="592" text-anchor="middle">src/server/lib</text>
+
+  <rect x="196" y="508" width="340" height="148" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="216" y="534">createAuth.ts</text>
+  <text class="l mono" x="216" y="558">betterAuth(database: env.DB_AUTH)</text>
+  <text class="l mono" x="216" y="580">socialProviders: google ・ github</text>
+  <text class="l mono" x="216" y="602">admin({ adminRoles: ['super-admin'] })</text>
+  <text class="l mono" x="216" y="624">accountLinking: trustedProviders</text>
+  <text class="cj" x="216" y="646">hooks before ／ after → 審計 ＋ step-up</text>
+
+  <rect x="570" y="508" width="300" height="148" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="590" y="534">authorization.ts</text>
+  <text class="cj mono" x="590" y="558">getAuthContext（會 throw）</text>
+  <text class="cj mono" x="590" y="580">tryGetAuthContext（吞例外）</text>
+  <text class="l mono" x="590" y="602">AuthContext { user, role, banned,</text>
+  <text class="l mono" x="590" y="624">permissions, fresh, stepUpExpiresAt }</text>
+  <text class="cj mono" x="590" y="646">resolveRole：未知角色降級 user</text>
+
+  <rect x="904" y="508" width="320" height="148" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="924" y="534">step-up.ts</text>
+  <text class="l mono" x="924" y="558">cookie: vtaiwan.step_up</text>
+  <text class="l mono" x="924" y="580">= exp.sessionId.sig（HMAC-SHA256）</text>
+  <text class="cj mono" x="924" y="602">TTL 15 分鐘 ・ 綁 session id</text>
+  <text class="l mono" x="924" y="624">requiresStepUp('/api/auth/admin/*')</text>
+  <text class="cj red" x="924" y="646">未通過 → 403 SESSION_NOT_FRESH</text>
+
+  <rect x="1258" y="508" width="360" height="148" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="1278" y="534">audit-log.ts ／ auth-audit.ts</text>
+  <text class="cj" x="1278" y="558">before：動作生效前快照操作對象</text>
+  <text class="cj" x="1278" y="580">after：確認回應成功才寫入</text>
+  <text class="cj mono" x="1278" y="602">recordAudit() 絕不 throw</text>
+  <text class="cj mono" x="1278" y="624">listAudit() 僅 super-admin 可讀</text>
+  <text class="cj mono" x="1278" y="646">src/lib/audit-log.ts 前後端共用</text>
+
+  <line x1="890" y1="656" x2="890" y2="686" stroke="#db7700" stroke-width="1.4" marker-end="url(#arrow)" />
+  <text class="lbl" x="902" y="676">D1 ／ R2 ／ 環境變數綁定</text>
+
+  <!-- Row 4：儲存與設定 -->
+  <rect x="52" y="688" width="132" height="100" rx="8" class="bx-band" />
+  <text class="stitle" x="118" y="728" text-anchor="middle">儲存與設定</text>
+  <text class="cj mono" x="118" y="748" text-anchor="middle">wrangler.jsonc</text>
+
+  <rect x="196" y="688" width="340" height="100" rx="8" class="bx-store" />
+  <text class="btitle mono" x="216" y="714">D1 ｜ DB_AUTH（vtaiwan-auth）</text>
+  <text class="l mono" x="216" y="738">user ・ session ・ account ・ verification</text>
+  <text class="cj" x="216" y="762">schema 由 Better Auth CLI 生成，勿手改</text>
+
+  <rect x="570" y="688" width="300" height="100" rx="8" class="bx-store" />
+  <text class="btitle mono" x="590" y="714">D1 ｜ DB（vtaiwan-transcriptions）</text>
+  <text class="l mono" x="590" y="738">admin_audit_log（migrations/0002）</text>
+  <text class="l mono" x="590" y="762">transcriptions ・ chunks ・ meeting</text>
+
+  <rect x="904" y="688" width="320" height="100" rx="8" class="bx-store" />
+  <text class="btitle mono" x="924" y="714">R2 ｜ vtaiwan-meeting-files</text>
+  <text class="l mono" x="924" y="738">&lt;meeting_id&gt;.txt（現行內容）</text>
+  <text class="l mono" x="924" y="762">versions/… ・ outlines/…（保留全部）</text>
+
+  <rect x="1258" y="688" width="360" height="100" rx="8" class="bx-store" />
+  <text class="btitle" x="1278" y="714">環境變數（.dev.vars ／ Secrets）</text>
+  <text class="l mono" x="1278" y="738">BETTER_AUTH_SECRET ・ BETTER_AUTH_URL</text>
+  <text class="l mono" x="1278" y="762">GOOGLE_CLIENT_* ・ GITHUB_CLIENT_*</text>
+
+  <text class="note red" x="196" y="814">⚠ 兩個 D1 分屬不同資料庫、無法 JOIN —— 審計日誌的操作對象姓名與原角色一律在動作生效「之前」快照（auth-audit.ts 的 before hook）。</text>
+
+  <!-- ══════════════ Panel B：/admin 路由守衛 ══════════════ -->
+  <rect x="32" y="860" width="1616" height="350" rx="10" class="panel" />
+  <text class="ptitle" x="52" y="892">B ｜ /admin 路由守衛資訊流（SSR 請求，Worker 端安全底線）</text>
+
+  <rect x="56" y="930" width="240" height="96" rx="8" class="bx-plain" />
+  <text class="btitle mono" x="76" y="958">① GET /admin</text>
+  <text class="cj" x="76" y="982">（含 /admin/* 所有子路徑）</text>
+  <text class="cj" x="76" y="1004">瀏覽器帶上 session cookie</text>
+
+  <line x1="296" y1="978" x2="320" y2="978" stroke="#505050" stroke-width="1.4" marker-end="url(#arrow)" />
+
+  <rect x="326" y="930" width="270" height="96" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="346" y="958">② app.get('*')</text>
+  <text class="cj mono" x="346" y="982">無副檔名 → renderPage()</text>
+  <text class="cj" x="346" y="1004">先產出完整 HTML 殼</text>
+
+  <line x1="596" y1="978" x2="620" y2="978" stroke="#505050" stroke-width="1.4" marker-end="url(#arrow)" />
+
+  <rect x="626" y="930" width="290" height="96" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="646" y="958">③ isAdminPath(pathname)</text>
+  <text class="l mono" x="646" y="982">→ tryGetAuthContext(env, headers)</text>
+  <text class="cj" x="646" y="1004">讀不到 session ⇒ 保守視為未授權</text>
+
+  <line x1="916" y1="978" x2="940" y2="978" stroke="#505050" stroke-width="1.4" marker-end="url(#arrow)" />
+
+  <rect x="946" y="930" width="312" height="96" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="966" y="958">④ isActiveAdminRole(role, banned)</text>
+  <text class="cj" x="966" y="982">＝ 未停權 且 admin ／ super-admin</text>
+  <text class="cj red" x="966" y="1004">只看角色，不看 fresh</text>
+
+  <path d="M 1258 970 L 1272 970 L 1272 940 L 1282 940" fill="none" stroke="#d80000" stroke-width="1.4" marker-end="url(#arrow-red)" />
+  <path d="M 1258 990 L 1272 990 L 1272 1024 L 1282 1024" fill="none" stroke="#008888" stroke-width="1.4" marker-end="url(#arrow-green)" />
+
+  <rect x="1288" y="902" width="330" height="76" rx="8" class="bx-warn" />
+  <text class="btitle red" x="1308" y="928">✗ 非管理員 → HTTP 403</text>
+  <text class="cj" x="1308" y="952">HTML 內容不變，只覆寫狀態碼</text>
+
+  <rect x="1288" y="986" width="330" height="76" rx="8" class="bx-plain" />
+  <text class="btitle green" x="1308" y="1012">✓ 管理員 → HTTP 200</text>
+  <text class="cj" x="1308" y="1036">hydration 後由 AdminView 接手判定</text>
+
+  <rect x="56" y="1084" width="1562" height="104" rx="8" class="bx-plain" />
+  <text class="note red" x="76" y="1110">⚠ 只覆寫狀態碼、不替換 HTML —— 若 403 回不同內容，client 端 hydration 會 mismatch（index.ts 明載此意圖）。</text>
+  <text class="note red" x="76" y="1134">⚠ 這道守衛刻意不檢查 fresh —— 直接回 403 會讓「session 已不新鮮的管理員」連重新登入的入口都看不到；新鮮度改由各資料端點把關。</text>
+  <text class="note" x="76" y="1158">・ public/robots.txt 的 Disallow: /admin 只是 crawler 提示；AdminView 的 403 畫面與 /profile 的入口顯示同樣只是 UX。真正的邊界只有這裡與各 API 端點。</text>
+
+  <!-- ══════════════ Panel C：四道閘 ＋ step-up ══════════════ -->
+  <rect x="32" y="1230" width="1616" height="630" rx="10" class="panel" />
+  <text class="ptitle" x="52" y="1262">C ｜ /api/* 授權四道閘　＋　敏感操作二次驗證（step-up）資訊流</text>
+
+  <line x1="800" y1="1280" x2="800" y2="1840" stroke="#e0e0e0" stroke-width="1" />
+
+  <text class="stitle" x="56" y="1296">C-1　每個受保護端點的四道閘（順序固定，缺一即為破口）</text>
+
+  <rect x="56" y="1306" width="710" height="72" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="76" y="1332">① csrf()　——　跨站請求 → 403</text>
+  <text class="cj" x="76" y="1356">全域掛在 /api/*；端點內不得再自寫同源檢查（單一來源）</text>
+
+  <rect x="56" y="1394" width="710" height="72" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="76" y="1420">② getAuthContext ／ tryGetAuthContext　——　未登入 → 401</text>
+  <text class="cj" x="76" y="1444">tryGet 版把例外壓成「未登入」；/api/me 刻意用會 throw 的版本以區分系統故障</text>
+
+  <rect x="56" y="1482" width="710" height="72" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="76" y="1508">③ hasPermission(context, permission)　——　權限不足 → 403</text>
+  <text class="cj" x="76" y="1532">停權帳號的 permissions 為空陣列，任何權限都不會通過</text>
+
+  <rect x="56" y="1570" width="710" height="72" rx="8" class="bx-worker" />
+  <text class="btitle mono" x="76" y="1596">④ context.fresh　——　未二次驗證 → 403 SESSION_NOT_FRESH</text>
+  <text class="cj" x="76" y="1620">僅敏感操作要求；前端收到此碼即整頁切換成二次驗證畫面</text>
+
+  <rect x="56" y="1658" width="710" height="60" rx="8" class="bx-plain" />
+  <text class="btitle" x="76" y="1684">端點執行　→　recordAudit() 寫入 admin_audit_log</text>
+  <text class="cj" x="76" y="1706">日誌寫失敗不得讓已成功的管理操作變成 500，故 recordAudit 絕不 throw</text>
+
+  <text class="note red" x="56" y="1748">⚠ client 端的 v-if 與 auth-session.ts 只影響顯示；任何「前端擋住就好」的做法都是漏洞。</text>
+  <text class="note" x="56" y="1772">・ 除 csrf() 外，/api/query-table、/api/create-table、/api/test-ai 目前無身分檢查（bootstrap 與測試用途）。</text>
+
+  <text class="stitle" x="830" y="1296">C-2　step-up 二次驗證：意圖寫進 OAuth state 並往返</text>
+  <text class="note red" x="830" y="1320">關鍵語意：只有「刻意為了複核而重新登入」才算通過 —— session 的 createdAt 無法承載此語意（登出再登入也是新 session）。</text>
+
+  <rect x="830" y="1336" width="790" height="52" rx="8" class="bx-client" />
+  <text class="cj" x="850" y="1358">① AdminView 偵測 !fresh（或倒數歸零）→ 整頁換成 StepUpAuth 卡片</text>
+  <text class="tiny mono" x="850" y="1378">needsStepUp = !fresh || staleSession || stepUpExpired</text>
+
+  <rect x="830" y="1398" width="790" height="52" rx="8" class="bx-client" />
+  <text class="cj mono" x="850" y="1420">② signIn.social({ provider, callbackURL, additionalData: { purpose:'step-up' } })</text>
+  <text class="tiny" x="850" y="1440">callbackURL 預設為當前路由 → 完成後回到 /admin，不必從 /profile 繞</text>
+
+  <rect x="830" y="1460" width="790" height="52" rx="8" class="bx-plain" />
+  <text class="cj" x="850" y="1482">③ 轉跳 Google ／ GitHub 授權頁（兩個 provider 共用同一條 /sign-in/social 流程）</text>
+  <text class="tiny" x="850" y="1502">purpose 寫在 provider 無關的 OAuth state，任一 provider 的回調都能簽發 cookie</text>
+
+  <rect x="830" y="1522" width="790" height="52" rx="8" class="bx-worker" />
+  <text class="cj mono" x="850" y="1544">④ 回調 /api/auth/callback/:provider　（失敗導向 /auth/error）</text>
+  <text class="tiny mono" x="850" y="1564">requiresStepUp() 只涵蓋 /api/auth/admin/*，不會擋住這條登入流程本身</text>
+
+  <rect x="830" y="1584" width="790" height="66" rx="8" class="bx-worker" />
+  <text class="cj mono" x="850" y="1606">⑤ createAuth after hook：getOAuthState().purpose === 'step-up' ？</text>
+  <text class="cj mono" x="850" y="1628">　　→ sealStepUpToken(ctx.context.newSession.session.id, BETTER_AUTH_SECRET)</text>
+  <text class="tiny" x="850" y="1646">一般登入沒有這個標記，因此拿不到 cookie</text>
+
+  <rect x="830" y="1660" width="790" height="66" rx="8" class="bx-worker" />
+  <text class="cj mono" x="850" y="1682">⑥ Set-Cookie: vtaiwan.step_up = exp.sessionId.sig</text>
+  <text class="cj mono" x="850" y="1704">　　HttpOnly ・ SameSite=Lax ・ Max-Age=900（15 分鐘）</text>
+  <text class="tiny" x="850" y="1722">綁 session id：登出換 session ⇒ 舊 cookie 自動失效；/sign-out 另主動清除</text>
+
+  <rect x="830" y="1736" width="790" height="52" rx="8" class="bx-plain" />
+  <text class="cj" x="850" y="1758">⑦ 導回 callbackURL（發起二次驗證的原頁，通常即 /admin）</text>
+  <text class="tiny" x="850" y="1778">/admin 的 SSR 守衛此時只看角色，故直接放行進入頁面</text>
+
+  <rect x="830" y="1798" width="790" height="52" rx="8" class="bx-client" />
+  <text class="cj mono" x="850" y="1820">⑧ GET /api/me → readStepUpExpiry() → fresh: true ＋ stepUpExpiresAt</text>
+  <text class="tiny" x="850" y="1840">AdminView 解鎖成員／日誌分頁，右上角顯示 15 分鐘倒數，歸零即退回 ①</text>
+
+  <!-- ══════════════ Panel D：角色權限與端點對照 ══════════════ -->
+  <rect x="32" y="1880" width="1616" height="520" rx="10" class="panel" />
+  <text class="ptitle" x="52" y="1912">D ｜ 角色、權限與端點對照（逐條由原始碼驗證）</text>
+
+  <text class="stitle" x="56" y="1940">D-1　角色 × 能力矩陣（authorization.ts 的 permissionsByRole 為單一來源）</text>
+
+  <rect x="56" y="1952" width="750" height="210" rx="8" class="bx-plain" />
+  <line x1="56" y1="1984" x2="806" y2="1984" stroke="#e0e0e0" stroke-width="1" />
+  <text class="stitle" x="76" y="1974">權限 ／ 能力</text>
+  <text class="stitle" x="576" y="1974" text-anchor="middle">user</text>
+  <text class="stitle" x="666" y="1974" text-anchor="middle">admin</text>
+  <text class="stitle" x="762" y="1974" text-anchor="middle">super-admin</text>
+
+  <rect x="57" y="1984" width="748" height="30" class="row-even" />
+  <text class="cj mono" x="76" y="2005">meeting.join</text>
+  <text class="cj green" x="576" y="2005" text-anchor="middle">✓</text>
+  <text class="cj green" x="666" y="2005" text-anchor="middle">✓</text>
+  <text class="cj green" x="762" y="2005" text-anchor="middle">✓</text>
+
+  <text class="cj mono" x="76" y="2035">meeting.moderate</text>
+  <text class="cj" x="576" y="2035" text-anchor="middle">—</text>
+  <text class="cj green" x="666" y="2035" text-anchor="middle">✓</text>
+  <text class="cj green" x="762" y="2035" text-anchor="middle">✓</text>
+
+  <rect x="57" y="2044" width="748" height="30" class="row-even" />
+  <text class="cj mono" x="76" y="2065">transcription.update</text>
+  <text class="cj" x="576" y="2065" text-anchor="middle">—</text>
+  <text class="cj green" x="666" y="2065" text-anchor="middle">✓</text>
+  <text class="cj green" x="762" y="2065" text-anchor="middle">✓</text>
+
+  <line x1="56" y1="2074" x2="806" y2="2074" stroke="#a0a0a0" stroke-width="1" />
+
+  <text class="cj" x="76" y="2096">成員列表 ／ 改角色 ／ 停權（/api/auth/admin/*）</text>
+  <text class="cj" x="576" y="2096" text-anchor="middle">—</text>
+  <text class="cj" x="666" y="2096" text-anchor="middle">—</text>
+  <text class="cj green" x="762" y="2096" text-anchor="middle">✓</text>
+
+  <rect x="57" y="2105" width="748" height="30" class="row-even" />
+  <text class="cj" x="76" y="2126">變更日誌（/api/admin/audit-log）</text>
+  <text class="cj" x="576" y="2126" text-anchor="middle">—</text>
+  <text class="cj" x="666" y="2126" text-anchor="middle">—</text>
+  <text class="cj green" x="762" y="2126" text-anchor="middle">✓</text>
+
+  <text class="cj" x="76" y="2156">帳號被停權（banned）⇒ permissions 為空，上列全數失效</text>
+
+  <text class="note green" x="56" y="2198">・ 不變量：每個 Permission 都必須有實際強制它的 Worker 端點，不留孤兒權限（authorization.test.ts 逐字釘住權限集合）。</text>
+  <text class="note" x="56" y="2220">・ 議題（Topic）的上架與內容修改由 talk.vtaiwan.tw（Discourse）管理員負責，不屬本站授權範圍，故 Permission 型別刻意不定義 topic.* 權限。</text>
+  <text class="note" x="56" y="2242">・ admin 與 super-admin 的「業務權限」完全相同；差別只在 createAuth.ts 的 adminRoleAccess（user／admin 為 userAc，super-admin 為 adminAc）與 isSuperAdminRole()。</text>
+
+  <text class="stitle" x="830" y="1940">D-2　端點 → 授權需求（Worker 端實際檢查的內容）</text>
+
+  <text class="cj mono" x="830" y="1968">/api/me</text>
+  <text class="cj" x="1180" y="1968">有效 session（讀取失敗刻意 throw，不壓成 401）</text>
+
+  <text class="cj mono" x="830" y="1994">/api/auth/admin/*</text>
+  <text class="cj" x="1180" y="1994">401 → banned 403 → fresh 403 → 再由 plugin 判 super-admin</text>
+
+  <text class="cj mono" x="830" y="2020">/api/admin/audit-log</text>
+  <text class="cj" x="1180" y="2020">super-admin ＋ fresh</text>
+
+  <text class="cj mono" x="830" y="2046">/api/jitsi-token（POST）</text>
+  <text class="cj" x="1180" y="2046">meeting.join；moderator claim 由 meeting.moderate 決定</text>
+
+  <text class="cj mono" x="830" y="2072">/api/meeting/* ・ /api/ws/meeting/:date</text>
+  <text class="cj" x="1180" y="2072">meeting.join（WS 未授權者僅唯讀）</text>
+
+  <text class="cj mono" x="830" y="2098">/api/transcription/:lang</text>
+  <text class="cj" x="1180" y="2098">meeting.join</text>
+
+  <text class="cj mono" x="830" y="2124">/api/upload-transcription</text>
+  <text class="cj" x="1180" y="2124">transcription.update（覆蓋既有逐字稿才另需 fresh）</text>
+
+  <text class="cj mono" x="830" y="2150">/api/update-outline ・ restore ・ delete</text>
+  <text class="cj" x="1180" y="2150">transcription.update ＋ fresh</text>
+
+  <text class="cj mono" x="830" y="2176">/api/transcriptions/:id/versions[/text]</text>
+  <text class="cj" x="1180" y="2176">transcription.update（舊版本不隨公開逐字稿露出）</text>
+
+  <rect x="56" y="2262" width="1562" height="112" rx="8" class="bx-warn" />
+  <text class="btitle red" x="76" y="2288">⚠ 已知死路：二次驗證時登入了「另一個」社群帳號</text>
+  <text class="note" x="76" y="2312">若該社群帳號的 email 與管理員帳號不同，Better Auth 依 email 找不到既有使用者，會新建一個 role='user' 的帳號並簽發其 session —— 形同靜默換身分。</text>
+  <text class="note" x="76" y="2334">純函式 isWrongAccountAfterStepUp()（fresh 為真卻非管理員；一般訪客到不了此狀態）據此 alert 後 router.replace('/')。判定必須用伺服器回報的 fresh，不可改用 needsStepUp（摻前端倒數會漏判）。</text>
+  <text class="note" x="76" y="2356">侷限：provider 仍在登入狀態時，二次驗證是零點擊轉跳 —— 擋得住被竊的 session cookie，擋不住被借用的已解鎖裝置。</text>
+
+  <!-- ══════════════ 頁尾 ══════════════ -->
+  <text class="tiny" x="40" y="2424">繪製依據（main 分支原始碼）：src/index.ts ・ src/api/{auth,admin,transcription,jitsi_token,meeting,cors,types}.ts ・ src/server/lib/{createAuth,authorization,step-up,audit-log,auth-audit}.ts</text>
+  <text class="tiny" x="40" y="2444">src/lib/{audit-log,transcription-versions}.ts ・ src/client/{auth-session,authClient}.ts ・ src/App.vue ・ src/views/AdminView.vue ・ src/components/{SocialLogin,StepUpAuth}.vue ・ src/router/routes.server.ts ・ wrangler.jsonc ・ migrations/</text>
+</svg>

@@ -3,7 +3,9 @@ import type { AppBindings } from '../../api/types'
 import { readStepUpExpiry } from './step-up'
 
 export type AppRole = 'user' | 'admin' | 'super-admin'
-export type Permission = 'meeting.join' | 'meeting.moderate' | 'transcription.update' | 'topic.manage'
+// 只列本專案真的會強制的權限。議題（Topic）的上架與內容修改由 talk.vtaiwan.tw（Discourse）
+// 的管理員負責，不屬於本站的授權範圍，故刻意不定義 topic.* 權限。
+export type Permission = 'meeting.join' | 'meeting.moderate' | 'transcription.update'
 
 export interface AuthContext {
   user: {
@@ -26,8 +28,8 @@ export interface AuthContext {
 
 const permissionsByRole: Record<AppRole, Permission[]> = {
   user: ['meeting.join'],
-  admin: ['meeting.join', 'meeting.moderate', 'transcription.update', 'topic.manage'],
-  'super-admin': ['meeting.join', 'meeting.moderate', 'transcription.update', 'topic.manage'],
+  admin: ['meeting.join', 'meeting.moderate', 'transcription.update'],
+  'super-admin': ['meeting.join', 'meeting.moderate', 'transcription.update'],
 }
 
 export function resolveRole(role: string | null | undefined): AppRole {

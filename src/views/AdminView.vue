@@ -419,13 +419,13 @@ interface Member {
 }
 
 const ALL_ROLES: AppRole[] = ['user', 'admin', 'super-admin']
-const permKeys: Permission[] = ['meeting.join', 'meeting.moderate', 'transcription.update', 'topic.manage']
+const permKeys: Permission[] = ['meeting.join', 'meeting.moderate', 'transcription.update']
 
 // 與 src/server/lib/authorization.ts 的 permissionsByRole 對齊（顯示用；安全邊界在 Worker）。
 const permissionsByRole: Record<AppRole, Permission[]> = {
   user: ['meeting.join'],
-  admin: ['meeting.join', 'meeting.moderate', 'transcription.update', 'topic.manage'],
-  'super-admin': ['meeting.join', 'meeting.moderate', 'transcription.update', 'topic.manage'],
+  admin: ['meeting.join', 'meeting.moderate', 'transcription.update'],
+  'super-admin': ['meeting.join', 'meeting.moderate', 'transcription.update'],
 }
 
 const tabs = [
