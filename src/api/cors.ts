@@ -14,8 +14,8 @@ export const ALLOWED_ORIGINS = [
   'https://www.vtaiwan.tw',
   'https://vue.vtaiwan.tw',
   'https://talk.vtaiwan.tw',
+  'https://next.vtaiwan.tw',
   'https://feat-newsletters-page.vtaiwan.pages.dev',
-  'https://vtaiwan-hono.audreyt.workers.dev',
   'https://vtaiwan-hono.vtaiwan-tw-349.workers.dev/',
 ]
 
