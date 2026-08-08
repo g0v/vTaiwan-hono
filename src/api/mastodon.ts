@@ -11,10 +11,10 @@ export function registerMastodonApi(app: App) {
     const token = c.env.MASTODON_TOKEN
     if (!token) return c.json({ error: 'MASTODON_TOKEN not configured' }, 500)
 
-    // cf.cacheEverything：強制 Cloudflare edge 快取此回應。
-    // 帶 Authorization header 的請求，Cloudflare 預設不快取；
-    // cacheEverything: true 明確覆寫此行為，讓所有 Worker 實例共用同一份快取。
-    // timeline 資料與呼叫者身分無關，快取同一份公開結果是安全的。
+    // cf.cacheEverything：請求 Cloudflare edge 強制快取此回應（包括覆蓋上游 cache-control）。
+    // timeline 資料為公開內容，與呼叫者身分無關，所有請求共用同一份快取是安全的。
+    // ⚠️ Authorization header 是否影響 Cloudflare 實際快取行為，需上線後以
+    // 回應的 `cf-cache-status: HIT` header 確認（本機測試環境不可驗）。
     const response = await fetch('https://g0v.social/api/v1/timelines/tag/vtaiwan?limit=20&local=true', {
       headers: {
         Authorization: `Bearer ${token}`,
