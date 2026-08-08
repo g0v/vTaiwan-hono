@@ -5,6 +5,7 @@ import { hasPermission as clientHasPermission, isAdminSession, type AuthSession 
 
 describe('Better Auth 業務權限', () => {
   it('將未知或缺少的角色降級為 user', () => {
+    expect(resolveRole(null)).toBe('user')
     expect(resolveRole(undefined)).toBe('user')
     expect(resolveRole('legacy-admin')).toBe('user')
   })
