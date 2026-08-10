@@ -79,7 +79,12 @@ async function saveProfile() {
 <template>
   <main class="mx-auto w-full max-w-4xl px-4 py-12 sm:px-6">
     <section class="rounded-vt-lg border border-vt-border bg-vt-bg-1 p-6 shadow-vt-md sm:p-8">
-      <h1 class="mb-8 font-sans text-vt-3xl font-bold">{{ t('profile.title') }}</h1>
+      <div class="mb-8 flex items-center justify-between gap-4">
+        <h1 class="font-sans text-vt-3xl font-bold">{{ t('profile.title') }}</h1>
+        <RouterLink v-if="user && isAdmin" :to="adminNavLink.href" class="vt-btn shrink-0 rounded-vt-md border border-democratic-red text-democratic-red hover:bg-vt-red-tint">
+          {{ t(adminNavLink.labelKey) }}
+        </RouterLink>
+      </div>
 
       <div v-if="!user" class="py-8 text-center">
         <p class="mb-5 text-vt-fg-2">{{ t('profile.loginRequired') }}</p>
@@ -114,10 +119,7 @@ async function saveProfile() {
           <button type="button" class="vt-btn vt-btn-primary" @click="startEdit">
             {{ t('common.edit') }}
           </button>
-          <RouterLink v-if="isAdmin" :to="adminNavLink.href" class="vt-btn rounded-vt-md border border-vt-border text-vt-fg-1 hover:bg-vt-bg-2">
-            {{ t(adminNavLink.labelKey) }}
-          </RouterLink>
-          <button type="button" class="vt-btn rounded-vt-md border border-democratic-red text-democratic-red hover:bg-vt-red-tint" @click="emit('logout')">
+          <button type="button" class="vt-btn rounded-vt-md border border-vt-border text-vt-fg-1 hover:bg-vt-bg-2" @click="emit('logout')">
             {{ t('common.logout') }}
           </button>
         </div>
