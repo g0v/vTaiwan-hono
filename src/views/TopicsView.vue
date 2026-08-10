@@ -171,19 +171,7 @@ const bookmarkTopic = (topic: FormattedTopicData) => {
 const loadTopics = async () => {
   try {
     loading.value = true
-    const allTopics = await discourseApi.getAllTopics()
-    const processedTopics: FormattedTopicData[] = []
-
-    for (const topic of allTopics) {
-      try {
-        const topicData = await discourseApi.getTopic(topic.id)
-        processedTopics.push(discourseApi.formatTopicData(topicData))
-      } catch (error) {
-        console.error('Error processing topic:', topic.id, error)
-      }
-    }
-
-    topics.value = processedTopics
+    topics.value = await discourseApi.getFormattedTopics()
     lastUpdated.value = new Date().toLocaleString('zh-TW')
   } catch (error) {
     console.error('Error loading topics:', error)
