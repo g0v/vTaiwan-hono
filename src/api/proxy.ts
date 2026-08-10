@@ -4,7 +4,7 @@ import type { App } from './types'
 const allowedHosts = ['medium.com', 'vtaiwantw.substack.com']
 
 // RSS feed 快取 TTL（秒）— 10 分鐘足以吸收突發流量，不至於內容落後太多。
-// 與 discourse-server.ts 的 DISCOURSE_CACHE_TTL_SECONDS 命名慣例一致。
+// 與 discourse-server.ts 的快取 TTL 常數命名慣例一致。
 const PROXY_CACHE_TTL_SECONDS = 600
 
 export function registerProxyApi(app: App) {

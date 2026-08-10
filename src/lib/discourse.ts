@@ -4,28 +4,28 @@ import { formatTopicData, type DiscourseTopic, type FormattedTopicData } from '.
 
 export type { DiscoursePost, DiscourseTopic, FormattedTopicData } from './discourse-types'
 
-// 依 path 去重的請求快取：多個議題元件在同頁各自 getTopic(sameId) 時只打一次 /api/discourse
-const inflight = new Map<string, Promise<unknown>>()
+// 依 path 合併進行中的請求；資料快取統一由 Worker 端的 Cache API 管理。
+const inFlightRequests = new Map<string, Promise<unknown>>()
 
-// 契約：依 path 去重進行中的請求；HTTP 錯誤時自快取移除該 path 並 reject；成功時解析 JSON 回傳 T。
+// 契約：依 path 合併進行中的請求；請求結束後移除，避免 client 端無期限保留舊資料。
 // （回傳 Promise 且含多敘述 lambda，LemmaScript 不可建模，故不做標注）
 function getJson<T>(path: string): Promise<T> {
-  const cached = inflight.get(path)
-  if (cached) return cached as Promise<T>
+  const inFlightRequest = inFlightRequests.get(path)
+  if (inFlightRequest) return inFlightRequest as Promise<T>
 
-  const promise = fetch(path, { headers: { Accept: 'application/json' } }).then(response => {
-    if (!response.ok) {
-      inflight.delete(path)
-      throw new Error(`Discourse proxy error: ${response.status}`)
-    }
-    return response.json() as Promise<T>
-  })
-  inflight.set(path, promise)
+  const promise = fetch(path, { headers: { Accept: 'application/json' } })
+    .then(response => {
+      if (!response.ok) throw new Error(`Discourse proxy error: ${response.status}`)
+      return response.json() as Promise<T>
+    })
+    .finally(() => inFlightRequests.delete(path))
+  inFlightRequests.set(path, promise)
   return promise
 }
 
 export interface DiscourseAPI {
   getAllTopics(): Promise<DiscourseTopic[]>
+  getFormattedTopics(): Promise<FormattedTopicData[]>
   getAllCategoryTopics(categoryUri: string): Promise<DiscourseTopic[]>
   getTopic(topicId: string | number): Promise<DiscourseTopic>
   formatTopicData(topicData: DiscourseTopic): FormattedTopicData
@@ -34,6 +34,10 @@ export interface DiscourseAPI {
 const discourseAPI: DiscourseAPI = {
   getAllTopics() {
     return getJson<DiscourseTopic[]>('/api/discourse/topics')
+  },
+
+  getFormattedTopics() {
+    return getJson<FormattedTopicData[]>('/api/discourse/topics?detailed=1')
   },
 
   getAllCategoryTopics(categoryUri: string) {
