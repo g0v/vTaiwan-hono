@@ -47,6 +47,7 @@ describe('Better Auth 業務權限', () => {
       permissions: permissionsForRole('admin'),
       fresh: true,
       stepUpExpiresAt: Date.now() + 60_000,
+      nameChangeCooldownDays: null,
     }
 
     expect(isAdminSession(session)).toBe(false)

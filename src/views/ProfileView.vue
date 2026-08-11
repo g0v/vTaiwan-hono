@@ -4,6 +4,8 @@ import { useI18n } from 'vue-i18n'
 import SocialLogin from '../components/SocialLogin.vue'
 import UserAvatar from '../components/UserAvatar.vue'
 import { authClient } from '../client/authClient'
+import type { AuthSession } from '../client/auth-session'
+import { isNameChangeCooldownPayload, NAME_CHANGE_COOLDOWN_DAYS } from '../lib/profile-name'
 import { adminNavLink } from '../router/nav-links'
 
 interface AuthenticatedUser {
@@ -16,19 +18,21 @@ interface AuthenticatedUser {
 const props = withDefaults(
   defineProps<{
     user?: AuthenticatedUser | null
+    authSession?: AuthSession | null
     inApp?: boolean
     /** 管理員才顯示後台入口；僅顯示層取捨，真正把關在 Worker 端。 */
     isAdmin?: boolean
   }>(),
   {
     user: null,
+    authSession: null,
     inApp: false,
     isAdmin: false,
   }
 )
 const emit = defineEmits<{
   logout: []
-  'profile-updated': [displayName: string]
+  'profile-updated': [displayName: string, nameChangeCooldownDays: number]
 }>()
 const { t } = useI18n()
 const editing = ref(false)
@@ -38,6 +42,7 @@ const editForm = reactive({ displayName: '' })
 const hasChanges = computed(() => editForm.displayName.trim() !== (props.user?.displayName ?? ''))
 const profileName = computed(() => props.user?.displayName || t('profile.notSet'))
 const profilePhotoUrl = computed(() => props.user?.photoURL)
+const nameChangeCooldownDays = computed(() => props.authSession?.nameChangeCooldownDays ?? null)
 
 watch(
   () => props.user,
@@ -59,17 +64,18 @@ function cancelEdit() {
 
 async function saveProfile() {
   if (!props.user || updating.value || !hasChanges.value) return
+  if (!window.confirm(t('profile.nameChangeConfirm', { days: NAME_CHANGE_COOLDOWN_DAYS }))) return
 
   try {
     updating.value = true
     const displayName = editForm.displayName.trim()
     const { error } = await authClient.updateUser({ name: displayName })
     if (error) throw error
-    emit('profile-updated', displayName)
+    emit('profile-updated', displayName, NAME_CHANGE_COOLDOWN_DAYS)
     editing.value = false
   } catch (error) {
     console.error('Failed to update profile:', error)
-    window.alert(t('profile.updateFailed'))
+    window.alert(t(isNameChangeCooldownPayload(error) ? 'profile.nameChangeCooldown' : 'profile.updateFailed'))
   } finally {
     updating.value = false
   }
@@ -106,6 +112,9 @@ async function saveProfile() {
               {{ t('profile.name') }}
             </dt>
             <dd>{{ profileName }}</dd>
+            <p v-if="nameChangeCooldownDays !== null" class="mt-2 text-vt-sm text-vt-fg-2">
+              {{ t('profile.nameChangeCooldownRemaining', { days: nameChangeCooldownDays }) }}
+            </p>
           </div>
           <div class="rounded-vt-md border border-vt-border bg-vt-bg-2 p-4">
             <dt class="mb-1 font-sans text-vt-sm font-medium text-vt-fg-2">
@@ -143,6 +152,9 @@ async function saveProfile() {
               required
               class="w-full rounded-vt-md border border-vt-border bg-vt-bg-1 px-3 py-2 font-sans focus:border-democratic-red focus:ring-2 focus:ring-democratic-red/20 focus:outline-none"
             />
+            <p v-if="nameChangeCooldownDays !== null" class="mt-2 text-vt-sm text-vt-fg-2">
+              {{ t('profile.nameChangeCooldownRemaining', { days: nameChangeCooldownDays }) }}
+            </p>
           </div>
           <div>
             <p class="mb-2 font-sans text-vt-sm font-medium">{{ t('profile.email') }}</p>

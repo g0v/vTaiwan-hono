@@ -298,7 +298,10 @@
     "loginRequired": "プロフィールの閲覧・編集にはログインが必要です",
     "notSet": "未設定",
     "avatarAlt": "プロフィール画像",
-    "updateFailed": "プロフィールの更新に失敗しました。もう一度お試しください。"
+    "updateFailed": "プロフィールの更新に失敗しました。もう一度お試しください。",
+    "nameChangeCooldown": "氏名は変更後30日間、再度変更できません。",
+    "nameChangeCooldownRemaining": "氏名を再度変更できるまであと {days} 日です。",
+    "nameChangeConfirm": "氏名変更後{days}日間は再度変更できません。氏名を変更しますか？"
   },
   "contributors": {
     "title": "貢献者",

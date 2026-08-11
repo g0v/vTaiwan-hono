@@ -72,6 +72,7 @@ describe('敏感操作二次驗證（step-up cookie）', () => {
       permissions: [],
       fresh,
       stepUpExpiresAt: fresh ? Date.UTC(2026, 7, 2, 0, 15, 0) : null,
+      nameChangeCooldownDays: null,
     })
 
     it('通過二次驗證卻非管理員：判定為換到別的帳號', () => {

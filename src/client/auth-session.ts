@@ -22,6 +22,8 @@ export interface AuthSession {
   fresh: boolean
   /** 二次驗證到期時間（epoch 毫秒）；未通過時為 null */
   stepUpExpiresAt: number | null
+  /** 名稱修改冷卻期剩餘天數；未在冷卻期時為 null。 */
+  nameChangeCooldownDays: number | null
 }
 
 export async function loadAuthSession(): Promise<AuthSession | null> {

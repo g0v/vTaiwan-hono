@@ -298,7 +298,10 @@
     "loginRequired": "Please login to view and edit your profile",
     "notSet": "Not set",
     "avatarAlt": "Profile avatar",
-    "updateFailed": "Failed to update profile. Please try again."
+    "updateFailed": "Failed to update profile. Please try again.",
+    "nameChangeCooldown": "Your name can only be changed once every 30 days.",
+    "nameChangeCooldownRemaining": "You can change your name again in {days} days.",
+    "nameChangeConfirm": "After renaming, you cannot change your name again for {days} days. Confirm rename?"
   },
   "contributors": {
     "title": "Contributors",

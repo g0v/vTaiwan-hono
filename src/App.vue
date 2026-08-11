@@ -94,12 +94,12 @@ async function handleLogout() {
   }
 }
 
-function handleProfileUpdated(displayName: string) {
+function handleProfileUpdated(displayName: string, nameChangeCooldownDays: number) {
   if (user.value) {
     user.value = { ...user.value, displayName }
   }
   if (authSession.value) {
-    authSession.value = { ...authSession.value, user: { ...authSession.value.user, name: displayName } }
+    authSession.value = { ...authSession.value, user: { ...authSession.value.user, name: displayName }, nameChangeCooldownDays }
   }
 }
 

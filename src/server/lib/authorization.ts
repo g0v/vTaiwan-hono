@@ -1,5 +1,6 @@
 import { createAuth } from './createAuth'
 import type { AppBindings } from '../../api/types'
+import { nameChangeCooldownRemainingDays } from '../../lib/profile-name'
 import { readStepUpExpiry } from './step-up'
 
 export type AppRole = 'user' | 'admin' | 'super-admin'
@@ -24,6 +25,12 @@ export interface AuthContext {
   fresh: boolean
   /** 二次驗證的到期時間（epoch 毫秒）；未通過時為 null。供前端顯示剩餘時間 */
   stepUpExpiresAt: number | null
+  /** 名稱修改冷卻期剩餘天數；未在冷卻期時為 null。 */
+  nameChangeCooldownDays: number | null
+}
+
+type UserNameChangeRow = {
+  nameChangedAt: string | null
 }
 
 const permissionsByRole: Record<AppRole, Permission[]> = {
@@ -85,6 +92,7 @@ export async function getAuthContext(env: AppBindings, headers: Headers): Promis
   const role = resolveRole(session.user.role)
   const banned = session.user.banned === true
   const stepUpExpiresAt = await readStepUpExpiry(headers.get('cookie'), session.session.id, env.BETTER_AUTH_SECRET)
+  const user = await env.DB_AUTH.prepare('SELECT "nameChangedAt" FROM "user" WHERE "id" = ?').bind(session.user.id).first<UserNameChangeRow>()
   return {
     user: {
       id: session.user.id,
@@ -97,5 +105,6 @@ export async function getAuthContext(env: AppBindings, headers: Headers): Promis
     permissions: permissionsForAccount(role, banned),
     fresh: stepUpExpiresAt !== null,
     stepUpExpiresAt,
+    nameChangeCooldownDays: nameChangeCooldownRemainingDays(user?.nameChangedAt ?? null),
   }
 }

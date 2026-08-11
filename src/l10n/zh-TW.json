@@ -293,7 +293,10 @@
     "loginRequired": "請先登入以查看和編輯個人資料",
     "notSet": "未設定",
     "avatarAlt": "個人頭像",
-    "updateFailed": "更新個人資料失敗，請重試"
+    "updateFailed": "更新個人資料失敗，請重試",
+    "nameChangeCooldown": "姓名修改後 30 天內不得再次修改。",
+    "nameChangeCooldownRemaining": "還有 {days} 天才能再次改名。",
+    "nameChangeConfirm": "改名後 {days} 天內不得再改名，確定要改名嗎？"
   },
   "contributors": {
     "title": "貢獻者",
