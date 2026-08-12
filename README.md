@@ -4,9 +4,9 @@
 
 視覺設計來自：https://github.com/Tofuswang/vtaiwan-design-system
 
-**EN:** SSR re-implementation of the vTaiwan website. It **parallel-migrates the pages and features of the existing [`vue.vTaiwan-neo`](https://github.com/Tofuswang/vue.vTaiwan-neo) site** onto a **Hono + Vue 3 SSR + Cloudflare Workers** stack, applying the new **[vtaiwan-design-system](https://github.com/Tofuswang/vtaiwan-design-system)** visual language. Hono handles API / entry routing; the site UI is server-rendered per request and hydrated client-side with vue-router. Multilingual (zh-TW / en / ja) via vue-i18n.
+**EN:** SSR re-implementation of the vTaiwan website. It **parallel-migrates the pages and features of the existing [`vue.vTaiwan-neo`](https://github.com/g0v/vue.vTaiwan-neo) site** onto a **Hono + Vue 3 SSR + Cloudflare Workers** stack, applying the new **[vtaiwan-design-system](https://github.com/Tofuswang/vtaiwan-design-system)** visual language. Hono handles API / entry routing; the site UI is server-rendered per request and hydrated client-side with vue-router. Multilingual (zh-TW / en / ja) via vue-i18n.
 
-**中文：**vTaiwan 官網的 SSR 版本。以 **Hono + Vue 3 SSR + Cloudflare Workers** 技術棧，**平行搬移現有 [`vue.vTaiwan-neo`](https://github.com/Tofuswang/vue.vTaiwan-neo) 官網的頁面與功能**，並套用 [vtaiwan-design-system](https://github.com/Tofuswang/vtaiwan-design-system) 的新視覺設計。API／入口路由用 Hono；畫面每個請求都在伺服端渲染，再由瀏覽器端 vue-router hydration 接管。支援多語（zh-TW / en / ja，vue-i18n）。
+**中文：**vTaiwan 官網的 SSR 版本。以 **Hono + Vue 3 SSR + Cloudflare Workers** 技術棧，**平行搬移現有 [`vue.vTaiwan-neo`](https://github.com/g0v/vue.vTaiwan-neo) 官網的頁面與功能**，並套用 [vtaiwan-design-system](https://github.com/Tofuswang/vtaiwan-design-system) 的新視覺設計。API／入口路由用 Hono；畫面每個請求都在伺服端渲染，再由瀏覽器端 vue-router hydration 接管。支援多語（zh-TW / en / ja，vue-i18n）。
 
 ## Project goals / 專案目的
 
