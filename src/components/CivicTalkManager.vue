@@ -322,7 +322,7 @@ onMounted(() => {
           <tbody>
             <tr v-for="issue in issues" :key="issue.id">
               <td :data-label="t('admin.civicTalk.columns.title')">
-                <p class="font-medium text-vt-fg-1">{{ issue.title }}</p>
+                <a :href="`https://civic.vtaiwan.tw/issues/${issue.id}`" target="_blank" class="civic-issue-link font-medium">{{ issue.title }}</a>
                 <p v-if="issue.description" class="mt-vt-1 text-vt-sm text-vt-fg-3">{{ issue.description }}</p>
               </td>
               <td :data-label="t('admin.civicTalk.columns.status')">
@@ -596,6 +596,16 @@ onMounted(() => {
 }
 
 .civic-link:hover {
+  text-decoration: underline;
+  text-underline-offset: var(--spacing-vt-1);
+}
+
+.civic-issue-link {
+  color: var(--color-vt-fg-1);
+}
+
+.civic-issue-link:hover {
+  color: var(--color-vt-democratic-red);
   text-decoration: underline;
   text-underline-offset: var(--spacing-vt-1);
 }
