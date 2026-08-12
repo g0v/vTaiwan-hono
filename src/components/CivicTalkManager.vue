@@ -297,7 +297,7 @@ onMounted(() => {
           <h3 class="text-vt-lg font-semibold text-vt-fg-1">{{ t('admin.civicTalk.issue.title') }}</h3>
           <p class="mt-vt-1 text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.issue.hint') }}</p>
         </div>
-        <button type="button" class="civic-button civic-button--primary" @click="openCreateIssue">{{ t('admin.civicTalk.issue.create') }}</button>
+        <button type="button" class="civic-button civic-button--outline-primary" @click="openCreateIssue">{{ t('admin.civicTalk.issue.create') }}</button>
       </div>
 
       <p v-if="issuesLoading" class="civic-empty">{{ t('admin.civicTalk.loading') }}</p>
@@ -404,7 +404,6 @@ onMounted(() => {
       <form class="civic-modal max-w-xl" @submit.prevent="saveIssue">
         <div class="civic-section-heading">
           <h3 class="text-vt-xl font-semibold text-vt-fg-1">{{ t(formTitleKey) }}</h3>
-          <button type="button" class="civic-link" @click="closeForm">{{ t('common.cancel') }}</button>
         </div>
         <label class="civic-field">
           <span>{{ t('admin.civicTalk.issue.fields.title') }}</span>
@@ -515,6 +514,11 @@ onMounted(() => {
   font-weight: 500;
 }
 
+.civic-table th:not(:first-child),
+.civic-table td:not(:first-child) {
+  white-space: nowrap;
+}
+
 .civic-table tbody tr:last-child td {
   border-bottom: 0;
 }
@@ -555,8 +559,20 @@ onMounted(() => {
 }
 
 .civic-button--primary:hover:not(:disabled) {
-  background-color: var(--color-vt-ink);
-  border-color: var(--color-vt-ink);
+  background-color: var(--color-vt-bg-inverse);
+  border-color: var(--color-vt-bg-inverse);
+}
+
+.civic-button--outline-primary {
+  color: var(--color-vt-democratic-red);
+  background-color: var(--color-vt-bg-1);
+  border-color: var(--color-vt-democratic-red);
+}
+
+.civic-button--outline-primary:hover:not(:disabled) {
+  color: var(--color-vt-fg-inverse);
+  background-color: var(--color-vt-democratic-red);
+  border-color: var(--color-vt-democratic-red);
 }
 
 .civic-detail-button {
