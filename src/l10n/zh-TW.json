@@ -1190,6 +1190,7 @@
       "saving": "儲存中…",
       "edit": "編輯",
       "delete": "刪除",
+      "backToIssues": "返回議題管理",
       "selectIssue": "選擇議題",
       "selectPlaceholder": "請選擇議題…",
       "selectRequired": "請先選擇一個議題。",

@@ -39,12 +39,6 @@ interface Opinion {
 const emit = defineEmits<{ 'step-up-required': [] }>()
 const { t } = useI18n()
 
-const sections = computed(() => [
-  { key: 'issues' as const, label: 'admin.civicTalk.sections.issues' },
-  { key: 'materials' as const, label: 'admin.civicTalk.sections.materials' },
-  { key: 'opinions' as const, label: 'admin.civicTalk.sections.opinions' },
-])
-
 const activeSection = ref<ManagerSection>('issues')
 const issues = ref<Issue[]>([])
 const materials = ref<Material[]>([])
@@ -67,6 +61,8 @@ const issueCount = computed(() => issues.value.length)
 const materialCount = computed(() => issues.value.reduce((total, issue) => total + issue.material_count, 0))
 const opinionCount = computed(() => issues.value.reduce((total, issue) => total + issue.opinion_count, 0))
 const formTitleKey = computed(() => (editingIssueId.value === null ? 'admin.civicTalk.issue.createTitle' : 'admin.civicTalk.issue.editTitle'))
+const selectedMaterialIssue = computed(() => issues.value.find(issue => issue.id === materialIssueId.value) ?? null)
+const selectedOpinionIssue = computed(() => issues.value.find(issue => issue.id === opinionIssueId.value) ?? null)
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T | null> {
   const response = await fetch(path, {
@@ -236,6 +232,20 @@ function formatDate(value: string): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
+function showIssueMaterials(issueId: number) {
+  activeSection.value = 'materials'
+  materialIssueId.value = issueId
+}
+
+function showIssueOpinions(issueId: number) {
+  activeSection.value = 'opinions'
+  opinionIssueId.value = issueId
+}
+
+function returnToIssues() {
+  activeSection.value = 'issues'
+}
+
 watch(materialIssueId, () => {
   if (activeSection.value === 'materials') void loadMaterials()
 })
@@ -281,20 +291,6 @@ onMounted(() => {
 
     <p v-if="error" class="civic-notice civic-notice--error" role="alert">{{ error }}</p>
 
-    <div class="civic-tabs" role="tablist">
-      <button
-        v-for="section in sections"
-        :key="section.key"
-        type="button"
-        class="civic-tab"
-        :class="activeSection === section.key ? 'civic-tab--active' : ''"
-        :aria-selected="activeSection === section.key"
-        @click="activeSection = section.key"
-      >
-        {{ t(section.label) }}
-      </button>
-    </div>
-
     <section v-show="activeSection === 'issues'" class="civic-card">
       <div class="civic-section-heading">
         <div>
@@ -328,8 +324,16 @@ onMounted(() => {
               <td :data-label="t('admin.civicTalk.columns.status')">
                 <span class="civic-status">{{ t(`admin.civicTalk.status.${issue.status}`) }}</span>
               </td>
-              <td :data-label="t('admin.civicTalk.columns.materials')">{{ issue.material_count }}</td>
-              <td :data-label="t('admin.civicTalk.columns.opinions')">{{ issue.opinion_count }}</td>
+              <td :data-label="t('admin.civicTalk.columns.materials')">
+                <button type="button" class="civic-detail-button" :aria-label="t('admin.civicTalk.columns.materials')" @click="showIssueMaterials(issue.id)">
+                  {{ issue.material_count }}
+                </button>
+              </td>
+              <td :data-label="t('admin.civicTalk.columns.opinions')">
+                <button type="button" class="civic-detail-button" :aria-label="t('admin.civicTalk.columns.opinions')" @click="showIssueOpinions(issue.id)">
+                  {{ issue.opinion_count }}
+                </button>
+              </td>
               <td :data-label="t('admin.civicTalk.columns.author')">{{ issue.author_name || t('admin.civicTalk.unknownAuthor') }}</td>
               <td :data-label="t('admin.civicTalk.columns.createdAt')">{{ formatDate(issue.created_at) }}</td>
               <td :data-label="t('admin.civicTalk.columns.actions')">
@@ -350,14 +354,9 @@ onMounted(() => {
           <h3 class="text-vt-lg font-semibold text-vt-fg-1">{{ t('admin.civicTalk.material.title') }}</h3>
           <p class="mt-vt-1 text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.material.hint') }}</p>
         </div>
+        <button type="button" class="civic-button" @click="returnToIssues">{{ t('admin.civicTalk.backToIssues') }}</button>
       </div>
-      <label class="civic-field">
-        <span>{{ t('admin.civicTalk.selectIssue') }}</span>
-        <select v-model="materialIssueId">
-          <option :value="null">{{ t('admin.civicTalk.selectPlaceholder') }}</option>
-          <option v-for="issue in issues" :key="issue.id" :value="issue.id">{{ issue.title }}</option>
-        </select>
-      </label>
+      <p v-if="selectedMaterialIssue" class="civic-selected-issue">{{ selectedMaterialIssue.title }}</p>
       <p v-if="!materialIssueId" class="civic-empty">{{ t('admin.civicTalk.selectRequired') }}</p>
       <p v-else-if="detailsLoading" class="civic-empty">{{ t('admin.civicTalk.loading') }}</p>
       <p v-else-if="materials.length === 0" class="civic-empty">{{ t('admin.civicTalk.material.empty') }}</p>
@@ -383,14 +382,9 @@ onMounted(() => {
           <h3 class="text-vt-lg font-semibold text-vt-fg-1">{{ t('admin.civicTalk.opinion.title') }}</h3>
           <p class="mt-vt-1 text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.opinion.hint') }}</p>
         </div>
+        <button type="button" class="civic-button" @click="returnToIssues">{{ t('admin.civicTalk.backToIssues') }}</button>
       </div>
-      <label class="civic-field">
-        <span>{{ t('admin.civicTalk.selectIssue') }}</span>
-        <select v-model="opinionIssueId">
-          <option :value="null">{{ t('admin.civicTalk.selectPlaceholder') }}</option>
-          <option v-for="issue in issues" :key="issue.id" :value="issue.id">{{ issue.title }}</option>
-        </select>
-      </label>
+      <p v-if="selectedOpinionIssue" class="civic-selected-issue">{{ selectedOpinionIssue.title }}</p>
       <p v-if="!opinionIssueId" class="civic-empty">{{ t('admin.civicTalk.selectRequired') }}</p>
       <p v-else-if="detailsLoading" class="civic-empty">{{ t('admin.civicTalk.loading') }}</p>
       <p v-else-if="opinions.length === 0" class="civic-empty">{{ t('admin.civicTalk.opinion.empty') }}</p>
@@ -491,31 +485,6 @@ onMounted(() => {
   font-size: var(--text-vt-sm);
 }
 
-.civic-tabs {
-  display: flex;
-  gap: var(--spacing-vt-1);
-  overflow-x: auto;
-  border-bottom: 1px solid var(--color-vt-border);
-}
-
-.civic-tab {
-  flex: 0 0 auto;
-  padding: var(--spacing-vt-2) var(--spacing-vt-3);
-  color: var(--color-vt-fg-3);
-  font-size: var(--text-vt-sm);
-  font-weight: 500;
-  border-bottom: 2px solid transparent;
-}
-
-.civic-tab:hover {
-  color: var(--color-vt-fg-1);
-}
-
-.civic-tab--active {
-  color: var(--color-vt-democratic-red);
-  border-bottom-color: var(--color-vt-democratic-red);
-}
-
 .civic-card {
   padding: var(--spacing-vt-6);
   border-radius: var(--radius-vt-lg);
@@ -561,7 +530,8 @@ onMounted(() => {
 }
 
 .civic-button,
-.civic-link {
+.civic-link,
+.civic-detail-button {
   color: var(--color-vt-democratic-red);
   font-size: var(--text-vt-sm);
   font-weight: 500;
@@ -587,6 +557,23 @@ onMounted(() => {
 .civic-button--primary:hover:not(:disabled) {
   background-color: var(--color-vt-ink);
   border-color: var(--color-vt-ink);
+}
+
+.civic-detail-button {
+  min-width: var(--spacing-vt-8);
+  padding: var(--spacing-vt-1) var(--spacing-vt-2);
+  background-color: var(--color-vt-bg-1);
+  border: 1px solid var(--color-vt-border);
+  border-radius: var(--radius-vt-md);
+}
+
+.civic-detail-button:hover {
+  background-color: var(--color-vt-red-tint);
+}
+
+.civic-detail-button:focus-visible {
+  outline: 2px solid var(--color-vt-democratic-red);
+  outline-offset: 2px;
 }
 
 .civic-button:disabled {
@@ -651,6 +638,14 @@ onMounted(() => {
 .civic-empty {
   padding: var(--spacing-vt-6) 0;
   text-align: center;
+}
+
+.civic-selected-issue {
+  margin-top: var(--spacing-vt-4);
+  margin-bottom: var(--spacing-vt-4);
+  color: var(--color-vt-fg-1);
+  font-size: var(--text-vt-lg);
+  font-weight: 600;
 }
 
 .civic-entry {

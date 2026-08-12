@@ -1190,6 +1190,7 @@
       "saving": "Saving…",
       "edit": "Edit",
       "delete": "Delete",
+      "backToIssues": "Back to issues",
       "selectIssue": "Select an issue",
       "selectPlaceholder": "Select an issue…",
       "selectRequired": "Select an issue first.",

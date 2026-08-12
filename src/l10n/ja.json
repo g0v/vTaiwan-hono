@@ -1190,6 +1190,7 @@
       "saving": "保存中…",
       "edit": "編集",
       "delete": "削除",
+      "backToIssues": "議題管理に戻る",
       "selectIssue": "議題を選択",
       "selectPlaceholder": "議題を選択…",
       "selectRequired": "先に議題を選択してください。",
