@@ -581,9 +581,14 @@ export default {
             useAppLanguage: false,
             preferredLanguage: 'en-US',
           },
-        },
-        interfaceConfigOverwrite: {
-          TOOLBAR_BUTTONS: [
+          // Breakout Rooms：由參與者面板進入；按鈕預設顯示
+          breakoutRooms: {
+            hideAddRoomButton: false,
+            hideAutoAssignButton: false,
+            hideJoinRoomButton: false,
+          },
+          // toolbarButtons 已取代舊的 interfaceConfig.TOOLBAR_BUTTONS
+          toolbarButtons: [
             'microphone',
             'camera',
             'closedcaptions',
@@ -601,6 +606,7 @@ export default {
             'raisehand',
             'videoquality',
             'filmstrip',
+            'participants-pane', // Breakout Rooms 入口
             'invite',
             'feedback',
             'stats',
@@ -612,6 +618,8 @@ export default {
             'mute-everyone',
             'security',
           ],
+        },
+        interfaceConfigOverwrite: {
           SHOW_JITSI_WATERMARK: false,
           SHOW_WATERMARK_FOR_GUESTS: false,
           DEFAULT_BACKGROUND: '#474747',
