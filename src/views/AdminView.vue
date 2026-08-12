@@ -222,6 +222,9 @@
             <TranscriptionManager manage :auth-session="props.authSession" @step-up-required="requireStepUp" />
           </div>
         </section>
+
+        <!-- Tab 4：Civic Talk 管理（資料僅在 client mount 後由受保護 API 載入） -->
+        <CivicTalkManager v-if="activeTab === 'civicTalks'" @step-up-required="requireStepUp" />
       </div>
     </div>
 
@@ -327,13 +330,14 @@ import {
 } from '../client/auth-session'
 import { auditActionLabelKey, AUDIT_LOG_LIMIT, restoreCommandFor, type AuditEntry } from '../lib/audit-log'
 import IconWrapper from '../components/IconWrapper.vue'
+import CivicTalkManager from '../components/CivicTalkManager.vue'
 import SearchInput from '../components/SearchInput.vue'
 import StepUpAuth from '../components/StepUpAuth.vue'
 import TranscriptionManager from '../components/TranscriptionManager.vue'
 
 const { t } = useI18n()
 
-// tab 1 成員／角色：Better Auth admin API（僅 super-admin）；tab 2 日誌仍為偽資料；tab 3 逐字稿為真實 API。
+// tab 1 成員／角色：Better Auth admin API（僅 super-admin）；tab 2 日誌；tab 3 逐字稿；tab 4 Civic Talk。
 // authReady：session 是否已載入完成（App.vue 提供）——區分「確認中」與「非管理員」。
 const props = withDefaults(
   defineProps<{
@@ -432,9 +436,10 @@ const tabs = [
   { key: 'members', label: 'admin.tabs.members' },
   { key: 'logs', label: 'admin.tabs.logs' },
   { key: 'transcripts', label: 'admin.tabs.transcripts' },
+  { key: 'civicTalks', label: 'admin.tabs.civicTalks' },
 ] as const
 
-const activeTab = ref<'members' | 'logs' | 'transcripts'>('members')
+const activeTab = ref<'members' | 'logs' | 'transcripts' | 'civicTalks'>('members')
 
 // ── 真實成員（SSR／首次 hydration 維持空陣列，掛載後再抓）────────
 const members = ref<Member[]>([])

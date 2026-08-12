@@ -1057,7 +1057,7 @@
       "sessionRemainingAria": "敏感操作授權剩餘時間"
     },
     "title": "管理員後台",
-    "subtitle": "成員清單、角色變更與變更日誌皆使用真實資料（僅超級管理員可操作）。",
+    "subtitle": "成員、逐字稿與 Civic Talk 的管理操作皆使用真實資料。",
     "search": {
       "label": "關鍵字搜尋",
       "clear": "清除搜尋",
@@ -1070,7 +1070,8 @@
     "tabs": {
       "members": "成員與權限",
       "logs": "變更日誌",
-      "transcripts": "逐字稿管理"
+      "transcripts": "逐字稿管理",
+      "civicTalks": "Civic Talk 管理"
     },
     "members": {
       "listTitle": "成員清單",
@@ -1177,6 +1178,83 @@
     "transcripts": {
       "title": "逐字稿管理",
       "hint": "此分頁使用真實資料：登入後即可上傳逐字稿；覆蓋既有逐字稿與編輯 AI 大綱需管理員權限。"
+    },
+    "civicTalk": {
+      "title": "Civic Talk 管理",
+      "hint": "管理 vtaiwan-civic-talks 的議題、素材與意見；資料只在通過二次驗證後載入。",
+      "refresh": "重新整理",
+      "loading": "正在載入資料…",
+      "loadFailed": "無法載入 Civic Talk 資料，請稍後再試。",
+      "saveFailed": "儲存操作失敗，請稍後再試。",
+      "save": "儲存",
+      "saving": "儲存中…",
+      "edit": "編輯",
+      "delete": "刪除",
+      "selectIssue": "選擇議題",
+      "selectPlaceholder": "請選擇議題…",
+      "selectRequired": "請先選擇一個議題。",
+      "unknownAuthor": "未知投稿者",
+      "unknownSource": "未知來源",
+      "author": "投稿者：{name}",
+      "stats": {
+        "ariaLabel": "Civic Talk 資料統計",
+        "issues": "議題",
+        "materials": "素材",
+        "opinions": "意見"
+      },
+      "sections": {
+        "issues": "議題管理",
+        "materials": "素材管理",
+        "opinions": "意見管理"
+      },
+      "columns": {
+        "title": "標題",
+        "status": "狀態",
+        "materials": "素材",
+        "opinions": "意見",
+        "author": "建立者",
+        "createdAt": "建立時間",
+        "actions": "操作"
+      },
+      "status": {
+        "collecting": "蒐集素材",
+        "summarizing": "整理中",
+        "published": "已發布"
+      },
+      "stance": {
+        "pro": "支持",
+        "con": "反對",
+        "neutral": "中立",
+        "unknown": "未標示"
+      },
+      "issue": {
+        "title": "議題管理",
+        "hint": "建立、編輯或刪除 Civic Talk 議題；刪除議題會一併移除其素材、意見與彙整。",
+        "create": "新增議題",
+        "empty": "尚無議題。",
+        "createTitle": "新增 Civic Talk 議題",
+        "editTitle": "編輯 Civic Talk 議題",
+        "titleRequired": "請填寫議題標題。",
+        "confirmDelete": "確定要刪除「{title}」嗎？相關素材、意見與彙整也會一併刪除。",
+        "fields": {
+          "title": "標題",
+          "description": "說明",
+          "status": "狀態",
+          "polisEnabled": "啟用 Polis 討論"
+        }
+      },
+      "material": {
+        "title": "素材管理",
+        "hint": "檢視各議題的素材與投稿者，並移除不適合的內容。",
+        "empty": "這個議題尚無素材。",
+        "confirmDelete": "確定要刪除這筆素材嗎？"
+      },
+      "opinion": {
+        "title": "意見管理",
+        "hint": "檢視各議題的意見與投稿者，並移除不適合的內容。",
+        "empty": "這個議題尚無意見。",
+        "confirmDelete": "確定要刪除這則意見嗎？"
+      }
     }
   }
 }

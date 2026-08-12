@@ -10,6 +10,7 @@ export type AppBindings = {
   MASTODON_TOKEN?: string
   DB: D1Database
   DB_AUTH: D1Database
+  DB_CIVIC_TALKS: D1Database
   R2?: R2Bucket
   AI?: Ai
   MEETING_ROOM?: DurableObjectNamespace<MeetingRoom>

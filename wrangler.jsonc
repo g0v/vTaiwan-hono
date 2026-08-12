@@ -27,6 +27,13 @@
       "database_id": "e26edd14-d163-427d-8630-9304f815e9fa",
       "migrations_dir": "./migrations/auth",
     },
+    {
+      "remote": true,
+      "binding": "DB_CIVIC_TALKS",
+      "database_name": "vtaiwan-civic-talks",
+      "database_id": "1b5f4077-f5a7-4b0d-9877-952d5726c7b8",
+      "migrations_dir": "./migrations/civic-talks",
+    },
   ],
   "r2_buckets": [
     {

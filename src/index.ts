@@ -8,6 +8,7 @@ import { registerMastodonApi } from './api/mastodon'
 import { registerProxyApi } from './api/proxy'
 import { registerTranscriptionApi } from './api/transcription'
 import { registerAdminApi } from './api/admin'
+import { registerCivicTalkAdminApi } from './api/civic-talk'
 import type { AppEnv } from './api/types'
 import auth from './api/auth'
 import { registerMeetingApi } from './api/meeting'
@@ -75,6 +76,7 @@ registerDiscourseTopicIdApi(app)
 registerJitsiTokenApi(app)
 registerTranscriptionApi(app)
 registerAdminApi(app)
+registerCivicTalkAdminApi(app)
 registerMeetingApi(app)
 
 // 其他 GET 請求：靜態檔交給 ASSETS，其餘交給 Vue SSR + vue-router。

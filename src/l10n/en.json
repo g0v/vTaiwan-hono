@@ -1057,7 +1057,7 @@
       "sessionRemainingAria": "Time remaining for elevated access"
     },
     "title": "Admin Console",
-    "subtitle": "Member list, role changes, and the change log all use real data (super-admin only).",
+    "subtitle": "Member, transcript, and Civic Talk management use live data.",
     "search": {
       "label": "Keyword search",
       "clear": "Clear search",
@@ -1070,7 +1070,8 @@
     "tabs": {
       "members": "Members & Permissions",
       "logs": "Change Log",
-      "transcripts": "Transcripts"
+      "transcripts": "Transcripts",
+      "civicTalks": "Civic Talk"
     },
     "members": {
       "listTitle": "Member List",
@@ -1177,6 +1178,83 @@
     "transcripts": {
       "title": "Transcript Management",
       "hint": "This tab uses real data: sign in to upload transcripts; overwriting an existing transcript or editing AI outlines requires admin privileges."
+    },
+    "civicTalk": {
+      "title": "Civic Talk Management",
+      "hint": "Manage issues, materials, and opinions in vtaiwan-civic-talks. Data loads only after elevated access is verified.",
+      "refresh": "Refresh",
+      "loading": "Loading data…",
+      "loadFailed": "Unable to load Civic Talk data. Please try again later.",
+      "saveFailed": "The change could not be saved. Please try again later.",
+      "save": "Save",
+      "saving": "Saving…",
+      "edit": "Edit",
+      "delete": "Delete",
+      "selectIssue": "Select an issue",
+      "selectPlaceholder": "Select an issue…",
+      "selectRequired": "Select an issue first.",
+      "unknownAuthor": "Unknown contributor",
+      "unknownSource": "Unknown source",
+      "author": "Contributor: {name}",
+      "stats": {
+        "ariaLabel": "Civic Talk data statistics",
+        "issues": "Issues",
+        "materials": "Materials",
+        "opinions": "Opinions"
+      },
+      "sections": {
+        "issues": "Issues",
+        "materials": "Materials",
+        "opinions": "Opinions"
+      },
+      "columns": {
+        "title": "Title",
+        "status": "Status",
+        "materials": "Materials",
+        "opinions": "Opinions",
+        "author": "Author",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "status": {
+        "collecting": "Collecting materials",
+        "summarizing": "Summarizing",
+        "published": "Published"
+      },
+      "stance": {
+        "pro": "In favor",
+        "con": "Opposed",
+        "neutral": "Neutral",
+        "unknown": "Unspecified"
+      },
+      "issue": {
+        "title": "Issue Management",
+        "hint": "Create, edit, or delete Civic Talk issues. Deleting an issue also removes its materials, opinions, and briefings.",
+        "create": "New issue",
+        "empty": "No issues yet.",
+        "createTitle": "New Civic Talk Issue",
+        "editTitle": "Edit Civic Talk Issue",
+        "titleRequired": "Enter an issue title.",
+        "confirmDelete": "Delete \"{title}\"? Its materials, opinions, and briefings will also be removed.",
+        "fields": {
+          "title": "Title",
+          "description": "Description",
+          "status": "Status",
+          "polisEnabled": "Enable Polis discussion"
+        }
+      },
+      "material": {
+        "title": "Material Management",
+        "hint": "Review materials and contributors for each issue, and remove unsuitable content.",
+        "empty": "This issue has no materials yet.",
+        "confirmDelete": "Delete this material?"
+      },
+      "opinion": {
+        "title": "Opinion Management",
+        "hint": "Review opinions and contributors for each issue, and remove unsuitable content.",
+        "empty": "This issue has no opinions yet.",
+        "confirmDelete": "Delete this opinion?"
+      }
     }
   }
 }

@@ -31,6 +31,7 @@ const schemaOnlyD1 = {
 export const auth = createAuth({
   DB: schemaOnlyD1,
   DB_AUTH: schemaOnlyD1,
+  DB_CIVIC_TALKS: schemaOnlyD1,
   BETTER_AUTH_SECRET: 'schema-generation-only-secret-value',
   BETTER_AUTH_URL: 'https://schema-generation.invalid',
   GOOGLE_CLIENT_ID: 'schema-generation-only',
