@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { RefreshCw } from 'lucide-vue-next'
 import { responseRequiresStepUp } from '../client/auth-session'
 
 type IssueStatus = 'collecting' | 'summarizing' | 'published'
@@ -357,7 +358,9 @@ onMounted(() => {
             {{ t('admin.civicTalk.events.button') }}
           </button>
         </div>
-        <button type="button" class="civic-button" :disabled="activeLoading" @click="refreshActiveSection">{{ t('admin.civicTalk.refresh') }}</button>
+        <button type="button" class="civic-button civic-icon-button" :aria-label="t('admin.civicTalk.refresh')" :title="t('admin.civicTalk.refresh')" :disabled="activeLoading" @click="refreshActiveSection">
+          <RefreshCw aria-hidden="true" />
+        </button>
       </div>
     </header>
 
@@ -404,8 +407,8 @@ onMounted(() => {
           <tbody>
             <tr v-for="issue in issues" :key="issue.id">
               <td :data-label="t('admin.civicTalk.columns.title')">
-                <a :href="`https://civic.vtaiwan.tw/issues/${issue.id}`" target="_blank" class="civic-issue-link font-medium">{{ issue.title }}</a>
-                <p v-if="issue.description" class="mt-vt-1 text-vt-sm text-vt-fg-3">{{ issue.description }}</p>
+                <a :href="`https://civic.vtaiwan.tw/issues/${issue.id}`" target="_blank" rel="noopener noreferrer" class="civic-issue-link font-medium">{{ issue.title }}</a>
+                <p v-if="issue.description" class="civic-issue-description mt-vt-1 text-vt-sm text-vt-fg-3">{{ issue.description }}</p>
               </td>
               <td :data-label="t('admin.civicTalk.columns.status')">
                 <span class="civic-status">{{ t(`admin.civicTalk.status.${issue.status}`) }}</span>
@@ -526,9 +529,10 @@ onMounted(() => {
     </section>
 
     <div v-if="formOpen" class="civic-modal-backdrop" role="presentation" @click.self="closeForm">
-      <form class="civic-modal max-w-xl" @submit.prevent="saveIssue">
+      <form class="civic-modal max-w-xl" role="dialog" aria-modal="true" :aria-label="t('admin.civicTalk.issue.editTitle')" @submit.prevent="saveIssue">
         <div class="civic-section-heading">
           <h3 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.civicTalk.issue.editTitle') }}</h3>
+          <button type="button" class="civic-modal-close" :aria-label="t('common.cancel')" :disabled="submitting" @click="closeForm">×</button>
         </div>
         <label class="civic-field">
           <span>{{ t('admin.civicTalk.issue.fields.title') }}</span>
@@ -724,6 +728,7 @@ onMounted(() => {
 
 .civic-status {
   display: inline-flex;
+  width: fit-content;
   padding: var(--spacing-vt-1) var(--spacing-vt-2);
   color: var(--color-vt-fg-2);
   background-color: var(--color-vt-bg-2);
@@ -735,6 +740,10 @@ onMounted(() => {
 .civic-button,
 .civic-link,
 .civic-detail-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--spacing-vt-8);
   color: var(--color-vt-democratic-red);
   font-size: var(--text-vt-sm);
   font-weight: 500;
@@ -745,6 +754,16 @@ onMounted(() => {
   padding: var(--spacing-vt-2) var(--spacing-vt-3);
   border: 1px solid var(--color-vt-border);
   border-radius: var(--radius-vt-md);
+}
+
+.civic-icon-button {
+  aspect-ratio: 1;
+  padding: var(--spacing-vt-2);
+}
+
+.civic-icon-button :deep(svg) {
+  width: var(--spacing-vt-4);
+  height: var(--spacing-vt-4);
 }
 
 .civic-button:hover:not(:disabled) {
@@ -798,6 +817,7 @@ onMounted(() => {
 
 .civic-detail-button {
   min-width: var(--spacing-vt-8);
+  width: fit-content;
   padding: var(--spacing-vt-1) var(--spacing-vt-2);
   background-color: var(--color-vt-bg-1);
   border: 1px solid var(--color-vt-border);
@@ -822,6 +842,13 @@ onMounted(() => {
 .civic-link:hover {
   text-decoration: underline;
   text-underline-offset: var(--spacing-vt-1);
+}
+
+.civic-link:focus-visible,
+.civic-event-item:focus-visible,
+.civic-modal-close:focus-visible {
+  outline: 2px solid var(--color-vt-democratic-red);
+  outline-offset: 2px;
 }
 
 .civic-event-action {
@@ -1023,6 +1050,10 @@ onMounted(() => {
     width: 100%;
   }
 
+  .civic-header__actions > .civic-button:not(.civic-icon-button) {
+    flex: 1;
+  }
+
   .civic-section-switcher {
     flex: 1;
   }
@@ -1036,7 +1067,109 @@ onMounted(() => {
   }
 
   .civic-stats {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .civic-stat {
+    padding: var(--spacing-vt-3);
+    text-align: center;
+  }
+
+  .civic-stat__value {
+    font-size: var(--text-vt-xl);
+  }
+
+  .civic-table-wrap {
+    overflow: visible;
+  }
+
+  .civic-table,
+  .civic-table tbody,
+  .civic-table tr,
+  .civic-table td {
+    display: block;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .civic-table thead {
+    display: none;
+  }
+
+  .civic-table tr {
+    padding: var(--spacing-vt-3) 0;
+    border-bottom: 1px solid var(--color-vt-border);
+  }
+
+  .civic-table tbody tr:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .civic-table td {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+    gap: var(--spacing-vt-3);
+    padding: var(--spacing-vt-2) 0;
+    border-bottom: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .civic-table td::before {
+    content: attr(data-label);
+    color: var(--color-vt-fg-3);
+    font-weight: 500;
+  }
+
+  .civic-table th:not(:first-child),
+  .civic-table td:not(:first-child) {
+    white-space: normal;
+  }
+
+  .civic-table td > * {
+    min-width: 0;
+  }
+
+  .civic-issue-description {
+    display: none;
+  }
+
+  .civic-actions {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .civic-actions .civic-link,
+  .civic-entry__heading .civic-link {
+    padding: var(--spacing-vt-2) var(--spacing-vt-3);
+    border: 1px solid var(--color-vt-border);
+    border-radius: var(--radius-vt-md);
+  }
+
+  .civic-entry__heading .civic-link {
+    align-self: flex-start;
+  }
+
+  .civic-modal-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .civic-modal {
+    max-height: calc(100dvh - var(--spacing-vt-8));
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  .civic-modal__actions {
+    position: sticky;
+    bottom: calc(-1 * var(--spacing-vt-4));
+    padding: var(--spacing-vt-3) 0 var(--spacing-vt-4);
+    background-color: var(--color-vt-bg-1);
+  }
+
+  .civic-modal__actions .civic-button {
+    flex: 1;
   }
 
   .civic-card,
