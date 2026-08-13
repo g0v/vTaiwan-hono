@@ -1189,6 +1189,8 @@
       "save": "保存",
       "saving": "保存中…",
       "edit": "編集",
+      "manageMaterials": "資料を管理",
+      "manageOpinions": "意見を管理",
       "delete": "削除",
       "backToIssues": "議題管理に戻る",
       "switcher": {

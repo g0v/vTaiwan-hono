@@ -358,7 +358,14 @@ onMounted(() => {
             {{ t('admin.civicTalk.events.button') }}
           </button>
         </div>
-        <button type="button" class="civic-button civic-icon-button" :aria-label="t('admin.civicTalk.refresh')" :title="t('admin.civicTalk.refresh')" :disabled="activeLoading" @click="refreshActiveSection">
+        <button
+          type="button"
+          class="civic-button civic-icon-button"
+          :aria-label="t('admin.civicTalk.refresh')"
+          :title="t('admin.civicTalk.refresh')"
+          :disabled="activeLoading"
+          @click="refreshActiveSection"
+        >
           <RefreshCw aria-hidden="true" />
         </button>
       </div>
@@ -414,12 +421,12 @@ onMounted(() => {
                 <span class="civic-status">{{ t(`admin.civicTalk.status.${issue.status}`) }}</span>
               </td>
               <td :data-label="t('admin.civicTalk.columns.materials')">
-                <button type="button" class="civic-detail-button" :aria-label="t('admin.civicTalk.columns.materials')" @click="showIssueMaterials(issue.id)">
+                <button type="button" class="civic-detail-button" :aria-label="t('admin.civicTalk.columns.materials')" :disabled="issue.material_count === 0" @click="showIssueMaterials(issue.id)">
                   {{ issue.material_count }}
                 </button>
               </td>
               <td :data-label="t('admin.civicTalk.columns.opinions')">
-                <button type="button" class="civic-detail-button" :aria-label="t('admin.civicTalk.columns.opinions')" @click="showIssueOpinions(issue.id)">
+                <button type="button" class="civic-detail-button" :aria-label="t('admin.civicTalk.columns.opinions')" :disabled="issue.opinion_count === 0" @click="showIssueOpinions(issue.id)">
                   {{ issue.opinion_count }}
                 </button>
               </td>
@@ -428,6 +435,8 @@ onMounted(() => {
               <td :data-label="t('admin.civicTalk.columns.actions')">
                 <div class="civic-actions">
                   <button type="button" class="civic-link" @click="openEditIssue(issue)">{{ t('admin.civicTalk.edit') }}</button>
+                  <button type="button" class="civic-link" :disabled="issue.material_count === 0" @click="showIssueMaterials(issue.id)">{{ t('admin.civicTalk.manageMaterials') }}</button>
+                  <button type="button" class="civic-link" :disabled="issue.opinion_count === 0" @click="showIssueOpinions(issue.id)">{{ t('admin.civicTalk.manageOpinions') }}</button>
                   <button type="button" class="civic-link civic-link--danger" @click="deleteIssue(issue)">{{ t('admin.civicTalk.delete') }}</button>
                 </div>
               </td>
@@ -824,7 +833,7 @@ onMounted(() => {
   border-radius: var(--radius-vt-md);
 }
 
-.civic-detail-button:hover {
+.civic-detail-button:hover:not(:disabled) {
   background-color: var(--color-vt-red-tint);
 }
 
@@ -833,7 +842,9 @@ onMounted(() => {
   outline-offset: 2px;
 }
 
-.civic-button:disabled {
+.civic-button:disabled,
+.civic-link:disabled,
+.civic-detail-button:disabled {
   color: var(--color-vt-fg-3);
   cursor: not-allowed;
   opacity: 0.7;

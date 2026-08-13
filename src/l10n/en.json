@@ -1189,6 +1189,8 @@
       "save": "Save",
       "saving": "Saving…",
       "edit": "Edit",
+      "manageMaterials": "Manage materials",
+      "manageOpinions": "Manage opinions",
       "delete": "Delete",
       "backToIssues": "Back to issues",
       "switcher": {
