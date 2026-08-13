@@ -10,10 +10,7 @@
       "path": "../vtaiwan-design-system",
     },
     {
-      "path": "../vtaiwan-transcription-worker",
-    },
-    {
-      "path": "../vtaiwan-jaas-jwt-worker",
+      "path": "../civic-talk-hono",
     },
   ],
   "settings": {
