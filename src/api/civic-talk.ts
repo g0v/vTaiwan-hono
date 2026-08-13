@@ -3,6 +3,7 @@ import {
   deleteCivicTalkIssue,
   deleteCivicTalkMaterial,
   deleteCivicTalkOpinion,
+  listCivicTalkCreationEvents,
   listCivicTalkIssues,
   listCivicTalkMaterials,
   listCivicTalkOpinions,
@@ -17,6 +18,12 @@ const issueStatuses = new Set<CivicTalkIssueStatus>(['collecting', 'summarizing'
 function parsePositiveId(raw: string): number | null {
   const id = Number(raw)
   return Number.isSafeInteger(id) && id > 0 ? id : null
+}
+
+function parseEventPage(raw: string | undefined): number | null {
+  if (raw === undefined) return 1
+  const page = Number(raw)
+  return Number.isSafeInteger(page) && page > 0 && page <= 100_000 ? page : null
 }
 
 function parseText(value: unknown, maxLength: number): string | null {
@@ -58,6 +65,14 @@ export function registerCivicTalkAdminApi(app: App): void {
     const auth = await requireFreshAdmin(c.env, c.req.raw.headers)
     if (!('context' in auth)) return c.json(auth.body, auth.status)
     return c.json({ issues: await listCivicTalkIssues(c.env.DB_CIVIC_TALKS) })
+  })
+
+  app.get('/api/admin/civic-talks/events', async c => {
+    const auth = await requireFreshAdmin(c.env, c.req.raw.headers)
+    if (!('context' in auth)) return c.json(auth.body, auth.status)
+    const page = parseEventPage(c.req.query('page'))
+    if (!page) return c.json({ error: 'Invalid event page' }, 400)
+    return c.json(await listCivicTalkCreationEvents(c.env.DB_CIVIC_TALKS, page))
   })
 
   app.put('/api/admin/civic-talks/issues/:id', async c => {

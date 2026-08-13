@@ -20,4 +20,12 @@ describe('Civic Talk 管理端點的授權關卡', () => {
 
     expect(response.status).toBe(401)
   })
+
+  it('未登入不得讀取含投稿者與內容的建立事件', async () => {
+    const response = await app.request('https://vtaiwan.tw/api/admin/civic-talks/events?page=1', {
+      headers: { origin: 'https://vtaiwan.tw' },
+    })
+
+    expect(response.status).toBe(401)
+  })
 })

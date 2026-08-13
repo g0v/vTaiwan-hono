@@ -1191,6 +1191,49 @@
       "edit": "編輯",
       "delete": "刪除",
       "backToIssues": "返回議題管理",
+      "switcher": {
+        "ariaLabel": "Civic Talk 管理區段切換",
+        "agenda": "議程管理"
+      },
+      "events": {
+        "button": "事件記錄",
+        "title": "Civic Talk 事件記錄",
+        "hint": "依建立時間由新到舊顯示，每頁 {n} 筆。",
+        "loadFailed": "無法載入 Civic Talk 事件記錄，請稍後再試。",
+        "empty": "尚無建立記錄。",
+        "columns": {
+          "time": "時間",
+          "action": "動作"
+        },
+        "action": {
+          "on": "{actor} 在",
+          "created": "建立了"
+        },
+        "type": {
+          "material": "素材",
+          "briefing": "志願者工具",
+          "opinion": "民眾意見"
+        },
+        "pagination": {
+          "ariaLabel": "事件記錄分頁",
+          "previous": "上一頁",
+          "next": "下一頁",
+          "status": "第 {page} / {total} 頁"
+        },
+        "preview": {
+          "title": "{type}預覽",
+          "createdBy": "建立者：{author} · {time}",
+          "sourceName": "來源名稱",
+          "stance": "立場",
+          "verifiedCount": "驗證次數",
+          "version": "版本 {version}",
+          "consensus": "共識",
+          "disputes": "爭議",
+          "positions": "立場整理",
+          "narrative": "敘事",
+          "opinionPrompt": "意見提問"
+        }
+      },
       "selectIssue": "選擇議題",
       "selectPlaceholder": "請選擇議題…",
       "selectRequired": "請先選擇一個議題。",

@@ -1191,6 +1191,49 @@
       "edit": "Edit",
       "delete": "Delete",
       "backToIssues": "Back to issues",
+      "switcher": {
+        "ariaLabel": "Civic Talk management section switcher",
+        "agenda": "Agenda Management"
+      },
+      "events": {
+        "button": "Event Log",
+        "title": "Civic Talk Event Log",
+        "hint": "Newest creation events first, {n} per page.",
+        "loadFailed": "Unable to load Civic Talk event records. Please try again later.",
+        "empty": "No creation events yet.",
+        "columns": {
+          "time": "Time",
+          "action": "Action"
+        },
+        "action": {
+          "on": "{actor} created an item in",
+          "created": ":"
+        },
+        "type": {
+          "material": "a material",
+          "briefing": "a volunteer tool",
+          "opinion": "a public opinion"
+        },
+        "pagination": {
+          "ariaLabel": "Event log pagination",
+          "previous": "Previous",
+          "next": "Next",
+          "status": "Page {page} of {total}"
+        },
+        "preview": {
+          "title": "{type} preview",
+          "createdBy": "Created by {author} · {time}",
+          "sourceName": "Source name",
+          "stance": "Stance",
+          "verifiedCount": "Verification count",
+          "version": "Version {version}",
+          "consensus": "Consensus",
+          "disputes": "Disputes",
+          "positions": "Positions",
+          "narrative": "Narrative",
+          "opinionPrompt": "Opinion prompt"
+        }
+      },
       "selectIssue": "Select an issue",
       "selectPlaceholder": "Select an issue…",
       "selectRequired": "Select an issue first.",

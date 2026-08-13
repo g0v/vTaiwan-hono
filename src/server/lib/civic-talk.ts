@@ -34,14 +34,176 @@ export interface CivicTalkOpinion {
   author_name: string | null
 }
 
+export const CIVIC_TALK_EVENT_PAGE_SIZE = 15
+
+export type CivicTalkCreationEventType = 'material' | 'briefing' | 'opinion'
+
+export interface CivicTalkCreationEvent {
+  id: number
+  type: CivicTalkCreationEventType
+  issueId: number
+  issueTitle: string
+  authorName: string | null
+  createdAt: string
+  material: { sourceName: string | null; sourceUrl: string | null; stance: CivicTalkMaterial['stance']; content: string; verifiedCount: number } | null
+  briefing: { consensus: string | null; disputes: string | null; positions: string | null; narrative: string | null; opinionPrompt: string | null; version: number } | null
+  opinion: { summary: string } | null
+}
+
+export interface CivicTalkCreationEventPage {
+  events: CivicTalkCreationEvent[]
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+}
+
+interface CivicTalkCreationEventRow {
+  id: number
+  type: CivicTalkCreationEventType
+  issue_id: number
+  issue_title: string
+  author_name: string | null
+  created_at: string
+  source_name: string | null
+  source_url: string | null
+  stance: CivicTalkMaterial['stance'] | null
+  content: string | null
+  verified_count: number | null
+  consensus: string | null
+  disputes: string | null
+  positions: string | null
+  narrative: string | null
+  opinion_prompt: string | null
+  version: number | null
+  summary: string | null
+}
+
 const ISSUE_COLUMNS = 'id, title, description, status, polis_id, created_at, author_name'
 const ISSUE_COUNTS = `
   (SELECT COUNT(*) FROM ct_materials WHERE issue_id = ct_issues.id) AS material_count,
   (SELECT COUNT(*) FROM ct_opinions WHERE issue_id = ct_issues.id) AS opinion_count`
 
+const CREATION_EVENT_ROWS = `
+  SELECT
+    ct_materials.id,
+    'material' AS type,
+    ct_materials.issue_id,
+    ct_issues.title AS issue_title,
+    ct_materials.author_name,
+    ct_materials.created_at,
+    ct_materials.source_name,
+    ct_materials.source_url,
+    ct_materials.stance,
+    ct_materials.content,
+    ct_materials.verified_count,
+    NULL AS consensus,
+    NULL AS disputes,
+    NULL AS positions,
+    NULL AS narrative,
+    NULL AS opinion_prompt,
+    NULL AS version,
+    NULL AS summary
+  FROM ct_materials
+  INNER JOIN ct_issues ON ct_issues.id = ct_materials.issue_id
+  UNION ALL
+  SELECT
+    ct_briefings.id,
+    'briefing' AS type,
+    ct_briefings.issue_id,
+    ct_issues.title AS issue_title,
+    ct_briefings.author_name,
+    ct_briefings.created_at,
+    NULL AS source_name,
+    NULL AS source_url,
+    NULL AS stance,
+    NULL AS content,
+    NULL AS verified_count,
+    ct_briefings.consensus,
+    ct_briefings.disputes,
+    ct_briefings.positions,
+    ct_briefings.narrative,
+    ct_briefings.opinion_prompt,
+    ct_briefings.version,
+    NULL AS summary
+  FROM ct_briefings
+  INNER JOIN ct_issues ON ct_issues.id = ct_briefings.issue_id
+  UNION ALL
+  SELECT
+    ct_opinions.id,
+    'opinion' AS type,
+    ct_opinions.issue_id,
+    ct_issues.title AS issue_title,
+    ct_opinions.author_name,
+    ct_opinions.created_at,
+    NULL AS source_name,
+    NULL AS source_url,
+    NULL AS stance,
+    NULL AS content,
+    NULL AS verified_count,
+    NULL AS consensus,
+    NULL AS disputes,
+    NULL AS positions,
+    NULL AS narrative,
+    NULL AS opinion_prompt,
+    NULL AS version,
+    ct_opinions.summary
+  FROM ct_opinions
+  INNER JOIN ct_issues ON ct_issues.id = ct_opinions.issue_id`
+
 export async function listCivicTalkIssues(db: D1Database): Promise<CivicTalkIssue[]> {
   const { results } = await db.prepare(`SELECT ${ISSUE_COLUMNS}, ${ISSUE_COUNTS} FROM ct_issues ORDER BY created_at DESC`).all<CivicTalkIssue>()
   return results ?? []
+}
+
+function toCreationEvent(row: CivicTalkCreationEventRow): CivicTalkCreationEvent {
+  return {
+    id: row.id,
+    type: row.type,
+    issueId: row.issue_id,
+    issueTitle: row.issue_title,
+    authorName: row.author_name,
+    createdAt: row.created_at,
+    material:
+      row.type === 'material'
+        ? {
+            sourceName: row.source_name,
+            sourceUrl: row.source_url,
+            stance: row.stance ?? 'unknown',
+            content: row.content ?? '',
+            verifiedCount: row.verified_count ?? 0,
+          }
+        : null,
+    briefing:
+      row.type === 'briefing'
+        ? {
+            consensus: row.consensus,
+            disputes: row.disputes,
+            positions: row.positions,
+            narrative: row.narrative,
+            opinionPrompt: row.opinion_prompt,
+            version: row.version ?? 1,
+          }
+        : null,
+    opinion: row.type === 'opinion' ? { summary: row.summary ?? '' } : null,
+  }
+}
+
+export async function listCivicTalkCreationEvents(db: D1Database, page: number): Promise<CivicTalkCreationEventPage> {
+  const offset = (page - 1) * CIVIC_TALK_EVENT_PAGE_SIZE
+  const [countResult, eventResult] = await db.batch([
+    db.prepare(`SELECT COUNT(*) AS total FROM (${CREATION_EVENT_ROWS})`).bind(),
+    db.prepare(`SELECT * FROM (${CREATION_EVENT_ROWS}) ORDER BY created_at DESC, id DESC, type ASC LIMIT ? OFFSET ?`).bind(CIVIC_TALK_EVENT_PAGE_SIZE, offset),
+  ])
+  const total = Number((countResult.results?.[0] as { total?: number } | undefined)?.total ?? 0)
+
+  return {
+    events: (eventResult.results as CivicTalkCreationEventRow[] | undefined)?.map(toCreationEvent) ?? [],
+    page,
+    pageSize: CIVIC_TALK_EVENT_PAGE_SIZE,
+    total,
+    totalPages: Math.ceil(total / CIVIC_TALK_EVENT_PAGE_SIZE),
+  }
 }
 
 export async function updateCivicTalkIssue(db: D1Database, id: number, input: { title: string; description: string; status: CivicTalkIssueStatus; polisId: string | null }): Promise<boolean> {

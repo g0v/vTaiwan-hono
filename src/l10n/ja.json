@@ -1191,6 +1191,49 @@
       "edit": "編集",
       "delete": "削除",
       "backToIssues": "議題管理に戻る",
+      "switcher": {
+        "ariaLabel": "Civic Talk 管理セクションの切り替え",
+        "agenda": "議題管理"
+      },
+      "events": {
+        "button": "イベント履歴",
+        "title": "Civic Talk イベント履歴",
+        "hint": "作成日時の新しい順に、1 ページ {n} 件を表示します。",
+        "loadFailed": "Civic Talk のイベント履歴を読み込めませんでした。後でもう一度お試しください。",
+        "empty": "作成履歴はまだありません。",
+        "columns": {
+          "time": "日時",
+          "action": "操作"
+        },
+        "action": {
+          "on": "{actor} が作成した項目（",
+          "created": "）："
+        },
+        "type": {
+          "material": "資料",
+          "briefing": "ボランティアツール",
+          "opinion": "市民の意見"
+        },
+        "pagination": {
+          "ariaLabel": "イベント履歴のページ送り",
+          "previous": "前へ",
+          "next": "次へ",
+          "status": "{page} / {total} ページ"
+        },
+        "preview": {
+          "title": "{type}のプレビュー",
+          "createdBy": "作成者：{author} · {time}",
+          "sourceName": "情報源名",
+          "stance": "立場",
+          "verifiedCount": "検証回数",
+          "version": "バージョン {version}",
+          "consensus": "合意点",
+          "disputes": "争点",
+          "positions": "立場の整理",
+          "narrative": "ナラティブ",
+          "opinionPrompt": "意見の問い"
+        }
+      },
       "selectIssue": "議題を選択",
       "selectPlaceholder": "議題を選択…",
       "selectRequired": "先に議題を選択してください。",

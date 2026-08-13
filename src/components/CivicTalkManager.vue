@@ -4,7 +4,8 @@ import { useI18n } from 'vue-i18n'
 import { responseRequiresStepUp } from '../client/auth-session'
 
 type IssueStatus = 'collecting' | 'summarizing' | 'published'
-type ManagerSection = 'issues' | 'materials' | 'opinions'
+type ManagerSection = 'issues' | 'materials' | 'opinions' | 'events'
+type CreationEventType = 'material' | 'briefing' | 'opinion'
 
 interface Issue {
   id: number
@@ -36,6 +37,18 @@ interface Opinion {
   author_name: string | null
 }
 
+interface CreationEvent {
+  id: number
+  type: CreationEventType
+  issueId: number
+  issueTitle: string
+  authorName: string | null
+  createdAt: string
+  material: { sourceName: string | null; sourceUrl: string | null; stance: Material['stance']; content: string; verifiedCount: number } | null
+  briefing: { consensus: string | null; disputes: string | null; positions: string | null; narrative: string | null; opinionPrompt: string | null; version: number } | null
+  opinion: { summary: string } | null
+}
+
 const emit = defineEmits<{ 'step-up-required': [] }>()
 const { t } = useI18n()
 
@@ -43,11 +56,16 @@ const activeSection = ref<ManagerSection>('issues')
 const issues = ref<Issue[]>([])
 const materials = ref<Material[]>([])
 const opinions = ref<Opinion[]>([])
+const creationEvents = ref<CreationEvent[]>([])
 const materialIssueId = ref<number | null>(null)
 const opinionIssueId = ref<number | null>(null)
+const eventPage = ref(1)
+const eventTotalPages = ref(0)
 const issuesLoading = ref(false)
 const detailsLoading = ref(false)
+const eventsLoading = ref(false)
 const error = ref<string | null>(null)
+const previewEvent = ref<CreationEvent | null>(null)
 const formOpen = ref(false)
 const editingIssueId = ref<number | null>(null)
 const submitting = ref(false)
@@ -62,6 +80,7 @@ const materialCount = computed(() => issues.value.reduce((total, issue) => total
 const opinionCount = computed(() => issues.value.reduce((total, issue) => total + issue.opinion_count, 0))
 const selectedMaterialIssue = computed(() => issues.value.find(issue => issue.id === materialIssueId.value) ?? null)
 const selectedOpinionIssue = computed(() => issues.value.find(issue => issue.id === opinionIssueId.value) ?? null)
+const activeLoading = computed(() => (activeSection.value === 'issues' ? issuesLoading.value : activeSection.value === 'events' ? eventsLoading.value : detailsLoading.value))
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T | null> {
   const response = await fetch(path, {
@@ -126,6 +145,25 @@ async function loadOpinions() {
     opinions.value = []
   } finally {
     detailsLoading.value = false
+  }
+}
+
+async function loadCreationEvents() {
+  eventsLoading.value = true
+  error.value = null
+  try {
+    const data = await requestJson<{ events: CreationEvent[]; page: number; totalPages: number }>(`/api/admin/civic-talks/events?page=${eventPage.value}`)
+    if (!data) return
+    creationEvents.value = data.events
+    eventPage.value = data.page
+    eventTotalPages.value = data.totalPages
+  } catch (loadError) {
+    console.error('Failed to load civic talk creation events:', loadError)
+    error.value = t('admin.civicTalk.events.loadFailed')
+    creationEvents.value = []
+    eventTotalPages.value = 0
+  } finally {
+    eventsLoading.value = false
   }
 }
 
@@ -223,6 +261,13 @@ function formatDate(value: string): string {
   return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 }
 
+function formatDateTime(value: string): string {
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return value
+  const pad = (number: number) => String(number).padStart(2, '0')
+  return `${formatDate(value)} ${pad(date.getHours())}:${pad(date.getMinutes())}`
+}
+
 function showIssueMaterials(issueId: number) {
   activeSection.value = 'materials'
   materialIssueId.value = issueId
@@ -237,6 +282,42 @@ function returnToIssues() {
   activeSection.value = 'issues'
 }
 
+function showCreationEvents() {
+  eventPage.value = 1
+  if (activeSection.value === 'events') {
+    void loadCreationEvents()
+    return
+  }
+  activeSection.value = 'events'
+}
+
+function refreshActiveSection() {
+  if (activeSection.value === 'issues') return void loadIssues()
+  if (activeSection.value === 'materials') return void loadMaterials()
+  if (activeSection.value === 'opinions') return void loadOpinions()
+  return void loadCreationEvents()
+}
+
+function previewTitle(event: CreationEvent): string {
+  return t(`admin.civicTalk.events.type.${event.type}`)
+}
+
+function previewEventRecord(event: CreationEvent) {
+  previewEvent.value = event
+}
+
+function closePreview() {
+  previewEvent.value = null
+}
+
+function previousEventPage() {
+  if (eventPage.value > 1) eventPage.value -= 1
+}
+
+function nextEventPage() {
+  if (eventPage.value < eventTotalPages.value) eventPage.value += 1
+}
+
 watch(materialIssueId, () => {
   if (activeSection.value === 'materials') void loadMaterials()
 })
@@ -245,9 +326,14 @@ watch(opinionIssueId, () => {
   if (activeSection.value === 'opinions') void loadOpinions()
 })
 
+watch(eventPage, () => {
+  if (activeSection.value === 'events') void loadCreationEvents()
+})
+
 watch(activeSection, section => {
   if (section === 'materials') void loadMaterials()
   if (section === 'opinions') void loadOpinions()
+  if (section === 'events') void loadCreationEvents()
 })
 
 onMounted(() => {
@@ -262,7 +348,17 @@ onMounted(() => {
         <h2 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.civicTalk.title') }}</h2>
         <p class="mt-vt-1 text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.hint') }}</p>
       </div>
-      <button type="button" class="civic-button" :disabled="issuesLoading" @click="loadIssues">{{ t('admin.civicTalk.refresh') }}</button>
+      <div class="civic-header__actions">
+        <div class="civic-section-switcher" role="group" :aria-label="t('admin.civicTalk.switcher.ariaLabel')">
+          <button type="button" class="civic-button civic-section-switcher__button" :class="{ 'civic-section-switcher__button--active': activeSection !== 'events' }" @click="returnToIssues">
+            {{ t('admin.civicTalk.switcher.agenda') }}
+          </button>
+          <button type="button" class="civic-button civic-section-switcher__button" :class="{ 'civic-section-switcher__button--active': activeSection === 'events' }" @click="showCreationEvents">
+            {{ t('admin.civicTalk.events.button') }}
+          </button>
+        </div>
+        <button type="button" class="civic-button" :disabled="activeLoading" @click="refreshActiveSection">{{ t('admin.civicTalk.refresh') }}</button>
+      </div>
     </header>
 
     <div class="civic-stats" :aria-label="t('admin.civicTalk.stats.ariaLabel')">
@@ -390,6 +486,45 @@ onMounted(() => {
       </div>
     </section>
 
+    <section v-show="activeSection === 'events'" class="civic-card">
+      <div class="civic-section-heading">
+        <div>
+          <h3 class="text-vt-lg font-semibold text-vt-fg-1">{{ t('admin.civicTalk.events.title') }}</h3>
+          <p class="mt-vt-1 text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.events.hint', { n: 15 }) }}</p>
+        </div>
+      </div>
+
+      <p v-if="eventsLoading" class="civic-empty">{{ t('admin.civicTalk.loading') }}</p>
+      <p v-else-if="creationEvents.length === 0" class="civic-empty">{{ t('admin.civicTalk.events.empty') }}</p>
+      <div v-else class="civic-table-wrap">
+        <table class="civic-table min-w-3xl">
+          <thead>
+            <tr>
+              <th>{{ t('admin.civicTalk.events.columns.time') }}</th>
+              <th>{{ t('admin.civicTalk.events.columns.action') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="event in creationEvents" :key="`${event.type}-${event.id}`">
+              <td :data-label="t('admin.civicTalk.events.columns.time')">{{ formatDateTime(event.createdAt) }}</td>
+              <td :data-label="t('admin.civicTalk.events.columns.action')" class="civic-event-action">
+                <span>{{ t('admin.civicTalk.events.action.on', { actor: event.authorName || t('admin.civicTalk.unknownAuthor') }) }}</span>
+                <a :href="`https://civic.vtaiwan.tw/issues/${event.issueId}`" target="_blank" rel="noopener noreferrer" class="civic-issue-link">{{ event.issueTitle }}</a>
+                <span>{{ t('admin.civicTalk.events.action.created') }}</span>
+                <button type="button" class="civic-event-item" @click="previewEventRecord(event)">{{ previewTitle(event) }}</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <nav v-if="eventTotalPages > 1" class="civic-pagination" :aria-label="t('admin.civicTalk.events.pagination.ariaLabel')">
+        <button type="button" class="civic-button" :disabled="eventPage === 1 || eventsLoading" @click="previousEventPage">{{ t('admin.civicTalk.events.pagination.previous') }}</button>
+        <span class="text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.events.pagination.status', { page: eventPage, total: eventTotalPages }) }}</span>
+        <button type="button" class="civic-button" :disabled="eventPage === eventTotalPages || eventsLoading" @click="nextEventPage">{{ t('admin.civicTalk.events.pagination.next') }}</button>
+      </nav>
+    </section>
+
     <div v-if="formOpen" class="civic-modal-backdrop" role="presentation" @click.self="closeForm">
       <form class="civic-modal max-w-xl" @submit.prevent="saveIssue">
         <div class="civic-section-heading">
@@ -422,6 +557,71 @@ onMounted(() => {
         </div>
       </form>
     </div>
+
+    <div v-if="previewEvent" class="civic-modal-backdrop" role="presentation" @click.self="closePreview">
+      <section class="civic-modal civic-preview-modal max-w-xl" role="dialog" aria-modal="true" :aria-label="t('admin.civicTalk.events.preview.title', { type: previewTitle(previewEvent) })">
+        <div class="civic-section-heading">
+          <div>
+            <h3 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.civicTalk.events.preview.title', { type: previewTitle(previewEvent) }) }}</h3>
+            <p class="mt-vt-1 text-vt-sm text-vt-fg-3">
+              {{ t('admin.civicTalk.events.preview.createdBy', { author: previewEvent.authorName || t('admin.civicTalk.unknownAuthor'), time: formatDateTime(previewEvent.createdAt) }) }}
+            </p>
+          </div>
+          <button type="button" class="civic-modal-close" :aria-label="t('common.cancel')" @click="closePreview">×</button>
+        </div>
+
+        <div v-if="previewEvent.material" class="civic-preview-content">
+          <dl>
+            <div>
+              <dt>{{ t('admin.civicTalk.events.preview.sourceName') }}</dt>
+              <dd>{{ previewEvent.material.sourceName || t('admin.civicTalk.unknownSource') }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('admin.civicTalk.events.preview.stance') }}</dt>
+              <dd>{{ t(`admin.civicTalk.stance.${previewEvent.material.stance}`) }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('admin.civicTalk.events.preview.verifiedCount') }}</dt>
+              <dd>{{ previewEvent.material.verifiedCount }}</dd>
+            </div>
+          </dl>
+          <a v-if="previewEvent.material.sourceUrl" class="civic-source-link" :href="previewEvent.material.sourceUrl" target="_blank" rel="noopener noreferrer">{{
+            previewEvent.material.sourceUrl
+          }}</a>
+          <p class="civic-entry__content">{{ previewEvent.material.content }}</p>
+        </div>
+
+        <div v-else-if="previewEvent.briefing" class="civic-preview-content">
+          <p class="text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.events.preview.version', { version: previewEvent.briefing.version }) }}</p>
+          <dl>
+            <div v-if="previewEvent.briefing.consensus">
+              <dt>{{ t('admin.civicTalk.events.preview.consensus') }}</dt>
+              <dd>{{ previewEvent.briefing.consensus }}</dd>
+            </div>
+            <div v-if="previewEvent.briefing.disputes">
+              <dt>{{ t('admin.civicTalk.events.preview.disputes') }}</dt>
+              <dd>{{ previewEvent.briefing.disputes }}</dd>
+            </div>
+            <div v-if="previewEvent.briefing.positions">
+              <dt>{{ t('admin.civicTalk.events.preview.positions') }}</dt>
+              <dd>{{ previewEvent.briefing.positions }}</dd>
+            </div>
+            <div v-if="previewEvent.briefing.narrative">
+              <dt>{{ t('admin.civicTalk.events.preview.narrative') }}</dt>
+              <dd>{{ previewEvent.briefing.narrative }}</dd>
+            </div>
+            <div v-if="previewEvent.briefing.opinionPrompt">
+              <dt>{{ t('admin.civicTalk.events.preview.opinionPrompt') }}</dt>
+              <dd>{{ previewEvent.briefing.opinionPrompt }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div v-else-if="previewEvent.opinion" class="civic-preview-content">
+          <p class="civic-entry__content">{{ previewEvent.opinion.summary }}</p>
+        </div>
+      </section>
+    </div>
   </section>
 </template>
 
@@ -440,6 +640,15 @@ onMounted(() => {
 .civic-header,
 .civic-section-heading {
   align-items: flex-start;
+}
+
+.civic-header__actions,
+.civic-pagination,
+.civic-event-action,
+.civic-section-switcher {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-vt-3);
 }
 
 .civic-stats {
@@ -565,6 +774,28 @@ onMounted(() => {
   border-color: var(--color-vt-democratic-red);
 }
 
+.civic-section-switcher {
+  gap: normal;
+  border: 1px solid var(--color-vt-border);
+  border-radius: var(--radius-vt-md);
+  overflow: hidden;
+}
+
+.civic-section-switcher__button {
+  border: 0;
+  border-radius: 0;
+}
+
+.civic-section-switcher__button + .civic-section-switcher__button {
+  border-left: 1px solid var(--color-vt-border);
+}
+
+.civic-section-switcher__button--active,
+.civic-section-switcher__button--active:hover:not(:disabled) {
+  color: var(--color-vt-fg-inverse);
+  background-color: var(--color-vt-democratic-red);
+}
+
 .civic-detail-button {
   min-width: var(--spacing-vt-8);
   padding: var(--spacing-vt-1) var(--spacing-vt-2);
@@ -591,6 +822,28 @@ onMounted(() => {
 .civic-link:hover {
   text-decoration: underline;
   text-underline-offset: var(--spacing-vt-1);
+}
+
+.civic-event-action {
+  flex-wrap: wrap;
+  white-space: normal;
+}
+
+.civic-event-item {
+  color: var(--color-vt-democratic-red);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.civic-event-item:hover {
+  color: var(--color-vt-democratic-red);
+  text-decoration: underline;
+  text-underline-offset: var(--spacing-vt-1);
+}
+
+.civic-pagination {
+  justify-content: flex-end;
+  margin-top: var(--spacing-vt-5);
 }
 
 .civic-issue-link {
@@ -707,6 +960,42 @@ onMounted(() => {
   box-shadow: var(--shadow-vt-lg);
 }
 
+.civic-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--spacing-vt-8);
+  height: var(--spacing-vt-8);
+  border-radius: var(--radius-vt-full);
+  color: var(--color-vt-fg-2);
+  font-size: var(--text-vt-xl);
+}
+
+.civic-modal-close:hover {
+  background-color: var(--color-vt-bg-2);
+}
+
+.civic-preview-content {
+  margin-top: var(--spacing-vt-5);
+}
+
+.civic-preview-content dl {
+  display: grid;
+  gap: var(--spacing-vt-4);
+}
+
+.civic-preview-content dt {
+  color: var(--color-vt-fg-3);
+  font-size: var(--text-vt-sm);
+}
+
+.civic-preview-content dd {
+  margin-top: var(--spacing-vt-1);
+  color: var(--color-vt-fg-1);
+  font-size: var(--text-vt-sm);
+  white-space: pre-wrap;
+}
+
 .civic-check {
   display: flex;
   align-items: center;
@@ -727,6 +1016,23 @@ onMounted(() => {
   .civic-entry__heading {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .civic-header__actions,
+  .civic-pagination {
+    width: 100%;
+  }
+
+  .civic-section-switcher {
+    flex: 1;
+  }
+
+  .civic-section-switcher__button {
+    flex: 1;
+  }
+
+  .civic-pagination {
+    justify-content: space-between;
   }
 
   .civic-stats {
