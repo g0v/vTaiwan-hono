@@ -1,6 +1,5 @@
 import { isActiveAdminRole, tryGetAuthContext, type AuthContext } from '../server/lib/authorization'
 import {
-  createCivicTalkIssue,
   deleteCivicTalkIssue,
   deleteCivicTalkMaterial,
   deleteCivicTalkOpinion,
@@ -59,23 +58,6 @@ export function registerCivicTalkAdminApi(app: App): void {
     const auth = await requireFreshAdmin(c.env, c.req.raw.headers)
     if (!('context' in auth)) return c.json(auth.body, auth.status)
     return c.json({ issues: await listCivicTalkIssues(c.env.DB_CIVIC_TALKS) })
-  })
-
-  app.post('/api/admin/civic-talks/issues', async c => {
-    const auth = await requireFreshAdmin(c.env, c.req.raw.headers)
-    if (!('context' in auth)) return c.json(auth.body, auth.status)
-    const input = readIssueInput(await readJson(c.req.raw))
-    if (!input) return c.json({ error: 'Invalid issue payload' }, 400)
-
-    const id = await createCivicTalkIssue(c.env.DB_CIVIC_TALKS, {
-      title: input.title,
-      description: input.description,
-      status: input.status,
-      polisId: input.polisId,
-      authorId: auth.context.user.id,
-      authorName: auth.context.user.name || auth.context.user.email,
-    })
-    return c.json({ id }, 201)
   })
 
   app.put('/api/admin/civic-talks/issues/:id', async c => {

@@ -44,17 +44,6 @@ export async function listCivicTalkIssues(db: D1Database): Promise<CivicTalkIssu
   return results ?? []
 }
 
-export async function createCivicTalkIssue(
-  db: D1Database,
-  input: { title: string; description: string; status: CivicTalkIssueStatus; polisId: string | null; authorId: string; authorName: string }
-): Promise<number> {
-  const { meta } = await db
-    .prepare('INSERT INTO ct_issues (title, description, status, polis_id, author_id, author_name) VALUES (?, ?, ?, ?, ?, ?)')
-    .bind(input.title, input.description, input.status, input.polisId, input.authorId, input.authorName)
-    .run()
-  return meta.last_row_id
-}
-
 export async function updateCivicTalkIssue(db: D1Database, id: number, input: { title: string; description: string; status: CivicTalkIssueStatus; polisId: string | null }): Promise<boolean> {
   const exists = await db.prepare('SELECT id FROM ct_issues WHERE id = ?').bind(id).first<{ id: number }>()
   if (!exists) return false

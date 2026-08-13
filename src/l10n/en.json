@@ -1230,10 +1230,8 @@
       },
       "issue": {
         "title": "Issue Management",
-        "hint": "Create, edit, or delete Civic Talk issues. Deleting an issue also removes its materials, opinions, and briefings.",
-        "create": "New issue",
+        "hint": "Edit or delete Civic Talk issues. Deleting an issue also removes its materials, opinions, and briefings.",
         "empty": "No issues yet.",
-        "createTitle": "New Civic Talk Issue",
         "editTitle": "Edit Civic Talk Issue",
         "titleRequired": "Enter an issue title.",
         "confirmDelete": "Delete \"{title}\"? Its materials, opinions, and briefings will also be removed.",

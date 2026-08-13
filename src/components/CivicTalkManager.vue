@@ -60,7 +60,6 @@ const formPolisEnabled = ref(false)
 const issueCount = computed(() => issues.value.length)
 const materialCount = computed(() => issues.value.reduce((total, issue) => total + issue.material_count, 0))
 const opinionCount = computed(() => issues.value.reduce((total, issue) => total + issue.opinion_count, 0))
-const formTitleKey = computed(() => (editingIssueId.value === null ? 'admin.civicTalk.issue.createTitle' : 'admin.civicTalk.issue.editTitle'))
 const selectedMaterialIssue = computed(() => issues.value.find(issue => issue.id === materialIssueId.value) ?? null)
 const selectedOpinionIssue = computed(() => issues.value.find(issue => issue.id === opinionIssueId.value) ?? null)
 
@@ -130,16 +129,6 @@ async function loadOpinions() {
   }
 }
 
-function openCreateIssue() {
-  editingIssueId.value = null
-  formTitle.value = ''
-  formDescription.value = ''
-  formStatus.value = 'collecting'
-  formPolisEnabled.value = false
-  formError.value = null
-  formOpen.value = true
-}
-
 function openEditIssue(issue: Issue) {
   editingIssueId.value = issue.id
   formTitle.value = issue.title
@@ -152,6 +141,7 @@ function openEditIssue(issue: Issue) {
 
 function closeForm() {
   formOpen.value = false
+  editingIssueId.value = null
   formError.value = null
 }
 
@@ -169,12 +159,13 @@ async function saveIssue() {
     formError.value = t('admin.civicTalk.issue.titleRequired')
     return
   }
+  const issueId = editingIssueId.value
+  if (issueId === null) return
   submitting.value = true
   formError.value = null
   try {
-    const id = editingIssueId.value
-    const data = await requestJson<{ id?: number; ok?: boolean }>(id === null ? '/api/admin/civic-talks/issues' : `/api/admin/civic-talks/issues/${id}`, {
-      method: id === null ? 'POST' : 'PUT',
+    const data = await requestJson<{ ok: boolean }>(`/api/admin/civic-talks/issues/${issueId}`, {
+      method: 'PUT',
       body: JSON.stringify(issuePayload()),
     })
     if (!data) return
@@ -297,7 +288,6 @@ onMounted(() => {
           <h3 class="text-vt-lg font-semibold text-vt-fg-1">{{ t('admin.civicTalk.issue.title') }}</h3>
           <p class="mt-vt-1 text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.issue.hint') }}</p>
         </div>
-        <button type="button" class="civic-button civic-button--outline-primary" @click="openCreateIssue">{{ t('admin.civicTalk.issue.create') }}</button>
       </div>
 
       <p v-if="issuesLoading" class="civic-empty">{{ t('admin.civicTalk.loading') }}</p>
@@ -403,7 +393,7 @@ onMounted(() => {
     <div v-if="formOpen" class="civic-modal-backdrop" role="presentation" @click.self="closeForm">
       <form class="civic-modal max-w-xl" @submit.prevent="saveIssue">
         <div class="civic-section-heading">
-          <h3 class="text-vt-xl font-semibold text-vt-fg-1">{{ t(formTitleKey) }}</h3>
+          <h3 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.civicTalk.issue.editTitle') }}</h3>
         </div>
         <label class="civic-field">
           <span>{{ t('admin.civicTalk.issue.fields.title') }}</span>

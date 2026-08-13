@@ -1230,10 +1230,8 @@
       },
       "issue": {
         "title": "議題管理",
-        "hint": "Civic Talk の議題を作成、編集、削除できます。議題を削除すると、関連する資料、意見、要約も削除されます。",
-        "create": "議題を追加",
+        "hint": "Civic Talk の議題を編集、削除できます。議題を削除すると、関連する資料、意見、要約も削除されます。",
         "empty": "議題はまだありません。",
-        "createTitle": "Civic Talk 議題を追加",
         "editTitle": "Civic Talk 議題を編集",
         "titleRequired": "議題のタイトルを入力してください。",
         "confirmDelete": "「{title}」を削除しますか？関連する資料、意見、要約も削除されます。",
