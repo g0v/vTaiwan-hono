@@ -1,4 +1,4 @@
-import { isActiveAdminRole, tryGetAuthContext, type AuthContext } from '../server/lib/authorization'
+import { isActiveAdminRole, isSuperAdminRole, tryGetAuthContext, type AuthContext } from '../server/lib/authorization'
 import {
   confirmFlagCivicTalkContent,
   deleteCivicTalkIssue,
@@ -40,6 +40,14 @@ async function requireFreshAdmin(env: AppBindings, headers: Headers): Promise<{ 
   const context = await tryGetAuthContext(env, headers)
   if (!context) return { status: 401, body: { error: 'Unauthorized' } }
   if (!isActiveAdminRole(context.role, context.banned)) return { status: 403, body: { error: 'Forbidden' } }
+  if (!context.fresh) return { status: 403, body: sessionNotFreshBody() }
+  return { context }
+}
+
+async function requireFreshSuperAdmin(env: AppBindings, headers: Headers): Promise<{ context: AuthContext } | { status: 401 | 403; body: object }> {
+  const context = await tryGetAuthContext(env, headers)
+  if (!context) return { status: 401, body: { error: 'Unauthorized' } }
+  if (!isSuperAdminRole(context.role)) return { status: 403, body: { error: 'Forbidden' } }
   if (!context.fresh) return { status: 403, body: sessionNotFreshBody() }
   return { context }
 }
@@ -135,13 +143,13 @@ export function registerCivicTalkAdminApi(app: App): void {
   })
 
   app.get('/api/admin/civic-talks/abuse-reports', async c => {
-    const auth = await requireFreshAdmin(c.env, c.req.raw.headers)
+    const auth = await requireFreshSuperAdmin(c.env, c.req.raw.headers)
     if (!('context' in auth)) return c.json(auth.body, auth.status)
     return c.json({ reports: await listCivicTalkAbuseReports(c.env.DB_CIVIC_TALKS) })
   })
 
   app.patch('/api/admin/civic-talks/abuse-reports/:id/resolve', async c => {
-    const auth = await requireFreshAdmin(c.env, c.req.raw.headers)
+    const auth = await requireFreshSuperAdmin(c.env, c.req.raw.headers)
     if (!('context' in auth)) return c.json(auth.body, auth.status)
 
     const id = parsePositiveId(c.req.param('id'))
