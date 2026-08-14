@@ -431,12 +431,12 @@ function closeReportPreview() {
   previewReport.value = null
 }
 
-function reportTargetUrl(report: AbuseReport): string | null {
-  if (!report.target_issue_id) return null
+function reportTargetUrl(report: AbuseReport) {
+  if (!report.target_issue_id) return ''
   if (report.material_id) return `https://civic.vtaiwan.tw/issues/${report.target_issue_id}/source/${report.material_id}`
   if (report.opinion_id) return `https://civic.vtaiwan.tw/issues/${report.target_issue_id}/comment/${report.opinion_id}`
   if (report.briefing_id) return `https://civic.vtaiwan.tw/issues/${report.target_issue_id}`
-  return null
+  return ''
 }
 
 function previousEventPage() {
