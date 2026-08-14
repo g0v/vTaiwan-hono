@@ -73,7 +73,7 @@ const props = defineProps<{ authSession?: AuthSession | null }>()
 const emit = defineEmits<{ 'step-up-required': [] }>()
 const { t } = useI18n()
 
-const activeSection = ref<ManagerSection>('issues')
+const activeSection = ref<ManagerSection>('reports')
 const issues = ref<Issue[]>([])
 const materials = ref<Material[]>([])
 const opinions = ref<Opinion[]>([])
@@ -414,6 +414,7 @@ watch(activeSection, section => {
 })
 
 onMounted(() => {
+  void loadAbuseReports()
   void loadIssues()
 })
 </script>
@@ -427,6 +428,9 @@ onMounted(() => {
       </div>
       <div class="civic-header__actions">
         <nav class="civic-tabs" role="tablist" :aria-label="t('admin.civicTalk.tabs.ariaLabel')">
+          <button type="button" role="tab" class="civic-tab" :class="{ 'civic-tab--active': activeSection === 'reports' }" :aria-selected="activeSection === 'reports'" @click="showReports">
+            {{ t('admin.civicTalk.tabs.reports') }}
+          </button>
           <button
             type="button"
             role="tab"
@@ -439,9 +443,6 @@ onMounted(() => {
           </button>
           <button type="button" role="tab" class="civic-tab" :class="{ 'civic-tab--active': activeSection === 'events' }" :aria-selected="activeSection === 'events'" @click="showCreationEvents">
             {{ t('admin.civicTalk.tabs.events') }}
-          </button>
-          <button type="button" role="tab" class="civic-tab" :class="{ 'civic-tab--active': activeSection === 'reports' }" :aria-selected="activeSection === 'reports'" @click="showReports">
-            {{ t('admin.civicTalk.tabs.reports') }}
           </button>
         </nav>
         <button
