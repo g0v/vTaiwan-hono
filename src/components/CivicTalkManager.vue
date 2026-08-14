@@ -99,15 +99,12 @@ const formDescription = ref('')
 const formStatus = ref<IssueStatus>('collecting')
 const formPolisEnabled = ref(false)
 
-const issueCount = computed(() => issues.value.length)
 const filteredIssues = computed(() => {
   const searchQuery = issueSearchQuery.value.trim().toLocaleLowerCase()
   if (!searchQuery) return issues.value
 
   return issues.value.filter(issue => issue.title.toLocaleLowerCase().includes(searchQuery))
 })
-const materialCount = computed(() => issues.value.reduce((total, issue) => total + issue.material_count, 0))
-const opinionCount = computed(() => issues.value.reduce((total, issue) => total + issue.opinion_count, 0))
 const selectedMaterialIssue = computed(() => issues.value.find(issue => issue.id === materialIssueId.value) ?? null)
 const selectedOpinionIssue = computed(() => issues.value.find(issue => issue.id === opinionIssueId.value) ?? null)
 const activeLoading = computed(() => {
@@ -434,24 +431,6 @@ onMounted(() => {
         <p class="mt-vt-1 text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.hint') }}</p>
       </div>
       <div class="civic-header__actions">
-        <nav class="civic-tabs" role="tablist" :aria-label="t('admin.civicTalk.tabs.ariaLabel')">
-          <button type="button" role="tab" class="civic-tab" :class="{ 'civic-tab--active': activeSection === 'reports' }" :aria-selected="activeSection === 'reports'" @click="showReports">
-            {{ t('admin.civicTalk.tabs.reports') }}
-          </button>
-          <button
-            type="button"
-            role="tab"
-            class="civic-tab"
-            :class="{ 'civic-tab--active': activeSection === 'issues' || activeSection === 'materials' || activeSection === 'opinions' }"
-            :aria-selected="activeSection === 'issues' || activeSection === 'materials' || activeSection === 'opinions'"
-            @click="returnToIssues"
-          >
-            {{ t('admin.civicTalk.tabs.agenda') }}
-          </button>
-          <button type="button" role="tab" class="civic-tab" :class="{ 'civic-tab--active': activeSection === 'events' }" :aria-selected="activeSection === 'events'" @click="showCreationEvents">
-            {{ t('admin.civicTalk.tabs.events') }}
-          </button>
-        </nav>
         <button
           type="button"
           class="civic-button civic-icon-button"
@@ -465,22 +444,26 @@ onMounted(() => {
       </div>
     </header>
 
-    <div class="civic-stats" :aria-label="t('admin.civicTalk.stats.ariaLabel')">
-      <div class="civic-stat">
-        <span class="civic-stat__value">{{ issueCount }}</span>
-        <span class="civic-stat__label">{{ t('admin.civicTalk.stats.issues') }}</span>
-      </div>
-      <div class="civic-stat">
-        <span class="civic-stat__value">{{ materialCount }}</span>
-        <span class="civic-stat__label">{{ t('admin.civicTalk.stats.materials') }}</span>
-      </div>
-      <div class="civic-stat">
-        <span class="civic-stat__value">{{ opinionCount }}</span>
-        <span class="civic-stat__label">{{ t('admin.civicTalk.stats.opinions') }}</span>
-      </div>
-    </div>
-
     <p v-if="error" class="civic-notice civic-notice--error" role="alert">{{ error }}</p>
+
+    <nav class="civic-tabs" role="tablist" :aria-label="t('admin.civicTalk.tabs.ariaLabel')">
+      <button type="button" role="tab" class="civic-tab" :class="{ 'civic-tab--active': activeSection === 'reports' }" :aria-selected="activeSection === 'reports'" @click="showReports">
+        {{ t('admin.civicTalk.tabs.reports') }}
+      </button>
+      <button
+        type="button"
+        role="tab"
+        class="civic-tab"
+        :class="{ 'civic-tab--active': activeSection === 'issues' || activeSection === 'materials' || activeSection === 'opinions' }"
+        :aria-selected="activeSection === 'issues' || activeSection === 'materials' || activeSection === 'opinions'"
+        @click="returnToIssues"
+      >
+        {{ t('admin.civicTalk.tabs.agenda') }}
+      </button>
+      <button type="button" role="tab" class="civic-tab" :class="{ 'civic-tab--active': activeSection === 'events' }" :aria-selected="activeSection === 'events'" @click="showCreationEvents">
+        {{ t('admin.civicTalk.tabs.events') }}
+      </button>
+    </nav>
 
     <section v-show="activeSection === 'issues'" class="civic-card">
       <div class="civic-section-heading">
@@ -871,33 +854,12 @@ onMounted(() => {
   gap: var(--spacing-vt-3);
 }
 
-.civic-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--spacing-vt-3);
-}
-
-.civic-stat,
 .civic-card,
 .civic-entry {
   border: 1px solid var(--color-vt-border);
   background-color: var(--color-vt-bg-1);
 }
 
-.civic-stat {
-  display: grid;
-  gap: var(--spacing-vt-1);
-  padding: var(--spacing-vt-4);
-  border-radius: var(--radius-vt-md);
-}
-
-.civic-stat__value {
-  color: var(--color-vt-democratic-red);
-  font-size: var(--text-vt-2xl);
-  font-weight: 700;
-}
-
-.civic-stat__label,
 .civic-empty {
   color: var(--color-vt-fg-3);
   font-size: var(--text-vt-sm);
@@ -1294,19 +1256,6 @@ onMounted(() => {
 
   .civic-pagination {
     justify-content: space-between;
-  }
-
-  .civic-stats {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .civic-stat {
-    padding: var(--spacing-vt-3);
-    text-align: center;
-  }
-
-  .civic-stat__value {
-    font-size: var(--text-vt-xl);
   }
 
   .civic-table-wrap {
