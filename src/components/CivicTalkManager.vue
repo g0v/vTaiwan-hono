@@ -55,6 +55,7 @@ const { t } = useI18n()
 
 const activeSection = ref<ManagerSection>('issues')
 const issues = ref<Issue[]>([])
+const issueSearchQuery = ref('')
 const materials = ref<Material[]>([])
 const opinions = ref<Opinion[]>([])
 const creationEvents = ref<CreationEvent[]>([])
@@ -77,6 +78,12 @@ const formStatus = ref<IssueStatus>('collecting')
 const formPolisEnabled = ref(false)
 
 const issueCount = computed(() => issues.value.length)
+const filteredIssues = computed(() => {
+  const searchQuery = issueSearchQuery.value.trim().toLocaleLowerCase()
+  if (!searchQuery) return issues.value
+
+  return issues.value.filter(issue => issue.title.toLocaleLowerCase().includes(searchQuery))
+})
 const materialCount = computed(() => issues.value.reduce((total, issue) => total + issue.material_count, 0))
 const opinionCount = computed(() => issues.value.reduce((total, issue) => total + issue.opinion_count, 0))
 const selectedMaterialIssue = computed(() => issues.value.find(issue => issue.id === materialIssueId.value) ?? null)
@@ -395,9 +402,14 @@ onMounted(() => {
           <p class="mt-vt-1 text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.issue.hint') }}</p>
         </div>
       </div>
+      <label class="civic-search">
+        <span>{{ t('admin.civicTalk.issue.search.label') }}</span>
+        <input v-model="issueSearchQuery" type="search" :placeholder="t('admin.civicTalk.issue.search.placeholder')" autocomplete="off" />
+      </label>
 
       <p v-if="issuesLoading" class="civic-empty">{{ t('admin.civicTalk.loading') }}</p>
       <p v-else-if="issues.length === 0" class="civic-empty">{{ t('admin.civicTalk.issue.empty') }}</p>
+      <p v-else-if="filteredIssues.length === 0" class="civic-empty">{{ t('admin.civicTalk.issue.search.empty') }}</p>
       <div v-else class="civic-table-wrap">
         <table class="civic-table min-w-3xl">
           <thead>
@@ -412,10 +424,9 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="issue in issues" :key="issue.id">
+            <tr v-for="issue in filteredIssues" :key="issue.id">
               <td :data-label="t('admin.civicTalk.columns.title')">
                 <a :href="`https://civic.vtaiwan.tw/issues/${issue.id}`" target="_blank" rel="noopener noreferrer" class="civic-issue-link font-medium">{{ issue.title }}</a>
-                <p v-if="issue.description" class="civic-issue-description mt-vt-1 text-vt-sm text-vt-fg-3">{{ issue.description }}</p>
               </td>
               <td :data-label="t('admin.civicTalk.columns.status')">
                 <span class="civic-status">{{ t(`admin.civicTalk.status.${issue.status}`) }}</span>
@@ -907,9 +918,20 @@ onMounted(() => {
   font-weight: 500;
 }
 
+.civic-search {
+  margin-bottom: 1rem;
+  display: grid;
+  gap: var(--spacing-vt-2);
+  margin-top: var(--spacing-vt-5);
+  color: var(--color-vt-fg-2);
+  font-size: var(--text-vt-sm);
+  font-weight: 500;
+}
+
 .civic-field input,
 .civic-field select,
-.civic-field textarea {
+.civic-field textarea,
+.civic-search input {
   width: 100%;
   padding: var(--spacing-vt-2) var(--spacing-vt-3);
   color: var(--color-vt-fg-1);
@@ -926,7 +948,8 @@ onMounted(() => {
 
 .civic-field input:focus,
 .civic-field select:focus,
-.civic-field textarea:focus {
+.civic-field textarea:focus,
+.civic-search input:focus {
   outline: none;
   border-color: var(--color-vt-democratic-red);
   box-shadow: 0 0 0 2px var(--color-vt-red-tint);
@@ -1139,10 +1162,6 @@ onMounted(() => {
 
   .civic-table td > * {
     min-width: 0;
-  }
-
-  .civic-issue-description {
-    display: none;
   }
 
   .civic-actions {

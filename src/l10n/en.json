@@ -1277,6 +1277,11 @@
         "title": "Issue Management",
         "hint": "Edit or delete Civic Talk issues. Deleting an issue also removes its materials, opinions, and briefings.",
         "empty": "No issues yet.",
+        "search": {
+          "label": "Search issues",
+          "placeholder": "Enter an issue title",
+          "empty": "No matching issues found."
+        },
         "editTitle": "Edit Civic Talk Issue",
         "titleRequired": "Enter an issue title.",
         "confirmDelete": "Delete \"{title}\"? Its materials, opinions, and briefings will also be removed.",

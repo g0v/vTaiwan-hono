@@ -1277,6 +1277,11 @@
         "title": "議題管理",
         "hint": "Civic Talk の議題を編集、削除できます。議題を削除すると、関連する資料、意見、要約も削除されます。",
         "empty": "議題はまだありません。",
+        "search": {
+          "label": "議題を検索",
+          "placeholder": "議題のタイトルを入力",
+          "empty": "一致する議題が見つかりません。"
+        },
         "editTitle": "Civic Talk 議題を編集",
         "titleRequired": "議題のタイトルを入力してください。",
         "confirmDelete": "「{title}」を削除しますか？関連する資料、意見、要約も削除されます。",

@@ -1277,6 +1277,11 @@
         "title": "議題管理",
         "hint": "編輯或刪除 Civic Talk 議題；刪除議題會一併移除其素材、意見與彙整。",
         "empty": "尚無議題。",
+        "search": {
+          "label": "搜尋議題",
+          "placeholder": "輸入議題標題",
+          "empty": "找不到符合的議題。"
+        },
         "editTitle": "編輯 Civic Talk 議題",
         "titleRequired": "請填寫議題標題。",
         "confirmDelete": "確定要刪除「{title}」嗎？相關素材、意見與彙整也會一併刪除。",
