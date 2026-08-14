@@ -1320,6 +1320,9 @@
       "admin": {
         "reportsTab": "Abuse Reports",
         "reportsEmpty": "No abuse reports to review",
+        "rptSearchLabel": "Search abuse reports",
+        "rptSearchPlaceholder": "Search by ID, reporter, or description",
+        "rptSearchEmpty": "No matching abuse reports found.",
         "rptThId": "#",
         "rptThReporter": "Reporter",
         "rptThTarget": "Target",

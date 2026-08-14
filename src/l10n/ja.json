@@ -1320,6 +1320,9 @@
       "admin": {
         "reportsTab": "濫用報告",
         "reportsEmpty": "審査待ちの濫用報告はありません",
+        "rptSearchLabel": "濫用報告を検索",
+        "rptSearchPlaceholder": "ID・報告者・説明で検索",
+        "rptSearchEmpty": "一致する濫用報告が見つかりません。",
         "rptThId": "#",
         "rptThReporter": "報告者",
         "rptThTarget": "対象コンテンツ",

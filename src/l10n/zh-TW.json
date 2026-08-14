@@ -1320,6 +1320,9 @@
       "admin": {
         "reportsTab": "濫用回報",
         "reportsEmpty": "目前沒有待審核的濫用回報",
+        "rptSearchLabel": "搜尋濫用回報",
+        "rptSearchPlaceholder": "搜尋編號、回報者或說明",
+        "rptSearchEmpty": "找不到符合的濫用回報。",
         "rptThId": "#",
         "rptThReporter": "回報者",
         "rptThTarget": "目標內容",

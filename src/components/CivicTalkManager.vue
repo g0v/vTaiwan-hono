@@ -102,6 +102,7 @@ const issuesLoading = ref(false)
 const detailsLoading = ref(false)
 const eventsLoading = ref(false)
 const abuseReports = ref<AbuseReport[]>([])
+const reportSearchQuery = ref('')
 const reportsLoading = ref(false)
 const error = ref<string | null>(null)
 const previewEvent = ref<CreationEvent | null>(null)
@@ -120,6 +121,15 @@ const filteredIssues = computed(() => {
   if (!searchQuery) return issues.value
 
   return issues.value.filter(issue => issue.title.toLocaleLowerCase().includes(searchQuery))
+})
+// 濫用回報一次全數載入（端點無分頁），故與議題分頁同樣在前端即時過濾。
+const filteredReports = computed(() => {
+  const searchQuery = reportSearchQuery.value.trim().toLocaleLowerCase()
+  if (!searchQuery) return abuseReports.value
+
+  return abuseReports.value.filter(report =>
+    [String(report.id), report.reporter_name ?? '', report.reporter_email, report.description ?? ''].some(field => field.toLocaleLowerCase().includes(searchQuery))
+  )
 })
 const selectedMaterialIssue = computed(() => issues.value.find(issue => issue.id === materialIssueId.value) ?? null)
 const selectedOpinionIssue = computed(() => issues.value.find(issue => issue.id === opinionIssueId.value) ?? null)
@@ -688,8 +698,14 @@ onMounted(() => {
         </div>
       </div>
 
+      <label class="civic-search">
+        <span>{{ t('admin.civicTalk.admin.rptSearchLabel') }}</span>
+        <input v-model="reportSearchQuery" type="search" :placeholder="t('admin.civicTalk.admin.rptSearchPlaceholder')" autocomplete="off" />
+      </label>
+
       <p v-if="reportsLoading" class="civic-empty">{{ t('admin.civicTalk.loading') }}</p>
       <p v-else-if="abuseReports.length === 0" class="civic-empty">{{ t('admin.civicTalk.admin.reportsEmpty') }}</p>
+      <p v-else-if="filteredReports.length === 0" class="civic-empty">{{ t('admin.civicTalk.admin.rptSearchEmpty') }}</p>
       <div v-else class="civic-table-wrap">
         <table class="civic-table">
           <thead>
@@ -705,7 +721,7 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody>
-            <tr v-for="r in abuseReports" :key="r.id">
+            <tr v-for="r in filteredReports" :key="r.id">
               <td :data-label="t('admin.civicTalk.admin.rptThId')">{{ r.id }}</td>
               <td :data-label="t('admin.civicTalk.admin.rptThReporter')">
                 <div>{{ r.reporter_name || t('admin.civicTalk.unknownAuthor') }}</div>
