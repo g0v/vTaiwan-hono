@@ -1209,6 +1209,13 @@
         "hint": "Newest creation events first, {n} per page.",
         "loadFailed": "Unable to load Civic Talk event records. Please try again later.",
         "empty": "No creation events yet.",
+        "search": {
+          "label": "Search events",
+          "placeholder": "Search issue titles or event content",
+          "submit": "Search",
+          "clear": "Clear search",
+          "empty": "No events match “{q}”."
+        },
         "columns": {
           "time": "Time",
           "action": "Action"

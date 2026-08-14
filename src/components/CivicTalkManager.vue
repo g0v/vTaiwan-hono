@@ -79,6 +79,8 @@ const issueSearchQuery = ref('')
 const materials = ref<Material[]>([])
 const opinions = ref<Opinion[]>([])
 const creationEvents = ref<CreationEvent[]>([])
+const eventSearchQuery = ref('')
+const eventSearchTerm = ref('')
 const materialIssueId = ref<number | null>(null)
 const opinionIssueId = ref<number | null>(null)
 const eventPage = ref(1)
@@ -184,7 +186,9 @@ async function loadCreationEvents() {
   eventsLoading.value = true
   error.value = null
   try {
-    const data = await requestJson<{ events: CreationEvent[]; page: number; totalPages: number }>(`/api/admin/civic-talks/events?page=${eventPage.value}`)
+    const searchParams = new URLSearchParams({ page: String(eventPage.value) })
+    if (eventSearchTerm.value) searchParams.set('q', eventSearchTerm.value)
+    const data = await requestJson<{ events: CreationEvent[]; page: number; totalPages: number }>(`/api/admin/civic-talks/events?${searchParams}`)
     if (!data) return
     creationEvents.value = data.events
     eventPage.value = data.page
@@ -360,6 +364,21 @@ function showCreationEvents() {
     return
   }
   activeSection.value = 'events'
+}
+
+function submitEventSearch() {
+  eventSearchTerm.value = eventSearchQuery.value.trim()
+  if (eventPage.value === 1) {
+    void loadCreationEvents()
+    return
+  }
+  eventPage.value = 1
+}
+
+function clearEventSearch() {
+  if (!eventSearchQuery.value && !eventSearchTerm.value) return
+  eventSearchQuery.value = ''
+  submitEventSearch()
 }
 
 function showReports() {
@@ -587,8 +606,19 @@ onMounted(() => {
         </div>
       </div>
 
+      <form class="civic-search" @submit.prevent="submitEventSearch">
+        <label for="civic-event-search">{{ t('admin.civicTalk.events.search.label') }}</label>
+        <div class="civic-search__controls">
+          <input id="civic-event-search" v-model="eventSearchQuery" type="search" :placeholder="t('admin.civicTalk.events.search.placeholder')" autocomplete="off" maxlength="200" />
+          <button type="submit" class="civic-button" :disabled="eventsLoading">{{ t('admin.civicTalk.events.search.submit') }}</button>
+          <button v-if="eventSearchQuery || eventSearchTerm" type="button" class="civic-button" :disabled="eventsLoading" @click="clearEventSearch">
+            {{ t('admin.civicTalk.events.search.clear') }}
+          </button>
+        </div>
+      </form>
+
       <p v-if="eventsLoading" class="civic-empty">{{ t('admin.civicTalk.loading') }}</p>
-      <p v-else-if="creationEvents.length === 0" class="civic-empty">{{ t('admin.civicTalk.events.empty') }}</p>
+      <p v-else-if="creationEvents.length === 0" class="civic-empty">{{ eventSearchTerm ? t('admin.civicTalk.events.search.empty', { q: eventSearchTerm }) : t('admin.civicTalk.events.empty') }}</p>
       <div v-else class="civic-table-wrap">
         <table class="civic-table min-w-3xl">
           <thead>
@@ -850,7 +880,8 @@ onMounted(() => {
 .civic-header__actions,
 .civic-pagination,
 .civic-event-action,
-.civic-section-switcher {
+.civic-section-switcher,
+.civic-search__controls {
   display: flex;
   align-items: center;
   gap: var(--spacing-vt-3);
@@ -1079,13 +1110,20 @@ onMounted(() => {
 }
 
 .civic-search {
-  margin-bottom: 1rem;
   display: grid;
   gap: var(--spacing-vt-2);
   margin-top: var(--spacing-vt-5);
   color: var(--color-vt-fg-2);
   font-size: var(--text-vt-sm);
   font-weight: 500;
+}
+
+.civic-search__controls {
+  align-items: stretch;
+}
+
+.civic-search__controls input {
+  flex: 1;
 }
 
 .civic-field input,
@@ -1240,8 +1278,17 @@ onMounted(() => {
   }
 
   .civic-header__actions,
-  .civic-pagination {
+  .civic-pagination,
+  .civic-search__controls {
     width: 100%;
+  }
+
+  .civic-search__controls {
+    flex-wrap: wrap;
+  }
+
+  .civic-search__controls input {
+    flex-basis: 100%;
   }
 
   .civic-header__actions > .civic-button:not(.civic-icon-button) {

@@ -189,11 +189,20 @@ function toCreationEvent(row: CivicTalkCreationEventRow): CivicTalkCreationEvent
   }
 }
 
-export async function listCivicTalkCreationEvents(db: D1Database, page: number): Promise<CivicTalkCreationEventPage> {
+function escapeLikePattern(value: string): string {
+  return `%${value.replace(/[\\%_]/g, character => `\\${character}`)}%`
+}
+
+export async function listCivicTalkCreationEvents(db: D1Database, page: number, searchQuery: string = ''): Promise<CivicTalkCreationEventPage> {
   const offset = (page - 1) * CIVIC_TALK_EVENT_PAGE_SIZE
+  const normalizedSearchQuery = searchQuery.trim()
+  const searchWhere = normalizedSearchQuery
+    ? ` WHERE issue_title LIKE ? ESCAPE '\\' OR content LIKE ? ESCAPE '\\' OR consensus LIKE ? ESCAPE '\\' OR disputes LIKE ? ESCAPE '\\' OR positions LIKE ? ESCAPE '\\' OR narrative LIKE ? ESCAPE '\\' OR opinion_prompt LIKE ? ESCAPE '\\' OR summary LIKE ? ESCAPE '\\'`
+    : ''
+  const searchParams = normalizedSearchQuery ? Array.from({ length: 8 }, () => escapeLikePattern(normalizedSearchQuery)) : []
   const [countResult, eventResult] = await db.batch([
-    db.prepare(`SELECT COUNT(*) AS total FROM (${CREATION_EVENT_ROWS})`).bind(),
-    db.prepare(`SELECT * FROM (${CREATION_EVENT_ROWS}) ORDER BY created_at DESC, id DESC, type ASC LIMIT ? OFFSET ?`).bind(CIVIC_TALK_EVENT_PAGE_SIZE, offset),
+    db.prepare(`SELECT COUNT(*) AS total FROM (${CREATION_EVENT_ROWS})${searchWhere}`).bind(...searchParams),
+    db.prepare(`SELECT * FROM (${CREATION_EVENT_ROWS})${searchWhere} ORDER BY created_at DESC, id DESC, type ASC LIMIT ? OFFSET ?`).bind(...searchParams, CIVIC_TALK_EVENT_PAGE_SIZE, offset),
   ])
   const total = Number((countResult.results?.[0] as { total?: number } | undefined)?.total ?? 0)
 

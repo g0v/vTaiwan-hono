@@ -1209,6 +1209,13 @@
         "hint": "依建立時間由新到舊顯示，每頁 {n} 筆。",
         "loadFailed": "無法載入 Civic Talk 事件記錄，請稍後再試。",
         "empty": "尚無建立記錄。",
+        "search": {
+          "label": "搜尋事件",
+          "placeholder": "搜尋議題標題或事件內容",
+          "submit": "搜尋",
+          "clear": "清除搜尋",
+          "empty": "找不到符合「{q}」的事件。"
+        },
         "columns": {
           "time": "時間",
           "action": "動作"

@@ -32,6 +32,11 @@ function parseEventPage(raw: string | undefined): number | null {
   return Number.isSafeInteger(page) && page > 0 && page <= 100_000 ? page : null
 }
 
+function parseEventSearch(raw: string | undefined): string | null {
+  if (raw === undefined) return ''
+  return raw.length <= 200 ? raw.trim() : null
+}
+
 function parseText(value: unknown, maxLength: number): string | null {
   return typeof value === 'string' && value.length <= maxLength ? value.trim() : null
 }
@@ -85,8 +90,9 @@ export function registerCivicTalkAdminApi(app: App): void {
     const auth = await requireFreshAdmin(c.env, c.req.raw.headers)
     if (!('context' in auth)) return c.json(auth.body, auth.status)
     const page = parseEventPage(c.req.query('page'))
-    if (!page) return c.json({ error: 'Invalid event page' }, 400)
-    return c.json(await listCivicTalkCreationEvents(c.env.DB_CIVIC_TALKS, page))
+    const searchQuery = parseEventSearch(c.req.query('q'))
+    if (!page || searchQuery === null) return c.json({ error: 'Invalid event search parameters' }, 400)
+    return c.json(await listCivicTalkCreationEvents(c.env.DB_CIVIC_TALKS, page, searchQuery))
   })
 
   app.put('/api/admin/civic-talks/issues/:id', async c => {
