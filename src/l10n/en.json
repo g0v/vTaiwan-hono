@@ -1197,6 +1197,12 @@
         "ariaLabel": "Civic Talk management section switcher",
         "agenda": "Agenda Management"
       },
+      "tabs": {
+        "ariaLabel": "Civic Talk management tabs",
+        "agenda": "Agenda",
+        "events": "Event Log",
+        "reports": "Abuse Reports"
+      },
       "events": {
         "button": "Event Log",
         "title": "Civic Talk Event Log",
@@ -1298,6 +1304,38 @@
         "hint": "Review opinions and contributors for each issue, and remove unsuitable content.",
         "empty": "This issue has no opinions yet.",
         "confirmDelete": "Delete this opinion?"
+      },
+      "admin": {
+        "reportsTab": "Abuse Reports",
+        "reportsEmpty": "No abuse reports to review",
+        "rptThId": "#",
+        "rptThReporter": "Reporter",
+        "rptThTarget": "Target",
+        "rptThReason": "Reason",
+        "rptThDesc": "Description",
+        "rptThStatus": "Status",
+        "rptThCreated": "Created",
+        "rptStatusPending": "Pending",
+        "rptStatusFalse": "False report",
+        "rptStatusAbuse": "Confirmed abuse",
+        "rptBtnFalse": "False report & ban reporter",
+        "rptBtnAbuse": "Confirmed abuse & ban poster",
+        "rptNeedSuperAdmin": "Requires super-admin",
+        "rptCannotBanSelf": "Cannot ban yourself",
+        "rptToastResolved": "Resolved",
+        "rptToastFail": "Action failed",
+        "rptTargetMaterial": "Material #",
+        "rptTargetOpinion": "Opinion #",
+        "rptTargetBriefing": "Briefing #",
+        "rptTargetDeleted": "(target deleted)",
+        "rptNoAuthor": "(No author found, cannot ban)",
+        "rptConfirmFalse": "Mark as false report and ban reporter?",
+        "rptConfirmAbuse": "Confirm abuse and ban poster?",
+        "rptReasonSpam": "Spam",
+        "rptReasonHate": "Hate speech",
+        "rptReasonDefame": "Defamation",
+        "rptReasonMisinfo": "Misinformation",
+        "rptReasonOther": "Other"
       }
     }
   }
