@@ -242,3 +242,67 @@ export async function listCivicTalkOpinions(db: D1Database, issueId: number): Pr
 export async function deleteCivicTalkOpinion(db: D1Database, id: number): Promise<void> {
   await db.prepare('DELETE FROM ct_opinions WHERE id = ?').bind(id).run()
 }
+
+export type CivicTalkAbuseReportReason = 'spam' | 'hate_speech' | 'defamation' | 'misinformation' | 'other'
+export type CivicTalkAbuseReportStatus = 'pending' | 'resolved_false' | 'resolved_abuse'
+
+export interface CivicTalkAbuseReport {
+  id: number
+  reporter_id: string
+  reporter_name: string | null
+  reporter_email: string
+  reason: CivicTalkAbuseReportReason
+  description: string | null
+  material_id: number | null
+  briefing_id: number | null
+  opinion_id: number | null
+  review_status: CivicTalkAbuseReportStatus
+  created_at: string
+  target_issue_id: number | null
+  target_author_id: string | null
+}
+
+const ABUSE_REPORT_SELECT = `SELECT
+  r.id, r.reporter_id, r.reporter_name, r.reporter_email,
+  r.reason, r.description,
+  r.material_id, r.briefing_id, r.opinion_id,
+  r.review_status, r.created_at,
+  COALESCE(m.issue_id, b.issue_id, o.issue_id)    AS target_issue_id,
+  COALESCE(m.author_id, b.author_id, o.author_id) AS target_author_id
+FROM ct_abuse_reports r
+LEFT JOIN ct_materials m ON r.material_id = m.id
+LEFT JOIN ct_briefings b ON r.briefing_id = b.id
+LEFT JOIN ct_opinions  o ON r.opinion_id  = o.id`
+
+export async function listCivicTalkAbuseReports(db: D1Database): Promise<CivicTalkAbuseReport[]> {
+  const { results } = await db.prepare(`${ABUSE_REPORT_SELECT} ORDER BY r.created_at DESC`).all<CivicTalkAbuseReport>()
+  return results ?? []
+}
+
+export async function getCivicTalkAbuseReport(db: D1Database, id: number): Promise<CivicTalkAbuseReport | null> {
+  return db.prepare(`${ABUSE_REPORT_SELECT} WHERE r.id = ?`).bind(id).first<CivicTalkAbuseReport>()
+}
+
+export async function resolveCivicTalkAbuseReport(db: D1Database, id: number, status: 'resolved_false' | 'resolved_abuse'): Promise<void> {
+  await db.prepare('UPDATE ct_abuse_reports SET review_status = ? WHERE id = ?').bind(status, id).run()
+}
+
+export async function unflagCivicTalkContent(db: D1Database, report: Pick<CivicTalkAbuseReport, 'material_id' | 'briefing_id' | 'opinion_id'>): Promise<void> {
+  if (report.material_id != null) {
+    await db.prepare('UPDATE ct_materials SET abuse_flagged = 0 WHERE id = ?').bind(report.material_id).run()
+  } else if (report.briefing_id != null) {
+    await db.prepare('UPDATE ct_briefings SET abuse_flagged = 0 WHERE id = ?').bind(report.briefing_id).run()
+  } else if (report.opinion_id != null) {
+    await db.prepare('UPDATE ct_opinions SET abuse_flagged = 0 WHERE id = ?').bind(report.opinion_id).run()
+  }
+}
+
+export async function confirmFlagCivicTalkContent(db: D1Database, report: Pick<CivicTalkAbuseReport, 'material_id' | 'briefing_id' | 'opinion_id'>): Promise<void> {
+  if (report.material_id != null) {
+    await db.prepare('UPDATE ct_materials SET abuse_flagged = 2 WHERE id = ?').bind(report.material_id).run()
+  } else if (report.briefing_id != null) {
+    await db.prepare('UPDATE ct_briefings SET abuse_flagged = 2 WHERE id = ?').bind(report.briefing_id).run()
+  } else if (report.opinion_id != null) {
+    await db.prepare('UPDATE ct_opinions SET abuse_flagged = 2 WHERE id = ?').bind(report.opinion_id).run()
+  }
+}

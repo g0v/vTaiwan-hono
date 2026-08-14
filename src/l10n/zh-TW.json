@@ -1197,6 +1197,12 @@
         "ariaLabel": "Civic Talk 管理區段切換",
         "agenda": "議程管理"
       },
+      "tabs": {
+        "ariaLabel": "Civic Talk 管理分頁",
+        "agenda": "議程管理",
+        "events": "事件記錄",
+        "reports": "濫用回報"
+      },
       "events": {
         "button": "事件記錄",
         "title": "Civic Talk 事件記錄",
@@ -1303,6 +1309,38 @@
         "hint": "檢視各議題的意見與投稿者，並移除不適合的內容。",
         "empty": "這個議題尚無意見。",
         "confirmDelete": "確定要刪除這則意見嗎？"
+      },
+      "admin": {
+        "reportsTab": "濫用回報",
+        "reportsEmpty": "目前沒有待審核的濫用回報",
+        "rptThId": "#",
+        "rptThReporter": "回報者",
+        "rptThTarget": "目標內容",
+        "rptThReason": "原因",
+        "rptThDesc": "說明",
+        "rptThStatus": "審核狀態",
+        "rptThCreated": "建立時間",
+        "rptStatusPending": "待審核",
+        "rptStatusFalse": "誤報",
+        "rptStatusAbuse": "確認濫用",
+        "rptBtnFalse": "誤報・停權回報者",
+        "rptBtnAbuse": "確認濫用・停權張貼者",
+        "rptNeedSuperAdmin": "需要 super-admin 權限",
+        "rptCannotBanSelf": "不能停權自己",
+        "rptToastResolved": "審核完成",
+        "rptToastFail": "操作失敗",
+        "rptTargetMaterial": "素材 #",
+        "rptTargetOpinion": "意見 #",
+        "rptTargetBriefing": "說明頁 #",
+        "rptTargetDeleted": "（目標已刪除）",
+        "rptNoAuthor": "（找不到張貼者，無法停權）",
+        "rptConfirmFalse": "確定將此回報標記為誤報並停權回報者？",
+        "rptConfirmAbuse": "確定確認此為濫用並停權張貼者？",
+        "rptReasonSpam": "垃圾訊息",
+        "rptReasonHate": "仇恨言論",
+        "rptReasonDefame": "誹謗",
+        "rptReasonMisinfo": "錯誤資訊",
+        "rptReasonOther": "其他"
       }
     }
   }

@@ -2,11 +2,13 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { RefreshCw } from 'lucide-vue-next'
-import { responseRequiresStepUp } from '../client/auth-session'
+import { type AuthSession, responseRequiresStepUp } from '../client/auth-session'
 
 type IssueStatus = 'collecting' | 'summarizing' | 'published'
-type ManagerSection = 'issues' | 'materials' | 'opinions' | 'events'
+type ManagerSection = 'issues' | 'materials' | 'opinions' | 'events' | 'reports'
 type CreationEventType = 'material' | 'briefing' | 'opinion'
+type AbuseReportReason = 'spam' | 'hate_speech' | 'defamation' | 'misinformation' | 'other'
+type AbuseReportStatus = 'pending' | 'resolved_false' | 'resolved_abuse'
 
 interface Issue {
   id: number
@@ -50,10 +52,28 @@ interface CreationEvent {
   opinion: { summary: string } | null
 }
 
+interface AbuseReport {
+  id: number
+  reporter_id: string
+  reporter_name: string | null
+  reporter_email: string
+  reason: AbuseReportReason
+  description: string | null
+  material_id: number | null
+  briefing_id: number | null
+  opinion_id: number | null
+  review_status: AbuseReportStatus
+  created_at: string
+  target_issue_id: number | null
+  target_author_id: string | null
+}
+
+const props = defineProps<{ authSession?: AuthSession | null }>()
+
 const emit = defineEmits<{ 'step-up-required': [] }>()
 const { t } = useI18n()
 
-const activeSection = ref<ManagerSection>('issues')
+const activeSection = ref<ManagerSection>('reports')
 const issues = ref<Issue[]>([])
 const issueSearchQuery = ref('')
 const materials = ref<Material[]>([])
@@ -66,6 +86,8 @@ const eventTotalPages = ref(0)
 const issuesLoading = ref(false)
 const detailsLoading = ref(false)
 const eventsLoading = ref(false)
+const abuseReports = ref<AbuseReport[]>([])
+const reportsLoading = ref(false)
 const error = ref<string | null>(null)
 const previewEvent = ref<CreationEvent | null>(null)
 const formOpen = ref(false)
@@ -88,7 +110,12 @@ const materialCount = computed(() => issues.value.reduce((total, issue) => total
 const opinionCount = computed(() => issues.value.reduce((total, issue) => total + issue.opinion_count, 0))
 const selectedMaterialIssue = computed(() => issues.value.find(issue => issue.id === materialIssueId.value) ?? null)
 const selectedOpinionIssue = computed(() => issues.value.find(issue => issue.id === opinionIssueId.value) ?? null)
-const activeLoading = computed(() => (activeSection.value === 'issues' ? issuesLoading.value : activeSection.value === 'events' ? eventsLoading.value : detailsLoading.value))
+const activeLoading = computed(() => {
+  if (activeSection.value === 'issues') return issuesLoading.value
+  if (activeSection.value === 'events') return eventsLoading.value
+  if (activeSection.value === 'reports') return reportsLoading.value
+  return detailsLoading.value
+})
 
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T | null> {
   const response = await fetch(path, {
@@ -172,6 +199,45 @@ async function loadCreationEvents() {
     eventTotalPages.value = 0
   } finally {
     eventsLoading.value = false
+  }
+}
+
+const REASON_I18N: Record<string, string> = {
+  spam: 'admin.civicTalk.admin.rptReasonSpam',
+  hate_speech: 'admin.civicTalk.admin.rptReasonHate',
+  defamation: 'admin.civicTalk.admin.rptReasonDefame',
+  misinformation: 'admin.civicTalk.admin.rptReasonMisinfo',
+  other: 'admin.civicTalk.admin.rptReasonOther',
+}
+
+async function loadAbuseReports() {
+  reportsLoading.value = true
+  error.value = null
+  try {
+    const data = await requestJson<{ reports: AbuseReport[] }>('/api/admin/civic-talks/abuse-reports')
+    if (data) abuseReports.value = data.reports
+  } catch (loadError) {
+    console.error('Failed to load civic talk abuse reports:', loadError)
+    error.value = t('admin.civicTalk.loadFailed')
+    abuseReports.value = []
+  } finally {
+    reportsLoading.value = false
+  }
+}
+
+async function resolveReport(id: number, action: 'false_report' | 'confirmed_abuse') {
+  const confirmKey = action === 'false_report' ? 'admin.civicTalk.admin.rptConfirmFalse' : 'admin.civicTalk.admin.rptConfirmAbuse'
+  if (!window.confirm(t(confirmKey))) return
+  try {
+    const data = await requestJson<{ ok: boolean }>(`/api/admin/civic-talks/abuse-reports/${id}/resolve`, {
+      method: 'PATCH',
+      body: JSON.stringify({ action }),
+    })
+    if (!data) return
+    await loadAbuseReports()
+  } catch (resolveError) {
+    console.error('Failed to resolve abuse report:', resolveError)
+    error.value = t('admin.civicTalk.admin.rptToastFail')
   }
 }
 
@@ -299,10 +365,19 @@ function showCreationEvents() {
   activeSection.value = 'events'
 }
 
+function showReports() {
+  if (activeSection.value === 'reports') {
+    void loadAbuseReports()
+    return
+  }
+  activeSection.value = 'reports'
+}
+
 function refreshActiveSection() {
   if (activeSection.value === 'issues') return void loadIssues()
   if (activeSection.value === 'materials') return void loadMaterials()
   if (activeSection.value === 'opinions') return void loadOpinions()
+  if (activeSection.value === 'reports') return void loadAbuseReports()
   return void loadCreationEvents()
 }
 
@@ -342,9 +417,11 @@ watch(activeSection, section => {
   if (section === 'materials') void loadMaterials()
   if (section === 'opinions') void loadOpinions()
   if (section === 'events') void loadCreationEvents()
+  if (section === 'reports' && abuseReports.value.length === 0) void loadAbuseReports()
 })
 
 onMounted(() => {
+  void loadAbuseReports()
   void loadIssues()
 })
 </script>
@@ -357,14 +434,24 @@ onMounted(() => {
         <p class="mt-vt-1 text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.hint') }}</p>
       </div>
       <div class="civic-header__actions">
-        <div class="civic-section-switcher" role="group" :aria-label="t('admin.civicTalk.switcher.ariaLabel')">
-          <button type="button" class="civic-button civic-section-switcher__button" :class="{ 'civic-section-switcher__button--active': activeSection !== 'events' }" @click="returnToIssues">
-            {{ t('admin.civicTalk.switcher.agenda') }}
+        <nav class="civic-tabs" role="tablist" :aria-label="t('admin.civicTalk.tabs.ariaLabel')">
+          <button type="button" role="tab" class="civic-tab" :class="{ 'civic-tab--active': activeSection === 'reports' }" :aria-selected="activeSection === 'reports'" @click="showReports">
+            {{ t('admin.civicTalk.tabs.reports') }}
           </button>
-          <button type="button" class="civic-button civic-section-switcher__button" :class="{ 'civic-section-switcher__button--active': activeSection === 'events' }" @click="showCreationEvents">
-            {{ t('admin.civicTalk.events.button') }}
+          <button
+            type="button"
+            role="tab"
+            class="civic-tab"
+            :class="{ 'civic-tab--active': activeSection === 'issues' || activeSection === 'materials' || activeSection === 'opinions' }"
+            :aria-selected="activeSection === 'issues' || activeSection === 'materials' || activeSection === 'opinions'"
+            @click="returnToIssues"
+          >
+            {{ t('admin.civicTalk.tabs.agenda') }}
           </button>
-        </div>
+          <button type="button" role="tab" class="civic-tab" :class="{ 'civic-tab--active': activeSection === 'events' }" :aria-selected="activeSection === 'events'" @click="showCreationEvents">
+            {{ t('admin.civicTalk.tabs.events') }}
+          </button>
+        </nav>
         <button
           type="button"
           class="civic-button civic-icon-button"
@@ -546,6 +633,115 @@ onMounted(() => {
         <span class="text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.events.pagination.status', { page: eventPage, total: eventTotalPages }) }}</span>
         <button type="button" class="civic-button" :disabled="eventPage === eventTotalPages || eventsLoading" @click="nextEventPage">{{ t('admin.civicTalk.events.pagination.next') }}</button>
       </nav>
+    </section>
+
+    <!-- Reports tab -->
+    <section v-show="activeSection === 'reports'" class="civic-card">
+      <div class="civic-section-heading">
+        <div>
+          <h3 class="text-vt-lg font-semibold text-vt-fg-1">{{ t('admin.civicTalk.admin.reportsTab') }}</h3>
+        </div>
+      </div>
+
+      <p v-if="reportsLoading" class="civic-empty">{{ t('admin.civicTalk.loading') }}</p>
+      <p v-else-if="abuseReports.length === 0" class="civic-empty">{{ t('admin.civicTalk.admin.reportsEmpty') }}</p>
+      <div v-else class="civic-table-wrap">
+        <table class="civic-table">
+          <thead>
+            <tr>
+              <th>{{ t('admin.civicTalk.admin.rptThId') }}</th>
+              <th>{{ t('admin.civicTalk.admin.rptThReporter') }}</th>
+              <th>{{ t('admin.civicTalk.admin.rptThTarget') }}</th>
+              <th>{{ t('admin.civicTalk.admin.rptThReason') }}</th>
+              <th>{{ t('admin.civicTalk.admin.rptThDesc') }}</th>
+              <th>{{ t('admin.civicTalk.admin.rptThStatus') }}</th>
+              <th>{{ t('admin.civicTalk.admin.rptThCreated') }}</th>
+              <th>{{ t('admin.civicTalk.columns.actions') }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="r in abuseReports" :key="r.id">
+              <td :data-label="t('admin.civicTalk.admin.rptThId')">{{ r.id }}</td>
+              <td :data-label="t('admin.civicTalk.admin.rptThReporter')">
+                <div>{{ r.reporter_name || t('admin.civicTalk.unknownAuthor') }}</div>
+                <div class="text-vt-xs text-vt-fg-3">{{ r.reporter_email }}</div>
+              </td>
+              <td :data-label="t('admin.civicTalk.admin.rptThTarget')">
+                <template v-if="r.target_issue_id">
+                  <a v-if="r.material_id" :href="`https://civic.vtaiwan.tw/issues/${r.target_issue_id}/source/${r.material_id}`" class="civic-issue-link" target="_blank" rel="noopener">
+                    {{ t('admin.civicTalk.admin.rptTargetMaterial') }}{{ r.material_id }}
+                  </a>
+                  <a v-else-if="r.opinion_id" :href="`https://civic.vtaiwan.tw/issues/${r.target_issue_id}/comment/${r.opinion_id}`" class="civic-issue-link" target="_blank" rel="noopener">
+                    {{ t('admin.civicTalk.admin.rptTargetOpinion') }}{{ r.opinion_id }}
+                  </a>
+                  <a v-else-if="r.briefing_id" :href="`https://civic.vtaiwan.tw/issues/${r.target_issue_id}`" class="civic-issue-link" target="_blank" rel="noopener">
+                    {{ t('admin.civicTalk.admin.rptTargetBriefing') }}{{ r.briefing_id }}
+                  </a>
+                </template>
+                <span v-else class="text-vt-xs text-vt-fg-3">{{ t('admin.civicTalk.admin.rptTargetDeleted') }}</span>
+              </td>
+              <td :data-label="t('admin.civicTalk.admin.rptThReason')">{{ t(REASON_I18N[r.reason] ?? 'admin.civicTalk.admin.rptReasonOther') }}</td>
+              <td :data-label="t('admin.civicTalk.admin.rptThDesc')">
+                <span v-if="r.description" class="text-vt-xs">{{ r.description }}</span>
+                <span v-else class="text-vt-xs text-vt-fg-3">—</span>
+              </td>
+              <td :data-label="t('admin.civicTalk.admin.rptThStatus')">
+                <span
+                  class="rpt-status"
+                  :class="{
+                    'rpt-status--pending': r.review_status === 'pending',
+                    'rpt-status--abuse': r.review_status === 'resolved_abuse',
+                    'rpt-status--false': r.review_status === 'resolved_false',
+                  }"
+                >
+                  <template v-if="r.review_status === 'pending'">{{ t('admin.civicTalk.admin.rptStatusPending') }}</template>
+                  <template v-else-if="r.review_status === 'resolved_false'">{{ t('admin.civicTalk.admin.rptStatusFalse') }}</template>
+                  <template v-else>{{ t('admin.civicTalk.admin.rptStatusAbuse') }}</template>
+                </span>
+              </td>
+              <td :data-label="t('admin.civicTalk.admin.rptThCreated')" class="text-vt-xs text-vt-fg-3">{{ formatDate(r.created_at) }}</td>
+              <td :data-label="t('admin.civicTalk.columns.actions')">
+                <template v-if="r.review_status === 'pending'">
+                  <div class="civic-actions civic-actions--col">
+                    <button
+                      type="button"
+                      class="civic-link"
+                      :disabled="props.authSession?.role !== 'super-admin' || r.reporter_id === props.authSession?.user?.id"
+                      :title="
+                        props.authSession?.role !== 'super-admin'
+                          ? t('admin.civicTalk.admin.rptNeedSuperAdmin')
+                          : r.reporter_id === props.authSession?.user?.id
+                            ? t('admin.civicTalk.admin.rptCannotBanSelf')
+                            : undefined
+                      "
+                      @click="resolveReport(r.id, 'false_report')"
+                    >
+                      {{ t('admin.civicTalk.admin.rptBtnFalse') }}
+                    </button>
+                    <button
+                      type="button"
+                      class="civic-link civic-link--danger"
+                      :disabled="props.authSession?.role !== 'super-admin' || r.target_author_id === props.authSession?.user?.id"
+                      :title="
+                        props.authSession?.role !== 'super-admin'
+                          ? t('admin.civicTalk.admin.rptNeedSuperAdmin')
+                          : r.target_author_id === props.authSession?.user?.id
+                            ? t('admin.civicTalk.admin.rptCannotBanSelf')
+                            : undefined
+                      "
+                      @click="resolveReport(r.id, 'confirmed_abuse')"
+                    >
+                      {{ t('admin.civicTalk.admin.rptBtnAbuse') }}
+                    </button>
+                    <span v-if="!r.target_author_id" class="text-vt-xs text-vt-fg-3">{{ t('admin.civicTalk.admin.rptNoAuthor') }}</span>
+                  </div>
+                </template>
+                <span v-else class="text-vt-xs text-vt-fg-3">—</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </section>
 
     <div v-if="formOpen" class="civic-modal-backdrop" role="presentation" @click.self="closeForm">
@@ -1206,5 +1402,61 @@ onMounted(() => {
   .civic-modal {
     padding: var(--spacing-vt-4);
   }
+}
+
+/* Tab bar */
+.civic-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid var(--color-vt-border);
+}
+
+.civic-tab {
+  padding: var(--spacing-vt-2) var(--spacing-vt-4);
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  background: none;
+  color: var(--color-vt-fg-3);
+  font-size: var(--text-vt-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.civic-tab:hover:not(:disabled) {
+  color: var(--color-vt-fg-2);
+}
+
+.civic-tab--active {
+  color: var(--color-vt-democratic-red);
+  border-bottom-color: var(--color-vt-democratic-red);
+}
+
+/* Report status badges */
+.rpt-status {
+  font-size: var(--text-vt-sm);
+  font-weight: 500;
+}
+
+.rpt-status--pending {
+  color: var(--color-vt-wheat-yellow);
+}
+
+.rpt-status--abuse {
+  color: var(--color-vt-democratic-red);
+}
+
+.rpt-status--false {
+  color: var(--color-vt-fg-3);
+}
+
+/* Column-stacked actions (reports table) */
+.civic-actions--col {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-vt-1);
 }
 </style>

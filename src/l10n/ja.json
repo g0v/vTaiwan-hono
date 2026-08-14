@@ -1197,6 +1197,12 @@
         "ariaLabel": "Civic Talk 管理セクションの切り替え",
         "agenda": "議題管理"
       },
+      "tabs": {
+        "ariaLabel": "Civic Talk 管理タブ",
+        "agenda": "議題管理",
+        "events": "イベント履歴",
+        "reports": "濫用報告"
+      },
       "events": {
         "button": "イベント履歴",
         "title": "Civic Talk イベント履歴",
@@ -1303,6 +1309,38 @@
         "hint": "各議題の意見と投稿者を確認し、不適切な内容を削除できます。",
         "empty": "この議題にはまだ意見がありません。",
         "confirmDelete": "この意見を削除しますか？"
+      },
+      "admin": {
+        "reportsTab": "濫用報告",
+        "reportsEmpty": "審査待ちの濫用報告はありません",
+        "rptThId": "#",
+        "rptThReporter": "報告者",
+        "rptThTarget": "対象コンテンツ",
+        "rptThReason": "理由",
+        "rptThDesc": "説明",
+        "rptThStatus": "審査状態",
+        "rptThCreated": "作成日時",
+        "rptStatusPending": "審査待ち",
+        "rptStatusFalse": "誤報告",
+        "rptStatusAbuse": "濫用確認済み",
+        "rptBtnFalse": "誤報告・報告者を停止",
+        "rptBtnAbuse": "濫用確認・投稿者を停止",
+        "rptNeedSuperAdmin": "super-admin 権限が必要です",
+        "rptCannotBanSelf": "自分を停止することはできません",
+        "rptToastResolved": "審査完了",
+        "rptToastFail": "操作に失敗しました",
+        "rptTargetMaterial": "資料 #",
+        "rptTargetOpinion": "意見 #",
+        "rptTargetBriefing": "説明ページ #",
+        "rptTargetDeleted": "（対象が削除済み）",
+        "rptNoAuthor": "（投稿者が見つかりません）",
+        "rptConfirmFalse": "誤報告としてマークし、報告者を停止しますか？",
+        "rptConfirmAbuse": "濫用を確認し、投稿者を停止しますか？",
+        "rptReasonSpam": "スパム",
+        "rptReasonHate": "ヘイトスピーチ",
+        "rptReasonDefame": "名誉毀損",
+        "rptReasonMisinfo": "誤情報",
+        "rptReasonOther": "その他"
       }
     }
   }

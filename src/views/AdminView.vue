@@ -224,7 +224,7 @@
         </section>
 
         <!-- Tab 4：Civic Talk 管理（資料僅在 client mount 後由受保護 API 載入） -->
-        <CivicTalkManager v-if="activeTab === 'civicTalks'" @step-up-required="requireStepUp" />
+        <CivicTalkManager v-if="activeTab === 'civicTalks'" :auth-session="props.authSession" @step-up-required="requireStepUp" />
       </div>
     </div>
 

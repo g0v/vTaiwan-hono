@@ -1,15 +1,21 @@
-import { isActiveAdminRole, tryGetAuthContext, type AuthContext } from '../server/lib/authorization'
+import { isActiveAdminRole, isSuperAdminRole, tryGetAuthContext, type AuthContext } from '../server/lib/authorization'
 import {
+  confirmFlagCivicTalkContent,
   deleteCivicTalkIssue,
   deleteCivicTalkMaterial,
   deleteCivicTalkOpinion,
+  getCivicTalkAbuseReport,
+  listCivicTalkAbuseReports,
   listCivicTalkCreationEvents,
   listCivicTalkIssues,
   listCivicTalkMaterials,
   listCivicTalkOpinions,
+  resolveCivicTalkAbuseReport,
+  unflagCivicTalkContent,
   updateCivicTalkIssue,
   type CivicTalkIssueStatus,
 } from '../server/lib/civic-talk'
+import { createAuth } from '../server/lib/createAuth'
 import { sessionNotFreshBody } from '../server/lib/step-up'
 import type { App, AppBindings } from './types'
 
@@ -34,6 +40,14 @@ async function requireFreshAdmin(env: AppBindings, headers: Headers): Promise<{ 
   const context = await tryGetAuthContext(env, headers)
   if (!context) return { status: 401, body: { error: 'Unauthorized' } }
   if (!isActiveAdminRole(context.role, context.banned)) return { status: 403, body: { error: 'Forbidden' } }
+  if (!context.fresh) return { status: 403, body: sessionNotFreshBody() }
+  return { context }
+}
+
+async function requireFreshSuperAdmin(env: AppBindings, headers: Headers): Promise<{ context: AuthContext } | { status: 401 | 403; body: object }> {
+  const context = await tryGetAuthContext(env, headers)
+  if (!context) return { status: 401, body: { error: 'Unauthorized' } }
+  if (!isSuperAdminRole(context.role)) return { status: 403, body: { error: 'Forbidden' } }
   if (!context.fresh) return { status: 403, body: sessionNotFreshBody() }
   return { context }
 }
@@ -125,6 +139,65 @@ export function registerCivicTalkAdminApi(app: App): void {
     const id = parsePositiveId(c.req.param('id'))
     if (!id) return c.json({ error: 'Invalid opinion id' }, 400)
     await deleteCivicTalkOpinion(c.env.DB_CIVIC_TALKS, id)
+    return c.json({ ok: true })
+  })
+
+  app.get('/api/admin/civic-talks/abuse-reports', async c => {
+    const auth = await requireFreshSuperAdmin(c.env, c.req.raw.headers)
+    if (!('context' in auth)) return c.json(auth.body, auth.status)
+    return c.json({ reports: await listCivicTalkAbuseReports(c.env.DB_CIVIC_TALKS) })
+  })
+
+  app.patch('/api/admin/civic-talks/abuse-reports/:id/resolve', async c => {
+    const auth = await requireFreshSuperAdmin(c.env, c.req.raw.headers)
+    if (!('context' in auth)) return c.json(auth.body, auth.status)
+
+    const id = parsePositiveId(c.req.param('id'))
+    if (!id) return c.json({ error: 'Invalid report id' }, 400)
+
+    let body: { action?: unknown }
+    try {
+      body = await c.req.json()
+    } catch {
+      return c.json({ error: 'Invalid JSON' }, 400)
+    }
+    if (body.action !== 'false_report' && body.action !== 'confirmed_abuse') {
+      return c.json({ error: 'action must be "false_report" or "confirmed_abuse"' }, 400)
+    }
+
+    const report = await getCivicTalkAbuseReport(c.env.DB_CIVIC_TALKS, id)
+    if (!report) return c.json({ error: 'Report not found' }, 404)
+    if (report.review_status !== 'pending') return c.json({ error: 'Report already resolved' }, 409)
+
+    const targetUserId = body.action === 'false_report' ? report.reporter_id : report.target_author_id
+    const banReason = body.action === 'false_report' ? '濫用回報：誤報，已停權' : '發布違規內容：已確認濫用'
+
+    // ban 先做——確保失敗時 review_status 保持 pending，前端拿到真實錯誤碼。
+    // targetUserId 不存在時跳過 ban（目標已刪除）。
+    if (targetUserId) {
+      try {
+        await createAuth(c.env).api.banUser({
+          body: { userId: targetUserId, banReason },
+          headers: c.req.raw.headers,
+        })
+      } catch (banErr) {
+        const apiErr = banErr as { statusCode?: number; body?: { message?: string } }
+        const status = typeof apiErr.statusCode === 'number' ? apiErr.statusCode : 500
+        const message = apiErr.body?.message ?? 'Ban failed'
+        console.error('banUser failed', { reportId: id, action: body.action, caught: banErr })
+        return c.json({ error: message }, status as 400 | 403 | 404 | 500)
+      }
+    }
+
+    // ban 成功（或無須 ban）才寫業務 DB
+    if (body.action === 'false_report') {
+      await resolveCivicTalkAbuseReport(c.env.DB_CIVIC_TALKS, id, 'resolved_false')
+      await unflagCivicTalkContent(c.env.DB_CIVIC_TALKS, report)
+    } else {
+      await resolveCivicTalkAbuseReport(c.env.DB_CIVIC_TALKS, id, 'resolved_abuse')
+      await confirmFlagCivicTalkContent(c.env.DB_CIVIC_TALKS, report)
+    }
+
     return c.json({ ok: true })
   })
 }

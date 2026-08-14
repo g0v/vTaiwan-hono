@@ -28,4 +28,22 @@ describe('Civic Talk 管理端點的授權關卡', () => {
 
     expect(response.status).toBe(401)
   })
+
+  it('未登入不得讀取濫用回報', async () => {
+    const response = await app.request('https://vtaiwan.tw/api/admin/civic-talks/abuse-reports', {
+      headers: { origin: 'https://vtaiwan.tw' },
+    })
+
+    expect(response.status).toBe(401)
+  })
+
+  it('未登入不得解決濫用回報', async () => {
+    const response = await app.request('https://vtaiwan.tw/api/admin/civic-talks/abuse-reports/1/resolve', {
+      method: 'PATCH',
+      headers: { origin: 'https://vtaiwan.tw', 'content-type': 'application/json' },
+      body: JSON.stringify({ action: 'false_report' }),
+    })
+
+    expect(response.status).toBe(401)
+  })
 })
