@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { RefreshCw } from 'lucide-vue-next'
+import { ExternalLink, RefreshCw } from 'lucide-vue-next'
 import { type AuthSession, responseRequiresStepUp } from '../client/auth-session'
 
 type IssueStatus = 'collecting' | 'summarizing' | 'published'
@@ -9,6 +9,18 @@ type ManagerSection = 'issues' | 'materials' | 'opinions' | 'events' | 'reports'
 type CreationEventType = 'material' | 'briefing' | 'opinion'
 type AbuseReportReason = 'spam' | 'hate_speech' | 'defamation' | 'misinformation' | 'other'
 type AbuseReportStatus = 'pending' | 'resolved_false' | 'resolved_abuse'
+type AbuseReportTarget =
+  | { type: 'material'; source_name: string | null; source_url: string | null; stance: Material['stance']; content: string; verified_count: number }
+  | {
+      type: 'briefing'
+      consensus: string | null
+      disputes: string | null
+      positions: string | null
+      narrative: string | null
+      opinion_prompt: string | null
+      version: number
+    }
+  | { type: 'opinion'; summary: string }
 
 interface Issue {
   id: number
@@ -66,6 +78,7 @@ interface AbuseReport {
   created_at: string
   target_issue_id: number | null
   target_author_id: string | null
+  target: AbuseReportTarget | null
 }
 
 const props = defineProps<{ authSession?: AuthSession | null }>()
@@ -92,6 +105,7 @@ const abuseReports = ref<AbuseReport[]>([])
 const reportsLoading = ref(false)
 const error = ref<string | null>(null)
 const previewEvent = ref<CreationEvent | null>(null)
+const previewReport = ref<AbuseReport | null>(null)
 const formOpen = ref(false)
 const editingIssueId = ref<number | null>(null)
 const submitting = ref(false)
@@ -409,6 +423,22 @@ function closePreview() {
   previewEvent.value = null
 }
 
+function previewReportTarget(report: AbuseReport) {
+  previewReport.value = report
+}
+
+function closeReportPreview() {
+  previewReport.value = null
+}
+
+function reportTargetUrl(report: AbuseReport): string | null {
+  if (!report.target_issue_id) return null
+  if (report.material_id) return `https://civic.vtaiwan.tw/issues/${report.target_issue_id}/source/${report.material_id}`
+  if (report.opinion_id) return `https://civic.vtaiwan.tw/issues/${report.target_issue_id}/comment/${report.opinion_id}`
+  if (report.briefing_id) return `https://civic.vtaiwan.tw/issues/${report.target_issue_id}`
+  return null
+}
+
 function previousEventPage() {
   if (eventPage.value > 1) eventPage.value -= 1
 }
@@ -682,16 +712,24 @@ onMounted(() => {
                 <div class="text-vt-xs text-vt-fg-3">{{ r.reporter_email }}</div>
               </td>
               <td :data-label="t('admin.civicTalk.admin.rptThTarget')">
-                <template v-if="r.target_issue_id">
-                  <a v-if="r.material_id" :href="`https://civic.vtaiwan.tw/issues/${r.target_issue_id}/source/${r.material_id}`" class="civic-issue-link" target="_blank" rel="noopener">
-                    {{ t('admin.civicTalk.admin.rptTargetMaterial') }}{{ r.material_id }}
-                  </a>
-                  <a v-else-if="r.opinion_id" :href="`https://civic.vtaiwan.tw/issues/${r.target_issue_id}/comment/${r.opinion_id}`" class="civic-issue-link" target="_blank" rel="noopener">
-                    {{ t('admin.civicTalk.admin.rptTargetOpinion') }}{{ r.opinion_id }}
-                  </a>
-                  <a v-else-if="r.briefing_id" :href="`https://civic.vtaiwan.tw/issues/${r.target_issue_id}`" class="civic-issue-link" target="_blank" rel="noopener">
-                    {{ t('admin.civicTalk.admin.rptTargetBriefing') }}{{ r.briefing_id }}
-                  </a>
+                <template v-if="r.target && reportTargetUrl(r)">
+                  <div class="civic-report-target">
+                    <button type="button" class="civic-event-item" @click="previewReportTarget(r)">
+                      <template v-if="r.material_id">{{ t('admin.civicTalk.admin.rptTargetMaterial') }}{{ r.material_id }}</template>
+                      <template v-else-if="r.opinion_id">{{ t('admin.civicTalk.admin.rptTargetOpinion') }}{{ r.opinion_id }}</template>
+                      <template v-else>{{ t('admin.civicTalk.admin.rptTargetBriefing') }}{{ r.briefing_id }}</template>
+                    </button>
+                    <a
+                      :href="reportTargetUrl(r)"
+                      class="civic-detail-button civic-report-target__link"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      :aria-label="t('admin.civicTalk.admin.rptOpenTarget')"
+                      :title="t('admin.civicTalk.admin.rptOpenTarget')"
+                    >
+                      <ExternalLink aria-hidden="true" />
+                    </a>
+                  </div>
                 </template>
                 <span v-else class="text-vt-xs text-vt-fg-3">{{ t('admin.civicTalk.admin.rptTargetDeleted') }}</span>
               </td>
@@ -857,6 +895,66 @@ onMounted(() => {
         </div>
       </section>
     </div>
+
+    <div v-if="previewReport?.target" class="civic-modal-backdrop" role="presentation" @click.self="closeReportPreview">
+      <section class="civic-modal civic-preview-modal max-w-xl" role="dialog" aria-modal="true" :aria-label="t('admin.civicTalk.admin.rptPreviewTitle')">
+        <div class="civic-section-heading">
+          <h3 class="text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.civicTalk.admin.rptPreviewTitle') }}</h3>
+          <button type="button" class="civic-modal-close" :aria-label="t('common.cancel')" @click="closeReportPreview">×</button>
+        </div>
+
+        <div v-if="previewReport.target.type === 'material'" class="civic-preview-content">
+          <dl>
+            <div>
+              <dt>{{ t('admin.civicTalk.events.preview.sourceName') }}</dt>
+              <dd>{{ previewReport.target.source_name || t('admin.civicTalk.unknownSource') }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('admin.civicTalk.events.preview.stance') }}</dt>
+              <dd>{{ t(`admin.civicTalk.stance.${previewReport.target.stance}`) }}</dd>
+            </div>
+            <div>
+              <dt>{{ t('admin.civicTalk.events.preview.verifiedCount') }}</dt>
+              <dd>{{ previewReport.target.verified_count }}</dd>
+            </div>
+          </dl>
+          <a v-if="previewReport.target.source_url" class="civic-source-link" :href="previewReport.target.source_url" target="_blank" rel="noopener noreferrer">
+            {{ previewReport.target.source_url }}
+          </a>
+          <p class="civic-entry__content">{{ previewReport.target.content }}</p>
+        </div>
+
+        <div v-else-if="previewReport.target.type === 'briefing'" class="civic-preview-content">
+          <p class="text-vt-sm text-vt-fg-3">{{ t('admin.civicTalk.events.preview.version', { version: previewReport.target.version }) }}</p>
+          <dl>
+            <div v-if="previewReport.target.consensus">
+              <dt>{{ t('admin.civicTalk.events.preview.consensus') }}</dt>
+              <dd>{{ previewReport.target.consensus }}</dd>
+            </div>
+            <div v-if="previewReport.target.disputes">
+              <dt>{{ t('admin.civicTalk.events.preview.disputes') }}</dt>
+              <dd>{{ previewReport.target.disputes }}</dd>
+            </div>
+            <div v-if="previewReport.target.positions">
+              <dt>{{ t('admin.civicTalk.events.preview.positions') }}</dt>
+              <dd>{{ previewReport.target.positions }}</dd>
+            </div>
+            <div v-if="previewReport.target.narrative">
+              <dt>{{ t('admin.civicTalk.events.preview.narrative') }}</dt>
+              <dd>{{ previewReport.target.narrative }}</dd>
+            </div>
+            <div v-if="previewReport.target.opinion_prompt">
+              <dt>{{ t('admin.civicTalk.events.preview.opinionPrompt') }}</dt>
+              <dd>{{ previewReport.target.opinion_prompt }}</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div v-else class="civic-preview-content">
+          <p class="civic-entry__content">{{ previewReport.target.summary }}</p>
+        </div>
+      </section>
+    </div>
   </section>
 </template>
 
@@ -880,6 +978,7 @@ onMounted(() => {
 .civic-header__actions,
 .civic-pagination,
 .civic-event-action,
+.civic-report-target,
 .civic-section-switcher,
 .civic-search__controls {
   display: flex;
@@ -1079,6 +1178,19 @@ onMounted(() => {
   color: var(--color-vt-democratic-red);
   text-decoration: underline;
   text-underline-offset: var(--spacing-vt-1);
+}
+
+.civic-report-target {
+  justify-content: flex-start;
+}
+
+.civic-report-target__link {
+  flex: 0 0 auto;
+}
+
+.civic-report-target__link :deep(svg) {
+  width: var(--spacing-vt-4);
+  height: var(--spacing-vt-4);
 }
 
 .civic-pagination {

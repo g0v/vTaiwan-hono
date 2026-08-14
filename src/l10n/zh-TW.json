@@ -1340,6 +1340,8 @@
         "rptTargetOpinion": "意見 #",
         "rptTargetBriefing": "說明頁 #",
         "rptTargetDeleted": "（目標已刪除）",
+        "rptPreviewTitle": "目標內容",
+        "rptOpenTarget": "在新分頁開啟目標內容",
         "rptNoAuthor": "（找不到張貼者，無法停權）",
         "rptConfirmFalse": "確定將此回報標記為誤報並停權回報者？",
         "rptConfirmAbuse": "確定確認此為濫用並停權張貼者？",

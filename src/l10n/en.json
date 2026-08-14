@@ -1340,6 +1340,8 @@
         "rptTargetOpinion": "Opinion #",
         "rptTargetBriefing": "Briefing #",
         "rptTargetDeleted": "(target deleted)",
+        "rptPreviewTitle": "Target content",
+        "rptOpenTarget": "Open target content in a new tab",
         "rptNoAuthor": "(No author found, cannot ban)",
         "rptConfirmFalse": "Mark as false report and ban reporter?",
         "rptConfirmAbuse": "Confirm abuse and ban poster?",

@@ -255,6 +255,19 @@ export async function deleteCivicTalkOpinion(db: D1Database, id: number): Promis
 export type CivicTalkAbuseReportReason = 'spam' | 'hate_speech' | 'defamation' | 'misinformation' | 'other'
 export type CivicTalkAbuseReportStatus = 'pending' | 'resolved_false' | 'resolved_abuse'
 
+export type CivicTalkAbuseReportTarget =
+  | { type: 'material'; source_name: string | null; source_url: string | null; stance: CivicTalkMaterial['stance']; content: string; verified_count: number }
+  | {
+      type: 'briefing'
+      consensus: string | null
+      disputes: string | null
+      positions: string | null
+      narrative: string | null
+      opinion_prompt: string | null
+      version: number
+    }
+  | { type: 'opinion'; summary: string }
+
 export interface CivicTalkAbuseReport {
   id: number
   reporter_id: string
@@ -269,6 +282,23 @@ export interface CivicTalkAbuseReport {
   created_at: string
   target_issue_id: number | null
   target_author_id: string | null
+  target: CivicTalkAbuseReportTarget | null
+}
+
+interface CivicTalkAbuseReportRow extends Omit<CivicTalkAbuseReport, 'target'> {
+  target_type: CivicTalkAbuseReportTarget['type'] | null
+  source_name: string | null
+  source_url: string | null
+  stance: CivicTalkMaterial['stance'] | null
+  content: string | null
+  verified_count: number | null
+  consensus: string | null
+  disputes: string | null
+  positions: string | null
+  narrative: string | null
+  opinion_prompt: string | null
+  version: number | null
+  summary: string | null
 }
 
 const ABUSE_REPORT_SELECT = `SELECT
@@ -277,19 +307,40 @@ const ABUSE_REPORT_SELECT = `SELECT
   r.material_id, r.briefing_id, r.opinion_id,
   r.review_status, r.created_at,
   COALESCE(m.issue_id, b.issue_id, o.issue_id)    AS target_issue_id,
-  COALESCE(m.author_id, b.author_id, o.author_id) AS target_author_id
+  COALESCE(m.author_id, b.author_id, o.author_id) AS target_author_id,
+  CASE WHEN m.id IS NOT NULL THEN 'material' WHEN b.id IS NOT NULL THEN 'briefing' WHEN o.id IS NOT NULL THEN 'opinion' END AS target_type,
+  m.source_name, m.source_url, m.stance, m.content, m.verified_count,
+  b.consensus, b.disputes, b.positions, b.narrative, b.opinion_prompt, b.version,
+  o.summary
 FROM ct_abuse_reports r
 LEFT JOIN ct_materials m ON r.material_id = m.id
 LEFT JOIN ct_briefings b ON r.briefing_id = b.id
 LEFT JOIN ct_opinions  o ON r.opinion_id  = o.id`
 
+function toCivicTalkAbuseReport(row: CivicTalkAbuseReportRow): CivicTalkAbuseReport {
+  const { target_type, source_name, source_url, stance, content, verified_count, consensus, disputes, positions, narrative, opinion_prompt, version, summary, ...report } = row
+
+  if (target_type === 'material' && stance && content != null && verified_count != null) {
+    return { ...report, target: { type: 'material', source_name, source_url, stance, content, verified_count } }
+  }
+  if (target_type === 'briefing' && version != null) {
+    return { ...report, target: { type: 'briefing', consensus, disputes, positions, narrative, opinion_prompt, version } }
+  }
+  if (target_type === 'opinion' && summary != null) {
+    return { ...report, target: { type: 'opinion', summary } }
+  }
+
+  return { ...report, target: null }
+}
+
 export async function listCivicTalkAbuseReports(db: D1Database): Promise<CivicTalkAbuseReport[]> {
-  const { results } = await db.prepare(`${ABUSE_REPORT_SELECT} ORDER BY r.created_at DESC`).all<CivicTalkAbuseReport>()
-  return results ?? []
+  const { results } = await db.prepare(`${ABUSE_REPORT_SELECT} ORDER BY r.created_at DESC`).all<CivicTalkAbuseReportRow>()
+  return (results ?? []).map(toCivicTalkAbuseReport)
 }
 
 export async function getCivicTalkAbuseReport(db: D1Database, id: number): Promise<CivicTalkAbuseReport | null> {
-  return db.prepare(`${ABUSE_REPORT_SELECT} WHERE r.id = ?`).bind(id).first<CivicTalkAbuseReport>()
+  const row = await db.prepare(`${ABUSE_REPORT_SELECT} WHERE r.id = ?`).bind(id).first<CivicTalkAbuseReportRow>()
+  return row ? toCivicTalkAbuseReport(row) : null
 }
 
 export async function resolveCivicTalkAbuseReport(db: D1Database, id: number, status: 'resolved_false' | 'resolved_abuse'): Promise<void> {

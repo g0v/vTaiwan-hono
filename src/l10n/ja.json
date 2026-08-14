@@ -1340,6 +1340,8 @@
         "rptTargetOpinion": "意見 #",
         "rptTargetBriefing": "説明ページ #",
         "rptTargetDeleted": "（対象が削除済み）",
+        "rptPreviewTitle": "対象コンテンツ",
+        "rptOpenTarget": "対象コンテンツを新しいタブで開く",
         "rptNoAuthor": "（投稿者が見つかりません）",
         "rptConfirmFalse": "誤報告としてマークし、報告者を停止しますか？",
         "rptConfirmAbuse": "濫用を確認し、投稿者を停止しますか？",
