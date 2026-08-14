@@ -600,11 +600,13 @@ onMounted(() => {
           <tbody>
             <tr v-for="event in creationEvents" :key="`${event.type}-${event.id}`">
               <td :data-label="t('admin.civicTalk.events.columns.time')">{{ formatDateTime(event.createdAt) }}</td>
-              <td :data-label="t('admin.civicTalk.events.columns.action')" class="civic-event-action">
-                <span>{{ t('admin.civicTalk.events.action.on', { actor: event.authorName || t('admin.civicTalk.unknownAuthor') }) }}</span>
-                <a :href="`https://civic.vtaiwan.tw/issues/${event.issueId}`" target="_blank" rel="noopener noreferrer" class="civic-issue-link">{{ event.issueTitle }}</a>
-                <span>{{ t('admin.civicTalk.events.action.created') }}</span>
-                <button type="button" class="civic-event-item" @click="previewEventRecord(event)">{{ previewTitle(event) }}</button>
+              <td :data-label="t('admin.civicTalk.events.columns.action')">
+                <div class="civic-event-action">
+                  <span>{{ t('admin.civicTalk.events.action.on', { actor: event.authorName || t('admin.civicTalk.unknownAuthor') }) }}</span>
+                  <a :href="`https://civic.vtaiwan.tw/issues/${event.issueId}`" target="_blank" rel="noopener noreferrer" class="civic-issue-link">{{ event.issueTitle }}</a>
+                  <span>{{ t('admin.civicTalk.events.action.created') }}</span>
+                  <button type="button" class="civic-event-item" @click="previewEventRecord(event)">{{ previewTitle(event) }}</button>
+                </div>
               </td>
             </tr>
           </tbody>
