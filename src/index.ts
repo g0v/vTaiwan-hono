@@ -1,17 +1,17 @@
 import { Hono } from 'hono'
 import { csrf } from 'hono/csrf'
-import { registerDiscourseTopicIdApi } from './api/discourse_topic_id'
-import { registerDiscourseTopicsApi } from './api/discourse_topics'
-import { registerHelloApi } from './api/hello'
-import { registerJitsiTokenApi } from './api/jitsi_token'
-import { registerMastodonApi } from './api/mastodon'
-import { registerProxyApi } from './api/proxy'
-import { registerTranscriptionApi } from './api/transcription'
-import { registerAdminApi } from './api/admin'
-import { registerCivicTalkAdminApi } from './api/civic-talk'
+import admin from './api/admin'
+import civicTalk from './api/civic-talk'
+import discourseTopicId from './api/discourse_topic_id'
+import discourseTopics from './api/discourse_topics'
+import hello from './api/hello'
+import jitsiToken from './api/jitsi_token'
+import mastodon from './api/mastodon'
+import proxy from './api/proxy'
+import transcription from './api/transcription'
 import type { AppEnv } from './api/types'
 import auth from './api/auth'
-import { registerMeetingApi } from './api/meeting'
+import meeting from './api/meeting'
 export { MeetingRoom } from './durable-objects/meeting-room'
 import { isActiveAdminRole, tryGetAuthContext } from './server/lib/authorization'
 import { renderPage } from './ssr/render'
@@ -68,16 +68,16 @@ app.use('/api/*', csrf())
 
 // 純 JSON / 文字 API：直接回傳，不走 SSR
 app.route('/', auth)
-registerHelloApi(app)
-registerProxyApi(app)
-registerMastodonApi(app)
-registerDiscourseTopicsApi(app)
-registerDiscourseTopicIdApi(app)
-registerJitsiTokenApi(app)
-registerTranscriptionApi(app)
-registerAdminApi(app)
-registerCivicTalkAdminApi(app)
-registerMeetingApi(app)
+app.route('/api/hello', hello)
+app.route('/api/proxy', proxy)
+app.route('/api/mastodon', mastodon)
+app.route('/api/discourse/topics', discourseTopics)
+app.route('/api/discourse/topic', discourseTopicId)
+app.route('/api/jitsi-token', jitsiToken)
+app.route('/', transcription)
+app.route('/api/admin', admin)
+app.route('/api/admin/civic-talks', civicTalk)
+app.route('/', meeting)
 
 // 其他 GET 請求：靜態檔交給 ASSETS，其餘交給 Vue SSR + vue-router。
 app.get('*', async c => {
