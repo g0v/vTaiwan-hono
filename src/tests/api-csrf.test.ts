@@ -15,8 +15,8 @@ const SAME_ORIGIN = { ...FORM_HEADERS, origin: 'https://vtaiwan.tw', 'sec-fetch-
 // 全域中介層——打不存在的路徑會落到 SSR fallback，即使中介層失效也測不出來。
 // csrf **依設計不擋 GET／HEAD**：跨站 GET 是網頁平台的既有能力（<img>、<script>、<iframe> 都能發），
 // 擋不住也不該擋——GET 必須是安全方法（不改狀態），攻擊者也讀不到回應。跨站「讀」的把關是
-// 同源政策：不回 CORS 標頭就讀不到，且本站的 corsFor 一律不帶 credentials，
-// 所以任何跨來源讀取都是匿名的，需要 session 的 GET 端點（audit-log、versions）跨站只會拿到 401。
+// 同源政策：不回 CORS 標頭就讀不到；本站的 corsFor 一律不帶 credentials，
+// 即使呼叫端要求帶 cookie，瀏覽器也不會把 credentialed response 暴露給跨來源 script。
 // 詳見 AGENTS.md「API 模組掛載規則」。純 GET 的掛載由 api-routing.test.ts 的註冊順序測試涵蓋。
 const MOUNTED_WRITE_ENDPOINTS = [
   { mount: '/api/auth', method: 'POST', path: '/api/auth/admin/set-role' },
@@ -55,13 +55,27 @@ describe('/api/* 全域 csrf 防護', () => {
     const res = await app.request('https://vtaiwan.tw/api/hello', { headers: { origin: 'https://attacker.example' } })
     expect(res.status).not.toBe(403)
   })
+
+  it('寫入端點的跨來源 preflight 不回 CORS 放行標頭', async () => {
+    const res = await app.request('https://next.vtaiwan.tw/api/transcription/upload', {
+      method: 'OPTIONS',
+      headers: {
+        origin: 'https://vtaiwan.tw',
+        'access-control-request-method': 'POST',
+        'access-control-request-headers': 'content-type',
+      },
+    })
+    expect(res.headers.get('access-control-allow-origin')).toBeNull()
+    expect(res.headers.get('access-control-allow-methods')).toBeNull()
+  })
 })
 
 // GET 的跨站防線不是 csrf，而是同源政策：能不能讀到回應由 CORS 標頭決定。
-// 這裡釘住白名單「只開放匿名讀取」——沒有 Access-Control-Allow-Credentials，
-// 瀏覽器就不會把帶 cookie 的跨來源讀取結果交給呼叫端，需要 session 的 GET 端點跨站一律拿不到資料。
+// 這裡釘住「不開放 credentialed response」——沒有 Access-Control-Allow-Credentials，
+// 瀏覽器就不會把帶 cookie 的跨來源讀取結果交給呼叫端。這不代表 request 一定沒帶 cookie；
+// cookie 是否送出由 Fetch credentials mode 與 cookie policy 決定，CORS 管的是 response 能否交給 script。
 // 若哪天在 corsFor 加上 credentials: true，這條會紅——那等於把 session 資料開放給白名單上的每個網域。
-describe('CORS 白名單只開放匿名跨來源讀取', () => {
+describe('CORS 白名單不開放 credentialed response', () => {
   it('白名單來源拿得到 Allow-Origin，但拿不到 Allow-Credentials', async () => {
     const res = await app.request('https://next.vtaiwan.tw/api/hello', {
       headers: { origin: 'https://vtaiwan.tw', 'sec-fetch-site': 'cross-site' },
@@ -75,5 +89,26 @@ describe('CORS 白名單只開放匿名跨來源讀取', () => {
       headers: { origin: 'https://attacker.example', 'sec-fetch-site': 'cross-site' },
     })
     expect(res.headers.get('access-control-allow-origin')).toBeNull()
+  })
+})
+
+describe('WebSocket 升級的同源防護', () => {
+  const websocketHeaders = { upgrade: 'websocket' }
+
+  for (const origin of ['https://attacker.example', 'https://evil.vtaiwan.tw']) {
+    it(`拒絕來自 ${origin} 的瀏覽器握手`, async () => {
+      const res = await app.request('https://vtaiwan.tw/api/meeting/ws/20260803', {
+        headers: { ...websocketHeaders, origin },
+      })
+      expect(res.status).toBe(403)
+    })
+  }
+
+  it('同源瀏覽器握手通過 Origin 守衛', async () => {
+    const res = await app.request('https://vtaiwan.tw/api/meeting/ws/20260803', {
+      headers: { ...websocketHeaders, origin: 'https://vtaiwan.tw' },
+    })
+    // 測試環境沒有 DO 綁定，通過 Origin 守衛後會在後續綁定檢查回 500。
+    expect(res.status).toBe(500)
   })
 })

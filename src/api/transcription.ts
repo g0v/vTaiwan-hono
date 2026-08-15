@@ -96,9 +96,9 @@ const app = new Hono<AppEnv>()
 // ─── CORS 政策 ────────────────────────────────────────────────────────────────
 // **寫入端點一律不掛 `corsFor`**（/upload、/outline、/restore、/delete、/create-table、
 // /test-ai、/:lang）：它們只給本站自己的頁面用，沒有跨來源使用情境。
-// 這不只是宣告——跨來源的寫入請求本來就過不了全域 csrf()：preflight 的 OPTIONS 不是安全方法、
-// 又沒有 Content-Type（hono/csrf 視同 text/plain），連握手都會被擋成 403，`corsFor(['POST'])`
-// 的標頭實際上永遠送不出去。掛著只會讓 ALLOWED_ORIGINS 誤導後人以為這些路徑可以跨站呼叫。
+// 不掛 middleware 就不會回應 preflight 所需的 CORS 標頭，瀏覽器無法完成跨來源寫入；
+// 表單型實際請求另由全域 csrf() 把關。不要依賴特定 Hono 版本是否把 OPTIONS 視為安全方法，
+// 也不要把 CORS 誤當成授權機制。掛著只會讓 ALLOWED_ORIGINS 誤導後人以為這些路徑可跨站呼叫。
 // 只有公開讀取的 GET 端點（列表、逐字稿全文）才掛 corsFor，那才是真的會生效的地方。
 // ⚠️ 不要在端點內自己補同源檢查——同源把關的單一來源是 index.ts 的全域 csrf()。
 // ⚠️ 真的需要跨站寫入，必須先動全域 csrf 設定，那是要與使用者確認的決定。

@@ -6,7 +6,8 @@ import type { AppEnv } from './types'
 const app = new Hono<AppEnv>()
 
 // 不掛 corsFor：這是本站 JitsiView 自己用的寫入端點，沒有跨來源使用情境，
-// 且跨來源請求本來就過不了全域 csrf()（連 preflight 都會 403），CORS 標頭永遠送不出去。
+// 因此不回應跨來源 preflight 所需的 CORS 標頭；瀏覽器無法完成跨來源寫入。
+// 表單型實際請求另由全域 csrf() 把關，不把 CORS 誤當成授權機制。
 // 同 transcription.ts 的「CORS 政策」，寫入端點一律不宣告 CORS。
 app.post('/', async c => {
   const context = await getAuthContext(c.env, c.req.raw.headers)

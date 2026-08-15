@@ -105,7 +105,7 @@
 
   <rect x="470" y="344" width="250" height="132" rx="8" class="bx-worker" />
   <text class="btitle mono" x="490" y="370">app.use('/api/*', csrf())</text>
-  <text class="cj" x="490" y="394">唯一的同源把關點</text>
+  <text class="cj" x="490" y="394">HTTP 寫入同源把關</text>
   <text class="cj" x="490" y="416">端點內不再自寫檢查</text>
   <text class="cj" x="490" y="438">無 Origin 的表單請求</text>
   <text class="cj" x="490" y="460">一律 403（含 curl）</text>
@@ -372,7 +372,7 @@
   <text class="cj" x="1180" y="2046">meeting.join；moderator claim 由 meeting.moderate 決定</text>
 
   <text class="cj mono" x="830" y="2072">/api/meeting/* ・ /api/meeting/ws/:date</text>
-  <text class="cj" x="1180" y="2072">meeting.join（WS 未授權者僅唯讀）</text>
+  <text class="cj" x="1180" y="2072">meeting.join（WS 驗 Origin；未授權唯讀）</text>
 
   <text class="cj mono" x="830" y="2098">/api/transcription/:lang（站內專用）</text>
   <text class="cj" x="1180" y="2098">meeting.join</text>

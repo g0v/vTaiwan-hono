@@ -22,13 +22,22 @@ function isValidDate(date: string): boolean {
   return /^\d{8}$/.test(date)
 }
 
+/**
+ * 瀏覽器 WebSocket 握手一定帶 Origin；只接受與目標 URL 完全同源的頁面。
+ * 非瀏覽器 client 可以不帶 Origin，但不能藉此取得認證——session 仍由 cookie 決定。
+ */
+function hasAllowedWebSocketOrigin(request: Request): boolean {
+  const origin = request.headers.get('Origin')
+  return origin === null || origin === new URL(request.url).origin
+}
+
 const app = new Hono<AppEnv>()
 
 // ─── WebSocket Upgrade ─────────────────────────────────────────────────────
 
 /**
  * 把 WebSocket 升級請求轉給 MeetingRoom DO。
- * - 任何人皆可連線（read-only 觀察）
+ * - 同源瀏覽器與非瀏覽器 client 皆可連線（未認證時 read-only 觀察）
  * - 認證狀態由此處解析後寫入 X-Authenticated / X-User-Id 標頭，
  *   DO 在 webSocketMessage 中利用 serializeAttachment 把關寫入
  */
@@ -40,6 +49,11 @@ app.get('/ws/:date', async c => {
   if (!upgradeHeader || upgradeHeader.toLowerCase() !== 'websocket') {
     return c.text('Expected WebSocket upgrade', 426)
   }
+
+  // WebSocket 握手是 GET，不受 hono/csrf 保護，也沒有瀏覽器 CORS preflight。
+  // SameSite 只區分「站點」而非「來源」，不能阻止同一 registrable domain 下的惡意子網域
+  // 帶著 session cookie 建連；因此必須在讀 session 前獨立驗 Origin。
+  if (!hasAllowedWebSocketOrigin(c.req.raw)) return c.text('Forbidden', 403)
 
   // 解析認證（非強制；失敗視為未登入）
   // isAuthenticated = 有效 session 且擁有 meeting.join（停權帳號 permissions=[]，視為未授權）

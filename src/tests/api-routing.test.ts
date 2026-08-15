@@ -63,23 +63,38 @@ describe('動態路徑不得攔截同層的固定名稱端點', () => {
   })
 })
 
-// 寫入端點一律不宣告 CORS：它們只給本站自己的頁面用，而跨來源寫入本來就過不了全域 csrf()
-//（preflight 的 OPTIONS 同樣會被擋），掛 corsFor 的標頭永遠送不出去，
-// 只會讓 ALLOWED_ORIGINS 誤導後人以為這些路徑可以跨站呼叫。
+// 寫入端點一律不宣告 CORS：它們只給本站自己的頁面用，不應回應跨來源 preflight。
+// 表單型實際請求另由全域 csrf() 把關；兩層責任不能混為一談。
 // 這裡以回應標頭驗：同源請求若帶回 Access-Control-Allow-Origin，就代表該端點又掛上了 corsFor。
 describe('寫入端點不對外宣告 CORS', () => {
   const WRITE_ENDPOINTS = [
-    { method: 'POST', path: '/api/transcription/upload' },
-    { method: 'POST', path: '/api/transcription/outline' },
-    { method: 'POST', path: '/api/transcription/restore' },
-    { method: 'POST', path: '/api/transcription/delete' },
-    { method: 'POST', path: '/api/transcription/create-table' },
-    { method: 'POST', path: '/api/transcription/test-ai' },
-    { method: 'POST', path: '/api/transcription/zh-TW' },
-    { method: 'POST', path: '/api/jitsi-token' },
-    { method: 'PUT', path: '/api/admin/civic-talks/issues/1' },
-    { method: 'POST', path: '/api/meeting/20260803/transcript' },
+    { routePath: '/api/auth/*', method: 'POST', path: '/api/auth/admin/set-role' },
+    { routePath: '/api/jitsi-token', method: 'POST', path: '/api/jitsi-token' },
+    { routePath: '/api/transcription/upload', method: 'POST', path: '/api/transcription/upload' },
+    { routePath: '/api/transcription/outline', method: 'POST', path: '/api/transcription/outline' },
+    { routePath: '/api/transcription/restore', method: 'POST', path: '/api/transcription/restore' },
+    { routePath: '/api/transcription/delete', method: 'POST', path: '/api/transcription/delete' },
+    { routePath: '/api/transcription/create-table', method: 'POST', path: '/api/transcription/create-table' },
+    { routePath: '/api/transcription/test-ai', method: 'POST', path: '/api/transcription/test-ai' },
+    { routePath: '/api/transcription/:lang{zh-TW|en|ja}', method: 'POST', path: '/api/transcription/zh-TW' },
+    { routePath: '/api/admin/civic-talks/issues/:id', method: 'PUT', path: '/api/admin/civic-talks/issues/1' },
+    { routePath: '/api/admin/civic-talks/issues/:id', method: 'DELETE', path: '/api/admin/civic-talks/issues/1' },
+    { routePath: '/api/admin/civic-talks/materials/:id', method: 'DELETE', path: '/api/admin/civic-talks/materials/1' },
+    { routePath: '/api/admin/civic-talks/opinions/:id', method: 'DELETE', path: '/api/admin/civic-talks/opinions/1' },
+    { routePath: '/api/admin/civic-talks/abuse-reports/:id/resolve', method: 'PATCH', path: '/api/admin/civic-talks/abuse-reports/1/resolve' },
+    { routePath: '/api/meeting/:date/transcript', method: 'POST', path: '/api/meeting/20260803/transcript' },
+    { routePath: '/api/meeting/:date/transcript/:ts', method: 'DELETE', path: '/api/meeting/20260803/transcript/1' },
+    { routePath: '/api/meeting/:date', method: 'PATCH', path: '/api/meeting/20260803' },
   ] as const
+
+  it('測試案例完整涵蓋目前註冊的所有寫入路由', () => {
+    const registered = app.routes
+      .filter(route => route.method !== 'ALL' && !['GET', 'HEAD', 'OPTIONS'].includes(route.method))
+      .map(route => `${route.method} ${route.path}`)
+      .sort()
+    const covered = WRITE_ENDPOINTS.map(route => `${route.method} ${route.routePath}`).sort()
+    expect(covered).toEqual(registered)
+  })
 
   for (const { method, path } of WRITE_ENDPOINTS) {
     it(`${method} ${path} 不回 Access-Control-Allow-Origin`, async () => {
