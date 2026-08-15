@@ -106,7 +106,7 @@ async function loadVersions() {
   try {
     loading.value = true
     error.value = ''
-    const response = await fetch(`/api/transcriptions/${props.meetingId}/versions`)
+    const response = await fetch(`/api/transcription/${props.meetingId}/versions`)
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
     const data = (await response.json()) as { versions: TranscriptionVersion[]; truncated: boolean }
     versions.value = data.versions
@@ -122,7 +122,7 @@ async function loadVersions() {
 async function download(version: TranscriptionVersion) {
   downloadingId.value = version.version_id
   try {
-    const response = await fetch(`/api/transcriptions/${props.meetingId}/versions/${version.version_id}/text`)
+    const response = await fetch(`/api/transcription/${props.meetingId}/versions/${version.version_id}/text`)
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
     const blob = await response.blob()
     const url = URL.createObjectURL(blob)

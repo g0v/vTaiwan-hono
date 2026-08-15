@@ -125,7 +125,7 @@ onMounted(async () => {
     loading.value = true
     error.value = ''
     // 讀取 D1 逐字稿（取代原本直打公開 R2 網域）
-    const response = await fetch(`/api/transcriptions/${meetingId.value}/text`)
+    const response = await fetch(`/api/transcription/${meetingId.value}/text`)
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
     const text = await response.text()
     transcriptionContent.value = text.split(/\n{2,4}/).filter(block => block.trim().length > 0)

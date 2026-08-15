@@ -1,7 +1,9 @@
+import { Hono } from 'hono'
 import { corsFor } from './cors'
-import type { App } from './types'
+import type { AppEnv } from './types'
 
-export function registerHelloApi(app: App) {
-  app.use('/api/hello', corsFor(['GET']))
-  app.get('/api/hello', c => c.text('Hello World!'))
-}
+const app = new Hono<AppEnv>()
+
+app.use('/', corsFor(['GET']))
+app.get('/', c => c.text('Hello World!'))
+export default app

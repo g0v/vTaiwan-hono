@@ -5,7 +5,7 @@ import { requiresStepUp, sessionNotFreshBody } from '../server/lib/step-up'
 import { nameChangeCooldownExpiresAt, NAME_CHANGE_COOLDOWN_CODE } from '../lib/profile-name'
 import type { AppEnv } from './types'
 
-export const app = new Hono<AppEnv>()
+const app = new Hono<AppEnv>()
 
 type UserNameChangeRow = {
   name: string
@@ -43,7 +43,16 @@ async function enforceNameChangeCooldown(c: Context<AppEnv>): Promise<Response |
   return null
 }
 
-app.on(['GET', 'POST'], '/api/auth/*', async c => {
+// 這裡刻意用會 throw 的 getAuthContext：/api/auth/me 讀不到 session 是「壞掉」而非「未登入」，
+// 壓成 401 會讓前端把系統故障誤判成登出。必須放在 Better Auth 的 catch-all 前，
+// 否則會被 `/*` 攔截並由 Better Auth 回 404。
+app.get('/me', async c => {
+  const context = await getAuthContext(c.env, c.req.raw.headers)
+  if (!context) return c.json({ error: 'Unauthorized' }, 401)
+  return c.json(context)
+})
+
+app.on(['GET', 'POST'], '/*', async c => {
   const pathname = new URL(c.req.url).pathname
 
   if (pathname === '/api/auth/update-user' && c.req.method === 'POST') {
@@ -61,14 +70,6 @@ app.on(['GET', 'POST'], '/api/auth/*', async c => {
   }
 
   return createAuth(c.env).handler(c.req.raw)
-})
-
-// 這裡刻意用會 throw 的 getAuthContext：/api/me 讀不到 session 是「壞掉」而非「未登入」，
-// 壓成 401 會讓前端把系統故障誤判成登出。
-app.get('/api/me', async c => {
-  const context = await getAuthContext(c.env, c.req.raw.headers)
-  if (!context) return c.json({ error: 'Unauthorized' }, 401)
-  return c.json(context)
 })
 
 export default app

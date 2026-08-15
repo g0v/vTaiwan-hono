@@ -55,17 +55,17 @@ describe('版本端點的授權關卡', () => {
   const headers = { origin: 'https://vtaiwan.tw' }
 
   it('未登入不得列出歷史版本', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/transcriptions/20260803/versions', { headers })
+    const res = await app.request('https://vtaiwan.tw/api/transcription/20260803/versions', { headers })
     expect(res.status).toBe(401)
   })
 
   it('未登入不得下載歷史版本', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/transcriptions/20260803/versions/20260803T091500123Z/text', { headers })
+    const res = await app.request('https://vtaiwan.tw/api/transcription/20260803/versions/20260803T091500123Z/text', { headers })
     expect(res.status).toBe(401)
   })
 
   it('格式不合法的參數在碰到授權與 R2 之前就被擋下', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/transcriptions/2026080/versions', { headers })
+    const res = await app.request('https://vtaiwan.tw/api/transcription/2026080/versions', { headers })
     expect(res.status).toBe(400)
   })
 })

@@ -78,7 +78,7 @@ describe('變更日誌事件對應（#71）', () => {
     expect(auditActionForAdminPath('/api/auth/admin/list-user-sessions')).toBeNull()
     expect(auditActionForAdminPath('/api/auth/admin/has-permission')).toBeNull()
     expect(auditActionForAdminPath('/api/auth/callback/google')).toBeNull()
-    expect(auditActionForAdminPath('/api/me')).toBeNull()
+    expect(auditActionForAdminPath('/api/auth/me')).toBeNull()
   })
 
   // 少一個 key，日誌就會顯示 i18n 原始路徑。三檔同步由 l10n.test.ts 把關，這裡確保基準檔有值。
@@ -275,7 +275,7 @@ describe('回復／刪除端點的授權關卡', () => {
   const headers = { origin: 'https://vtaiwan.tw', 'content-type': 'application/json' }
 
   it('未登入不得回復逐字稿', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/restore-transcription', {
+    const res = await app.request('https://vtaiwan.tw/api/transcription/restore', {
       method: 'POST',
       headers,
       body: JSON.stringify({ meeting_id: '20260803', target: 'transcription', version_id: '20260803T091500123Z' }),
@@ -284,7 +284,7 @@ describe('回復／刪除端點的授權關卡', () => {
   })
 
   it('未登入不得刪除逐字稿', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/delete-transcription', {
+    const res = await app.request('https://vtaiwan.tw/api/transcription/delete', {
       method: 'POST',
       headers,
       body: JSON.stringify({ meeting_id: '20260803' }),

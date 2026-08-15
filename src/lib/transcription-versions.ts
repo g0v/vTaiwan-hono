@@ -66,7 +66,7 @@ export function versionIdFromKey(key: string, meetingId: string): string | null 
   return isValidVersionId(versionId) ? versionId : null
 }
 
-/** /api/transcriptions/:meeting_id/versions 回傳的單筆版本 */
+/** /api/transcription/:meeting_id/versions 回傳的單筆版本 */
 export interface TranscriptionVersion {
   version_id: string
   /** 上傳時間（epoch 毫秒）：取自版本識別碼，解析失敗時退回 R2 的 uploaded */

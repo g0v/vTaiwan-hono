@@ -6,7 +6,7 @@ import { sanitizeUntrustedHtml } from './html-sanitizer'
 
 marked.setOptions({ breaks: true, gfm: true })
 
-/** /api/query-table 回傳的逐字稿資料列 */
+/** /api/transcription 回傳的逐字稿資料列 */
 export interface Transcription {
   meeting_id: string
   transcription: string

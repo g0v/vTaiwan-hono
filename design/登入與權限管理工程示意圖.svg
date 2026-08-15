@@ -67,7 +67,7 @@
   <rect x="196" y="200" width="330" height="112" rx="8" class="bx-client" />
   <text class="btitle mono" x="216" y="226">App.vue</text>
   <text class="l mono" x="216" y="250">onMounted → loadAuthSession()</text>
-  <text class="l mono" x="216" y="272">GET /api/me → AuthSession</text>
+  <text class="l mono" x="216" y="272">GET /api/auth/me → AuthSession</text>
   <text class="cj" x="216" y="294">authReady ／ isAdmin → 顯示後台入口</text>
 
   <rect x="560" y="200" width="330" height="112" rx="8" class="bx-client" />
@@ -105,17 +105,17 @@
 
   <rect x="470" y="344" width="250" height="132" rx="8" class="bx-worker" />
   <text class="btitle mono" x="490" y="370">app.use('/api/*', csrf())</text>
-  <text class="cj" x="490" y="394">唯一的同源把關點</text>
+  <text class="cj" x="490" y="394">HTTP 寫入同源把關</text>
   <text class="cj" x="490" y="416">端點內不再自寫檢查</text>
   <text class="cj" x="490" y="438">無 Origin 的表單請求</text>
   <text class="cj" x="490" y="460">一律 403（含 curl）</text>
 
   <rect x="744" y="344" width="400" height="132" rx="8" class="bx-worker" />
   <text class="btitle" x="764" y="370">API 路由（純 JSON ／ 文字，不走 SSR）</text>
-  <text class="l mono" x="764" y="394">/api/auth/*　・　/api/me</text>
+  <text class="l mono" x="764" y="394">/api/auth/*　・　/api/auth/me</text>
   <text class="l mono" x="764" y="416">/api/admin/audit-log</text>
   <text class="l mono" x="764" y="438">/api/jitsi-token　・　/api/transcription/*</text>
-  <text class="l mono" x="764" y="460">/api/meeting/*　・　/api/ws/meeting/:date</text>
+  <text class="l mono" x="764" y="460">/api/meeting/*　・　/api/meeting/ws/:date</text>
 
   <rect x="1176" y="344" width="442" height="132" rx="8" class="bx-worker" />
   <text class="btitle mono" x="1196" y="370">app.get('*')　→　靜態檔 ／ SSR</text>
@@ -254,7 +254,7 @@
 
   <rect x="56" y="1394" width="710" height="72" rx="8" class="bx-worker" />
   <text class="btitle mono" x="76" y="1420">② getAuthContext ／ tryGetAuthContext　——　未登入 → 401</text>
-  <text class="cj" x="76" y="1444">tryGet 版把例外壓成「未登入」；/api/me 刻意用會 throw 的版本以區分系統故障</text>
+  <text class="cj" x="76" y="1444">tryGet 版把例外壓成「未登入」；/api/auth/me 刻意用會 throw 的版本以區分系統故障</text>
 
   <rect x="56" y="1482" width="710" height="72" rx="8" class="bx-worker" />
   <text class="btitle mono" x="76" y="1508">③ hasPermission(context, permission)　——　權限不足 → 403</text>
@@ -269,7 +269,7 @@
   <text class="cj" x="76" y="1706">日誌寫失敗不得讓已成功的管理操作變成 500，故 recordAudit 絕不 throw</text>
 
   <text class="note red" x="56" y="1748">⚠ client 端的 v-if 與 auth-session.ts 只影響顯示；任何「前端擋住就好」的做法都是漏洞。</text>
-  <text class="note" x="56" y="1772">・ 除 csrf() 外，/api/query-table、/api/create-table、/api/test-ai 目前無身分檢查（bootstrap 與測試用途）。</text>
+  <text class="note" x="56" y="1772">・ 除 csrf() 外，/api/transcription（列表）、/api/transcription/create-table、/api/transcription/test-ai 目前無身分檢查（bootstrap 與測試用途）。</text>
 
   <text class="stitle" x="830" y="1296">C-2　step-up 二次驗證：意圖寫進 OAuth state 並往返</text>
   <text class="note red" x="830" y="1320">關鍵語意：只有「刻意為了複核而重新登入」才算通過 —— session 的 createdAt 無法承載此語意（登出再登入也是新 session）。</text>
@@ -305,7 +305,7 @@
   <text class="tiny" x="850" y="1778">/admin 的 SSR 守衛此時只看角色，故直接放行進入頁面</text>
 
   <rect x="830" y="1798" width="790" height="52" rx="8" class="bx-client" />
-  <text class="cj mono" x="850" y="1820">⑧ GET /api/me → readStepUpExpiry() → fresh: true ＋ stepUpExpiresAt</text>
+  <text class="cj mono" x="850" y="1820">⑧ GET /api/auth/me → readStepUpExpiry() → fresh: true ＋ stepUpExpiresAt</text>
   <text class="tiny" x="850" y="1840">AdminView 解鎖成員／日誌分頁，右上角顯示 15 分鐘倒數，歸零即退回 ①</text>
 
   <!-- ══════════════ Panel D：角色權限與端點對照 ══════════════ -->
@@ -359,7 +359,7 @@
 
   <text class="stitle" x="830" y="1940">D-2　端點 → 授權需求（Worker 端實際檢查的內容）</text>
 
-  <text class="cj mono" x="830" y="1968">/api/me</text>
+  <text class="cj mono" x="830" y="1968">/api/auth/me</text>
   <text class="cj" x="1180" y="1968">有效 session（讀取失敗刻意 throw，不壓成 401）</text>
 
   <text class="cj mono" x="830" y="1994">/api/auth/admin/*</text>
@@ -371,19 +371,19 @@
   <text class="cj mono" x="830" y="2046">/api/jitsi-token（POST）</text>
   <text class="cj" x="1180" y="2046">meeting.join；moderator claim 由 meeting.moderate 決定</text>
 
-  <text class="cj mono" x="830" y="2072">/api/meeting/* ・ /api/ws/meeting/:date</text>
-  <text class="cj" x="1180" y="2072">meeting.join（WS 未授權者僅唯讀）</text>
+  <text class="cj mono" x="830" y="2072">/api/meeting/* ・ /api/meeting/ws/:date</text>
+  <text class="cj" x="1180" y="2072">meeting.join（WS 驗 Origin；未授權唯讀）</text>
 
-  <text class="cj mono" x="830" y="2098">/api/transcription/:lang</text>
+  <text class="cj mono" x="830" y="2098">/api/transcription/:lang（站內專用）</text>
   <text class="cj" x="1180" y="2098">meeting.join</text>
 
-  <text class="cj mono" x="830" y="2124">/api/upload-transcription</text>
+  <text class="cj mono" x="830" y="2124">/api/transcription/upload</text>
   <text class="cj" x="1180" y="2124">transcription.update（覆蓋既有逐字稿才另需 fresh）</text>
 
-  <text class="cj mono" x="830" y="2150">/api/update-outline ・ restore ・ delete</text>
+  <text class="cj mono" x="830" y="2150">/api/transcription/outline ・ restore ・ delete</text>
   <text class="cj" x="1180" y="2150">transcription.update ＋ fresh</text>
 
-  <text class="cj mono" x="830" y="2176">/api/transcriptions/:id/versions[/text]</text>
+  <text class="cj mono" x="830" y="2176">/api/transcription/:id/versions[/text]</text>
   <text class="cj" x="1180" y="2176">transcription.update（舊版本不隨公開逐字稿露出）</text>
 
   <rect x="56" y="2262" width="1562" height="112" rx="8" class="bx-warn" />

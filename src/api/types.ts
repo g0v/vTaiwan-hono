@@ -1,6 +1,5 @@
 import type { MeetingRoom } from '../durable-objects/meeting-room'
 
-import type { Hono } from 'hono'
 import type { D1Database, R2Bucket, Ai } from '@cloudflare/workers-types'
 
 export type AppBindings = {
@@ -38,5 +37,3 @@ export type AppEnv = {
     cspNonce: string
   }
 }
-
-export type App = Hono<AppEnv>

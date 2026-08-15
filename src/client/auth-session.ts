@@ -27,7 +27,7 @@ export interface AuthSession {
 }
 
 export async function loadAuthSession(): Promise<AuthSession | null> {
-  const response = await fetch('/api/me')
+  const response = await fetch('/api/auth/me')
   if (response.status === 401) return null
   if (!response.ok) throw new Error(`Failed to load auth session: ${response.status}`)
   return (await response.json()) as AuthSession
