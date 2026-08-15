@@ -88,7 +88,7 @@ export class MeetingRoom extends DurableObject<MeetingRoomEnv> {
 
   /**
    * 所有進來的請求都走這裡：
-   * - GET /api/ws/meeting/:date  → WebSocket upgrade（任何人）
+   * - GET /api/meeting/ws/:date  → WebSocket upgrade（任何人）
    * - GET /api/meeting/:date     → REST 讀取（任何人，供 Worker 代理）
    */
   async fetch(request: Request): Promise<Response> {

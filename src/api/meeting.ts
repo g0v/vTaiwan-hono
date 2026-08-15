@@ -4,7 +4,7 @@ import { Hono } from 'hono'
  * 即時會議 API（#81）
  *
  * WebSocket 端點（今日即時）：
- *   GET /api/ws/meeting/:date   → 轉交給 MeetingRoom DO，不需認證即可訂閱；
+ *   GET /api/meeting/ws/:date   → 轉交給 MeetingRoom DO，不需認證即可訂閱；
  *                                  Worker 在 Upgrade 時把認證狀態寫入請求標頭。
  *
  * REST 端點（歷史校對）：
@@ -32,7 +32,7 @@ export const app = new Hono<AppEnv>()
  * - 認證狀態由此處解析後寫入 X-Authenticated / X-User-Id 標頭，
  *   DO 在 webSocketMessage 中利用 serializeAttachment 把關寫入
  */
-app.get('/api/ws/meeting/:date', async c => {
+app.get('/ws/:date', async c => {
   const date = c.req.param('date')
   if (!isValidDate(date)) return c.text('Invalid date', 400)
 
@@ -66,7 +66,7 @@ app.get('/api/ws/meeting/:date', async c => {
  * 從 D1 讀取指定日期的全量快照。
  * 用於歷史日期的初始載入（不建 WebSocket）。
  */
-app.get('/api/meeting/:date', async c => {
+app.get('/:date', async c => {
   const date = c.req.param('date')
   if (!isValidDate(date)) return c.text('Invalid date', 400)
 
@@ -102,7 +102,7 @@ app.get('/api/meeting/:date', async c => {
 
 // ─── REST: 新增／覆寫逐字稿條目 ────────────────────────────────────────────
 
-app.post('/api/meeting/:date/transcript', async c => {
+app.post('/:date/transcript', async c => {
   const date = c.req.param('date')
   if (!isValidDate(date)) return c.text('Invalid date', 400)
 
@@ -122,7 +122,7 @@ app.post('/api/meeting/:date/transcript', async c => {
 
 // ─── REST: 刪除逐字稿條目 ─────────────────────────────────────────────────
 
-app.delete('/api/meeting/:date/transcript/:ts', async c => {
+app.delete('/:date/transcript/:ts', async c => {
   const date = c.req.param('date')
   const ts = Number(c.req.param('ts'))
   if (!isValidDate(date) || !Number.isFinite(ts)) return c.text('Invalid params', 400)
@@ -138,7 +138,7 @@ app.delete('/api/meeting/:date/transcript/:ts', async c => {
 
 // ─── REST: 更新會議 session ────────────────────────────────────────────────
 
-app.patch('/api/meeting/:date', async c => {
+app.patch('/:date', async c => {
   const date = c.req.param('date')
   if (!isValidDate(date)) return c.text('Invalid date', 400)
 

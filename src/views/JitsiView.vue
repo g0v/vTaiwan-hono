@@ -1136,7 +1136,7 @@ export default {
     connectMeetingWs() {
       this.disconnectWs()
       const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
-      const ws = new WebSocket(`${protocol}//${location.host}/api/ws/meeting/${this.today}`)
+      const ws = new WebSocket(`${protocol}//${location.host}/api/meeting/ws/${this.today}`)
       this.ws = ws
 
       ws.onopen = () => {

@@ -77,7 +77,7 @@ app.route('/api/jitsi-token', jitsiToken)
 app.route('/api/transcription', transcription)
 app.route('/api/admin', admin)
 app.route('/api/admin/civic-talks', civicTalk)
-app.route('/', meeting)
+app.route('/api/meeting', meeting)
 
 // 其他 GET 請求：靜態檔交給 ASSETS，其餘交給 Vue SSR + vue-router。
 app.get('*', async c => {
