@@ -151,7 +151,7 @@ async function loadTranscriptions() {
   try {
     loading.value = true
     error.value = ''
-    const response = await fetch('/api/query-table')
+    const response = await fetch('/api/transcription')
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
     transcriptions.value = (await response.json()) as Transcription[]
   } catch (err) {
@@ -191,7 +191,7 @@ async function uploadTranscription() {
     uploading.value = true
     const formData = new FormData()
     formData.append('file', selectedFile.value)
-    const response = await fetch('/api/upload-transcription', { method: 'POST', body: formData })
+    const response = await fetch('/api/transcription/upload', { method: 'POST', body: formData })
     // 覆蓋既有逐字稿屬敏感操作：session 不新鮮時伺服器會在寫 R2／算大綱前回 SESSION_NOT_FRESH
     if (await responseRequiresStepUp(response)) {
       emit('stepUpRequired')
@@ -222,7 +222,7 @@ async function saveOutline(outline: string) {
   const meetingId = currentOutlineItem.value?.meeting_id
   if (!meetingId) return
   try {
-    const response = await fetch('/api/update-outline', {
+    const response = await fetch('/api/transcription/outline', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ meeting_id: meetingId, outline }),
@@ -243,7 +243,7 @@ async function saveOutline(outline: string) {
 
 function copyTranscriptionLink(meetingId: string) {
   // 使用同源相對路徑；複製連結帶完整 origin 以便分享
-  const url = `${window.location.origin}/api/transcriptions/${meetingId}/text`
+  const url = `${window.location.origin}/api/transcription/${meetingId}/text`
   navigator.clipboard.writeText(url).catch(() => {
     // 降級忽略
   })
@@ -251,7 +251,7 @@ function copyTranscriptionLink(meetingId: string) {
 }
 
 function downloadTranscription(meetingId: string) {
-  fetch(`/api/transcriptions/${meetingId}/text`, {
+  fetch(`/api/transcription/${meetingId}/text`, {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
   })
     .then(r => r.text())

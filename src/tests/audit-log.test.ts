@@ -275,7 +275,7 @@ describe('回復／刪除端點的授權關卡', () => {
   const headers = { origin: 'https://vtaiwan.tw', 'content-type': 'application/json' }
 
   it('未登入不得回復逐字稿', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/restore-transcription', {
+    const res = await app.request('https://vtaiwan.tw/api/transcription/restore', {
       method: 'POST',
       headers,
       body: JSON.stringify({ meeting_id: '20260803', target: 'transcription', version_id: '20260803T091500123Z' }),
@@ -284,7 +284,7 @@ describe('回復／刪除端點的授權關卡', () => {
   })
 
   it('未登入不得刪除逐字稿', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/delete-transcription', {
+    const res = await app.request('https://vtaiwan.tw/api/transcription/delete', {
       method: 'POST',
       headers,
       body: JSON.stringify({ meeting_id: '20260803' }),

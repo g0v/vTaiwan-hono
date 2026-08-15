@@ -738,12 +738,12 @@ async function runRestore(log: AuditEntry) {
   try {
     const response =
       command.kind === 'delete'
-        ? await fetch('/api/delete-transcription', {
+        ? await fetch('/api/transcription/delete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ meeting_id: command.meetingId }),
           })
-        : await fetch('/api/restore-transcription', {
+        : await fetch('/api/transcription/restore', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({

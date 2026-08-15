@@ -83,42 +83,9 @@ async function snapshotOutline(r2: R2Bucket, meetingId: string, outline: string)
 
 export const app = new Hono<AppEnv>()
 
-// POST /api/transcription/:lang — 音頻檔轉文字（分軌本地錄音端點）
-app.use('/api/transcription/*', corsFor(['POST']))
-app.post('/api/transcription/:lang', async c => {
-  const context = await getAuthContext(c.env, c.req.raw.headers)
-  if (!context) return c.json({ error: 'Unauthorized' }, 401)
-  if (!hasPermission(context, 'meeting.join')) return c.json({ error: 'Forbidden' }, 403)
-
-  const rawLang = c.req.param('lang') || 'zh-TW'
-  const language = LANG_MAP[rawLang] ?? rawLang
-
-  let formData: FormData
-  try {
-    formData = await c.req.formData()
-  } catch {
-    return c.text('No file uploaded', 400)
-  }
-
-  const file = formData.get('file')
-  if (!(file instanceof File)) return c.text('No file uploaded', 400)
-
-  try {
-    const audioBuffer = await file.arrayBuffer()
-    const text = await readAudioToText(audioBuffer, c.env, language)
-    return c.text(text)
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error)
-    if (message.includes('音檔音量過低')) {
-      return c.json({ error: '音檔音量過低', message, code: 'LOW_VOLUME' }, 422)
-    }
-    return c.json({ error: '轉錄失敗', message, code: 'TRANSCRIPTION_ERROR' }, 400)
-  }
-})
-
-// POST /api/upload-transcription — 上傳逐字稿 .txt 至 D1 + R2，並生成 AI 大綱
-app.use('/api/upload-transcription', corsFor(['POST']))
-app.post('/api/upload-transcription', async c => {
+// POST /upload — 上傳逐字稿 .txt 至 D1 + R2，並生成 AI 大綱
+app.use('/upload', corsFor(['POST']))
+app.post('/upload', async c => {
   const context = await getAuthContext(c.env, c.req.raw.headers)
   if (!context) return c.json({ error: 'Unauthorized' }, 401)
   if (!hasPermission(context, 'transcription.update')) return c.json({ error: 'Forbidden' }, 403)
@@ -209,9 +176,9 @@ app.post('/api/upload-transcription', async c => {
   })
 })
 
-// POST /api/update-outline — 手動更新大綱
-app.use('/api/update-outline', corsFor(['POST']))
-app.post('/api/update-outline', async c => {
+// POST /outline — 手動更新大綱
+app.use('/outline', corsFor(['POST']))
+app.post('/outline', async c => {
   const context = await getAuthContext(c.env, c.req.raw.headers)
   if (!context) return c.json({ error: 'Unauthorized' }, 401)
   if (!hasPermission(context, 'transcription.update')) return c.json({ error: 'Forbidden' }, 403)
@@ -246,9 +213,9 @@ app.post('/api/update-outline', async c => {
   return c.json({ message: 'Outline updated successfully' })
 })
 
-// POST /api/restore-transcription — 由變更日誌回復到變更前的版本（#71 × #73）
-app.use('/api/restore-transcription', corsFor(['POST']))
-app.post('/api/restore-transcription', async c => {
+// POST /restore — 由變更日誌回復到變更前的版本（#71 × #73）
+app.use('/restore', corsFor(['POST']))
+app.post('/restore', async c => {
   // 用 tryGetAuthContext：session 讀不到（含綁定異常）一律當未登入擋下，寧可 401 也不要放行
   const context = await tryGetAuthContext(c.env, c.req.raw.headers)
   if (!context) return c.json({ error: 'Unauthorized' }, 401)
@@ -338,9 +305,9 @@ app.post('/api/restore-transcription', async c => {
   return c.json({ message: 'Transcription restored successfully', meeting_id, version_id, restored_version_id: restoredVersionId })
 })
 
-// POST /api/delete-transcription — 刪除現行逐字稿（歷史版本保留，可由日誌回復）
-app.use('/api/delete-transcription', corsFor(['POST']))
-app.post('/api/delete-transcription', async c => {
+// POST /delete — 刪除現行逐字稿（歷史版本保留，可由日誌回復）
+app.use('/delete', corsFor(['POST']))
+app.post('/delete', async c => {
   const context = await tryGetAuthContext(c.env, c.req.raw.headers)
   if (!context) return c.json({ error: 'Unauthorized' }, 401)
   if (!hasPermission(context, 'transcription.update')) return c.json({ error: 'Forbidden' }, 403)
@@ -380,18 +347,18 @@ app.post('/api/delete-transcription', async c => {
   return c.json({ message: 'Transcription deleted successfully', meeting_id })
 })
 
-// GET /api/query-table — 取得所有逐字稿列表
-app.use('/api/query-table', corsFor(['GET']))
-app.get('/api/query-table', async c => {
+// GET / — 取得所有逐字稿列表
+app.use('/', corsFor(['GET']))
+app.get('/', async c => {
   const db = c.env.DB
   if (!db) return c.json({ error: 'DB binding not configured' }, 500)
   const result = await db.prepare('SELECT * FROM transcriptions').all()
   return c.json(result.results)
 })
 
-// POST /api/create-table — 建立 D1 資料表（idempotent；本地 D1 bootstrap 用）
-app.use('/api/create-table', corsFor(['POST']))
-app.post('/api/create-table', async c => {
+// POST /create-table — 建立 D1 資料表（idempotent；本地 D1 bootstrap 用）
+app.use('/create-table', corsFor(['POST']))
+app.post('/create-table', async c => {
   const db = c.env.DB
   if (!db) return c.json({ error: 'DB binding not configured' }, 500)
   await db.batch([
@@ -406,9 +373,9 @@ app.post('/api/create-table', async c => {
   return c.json({ message: 'Table created successfully' })
 })
 
-// POST /api/test-ai — 測試 AI 摘要（前端未使用；為介面完整性保留）
-app.use('/api/test-ai', corsFor(['POST']))
-app.post('/api/test-ai', async c => {
+// POST /test-ai — 測試 AI 摘要（前端未使用；為介面完整性保留）
+app.use('/test-ai', corsFor(['POST']))
+app.post('/test-ai', async c => {
   let formData: FormData
   try {
     formData = await c.req.formData()
@@ -422,9 +389,43 @@ app.post('/api/test-ai', async c => {
   return c.text(outline)
 })
 
-// GET /api/transcriptions/:meeting_id/text — 讀取逐字稿純文字（取代公開 R2 網域）
-app.use('/api/transcriptions/*', corsFor(['GET']))
-app.get('/api/transcriptions/:meeting_id/text', async c => {
+// POST /:lang — 音頻檔轉文字（分軌本地錄音端點）
+// 固定名稱的寫入端點必須先註冊，避免被這個動態參數路徑攔截。
+app.use('/:lang', corsFor(['POST']))
+app.post('/:lang', async c => {
+  const context = await getAuthContext(c.env, c.req.raw.headers)
+  if (!context) return c.json({ error: 'Unauthorized' }, 401)
+  if (!hasPermission(context, 'meeting.join')) return c.json({ error: 'Forbidden' }, 403)
+
+  const rawLang = c.req.param('lang') || 'zh-TW'
+  const language = LANG_MAP[rawLang] ?? rawLang
+
+  let formData: FormData
+  try {
+    formData = await c.req.formData()
+  } catch {
+    return c.text('No file uploaded', 400)
+  }
+
+  const file = formData.get('file')
+  if (!(file instanceof File)) return c.text('No file uploaded', 400)
+
+  try {
+    const audioBuffer = await file.arrayBuffer()
+    const text = await readAudioToText(audioBuffer, c.env, language)
+    return c.text(text)
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : String(error)
+    if (message.includes('音檔音量過低')) {
+      return c.json({ error: '音檔音量過低', message, code: 'LOW_VOLUME' }, 422)
+    }
+    return c.json({ error: '轉錄失敗', message, code: 'TRANSCRIPTION_ERROR' }, 400)
+  }
+})
+
+// GET /:meeting_id/text — 讀取逐字稿純文字（取代公開 R2 網域）
+app.use('/:meeting_id/*', corsFor(['GET']))
+app.get('/:meeting_id/text', async c => {
   const meeting_id = c.req.param('meeting_id')
   if (!/^\d{8}$/.test(meeting_id)) return c.text('', 400)
   const db = c.env.DB
@@ -448,9 +449,9 @@ app.get('/api/transcriptions/:meeting_id/text', async c => {
   })
 })
 
-// GET /api/transcriptions/:meeting_id/versions — 列出歷史版本（#73）
+// GET /:meeting_id/versions — 列出歷史版本（#73）
 // 僅管理員：舊版本可能含後續被修正／下架的內容，不隨現行逐字稿一起公開。
-app.get('/api/transcriptions/:meeting_id/versions', async c => {
+app.get('/:meeting_id/versions', async c => {
   const meeting_id = c.req.param('meeting_id')
   if (!isValidMeetingId(meeting_id)) return c.json({ error: '會議 ID 格式不正確', code: 'INVALID_MEETING_ID' }, 400)
 
@@ -484,8 +485,8 @@ app.get('/api/transcriptions/:meeting_id/versions', async c => {
   return c.json({ meeting_id, versions, truncated: listed.truncated })
 })
 
-// GET /api/transcriptions/:meeting_id/versions/:version_id/text — 下載指定版本（#73）
-app.get('/api/transcriptions/:meeting_id/versions/:version_id/text', async c => {
+// GET /:meeting_id/versions/:version_id/text — 下載指定版本（#73）
+app.get('/:meeting_id/versions/:version_id/text', async c => {
   const meeting_id = c.req.param('meeting_id')
   const version_id = c.req.param('version_id')
   if (!isValidMeetingId(meeting_id) || !isValidVersionId(version_id)) {

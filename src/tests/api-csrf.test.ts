@@ -10,7 +10,7 @@ const BODY = '--x--'
 
 describe('/api/* 全域 csrf 防護', () => {
   it('跨站表單 POST 一律 403（進不到端點）', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/upload-transcription', {
+    const res = await app.request('https://vtaiwan.tw/api/transcription/upload', {
       method: 'POST',
       headers: { ...FORM_HEADERS, origin: 'https://attacker.example', 'sec-fetch-site': 'cross-site' },
       body: BODY,
@@ -19,7 +19,7 @@ describe('/api/* 全域 csrf 防護', () => {
   })
 
   it('同源表單 POST 放行（交由端點自己驗身分／權限）', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/upload-transcription', {
+    const res = await app.request('https://vtaiwan.tw/api/transcription/upload', {
       method: 'POST',
       headers: { ...FORM_HEADERS, origin: 'https://vtaiwan.tw', 'sec-fetch-site': 'same-origin' },
       body: BODY,
