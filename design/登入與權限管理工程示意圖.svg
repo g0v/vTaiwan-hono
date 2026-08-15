@@ -312,7 +312,7 @@
   <rect x="32" y="1880" width="1616" height="520" rx="10" class="panel" />
   <text class="ptitle" x="52" y="1912">D ｜ 角色、權限與端點對照（逐條由原始碼驗證）</text>
 
-  <text class="stitle" x="56" y="1940">D-1　角色 × 能力矩陣（authorization.ts 的 permissionsByRole 為單一來源）</text>
+  <text class="stitle" x="56" y="1940">D-1　角色 × 能力矩陣（業務權限 ＋ super-admin 角色能力）</text>
 
   <rect x="56" y="1952" width="750" height="210" rx="8" class="bx-plain" />
   <line x1="56" y1="1984" x2="806" y2="1984" stroke="#e0e0e0" stroke-width="1" />
@@ -340,7 +340,7 @@
 
   <line x1="56" y1="2074" x2="806" y2="2074" stroke="#a0a0a0" stroke-width="1" />
 
-  <text class="cj" x="76" y="2096">成員列表 ／ 改角色 ／ 停權（/api/auth/admin/*）</text>
+  <text class="cj" x="76" y="2096">權限管理：成員列表 ／ 改角色 ／ 停權</text>
   <text class="cj" x="576" y="2096" text-anchor="middle">—</text>
   <text class="cj" x="666" y="2096" text-anchor="middle">—</text>
   <text class="cj green" x="762" y="2096" text-anchor="middle">✓</text>
@@ -355,7 +355,7 @@
 
   <text class="note green" x="56" y="2198">・ 不變量：每個 Permission 都必須有實際強制它的 Worker 端點，不留孤兒權限（authorization.test.ts 逐字釘住權限集合）。</text>
   <text class="note" x="56" y="2220">・ 議題（Topic）的上架與內容修改由 talk.vtaiwan.tw（Discourse）管理員負責，不屬本站授權範圍，故 Permission 型別刻意不定義 topic.* 權限。</text>
-  <text class="note" x="56" y="2242">・ admin 與 super-admin 的「業務權限」完全相同；差別只在 createAuth.ts 的 adminRoleAccess（user／admin 為 userAc，super-admin 為 adminAc）與 isSuperAdminRole()。</text>
+  <text class="note" x="56" y="2242">・ admin 與 super-admin 的「業務權限」相同；AdminView 的「權限管理」欄依 adminRoleAccess 與 isSuperAdminRole()，僅 super-admin 打勾。</text>
 
   <text class="stitle" x="830" y="1940">D-2　端點 → 授權需求（Worker 端實際檢查的內容）</text>
 

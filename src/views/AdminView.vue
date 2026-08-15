@@ -133,38 +133,38 @@
                 </table>
               </div>
             </div>
-
-            <!-- 權限矩陣：依角色唯讀展示（對齊 authorization.ts）；不列出個別成員 -->
-            <div class="admin-card">
-              <h2 class="mb-vt-1 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.perms.title') }}</h2>
-              <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.perms.hint') }}</p>
-              <div class="admin-table-scroll">
-                <table class="admin-responsive-table admin-permission-table w-full text-left text-vt-sm">
-                  <thead>
-                    <tr class="border-b border-vt-border text-center text-vt-fg-3">
-                      <th class="px-vt-3 py-vt-2 text-center font-medium">{{ t('admin.perms.col.member') }}</th>
-                      <th v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-2 text-center font-medium">
-                        {{ t('admin.perms.' + p) }}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="role in ALL_ROLES" :key="role" class="border-b border-vt-border/60">
-                      <td class="px-vt-3 py-vt-3 text-center font-medium text-vt-fg-1" :data-label="t('admin.perms.col.member')">
-                        {{ t(roleLabelKey(role)) }}
-                      </td>
-                      <td v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-3 text-center" :data-label="t('admin.perms.' + p)">
-                        <span v-if="roleHasPermission(role, p)" class="flex justify-center" role="img" :aria-label="t('admin.perms.' + p) + ' — ' + t(roleLabelKey(role))">
-                          <IconWrapper name="circle-check-big" :size="18" type="primary" aria-hidden="true" />
-                        </span>
-                        <span v-else aria-hidden="true">—</span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
           </template>
+
+          <!-- 權限矩陣：所有管理員皆可唯讀查看；安全邊界仍在 Worker -->
+          <div class="admin-card">
+            <h2 class="mb-vt-1 text-vt-xl font-semibold text-vt-fg-1">{{ t('admin.perms.title') }}</h2>
+            <p class="mb-vt-4 text-vt-sm text-vt-fg-3">{{ t('admin.perms.hint') }}</p>
+            <div class="admin-table-scroll">
+              <table class="admin-responsive-table admin-permission-table w-full text-left text-vt-sm">
+                <thead>
+                  <tr class="border-b border-vt-border text-center text-vt-fg-3">
+                    <th class="px-vt-3 py-vt-2 text-center font-medium">{{ t('admin.perms.col.member') }}</th>
+                    <th v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-2 text-center font-medium">
+                      {{ t('admin.perms.' + p) }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="role in ALL_ROLES" :key="role" class="border-b border-vt-border/60">
+                    <td class="px-vt-3 py-vt-3 text-center font-medium text-vt-fg-1" :data-label="t('admin.perms.col.member')">
+                      {{ t(roleLabelKey(role)) }}
+                    </td>
+                    <td v-for="p in permKeys" :key="p" class="px-vt-3 py-vt-3 text-center" :data-label="t('admin.perms.' + p)">
+                      <span v-if="roleHasPermission(role, p)" class="flex justify-center" role="img" :aria-label="t('admin.perms.' + p) + ' — ' + t(roleLabelKey(role))">
+                        <IconWrapper name="circle-check-big" :size="18" type="primary" aria-hidden="true" />
+                      </span>
+                      <span v-else aria-hidden="true">—</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </section>
 
         <!-- Tab 2：變更日誌（真實事件：角色／停權變更 + 逐字稿與大綱異動） -->
@@ -318,16 +318,8 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { authClient } from '../client/authClient'
-import {
-  isAdminSession,
-  isSessionNotFreshPayload,
-  isSuperAdminSession,
-  isWrongAccountAfterStepUp,
-  responseRequiresStepUp,
-  type AppRole,
-  type AuthSession,
-  type Permission,
-} from '../client/auth-session'
+import { isAdminSession, isSessionNotFreshPayload, isSuperAdminSession, isWrongAccountAfterStepUp, responseRequiresStepUp, type AppRole, type AuthSession } from '../client/auth-session'
+import { ADMIN_PERMISSION_DISPLAY_KEYS, roleHasDisplayedPermission, type AdminPermissionDisplayKey } from '../lib/admin-permissions'
 import { auditActionLabelKey, AUDIT_LOG_LIMIT, restoreCommandFor, type AuditEntry } from '../lib/audit-log'
 import IconWrapper from '../components/IconWrapper.vue'
 import CivicTalkManager from '../components/CivicTalkManager.vue'
@@ -423,14 +415,7 @@ interface Member {
 }
 
 const ALL_ROLES: AppRole[] = ['user', 'admin', 'super-admin']
-const permKeys: Permission[] = ['meeting.join', 'meeting.moderate', 'transcription.update']
-
-// 與 src/server/lib/authorization.ts 的 permissionsByRole 對齊（顯示用；安全邊界在 Worker）。
-const permissionsByRole: Record<AppRole, Permission[]> = {
-  user: ['meeting.join'],
-  admin: ['meeting.join', 'meeting.moderate', 'transcription.update'],
-  'super-admin': ['meeting.join', 'meeting.moderate', 'transcription.update'],
-}
+const permKeys = ADMIN_PERMISSION_DISPLAY_KEYS
 
 const tabs = [
   { key: 'members', label: 'admin.tabs.members' },
@@ -478,8 +463,8 @@ function roleLabelKey(role: AppRole): string {
   return role === 'super-admin' ? 'admin.roles.superAdmin' : `admin.roles.${role}`
 }
 
-function roleHasPermission(role: AppRole, permission: Permission): boolean {
-  return permissionsByRole[role].includes(permission)
+function roleHasPermission(role: AppRole, permission: AdminPermissionDisplayKey): boolean {
+  return roleHasDisplayedPermission(role, permission)
 }
 
 function resolveRole(raw: string | null | undefined): AppRole {

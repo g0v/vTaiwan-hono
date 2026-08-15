@@ -1107,7 +1107,7 @@
     },
     "perms": {
       "title": "Role Permission Overview",
-      "hint": "Roles determine the actions users can perform. Use the member list above to change roles.",
+      "hint": "This is a read-only role permission overview. Only super admins can manage member roles and permissions.",
       "col": {
         "member": "Role"
       },
@@ -1117,6 +1117,9 @@
       },
       "transcription": {
         "update": "Update transcripts"
+      },
+      "permission": {
+        "manage": "Manage permissions"
       }
     },
     "ban": {
