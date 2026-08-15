@@ -67,7 +67,7 @@ app.use('*', async (c, next) => {
 app.use('/api/*', csrf())
 
 // 純 JSON / 文字 API：直接回傳，不走 SSR
-app.route('/', auth)
+app.route('/api/auth', auth)
 app.route('/api/hello', hello)
 app.route('/api/proxy', proxy)
 app.route('/api/mastodon', mastodon)

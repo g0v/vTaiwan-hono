@@ -78,7 +78,7 @@ describe('變更日誌事件對應（#71）', () => {
     expect(auditActionForAdminPath('/api/auth/admin/list-user-sessions')).toBeNull()
     expect(auditActionForAdminPath('/api/auth/admin/has-permission')).toBeNull()
     expect(auditActionForAdminPath('/api/auth/callback/google')).toBeNull()
-    expect(auditActionForAdminPath('/api/me')).toBeNull()
+    expect(auditActionForAdminPath('/api/auth/me')).toBeNull()
   })
 
   // 少一個 key，日誌就會顯示 i18n 原始路徑。三檔同步由 l10n.test.ts 把關，這裡確保基準檔有值。

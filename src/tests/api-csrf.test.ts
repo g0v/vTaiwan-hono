@@ -36,7 +36,7 @@ describe('/api/* 全域 csrf 防護', () => {
     expect(res.status).toBe(403)
   })
 
-  // /api/auth/* 是以 app.route('/', auth) 掛載的子 app，路徑組成方式與上面直接註冊的
+  // /api/auth/* 是以 app.route('/api/auth', auth) 掛載的子 app，路徑組成方式與上面直接註冊的
   // 端點不同——這是最需要保護的一段，單獨驗一次全域中介層確實也蓋到它。
   it('掛載的 /api/auth/* 子 app 同樣受保護', async () => {
     const res = await app.request('https://vtaiwan.tw/api/auth/admin/set-role', {

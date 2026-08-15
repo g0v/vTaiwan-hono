@@ -59,7 +59,7 @@ describe('敏感操作二次驗證（step-up cookie）', () => {
     expect(requiresStepUp('/api/auth/callback/google')).toBe(false)
     expect(requiresStepUp('/api/auth/callback/github')).toBe(false)
     expect(requiresStepUp('/api/auth/get-session')).toBe(false)
-    expect(requiresStepUp('/api/me')).toBe(false)
+    expect(requiresStepUp('/api/auth/me')).toBe(false)
   })
 
   // 社群帳號 email 與管理員帳號不同時，Better Auth 會新建一個角色為 user 的帳號並換掉 session；
@@ -110,5 +110,14 @@ describe('敏感操作二次驗證（step-up cookie）', () => {
     })
     expect(res.status).toBe(401)
     expect(await res.json()).toEqual({ error: 'Unauthorized', code: 'UNAUTHORIZED' })
+  })
+
+  it('/api/auth/me 優先於 Better Auth catch-all 路由', async () => {
+    // 測試環境沒有 DB_AUTH，因此 getAuthContext 的系統錯誤應為 500；若被 Better Auth
+    // catch-all 攔截則會回 404，代表 session 端點已失效。
+    const res = await app.request('https://vtaiwan.tw/api/auth/me', {
+      headers: { origin: 'https://vtaiwan.tw' },
+    })
+    expect(res.status).toBe(500)
   })
 })
