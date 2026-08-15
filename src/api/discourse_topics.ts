@@ -3,7 +3,7 @@ import { corsFor } from './cors'
 import { getAllTopics, getFormattedTopics } from '../lib/discourse-server'
 import type { AppEnv } from './types'
 
-export const app = new Hono<AppEnv>()
+const app = new Hono<AppEnv>()
 
 app.use('/', corsFor(['GET']))
 app.get('/', async c => {

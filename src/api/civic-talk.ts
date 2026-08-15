@@ -80,7 +80,7 @@ async function readJson(request: Request): Promise<unknown> {
   }
 }
 
-export const app = new Hono<AppEnv>()
+const app = new Hono<AppEnv>()
 
 app.get('/issues', async c => {
   const auth = await requireFreshAdmin(c.env, c.req.raw.headers)

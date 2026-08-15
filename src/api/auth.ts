@@ -5,7 +5,7 @@ import { requiresStepUp, sessionNotFreshBody } from '../server/lib/step-up'
 import { nameChangeCooldownExpiresAt, NAME_CHANGE_COOLDOWN_CODE } from '../lib/profile-name'
 import type { AppEnv } from './types'
 
-export const app = new Hono<AppEnv>()
+const app = new Hono<AppEnv>()
 
 type UserNameChangeRow = {
   name: string

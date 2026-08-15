@@ -22,7 +22,7 @@ function isValidDate(date: string): boolean {
   return /^\d{8}$/.test(date)
 }
 
-export const app = new Hono<AppEnv>()
+const app = new Hono<AppEnv>()
 
 // ─── WebSocket Upgrade ─────────────────────────────────────────────────────
 

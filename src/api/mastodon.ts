@@ -6,7 +6,7 @@ import type { AppEnv } from './types'
 // 避免同一個 #vtaiwan tag 的 timeline 被頻繁重複拉取。
 const MASTODON_CACHE_TTL_SECONDS = 300
 
-export const app = new Hono<AppEnv>()
+const app = new Hono<AppEnv>()
 
 app.use('/', corsFor(['GET']))
 app.get('/', async c => {

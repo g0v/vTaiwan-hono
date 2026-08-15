@@ -1,7 +1,6 @@
 import { Hono } from 'hono'
 import { csrf } from 'hono/csrf'
 import admin from './api/admin'
-import civicTalk from './api/civic-talk'
 import discourseTopicId from './api/discourse_topic_id'
 import discourseTopics from './api/discourse_topics'
 import hello from './api/hello'
@@ -64,6 +63,10 @@ app.use('*', async (c, next) => {
   c.header('X-Frame-Options', 'SAMEORIGIN')
 })
 
+// ⚠️ 全域 /api/* 中介層一律寫在下面的 app.route() 區塊之前。
+// Hono 依註冊順序組出 handler chain，而子 app 的 handler 一旦回應就結束整條 chain——
+// 寫在 app.route() 之後的 /api/* 中介層對所有掛載的子 app 都會靜默失效（不會有任何錯誤）。
+// 這是本站授權模型的第一道閘，api-routing.test.ts 釘住這個順序。
 app.use('/api/*', csrf())
 
 // 純 JSON / 文字 API：直接回傳，不走 SSR
@@ -76,7 +79,6 @@ app.route('/api/discourse/topic', discourseTopicId)
 app.route('/api/jitsi-token', jitsiToken)
 app.route('/api/transcription', transcription)
 app.route('/api/admin', admin)
-app.route('/api/admin/civic-talks', civicTalk)
 app.route('/api/meeting', meeting)
 
 // 其他 GET 請求：靜態檔交給 ASSETS，其餘交給 Vue SSR + vue-router。

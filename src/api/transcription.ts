@@ -31,6 +31,16 @@ const LANG_MAP: Record<string, string> = {
   ja: 'ja',
 }
 
+// 轉錄端點的語言碼路徑：**直接由 LANG_MAP 的 key 生成**，兩者永遠不會走鐘。
+// 收窄的兩個理由：
+//  1. 這條動態路徑與 /upload、/outline、/restore、/delete、/create-table、/test-ai 同層。
+//     光靠「固定名稱先註冊」來區分太脆弱——新端點自然會被追加在檔尾，也就是這條之後，
+//     然後被它靜默吃掉。變成精確清單後，註冊順序就不再是正確性的前提。
+//  2. 端點只給本站自己用（見下方 app.post 的說明），沒有「支援未知語言碼」的需求；
+//     `LANG_MAP[x] ?? x` 原本會把任何字串直接送進語音辨識當語言碼。
+// ⚠️ LANG_MAP 的 key 必須是單純的語言碼（`[A-Za-z-]`）——含 regex 特殊字元會破壞這個樣式。
+const LANG_PATH = `/:lang{${Object.keys(LANG_MAP).join('|')}}`
+
 /**
  * 逐字稿版本的核心不變量：**最新的版本永遠等於現行內容**。
  * 因此「變更前的版本」＝寫入新版本之前、R2 裡最新的那一個，變更日誌的
@@ -81,10 +91,19 @@ async function snapshotOutline(r2: R2Bucket, meetingId: string, outline: string)
   return versionId
 }
 
-export const app = new Hono<AppEnv>()
+const app = new Hono<AppEnv>()
+
+// ─── CORS 政策 ────────────────────────────────────────────────────────────────
+// **寫入端點一律不掛 `corsFor`**（/upload、/outline、/restore、/delete、/create-table、
+// /test-ai、/:lang）：它們只給本站自己的頁面用，沒有跨來源使用情境。
+// 這不只是宣告——跨來源的寫入請求本來就過不了全域 csrf()：preflight 的 OPTIONS 不是安全方法、
+// 又沒有 Content-Type（hono/csrf 視同 text/plain），連握手都會被擋成 403，`corsFor(['POST'])`
+// 的標頭實際上永遠送不出去。掛著只會讓 ALLOWED_ORIGINS 誤導後人以為這些路徑可以跨站呼叫。
+// 只有公開讀取的 GET 端點（列表、逐字稿全文）才掛 corsFor，那才是真的會生效的地方。
+// ⚠️ 不要在端點內自己補同源檢查——同源把關的單一來源是 index.ts 的全域 csrf()。
+// ⚠️ 真的需要跨站寫入，必須先動全域 csrf 設定，那是要與使用者確認的決定。
 
 // POST /upload — 上傳逐字稿 .txt 至 D1 + R2，並生成 AI 大綱
-app.use('/upload', corsFor(['POST']))
 app.post('/upload', async c => {
   const context = await getAuthContext(c.env, c.req.raw.headers)
   if (!context) return c.json({ error: 'Unauthorized' }, 401)
@@ -177,7 +196,6 @@ app.post('/upload', async c => {
 })
 
 // POST /outline — 手動更新大綱
-app.use('/outline', corsFor(['POST']))
 app.post('/outline', async c => {
   const context = await getAuthContext(c.env, c.req.raw.headers)
   if (!context) return c.json({ error: 'Unauthorized' }, 401)
@@ -214,7 +232,6 @@ app.post('/outline', async c => {
 })
 
 // POST /restore — 由變更日誌回復到變更前的版本（#71 × #73）
-app.use('/restore', corsFor(['POST']))
 app.post('/restore', async c => {
   // 用 tryGetAuthContext：session 讀不到（含綁定異常）一律當未登入擋下，寧可 401 也不要放行
   const context = await tryGetAuthContext(c.env, c.req.raw.headers)
@@ -306,7 +323,6 @@ app.post('/restore', async c => {
 })
 
 // POST /delete — 刪除現行逐字稿（歷史版本保留，可由日誌回復）
-app.use('/delete', corsFor(['POST']))
 app.post('/delete', async c => {
   const context = await tryGetAuthContext(c.env, c.req.raw.headers)
   if (!context) return c.json({ error: 'Unauthorized' }, 401)
@@ -357,7 +373,6 @@ app.get('/', async c => {
 })
 
 // POST /create-table — 建立 D1 資料表（idempotent；本地 D1 bootstrap 用）
-app.use('/create-table', corsFor(['POST']))
 app.post('/create-table', async c => {
   const db = c.env.DB
   if (!db) return c.json({ error: 'DB binding not configured' }, 500)
@@ -374,7 +389,6 @@ app.post('/create-table', async c => {
 })
 
 // POST /test-ai — 測試 AI 摘要（前端未使用；為介面完整性保留）
-app.use('/test-ai', corsFor(['POST']))
 app.post('/test-ai', async c => {
   let formData: FormData
   try {
@@ -389,10 +403,9 @@ app.post('/test-ai', async c => {
   return c.text(outline)
 })
 
-// POST /:lang — 音頻檔轉文字（分軌本地錄音端點）
-// 固定名稱的寫入端點必須先註冊，避免被這個動態參數路徑攔截。
-app.use('/:lang', corsFor(['POST']))
-app.post('/:lang', async c => {
+// POST /:lang — 音頻檔轉文字（分軌本地錄音端點）；語言碼清單見 LANG_PATH。
+// 只給本站 JitsiView 用：不掛 corsFor（見上方「CORS 政策」），把關為 csrf() + session + meeting.join。
+app.post(LANG_PATH, async c => {
   const context = await getAuthContext(c.env, c.req.raw.headers)
   if (!context) return c.json({ error: 'Unauthorized' }, 401)
   if (!hasPermission(context, 'meeting.join')) return c.json({ error: 'Forbidden' }, 403)

@@ -8,7 +8,7 @@ const allowedHosts = ['medium.com', 'vtaiwantw.substack.com']
 // 與 discourse-server.ts 的快取 TTL 常數命名慣例一致。
 const PROXY_CACHE_TTL_SECONDS = 600
 
-export const app = new Hono<AppEnv>()
+const app = new Hono<AppEnv>()
 
 app.use('/', corsFor(['GET']))
 app.get('/', async c => {

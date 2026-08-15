@@ -3,9 +3,10 @@ import { isSuperAdminRole, tryGetAuthContext } from '../server/lib/authorization
 import { listAudit } from '../server/lib/audit-log'
 import { AUDIT_LOG_LIMIT } from '../lib/audit-log'
 import { sessionNotFreshBody } from '../server/lib/step-up'
+import civicTalk from './civic-talk'
 import type { AppEnv } from './types'
 
-export const app = new Hono<AppEnv>()
+const app = new Hono<AppEnv>()
 
 // GET /audit-log — 管理後台變更日誌（#71）
 //
@@ -33,4 +34,10 @@ app.get('/audit-log', async c => {
     return c.json({ error: 'Failed to read audit log', code: 'AUDIT_LOG_UNAVAILABLE' }, 500)
   }
 })
+
+// 全民對談後台（/api/admin/civic-talks/*）掛在這裡而非 index.ts，
+// 讓「它是 /api/admin 底下的一組端點」這件事在程式碼結構上是顯性的——
+// 兩個重疊前綴各自掛載時，admin 之後若加入動態路徑就會靜默蓋掉它。
+app.route('/civic-talks', civicTalk)
+
 export default app
