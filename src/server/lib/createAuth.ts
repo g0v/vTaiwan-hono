@@ -1,6 +1,6 @@
 import { betterAuth } from 'better-auth'
 import { createAuthMiddleware, getOAuthState } from 'better-auth/api'
-import type { AppBindings } from '../../api/types'
+import type { AppBindings } from '../api/types'
 import { admin } from 'better-auth/plugins'
 import { adminAc, userAc } from 'better-auth/plugins/admin/access'
 import { prepareAuthAudit, recordPreparedAuthAudit, type PreparedAuthAudit } from './auth-audit'

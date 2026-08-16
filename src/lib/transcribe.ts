@@ -1,5 +1,5 @@
 import { tify } from 'chinese-conv'
-import type { AppBindings } from '../api/types'
+import type { AppBindings } from '../server/api/types'
 
 // Workers AI 部分模型的型別定義與實際輸入/輸出格式不一致：
 // - whisper-large-v3-turbo：實際接受 { audio: base64字串, language, task }，型別定義為 { audio: number[] }

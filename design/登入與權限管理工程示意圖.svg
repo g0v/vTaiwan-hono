@@ -393,6 +393,6 @@
   <text class="note" x="76" y="2356">侷限：provider 仍在登入狀態時，二次驗證是零點擊轉跳 —— 擋得住被竊的 session cookie，擋不住被借用的已解鎖裝置。</text>
 
   <!-- ══════════════ 頁尾 ══════════════ -->
-  <text class="tiny" x="40" y="2424">繪製依據（main 分支原始碼）：src/index.ts ・ src/api/{auth,admin,transcription,jitsi_token,meeting,cors,types}.ts ・ src/server/lib/{createAuth,authorization,step-up,audit-log,auth-audit}.ts</text>
+  <text class="tiny" x="40" y="2424">繪製依據（main 分支原始碼）：src/index.ts ・ src/server/api/{auth,admin,transcription,jitsi_token,meeting,cors,types}.ts ・ src/server/lib/{createAuth,authorization,step-up,audit-log,auth-audit}.ts</text>
   <text class="tiny" x="40" y="2444">src/lib/{audit-log,transcription-versions}.ts ・ src/client/{auth-session,authClient}.ts ・ src/App.vue ・ src/views/AdminView.vue ・ src/components/{SocialLogin,StepUpAuth}.vue ・ src/router/routes.server.ts ・ wrangler.jsonc ・ migrations/</text>
 </svg>

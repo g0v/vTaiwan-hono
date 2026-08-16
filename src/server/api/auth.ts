@@ -1,8 +1,8 @@
 import { Hono, type Context } from 'hono'
-import { createAuth } from '../server/lib/createAuth'
-import { getAuthContext, tryGetAuthContext } from '../server/lib/authorization'
-import { requiresStepUp, sessionNotFreshBody } from '../server/lib/step-up'
-import { nameChangeCooldownExpiresAt, NAME_CHANGE_COOLDOWN_CODE } from '../lib/profile-name'
+import { createAuth } from '../lib/createAuth'
+import { getAuthContext, tryGetAuthContext } from '../lib/authorization'
+import { requiresStepUp, sessionNotFreshBody } from '../lib/step-up'
+import { nameChangeCooldownExpiresAt, NAME_CHANGE_COOLDOWN_CODE } from '../../lib/profile-name'
 import type { AppEnv } from './types'
 
 const app = new Hono<AppEnv>()

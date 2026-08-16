@@ -1,5 +1,5 @@
 import { SignJWT } from 'jose'
-import type { AppBindings } from '../api/types'
+import type { AppBindings } from '../server/api/types'
 
 export interface JaasUserInfo {
   user_id?: string

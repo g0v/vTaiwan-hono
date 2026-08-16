@@ -1,4 +1,4 @@
-import type { AppBindings } from '../../api/types'
+import type { AppBindings } from '../api/types'
 import { resolveRole, type AuthContext } from './authorization'
 import { AUDIT_LOG_LIMIT, parseAuditDetail, serializeAuditDetail, type AuditAction, type AuditDetail, type AuditEntry, type AuditTargetType } from '../../lib/audit-log'
 

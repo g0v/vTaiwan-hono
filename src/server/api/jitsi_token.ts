@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
-import { generateJaasJwt } from '../lib/jaas-jwt'
-import { getAuthContext, hasPermission } from '../server/lib/authorization'
+import { generateJaasJwt } from '../../lib/jaas-jwt'
+import { getAuthContext, hasPermission } from '../lib/authorization'
 import type { AppEnv } from './types'
 
 const app = new Hono<AppEnv>()

@@ -14,7 +14,7 @@ import {
   type AuditEntry,
 } from '../lib/audit-log'
 import { isSuccessfulAuthAuditResponse, prepareAuthAudit } from '../server/lib/auth-audit'
-import type { AppBindings } from '../api/types'
+import type { AppBindings } from '../server/api/types'
 
 const ALL_ACTIONS: AuditAction[] = [
   'user.create',

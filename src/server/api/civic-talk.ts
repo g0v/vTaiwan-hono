@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { isActiveAdminRole, isSuperAdminRole, tryGetAuthContext, type AuthContext } from '../server/lib/authorization'
+import { isActiveAdminRole, isSuperAdminRole, tryGetAuthContext, type AuthContext } from '../lib/authorization'
 import {
   confirmFlagCivicTalkContent,
   deleteCivicTalkIssue,
@@ -15,9 +15,9 @@ import {
   unflagCivicTalkContent,
   updateCivicTalkIssue,
   type CivicTalkIssueStatus,
-} from '../server/lib/civic-talk'
-import { createAuth } from '../server/lib/createAuth'
-import { sessionNotFreshBody } from '../server/lib/step-up'
+} from '../lib/civic-talk'
+import { createAuth } from '../lib/createAuth'
+import { sessionNotFreshBody } from '../lib/step-up'
 import type { AppBindings, AppEnv } from './types'
 
 const issueStatuses = new Set<CivicTalkIssueStatus>(['collecting', 'summarizing', 'published'])

@@ -1,4 +1,4 @@
-import type { AppBindings } from '../api/types'
+import type { AppBindings } from '../server/api/types'
 import { extractGptOssText } from './transcribe'
 
 // gpt-oss-120b 使用 Responses API 格式，型別尚未登錄；回應由 extractGptOssText() 做 runtime 驗證

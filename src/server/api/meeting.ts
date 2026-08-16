@@ -14,7 +14,7 @@ import { Hono } from 'hono'
  *   PATCH  /api/meeting/:date               → 更新會議 session 欄位（需 meeting.join）
  */
 
-import { tryGetAuthContext, hasPermission } from '../server/lib/authorization'
+import { tryGetAuthContext, hasPermission } from '../lib/authorization'
 import type { AppEnv } from './types'
 
 /** YYYYMMDD 格式驗證（八位數字） */

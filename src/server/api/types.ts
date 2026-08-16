@@ -1,4 +1,4 @@
-import type { MeetingRoom } from '../durable-objects/meeting-room'
+import type { MeetingRoom } from '../../durable-objects/meeting-room'
 
 import type { D1Database, R2Bucket, Ai } from '@cloudflare/workers-types'
 

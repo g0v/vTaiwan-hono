@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
-import { isSuperAdminRole, tryGetAuthContext } from '../server/lib/authorization'
-import { listAudit } from '../server/lib/audit-log'
-import { AUDIT_LOG_LIMIT } from '../lib/audit-log'
-import { sessionNotFreshBody } from '../server/lib/step-up'
+import { isSuperAdminRole, tryGetAuthContext } from '../lib/authorization'
+import { listAudit } from '../lib/audit-log'
+import { AUDIT_LOG_LIMIT } from '../../lib/audit-log'
+import { sessionNotFreshBody } from '../lib/step-up'
 import civicTalk from './civic-talk'
 import type { AppEnv } from './types'
 

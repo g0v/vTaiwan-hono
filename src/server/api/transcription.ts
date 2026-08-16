@@ -1,8 +1,8 @@
 import { Hono } from 'hono'
 import { corsFor } from './cors'
-import { readAudioToText } from '../lib/transcribe'
-import { generateOutline } from '../lib/ai-summarize'
-import { splitTranscriptionIntoChunks, TRANSCRIPTION_MAX_BYTES, utf8ByteLength } from '../lib/transcription-storage'
+import { readAudioToText } from '../../lib/transcribe'
+import { generateOutline } from '../../lib/ai-summarize'
+import { splitTranscriptionIntoChunks, TRANSCRIPTION_MAX_BYTES, utf8ByteLength } from '../../lib/transcription-storage'
 import {
   formatVersionId,
   isValidMeetingId,
@@ -13,12 +13,12 @@ import {
   versionObjectKey,
   versionsPrefix,
   type TranscriptionVersion,
-} from '../lib/transcription-versions'
-import { stripHtmlFromMarkdown } from '../lib/html-sanitizer'
-import { getAuthContext, hasPermission, tryGetAuthContext } from '../server/lib/authorization'
-import { recordAudit } from '../server/lib/audit-log'
-import { formatMeetingId } from '../lib/transcription-format'
-import { sessionNotFreshBody } from '../server/lib/step-up'
+} from '../../lib/transcription-versions'
+import { stripHtmlFromMarkdown } from '../../lib/html-sanitizer'
+import { getAuthContext, hasPermission, tryGetAuthContext } from '../lib/authorization'
+import { recordAudit } from '../lib/audit-log'
+import { formatMeetingId } from '../../lib/transcription-format'
+import { sessionNotFreshBody } from '../lib/step-up'
 import type { AppEnv } from './types'
 import type { R2Bucket } from '@cloudflare/workers-types'
 

@@ -1,4 +1,4 @@
-import type { AppBindings } from '../../api/types'
+import type { AppBindings } from '../api/types'
 import { auditActionForAdminPath, readAdminActionBody, readAdminSessionToken, readCreatedAuditUser, type AuditAction, type AuditDetail } from '../../lib/audit-log'
 import { findAuditUserIdBySessionToken, findAuditUserTarget, recordAudit, type AuditTarget } from './audit-log'
 import { resolveRole, type AuthContext } from './authorization'

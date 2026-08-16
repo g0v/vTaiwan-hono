@@ -1,5 +1,5 @@
 import { createAuth } from './createAuth'
-import type { AppBindings } from '../../api/types'
+import type { AppBindings } from '../api/types'
 import { nameChangeCooldownRemainingDays } from '../../lib/profile-name'
 import { readStepUpExpiry } from './step-up'
 

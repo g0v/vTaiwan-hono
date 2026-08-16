@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { corsFor } from './cors'
-import { getTopic } from '../lib/discourse-server'
+import { getTopic } from '../../lib/discourse-server'
 import type { AppEnv } from './types'
 
 const app = new Hono<AppEnv>()
