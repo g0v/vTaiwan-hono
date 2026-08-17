@@ -1,5 +1,6 @@
 import { Hono } from 'hono'
 import { csrf } from 'hono/csrf'
+import { NONCE, secureHeaders } from 'hono/secure-headers'
 import admin from './server/api/admin'
 import discourseTopicId from './server/api/discourse_topic_id'
 import discourseTopics from './server/api/discourse_topics'
@@ -32,35 +33,57 @@ async function isAdminRequest(env: AppEnv['Bindings'], headers: Headers): Promis
 
 const app = new Hono<AppEnv>()
 
-// 防禦縱深：即使清洗器發生回歸，也禁止未授權的內嵌 script、style 與事件處理器執行。
-// Vite 開發伺服器注入的 Vue SFC <style> 以逐請求 nonce 精確放行，不使用
-// 'unsafe-inline'。script-src 額外允許 GA 的 GTM、Cloudflare Web Analytics beacon
-// 與 JaaS（8x8.vc）external_api.js，以及第三方套件產生的固定 inline script
-//（僅放行瀏覽器回報的 SHA-256）。connect-src 的 'self' 允許 Cloudflare 自動注入
-// 的 beacon 回傳至 /cdn-cgi/rum，另允許 GA4 beacon 與 JaaS API／WebSocket。
-// frame-src 另放行 JaaS 會議 iframe。
-// Firebase 相關 domain 已全數移除（#81：Firebase 由 DO + WebSocket 取代）。
-export function contentSecurityPolicyFor(nonce: string): string {
-  return `default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-3bzWVxQE32IZQKH9eh8KzyHuhXOlMrboDVVBRd0fWTU=' https://www.googletagmanager.com https://static.cloudflareinsights.com https://8x8.vc; style-src 'self' 'nonce-${nonce}' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https:; connect-src 'self' https://www.googletagmanager.com https://*.google-analytics.com https://*.analytics.google.com https://8x8.vc wss://8x8.vc; frame-src https://accounts.google.com https://pol.is https://app.sli.do https://livehouse.in https://embed.livehouse.in https://form.typeform.com https://docs.google.com https://calendar.google.com https://8x8.vc; frame-ancestors 'self'; form-action 'self'`
-}
-
-function generateCspNonce(): string {
-  const randomBytes = crypto.getRandomValues(new Uint8Array(16))
-  const binary = Array.from(randomBytes, byte => String.fromCharCode(byte)).join('')
-  return btoa(binary)
-}
+const securityHeaders = secureHeaders({
+  contentSecurityPolicy: {
+    defaultSrc: ["'self'"],
+    baseUri: ["'self'"],
+    objectSrc: ["'none'"],
+    scriptSrc: ["'self'", "'sha256-3bzWVxQE32IZQKH9eh8KzyHuhXOlMrboDVVBRd0fWTU='", 'https://www.googletagmanager.com', 'https://static.cloudflareinsights.com', 'https://8x8.vc'],
+    styleSrc: ["'self'", NONCE, 'https://fonts.googleapis.com'],
+    fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+    imgSrc: ["'self'", 'https:'],
+    connectSrc: ["'self'", 'https://www.googletagmanager.com', 'https://*.google-analytics.com', 'https://*.analytics.google.com', 'https://8x8.vc', 'wss://8x8.vc'],
+    frameSrc: [
+      'https://accounts.google.com',
+      'https://pol.is',
+      'https://app.sli.do',
+      'https://livehouse.in',
+      'https://embed.livehouse.in',
+      'https://form.typeform.com',
+      'https://docs.google.com',
+      'https://calendar.google.com',
+      'https://8x8.vc',
+    ],
+    frameAncestors: ["'self'"],
+    formAction: ["'self'"],
+  },
+  referrerPolicy: 'strict-origin-when-cross-origin',
+  xContentTypeOptions: true,
+  xFrameOptions: 'SAMEORIGIN',
+  // 不啟用 middleware 的其他預設標頭，維持目前跨來源與登入流程行為。
+  crossOriginResourcePolicy: false,
+  crossOriginOpenerPolicy: false,
+  originAgentCluster: false,
+  strictTransportSecurity: true,
+  xDnsPrefetchControl: false,
+  xDownloadOptions: false,
+  xPermittedCrossDomainPolicies: false,
+  xXssProtection: true,
+  removePoweredBy: true,
+})
 
 app.use('*', async (c, next) => {
-  const nonce = generateCspNonce()
-  c.set('cspNonce', nonce)
-  await next()
+  await securityHeaders(c, next)
   // WebSocket Upgrade（101）不加安全標頭：101 回應只需升級相關標頭，
   // 附加 CSP 等欄位在不同 runtime 下行為不確定，也無實際防護作用。
-  if (c.res.status === 101) return
-  c.header('Content-Security-Policy', contentSecurityPolicyFor(nonce))
-  c.header('Referrer-Policy', 'strict-origin-when-cross-origin')
-  c.header('X-Content-Type-Options', 'nosniff')
-  c.header('X-Frame-Options', 'SAMEORIGIN')
+  if (c.res.status !== 101) return
+
+  c.res.headers.delete('Content-Security-Policy')
+  c.res.headers.delete('Referrer-Policy')
+  c.res.headers.delete('X-Content-Type-Options')
+  c.res.headers.delete('X-Frame-Options')
+  c.res.headers.delete('Strict-Transport-Security')
+  c.res.headers.delete('X-XSS-Protection')
 })
 
 // ⚠️ 全域 /api/* 中介層一律寫在下面的 app.route() 區塊之前。
@@ -91,7 +114,7 @@ app.get('*', async c => {
     return c.env.ASSETS.fetch(c.req.raw)
   }
 
-  const rendered = await renderPage(`${url.pathname}${url.search}${url.hash}`, url.origin, c.get('cspNonce'))
+  const rendered = await renderPage(`${url.pathname}${url.search}${url.hash}`, url.origin, c.get('secureHeadersNonce'))
 
   // /admin 路由守衛：非管理員一律回 403（HTML 殼不變，僅覆寫狀態碼，避免 hydration mismatch；
   // 前端 AdminView 於 client 端顯示 403／二次驗證畫面）。
