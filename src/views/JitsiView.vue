@@ -648,7 +648,7 @@ export default {
         this.jitsiApi.addEventListener('videoConferenceJoined', () => {
           console.log('✅ 已加入會議')
         })
-        this.jitsiApi.addEventListener('videoConferenceLeft', this.handleMeetingLeft)
+        // this.jitsiApi.addEventListener('videoConferenceLeft', this.handleMeetingLeft)
         this.jitsiApi.addEventListener('readyToClose', this.handleMeetingLeft)
       } catch (error) {
         console.error('Failed to initialize Jitsi Meet:', error)
