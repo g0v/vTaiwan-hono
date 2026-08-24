@@ -38,7 +38,7 @@ const securityHeaders = secureHeaders({
     defaultSrc: ["'self'"],
     baseUri: ["'self'"],
     objectSrc: ["'none'"],
-    scriptSrc: ["'self'", "'sha256-3bzWVxQE32IZQKH9eh8KzyHuhXOlMrboDVVBRd0fWTU='", 'https://www.googletagmanager.com', 'https://static.cloudflareinsights.com', 'https://8x8.vc'],
+    scriptSrc: ["'self'", "'sha256-3bzWVxQE32IZQKH9eh8KzyHuhXOlMrboDVVBRd0fWTU='", 'https://www.googletagmanager.com', 'https://static.cloudflareinsights.com', 'https://8x8.vc', 'https://pol.is'],
     styleSrc: ["'self'", NONCE, 'https://fonts.googleapis.com'],
     fontSrc: ["'self'", 'https://fonts.gstatic.com'],
     imgSrc: ["'self'", 'https:'],
