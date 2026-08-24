@@ -37,7 +37,7 @@ onBeforeUnmount(() => {
 
   <section class="bg-gray-50 py-12">
     <div class="container px-2">
-      <div class="mx-auto max-w-4xl">
+      <div class="mx-auto mb-8 max-w-4xl">
         <div class="mb-8 rounded-lg bg-white p-6 shadow-md md:p-8">
           <p class="mb-4 text-xl font-semibold text-gray-900">{{ t('polis.intro.p1') }}</p>
           <p class="mb-4 text-gray-700">{{ t('polis.intro.p2') }}</p>
@@ -62,6 +62,16 @@ onBeforeUnmount(() => {
             <div class="polis" data-conversation_id="2525kxsn2f" />
           </div>
         </div>
+      </div>
+
+      <div class="rounded-vt-xl bg-white p-vt-8 shadow-vt-md" aria-labelledby="civic-platform-title">
+        <h2 id="civic-platform-title" class="text-vt-2xl font-semibold">
+          {{ t('polis.civicPlatform.title') }}
+        </h2>
+        <p class="mt-vt-3 max-w-2xl text-vt-gray-400">{{ t('polis.civicPlatform.description') }}</p>
+        <a href="https://civic.vtaiwan.tw/" target="_blank" rel="noopener noreferrer" class="vt-btn vt-btn-primary mt-vt-6">
+          {{ t('polis.civicPlatform.linkLabel') }}
+        </a>
       </div>
     </div>
   </section>
