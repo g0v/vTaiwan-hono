@@ -26,7 +26,6 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-
   <section class="bg-black py-8 text-white">
     <div class="container px-2">
       <div class="mx-auto max-w-4xl">
@@ -80,7 +79,6 @@ onBeforeUnmount(() => {
           </div>
         </div>
       </div>
-
     </div>
   </section>
 </template>
