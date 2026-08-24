@@ -26,11 +26,28 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+
   <section class="bg-black py-8 text-white">
     <div class="container px-2">
       <div class="mx-auto max-w-4xl">
         <h1 class="mb-4 text-3xl font-bold md:text-4xl">{{ t('polis.title') }}</h1>
-        <p class="text-lg opacity-90">{{ t('polis.subtitle') }}</p>
+        <!-- <p class="text-lg opacity-90">{{ t('polis.subtitle') }}</p> -->
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-white py-8 text-black">
+    <div class="container px-2">
+      <div class="mx-auto max-w-4xl">
+        <div class="rounded-vt-xl bg-white p-vt-8 shadow-vt-md" aria-labelledby="civic-platform-title">
+          <h2 id="civic-platform-title" class="text-vt-2xl font-semibold text-black">
+            {{ t('polis.civicPlatform.title') }}
+          </h2>
+          <p class="mt-vt-3 max-w-2xl text-vt-gray-400">{{ t('polis.civicPlatform.description') }}</p>
+          <a href="https://civic.vtaiwan.tw/" target="_blank" rel="noopener noreferrer" class="vt-btn vt-btn-primary mt-vt-6">
+            {{ t('polis.civicPlatform.linkLabel') }}
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -64,15 +81,6 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div class="rounded-vt-xl bg-white p-vt-8 shadow-vt-md" aria-labelledby="civic-platform-title">
-        <h2 id="civic-platform-title" class="text-vt-2xl font-semibold">
-          {{ t('polis.civicPlatform.title') }}
-        </h2>
-        <p class="mt-vt-3 max-w-2xl text-vt-gray-400">{{ t('polis.civicPlatform.description') }}</p>
-        <a href="https://civic.vtaiwan.tw/" target="_blank" rel="noopener noreferrer" class="vt-btn vt-btn-primary mt-vt-6">
-          {{ t('polis.civicPlatform.linkLabel') }}
-        </a>
-      </div>
     </div>
   </section>
 </template>
