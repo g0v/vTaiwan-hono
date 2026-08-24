@@ -37,7 +37,7 @@ onBeforeUnmount(() => {
 
   <section class="bg-gray-50 py-12">
     <div class="container px-2">
-      <div class="mx-auto max-w-4xl mb-10">
+      <div class="mx-auto mb-10 max-w-4xl">
         <div class="rounded-vt-xl bg-white p-vt-8 shadow-vt-md" aria-labelledby="civic-platform-title">
           <h2 id="civic-platform-title" class="text-vt-2xl font-semibold text-black">
             {{ t('polis.civicPlatform.title') }}
