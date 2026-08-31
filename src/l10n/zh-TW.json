@@ -628,7 +628,8 @@
     },
     "actions": {
       "share": "分享議題",
-      "bookmark": "加入書籤"
+      "bookmark": "加入書籤",
+      "removeBookmark": "移除書籤"
     },
     "bookmarks": {
       "myBookmarks": "書籤"

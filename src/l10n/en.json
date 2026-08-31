@@ -618,7 +618,8 @@
     },
     "actions": {
       "share": "Share Topic",
-      "bookmark": "Add Bookmark"
+      "bookmark": "Add Bookmark",
+      "removeBookmark": "Remove Bookmark"
     },
     "bookmarks": {
       "myBookmarks": "Bookmarks"

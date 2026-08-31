@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import IconWrapper from '../components/IconWrapper.vue'
 import discourseApi, { type FormattedTopicData } from '../lib/discourse'
+import { parseBookmarkedTopicIds, toggleBookmarkedTopicId, TOPIC_BOOKMARKS_STORAGE_KEY } from '../lib/topic-bookmarks'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -137,21 +138,20 @@ const shareTopic = (topic: FormattedTopicData) => {
 
 const loadBookmarks = () => {
   if (typeof window === 'undefined') return
-  const stored = localStorage.getItem('bookmarkedTopics')
-  if (stored) {
-    try {
-      bookmarkedIds.value = JSON.parse(stored) as number[]
-    } catch {
-      bookmarkedIds.value = []
-    }
-  } else {
+  try {
+    bookmarkedIds.value = parseBookmarkedTopicIds(localStorage.getItem(TOPIC_BOOKMARKS_STORAGE_KEY))
+  } catch {
     bookmarkedIds.value = []
   }
 }
 
 const saveBookmarks = () => {
   if (typeof window === 'undefined') return
-  localStorage.setItem('bookmarkedTopics', JSON.stringify(bookmarkedIds.value))
+  try {
+    localStorage.setItem(TOPIC_BOOKMARKS_STORAGE_KEY, JSON.stringify(bookmarkedIds.value))
+  } catch {
+    // 瀏覽器可能在隱私模式或儲存空間不足時拒絕寫入；仍保留本次頁面內的收藏狀態。
+  }
 }
 
 const isBookmarked = (topic: FormattedTopicData): boolean => {
@@ -159,12 +159,7 @@ const isBookmarked = (topic: FormattedTopicData): boolean => {
 }
 
 const bookmarkTopic = (topic: FormattedTopicData) => {
-  const idx = bookmarkedIds.value.indexOf(topic.id)
-  if (idx === -1) {
-    bookmarkedIds.value.push(topic.id)
-  } else {
-    bookmarkedIds.value.splice(idx, 1)
-  }
+  bookmarkedIds.value = toggleBookmarkedTopicId(bookmarkedIds.value, topic.id)
   saveBookmarks()
 }
 
@@ -465,7 +460,13 @@ onMounted(() => {
                     <button class="vt-topic-pill p-1 text-vt-fg-3 transition-colors hover:text-democratic-red" :title="t('topics.actions.share')" @click.stop="shareTopic(topic)">
                       <IconWrapper name="share-2" :size="12" />
                     </button>
-                    <button class="vt-topic-pill p-1 transition-colors" :title="t('topics.actions.bookmark')" @click.stop="bookmarkTopic(topic)">
+                    <button
+                      class="vt-topic-pill p-1 transition-colors"
+                      :title="t(isBookmarked(topic) ? 'topics.actions.removeBookmark' : 'topics.actions.bookmark')"
+                      :aria-label="t(isBookmarked(topic) ? 'topics.actions.removeBookmark' : 'topics.actions.bookmark')"
+                      :aria-pressed="isBookmarked(topic)"
+                      @click.stop="bookmarkTopic(topic)"
+                    >
                       <IconWrapper name="bookmark" :size="12" :class="isBookmarked(topic) ? 'fill-democratic-red text-democratic-red' : 'text-gray-400 hover:text-democratic-red'" />
                     </button>
                   </div>

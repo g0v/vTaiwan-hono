@@ -618,7 +618,8 @@
     },
     "actions": {
       "share": "トピックを共有",
-      "bookmark": "ブックマークに追加"
+      "bookmark": "ブックマークに追加",
+      "removeBookmark": "ブックマークを削除"
     },
     "bookmarks": {
       "myBookmarks": "ブックマーク"
