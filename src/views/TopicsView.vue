@@ -146,7 +146,8 @@ const shareTopic = async (topic: FormattedTopicData) => {
 
   if (typeof navigator.share === 'function') {
     try {
-      await navigator.share({ title: topic.title, text: topic.slogan, url })
+      await navigator.share({ title: topic.title, url })
+      // await navigator.share({ title: topic.title, text: topic.slogan, url })
       return
     } catch (error) {
       // 使用者取消系統分享面板時不應改為複製連結；其他失敗情況才降級。
