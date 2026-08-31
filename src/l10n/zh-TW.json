@@ -628,6 +628,8 @@
     },
     "actions": {
       "share": "分享議題",
+      "shareCopied": "議題連結已複製到剪貼簿",
+      "shareCopyFailed": "無法複製議題連結，請稍後再試",
       "bookmark": "加入書籤",
       "removeBookmark": "移除書籤"
     },

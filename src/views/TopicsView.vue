@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from 'vue'
+import { ref, onMounted, onUnmounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import IconWrapper from '../components/IconWrapper.vue'
+import { copyTextToClipboard } from '../lib/clipboard'
 import discourseApi, { type FormattedTopicData } from '../lib/discourse'
 import { parseBookmarkedTopicIds, toggleBookmarkedTopicId, TOPIC_BOOKMARKS_STORAGE_KEY } from '../lib/topic-bookmarks'
 
@@ -29,6 +30,8 @@ const steps = ref(
 const bookmarkedIds = ref<number[]>([])
 const showBookmarksOnly = ref(false)
 const selectedStep = ref('')
+const shareStatus = ref('')
+let shareStatusTimer: ReturnType<typeof setTimeout> | undefined
 
 const recentTopics = computed(() => {
   const threeMonthsAgo = new Date()
@@ -127,13 +130,31 @@ const goToTopic = (topic: FormattedTopicData) => {
   router.push(`/topic/${topic.routeName}`)
 }
 
-const shareTopic = (topic: FormattedTopicData) => {
-  const url = `${window.location.origin}/topic/${topic.routeName}`
-  if (navigator.share) {
-    navigator.share({ title: topic.title, text: topic.slogan, url })
-  } else {
-    navigator.clipboard.writeText(url)
+const showShareStatus = (message: string) => {
+  shareStatus.value = message
+  if (shareStatusTimer) clearTimeout(shareStatusTimer)
+  shareStatusTimer = setTimeout(() => {
+    shareStatus.value = ''
+    shareStatusTimer = undefined
+  }, 4000)
+}
+
+const shareTopic = async (topic: FormattedTopicData) => {
+  if (typeof window === 'undefined') return
+
+  const url = new URL(`/topic/${encodeURIComponent(topic.routeName)}`, window.location.origin).href
+
+  if (typeof navigator.share === 'function') {
+    try {
+      await navigator.share({ title: topic.title, text: topic.slogan, url })
+      return
+    } catch (error) {
+      // 使用者取消系統分享面板時不應改為複製連結；其他失敗情況才降級。
+      if (error instanceof Error && error.name === 'AbortError') return
+    }
   }
+
+  showShareStatus((await copyTextToClipboard(url)) ? t('topics.actions.shareCopied') : t('topics.actions.shareCopyFailed'))
 }
 
 const loadBookmarks = () => {
@@ -182,6 +203,10 @@ watch(topics, () => {
 onMounted(() => {
   loadTopics()
   loadBookmarks()
+})
+
+onUnmounted(() => {
+  if (shareStatusTimer) clearTimeout(shareStatusTimer)
 })
 </script>
 
@@ -457,7 +482,12 @@ onMounted(() => {
                     <span>{{ formatDate(topic.created_at) }}</span>
                   </div>
                   <div class="flex items-center gap-1">
-                    <button class="vt-topic-pill p-1 text-vt-fg-3 transition-colors hover:text-democratic-red" :title="t('topics.actions.share')" @click.stop="shareTopic(topic)">
+                    <button
+                      class="vt-topic-pill p-1 text-vt-fg-3 transition-colors hover:text-democratic-red"
+                      :title="t('topics.actions.share')"
+                      :aria-label="t('topics.actions.share')"
+                      @click.stop="shareTopic(topic)"
+                    >
                       <IconWrapper name="share-2" :size="12" />
                     </button>
                     <button
@@ -488,6 +518,16 @@ onMounted(() => {
       </div>
     </div>
   </section>
+
+  <div
+    v-if="shareStatus"
+    class="pointer-events-none fixed right-vt-6 bottom-vt-6 z-50 flex max-w-[calc(100vw-var(--spacing-vt-12))] items-center gap-vt-2 rounded-vt-md bg-vt-bg-inverse px-vt-4 py-vt-3 text-vt-sm text-vt-fg-inverse shadow-lg"
+    role="status"
+    aria-live="polite"
+  >
+    <IconWrapper name="circle-check-big" :size="18" color="currentColor" aria-hidden="true" />
+    <span>{{ shareStatus }}</span>
+  </div>
 </template>
 
 <style scoped>

@@ -618,6 +618,8 @@
     },
     "actions": {
       "share": "Share Topic",
+      "shareCopied": "Topic link copied to clipboard",
+      "shareCopyFailed": "Unable to copy the topic link. Please try again later.",
       "bookmark": "Add Bookmark",
       "removeBookmark": "Remove Bookmark"
     },
