@@ -29,8 +29,7 @@
       "description": "vTaiwanのトピック討論に参加し、政策形成に加わりましょう。"
     },
     "topicDetail": {
-      "title": "トピック詳細 | vTaiwan",
-      "withNameTitle": "トピック | {name} | vTaiwan",
+      "title": "トピック詳細",
       "description": "vTaiwanの政策討論の進捗と参加方法をご確認ください。"
     },
     "polis": {

@@ -73,17 +73,24 @@ const securityHeaders = secureHeaders({
 })
 
 app.use('*', async (c, next) => {
-  await securityHeaders(c, next)
   // WebSocket Upgrade（101）不加安全標頭：101 回應只需升級相關標頭，
-  // 附加 CSP 等欄位在不同 runtime 下行為不確定，也無實際防護作用。
-  if (c.res.status !== 101) return
+  // 且 Cloudflare 的升級回應不可複製或修改 headers。
+  if (c.req.header('Upgrade')?.toLowerCase() === 'websocket') {
+    await next()
+    if (c.res.status === 101) return
 
-  c.res.headers.delete('Content-Security-Policy')
-  c.res.headers.delete('Referrer-Policy')
-  c.res.headers.delete('X-Content-Type-Options')
-  c.res.headers.delete('X-Frame-Options')
-  c.res.headers.delete('Strict-Transport-Security')
-  c.res.headers.delete('X-XSS-Protection')
+    // 握手失敗的 4xx/5xx 仍是一般 HTTP 回應，保留安全標頭。
+    c.res = new Response(c.res.body, c.res)
+    await securityHeaders(c, async () => {})
+    return
+  }
+
+  await securityHeaders(c, async () => {
+    await next()
+    // ASSETS.fetch() 等 Fetch API 回應的 headers guard 可能是 immutable；先建立
+    // 可修改的副本，讓 secureHeaders 能在 downstream 完成後安全地附加標頭。
+    c.res = new Response(c.res.body, c.res)
+  })
 })
 
 // ⚠️ 全域 /api/* 中介層一律寫在下面的 app.route() 區塊之前。

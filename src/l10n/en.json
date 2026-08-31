@@ -29,8 +29,7 @@
       "description": "Join vTaiwan's topic discussions and take part in the policy-making process."
     },
     "topicDetail": {
-      "title": "Topic Details | vTaiwan",
-      "withNameTitle": "Topic | {name} | vTaiwan",
+      "title": "Topic Details",
       "description": "Learn about the progress of a vTaiwan policy discussion and how to participate."
     },
     "polis": {

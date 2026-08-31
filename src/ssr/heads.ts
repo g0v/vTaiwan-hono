@@ -108,8 +108,14 @@ export function headForTopics(origin: string, t: Translate): HeadConfig {
   }
 }
 
+export function titleForTopicDetail(routeName: string, t: Translate, topicTitle?: string): string {
+  // SSR 不抓動態資料，先以 routeName 作有意義的 fallback；client 取得議題資料後
+  // 再傳入 topicTitle，更新成實際議題名稱（issue #114）。
+  return `${topicTitle || routeName || t('head.topicDetail.title')} - ${SITE_NAME}`
+}
+
 export function headForTopicDetail(origin: string, routeName: string, t: Translate): HeadConfig {
-  const title = (routeName ? t('head.topicDetail.withNameTitle').replace('{name}', routeName) : t('head.topicDetail.title')) + ' - ' + SITE_NAME
+  const title = titleForTopicDetail(routeName, t)
   const description = t('head.topicDetail.description')
   const path = routeName ? `/topic/${encodeURIComponent(routeName)}` : '/topics'
   return {
