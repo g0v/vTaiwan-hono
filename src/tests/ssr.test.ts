@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vite-plus/test'
 import type { RouteRecordRaw } from 'vue-router'
 import { routes } from '#routes-runtime'
 import { renderPage } from '../ssr/render'
+import { titleForTopicDetail } from '../ssr/heads'
 
 // SSR 煙霧測試：對路由表每條 route 實際跑 renderPage()，取代「vp run dev 目視」的 SSR 首屏那一半。
 // 涵蓋：renderToString 不丟例外（含誤觸瀏覽器 API 的 SSR 安全違規）、HTTP status 符合
@@ -46,4 +47,17 @@ describe('SSR 煙霧測試', () => {
       expect(html).not.toContain('<div id="app"></div>')
     })
   }
+
+  it('單一議題在動態資料載入前以 routeName 產生 title 與 og:title', async () => {
+    const { html } = await renderPage('/topic/2026_AI_C_Protection', origin, cspNonce)
+
+    expect(html).toContain('<title>2026_AI_C_Protection - vTaiwan</title>')
+    expect(html).toContain('<meta property="og:title" content="2026_AI_C_Protection - vTaiwan" />')
+  })
+
+  it('單一議題取得動態資料後以實際名稱產生瀏覽器 title', () => {
+    const title = titleForTopicDetail('2026_AI_C_Protection', key => key, '2026審議大會：AI時代的風險評估')
+
+    expect(title).toBe('2026審議大會：AI時代的風險評估 - vTaiwan')
+  })
 })

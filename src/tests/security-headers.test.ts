@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vite-plus/test'
 import app from '../index'
+import type { AppBindings } from '../server/api/types'
 
 function directiveSources(policy: string, directive: string): string[] {
   const value = policy
@@ -64,5 +65,31 @@ describe('安全標頭', () => {
     expect(firstNonce).not.toBe(secondNonce)
     expect(firstHtml).toContain(`<meta property="csp-nonce" nonce="${firstNonce}" />`)
     expect(secondHtml).toContain(`<meta property="csp-nonce" nonce="${secondNonce}" />`)
+  })
+
+  it('ASSETS 回傳 immutable headers 時仍可附加安全標頭', async () => {
+    const location = 'https://cdn.example/styles.css'
+    const bindings = {
+      ASSETS: {
+        fetch: async () => Response.redirect(location),
+      },
+    } as unknown as AppBindings
+
+    const response = await app.request('https://vtaiwan.tw/styles.css', {}, bindings)
+
+    expect(response.status).toBe(302)
+    expect(response.headers.get('location')).toBe(location)
+    expect(response.headers.get('Content-Security-Policy')).not.toBeNull()
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
+  })
+
+  it('WebSocket 握手失敗的 HTTP 回應仍附加安全標頭', async () => {
+    const response = await app.request('https://vtaiwan.tw/api/meeting/ws/20260803', {
+      headers: { upgrade: 'websocket', origin: 'https://vtaiwan.tw' },
+    })
+
+    expect(response.status).toBe(500)
+    expect(response.headers.get('Content-Security-Policy')).not.toBeNull()
+    expect(response.headers.get('X-Content-Type-Options')).toBe('nosniff')
   })
 })

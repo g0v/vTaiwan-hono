@@ -29,8 +29,7 @@
       "description": "vTaiwan 的議題討論區，參與政策制定過程。"
     },
     "topicDetail": {
-      "title": "議題詳情 | vTaiwan",
-      "withNameTitle": "議題 | {name} | vTaiwan",
+      "title": "議題詳情",
       "description": "vTaiwan 議題詳情頁，了解政策討論進度與參與方式。"
     },
     "polis": {

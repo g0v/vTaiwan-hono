@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import IconWrapper from '../components/IconWrapper.vue'
@@ -8,14 +8,16 @@ import TopicSlide from '../components/TopicSlide.vue'
 import TopicTimeline from '../components/TopicTimeline.vue'
 import TopicDiscussion from '../components/TopicDiscussion.vue'
 import discourseApi, { type FormattedTopicData } from '../lib/discourse'
+import { titleForTopicDetail } from '../ssr/heads'
 
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const topic = ref<FormattedTopicData | null>(null)
 const loading = ref(true)
 const activeTab = ref<'timeline' | 'discussion'>('timeline')
 const realTopicId = ref<number | null>(null)
+let topicLoadRequestId = 0
 
 const topicId = computed(() => String(route.params.id ?? ''))
 
@@ -26,14 +28,27 @@ const showDiscussionButton = computed(() => {
 
 const showDiscussionTab = computed(() => showDiscussionButton.value)
 
+const syncTopicTitle = () => {
+  if (typeof window === 'undefined' || typeof document === 'undefined' || !topic.value) return
+  document.title = titleForTopicDetail(topicId.value, t, topic.value.title)
+}
+
 const loadTopic = async () => {
+  const requestId = ++topicLoadRequestId
+  const requestedTopicId = topicId.value
+  const isCurrentRequest = () => requestId === topicLoadRequestId && requestedTopicId === topicId.value
+
   try {
     loading.value = true
+    topic.value = null
+    realTopicId.value = null
     const allTopics = await discourseApi.getAllTopics()
+
+    if (!isCurrentRequest()) return
 
     const targetTopic = allTopics.find(item => {
       const routeName = item.title.split(' ')[1]
-      return routeName === topicId.value
+      return routeName === requestedTopicId
     })
 
     if (!targetTopic) {
@@ -43,7 +58,11 @@ const loadTopic = async () => {
 
     realTopicId.value = targetTopic.id
     const topicData = await discourseApi.getTopic(targetTopic.id)
+
+    if (!isCurrentRequest()) return
+
     topic.value = discourseApi.formatTopicData(topicData)
+    syncTopicTitle()
 
     if (route.hash === '#discussion' && showDiscussionButton.value) {
       activeTab.value = 'discussion'
@@ -51,16 +70,26 @@ const loadTopic = async () => {
       activeTab.value = 'timeline'
     }
   } catch (error) {
+    if (!isCurrentRequest()) return
+
     console.error('Error loading topic:', error)
     topic.value = null
   } finally {
-    loading.value = false
+    if (isCurrentRequest()) loading.value = false
   }
 }
 
 onMounted(() => {
   loadTopic()
 })
+
+watch(topicId, () => {
+  void loadTopic()
+})
+
+// 社群爬蟲不執行 hydration；OG/Twitter title 保留 SSR 的 routeName fallback。
+// 瀏覽器切換語言時，全域 head 同步會先恢復 fallback，再由議題頁補回實際名稱。
+watch(locale, syncTopicTitle)
 </script>
 
 <template>
