@@ -17,6 +17,7 @@ const topic = ref<FormattedTopicData | null>(null)
 const loading = ref(true)
 const activeTab = ref<'timeline' | 'discussion'>('timeline')
 const realTopicId = ref<number | null>(null)
+let topicLoadRequestId = 0
 
 const topicId = computed(() => String(route.params.id ?? ''))
 
@@ -33,15 +34,21 @@ const syncTopicTitle = () => {
 }
 
 const loadTopic = async () => {
+  const requestId = ++topicLoadRequestId
+  const requestedTopicId = topicId.value
+  const isCurrentRequest = () => requestId === topicLoadRequestId && requestedTopicId === topicId.value
+
   try {
     loading.value = true
     topic.value = null
     realTopicId.value = null
     const allTopics = await discourseApi.getAllTopics()
 
+    if (!isCurrentRequest()) return
+
     const targetTopic = allTopics.find(item => {
       const routeName = item.title.split(' ')[1]
-      return routeName === topicId.value
+      return routeName === requestedTopicId
     })
 
     if (!targetTopic) {
@@ -51,6 +58,9 @@ const loadTopic = async () => {
 
     realTopicId.value = targetTopic.id
     const topicData = await discourseApi.getTopic(targetTopic.id)
+
+    if (!isCurrentRequest()) return
+
     topic.value = discourseApi.formatTopicData(topicData)
     syncTopicTitle()
 
@@ -60,10 +70,12 @@ const loadTopic = async () => {
       activeTab.value = 'timeline'
     }
   } catch (error) {
+    if (!isCurrentRequest()) return
+
     console.error('Error loading topic:', error)
     topic.value = null
   } finally {
-    loading.value = false
+    if (isCurrentRequest()) loading.value = false
   }
 }
 
