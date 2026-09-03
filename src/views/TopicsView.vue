@@ -40,12 +40,12 @@ const recentTopics = computed(() => {
   return topics.value
     .filter(topic => {
       if (topic.title === '網站基本設定') return false
-      const topicDate = new Date(topic.last_posted_at || topic.created_at)
+      const topicDate = new Date(topic.created_at || topic.last_posted_at)
       return topicDate >= threeMonthsAgo
     })
     .sort((a, b) => {
-      const dateA = new Date(a.last_posted_at || a.created_at).getTime()
-      const dateB = new Date(b.last_posted_at || b.created_at).getTime()
+      const dateA = new Date(a.created_at || a.last_posted_at).getTime()
+      const dateB = new Date(b.created_at || b.last_posted_at).getTime()
       return dateB - dateA
     })
     .slice(0, 6)
@@ -86,7 +86,7 @@ const filteredTopics = computed(() => {
       break
     case 'latest':
     default:
-      sorted.sort((a, b) => new Date(b.last_posted_at || b.created_at).getTime() - new Date(a.last_posted_at || a.created_at).getTime())
+      sorted.sort((a, b) => new Date(b.created_at || b.last_posted_at).getTime() - new Date(a.created_at || a.last_posted_at).getTime())
       break
   }
 
@@ -253,7 +253,7 @@ onUnmounted(() => {
                 <div class="vt-topic-eyebrow flex-wrap">
                   <span class="vt-topic-status-dot" aria-hidden="true" />
                   <span>{{ t('topics.steps.' + getStatusText(topic.status)) }}</span>
-                  <span class="text-vt-fg-3">・{{ formatDate(topic.last_posted_at || topic.created_at) }}</span>
+                  <span class="text-vt-fg-3">・{{ formatDate(topic.created_at || topic.last_posted_at) }}</span>
                 </div>
               </div>
             </div>
@@ -389,7 +389,7 @@ onUnmounted(() => {
                   <div class="vt-topic-eyebrow flex-wrap">
                     <span class="vt-topic-status-dot" aria-hidden="true" />
                     <span>{{ t('topics.steps.' + getStatusText(topic.status)) }}</span>
-                    <span class="text-vt-fg-3">・{{ formatDate(topic.last_posted_at || topic.created_at) }}</span>
+                    <span class="text-vt-fg-3">・{{ formatDate(topic.created_at || topic.last_posted_at) }}</span>
                   </div>
                 </div>
               </div>
@@ -416,7 +416,7 @@ onUnmounted(() => {
                   </span>
                   <span class="vt-topic-pill">
                     <IconWrapper name="calendar" :size="16" />
-                    <span>{{ formatDate(topic.last_posted_at || topic.created_at) }}</span>
+                    <span>{{ formatDate(topic.created_at || topic.last_posted_at) }}</span>
                   </span>
                 </div>
 
