@@ -97,9 +97,12 @@ const app = new Hono<AppEnv>()
 // **寫入端點一律不掛 `corsFor`**（/upload、/outline、/restore、/delete、/create-table、
 // /test-ai、/:lang）：它們只給本站自己的頁面用，沒有跨來源使用情境。
 // 不掛 middleware 就不會回應 preflight 所需的 CORS 標頭，瀏覽器無法完成跨來源寫入；
-// 表單型實際請求另由全域 csrf() 把關。不要依賴特定 Hono 版本是否把 OPTIONS 視為安全方法，
+// 表單型實際請求另由全域 csrf() 把關。不要依賴特定 Hono 版本是否把 OPTIONS 視為安全方法
+//（Hono >= 4.13.0 的 csrf 已把 OPTIONS 列入安全方法，不再替我們攔下 preflight），
 // 也不要把 CORS 誤當成授權機制。掛著只會讓 ALLOWED_ORIGINS 誤導後人以為這些路徑可跨站呼叫。
 // 只有公開讀取的 GET 端點（列表、逐字稿全文）才掛 corsFor，那才是真的會生效的地方。
+// ⚠️ corsFor 的掛載路徑要精確到單一端點：wildcard（'/:x/*'）會連零區段一起命中，
+//    把同層的寫入端點一起蓋進來——preflight 就會回 CORS 放行標頭（見下方 /:meeting_id/text）。
 // ⚠️ 不要在端點內自己補同源檢查——同源把關的單一來源是 index.ts 的全域 csrf()。
 // ⚠️ 真的需要跨站寫入，必須先動全域 csrf 設定，那是要與使用者確認的決定。
 
@@ -437,7 +440,12 @@ app.post(LANG_PATH, async c => {
 })
 
 // GET /:meeting_id/text — 讀取逐字稿純文字（取代公開 R2 網域）
-app.use('/:meeting_id/*', corsFor(['GET']))
+// corsFor 只掛這一條公開讀取的路徑，**不可**寫成 '/:meeting_id/*'：
+// Hono 的尾綴 wildcard 連「零個區段」都算命中，`/:meeting_id/*` 會一併蓋到同層的
+// /upload、/outline、/restore、/delete、/create-table、/test-ai、/:lang——那些是寫入端點，
+// 依本檔「CORS 政策」一律不得宣告 CORS。底下 /versions 系列是管理員專屬讀取，
+// 比照 /api/admin/audit-log 同樣不掛（只給同源的後台頁面用）。
+app.use('/:meeting_id/text', corsFor(['GET']))
 app.get('/:meeting_id/text', async c => {
   const meeting_id = c.req.param('meeting_id')
   if (!/^\d{8}$/.test(meeting_id)) return c.text('', 400)

@@ -109,6 +109,34 @@ describe('寫入端點不對外宣告 CORS', () => {
     })
   }
 
+  // 上面驗的是「實際請求」；preflight 要另外驗。兩者會走到不同的 handler：
+  // 寫入端點的 POST/PUT/... handler 註冊在 corsFor 之前，handler 先回應就結束 chain，
+  // 因此就算後面誤掛了 corsFor，實際請求也照樣不帶 CORS 標頭——只有沒有對應 handler 的
+  // OPTIONS 會落到那個 middleware 身上並回出放行標頭。Hono >= 4.13.0 起 csrf 把 OPTIONS
+  // 視為安全方法，不再替我們攔下 preflight，這條就是唯一的把關。
+  // 期望值是 404（沒有任何 middleware／handler 接手），瀏覽器因此完不成跨來源寫入。
+  for (const { method, path } of WRITE_ENDPOINTS) {
+    it(`OPTIONS ${path}（${method} 的 preflight）不回 CORS 放行標頭`, async () => {
+      const res = await app.request(`https://next.vtaiwan.tw${path}`, {
+        method: 'OPTIONS',
+        headers: { origin: 'https://vtaiwan.tw', 'access-control-request-method': method, 'access-control-request-headers': 'content-type' },
+      })
+      expect(res.headers.get('access-control-allow-origin')).toBeNull()
+      expect(res.headers.get('access-control-allow-methods')).toBeNull()
+    })
+  }
+
+  // 管理員專屬的讀取端點比照 /api/admin/audit-log：連 corsFor 都不掛，跨來源根本讀不到。
+  // 舊版本可能含後續被修正／下架的內容，不該隨公開逐字稿一起露出。
+  for (const path of ['/api/transcription/20260803/versions', '/api/transcription/20260803/versions/20260803T000000000Z/text']) {
+    it(`${path} 不對外宣告 CORS（管理員專屬）`, async () => {
+      const res = await app.request(`https://next.vtaiwan.tw${path}`, {
+        headers: { origin: 'https://vtaiwan.tw', 'sec-fetch-site': 'cross-site' },
+      })
+      expect(res.headers.get('access-control-allow-origin')).toBeNull()
+    })
+  }
+
   // 對照組：公開讀取的 GET 端點才該掛 corsFor，那裡的 CORS 是真的會生效的。
   it('公開讀取的 GET 端點仍對白名單來源宣告 CORS', async () => {
     const res = await app.request('https://next.vtaiwan.tw/api/transcription/20260803/text', {
