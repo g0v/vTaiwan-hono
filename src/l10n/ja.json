@@ -121,7 +121,8 @@
     "warning": "警告",
     "info": "情報",
     "profile": "プロフィール",
-    "registerLogin": "登録 / ログイン"
+    "registerLogin": "登録 / ログイン",
+    "retry": "再試行"
   },
   "underConstruction": {
     "title": "工事中",
@@ -270,6 +271,13 @@
           "description": "市民のコンセンサスを具体的な政策提案に変換し、関連政府部門に提出します。"
         }
       }
+    },
+    "activeTopics": {
+      "eyebrow": "進行中のトピック",
+      "title": "いま進んでいる公共討論",
+      "viewAll": "すべてのトピックを見る",
+      "empty": "現在、進行中のトピックはありません。",
+      "loadError": "現在トピックを読み込めません。トピック一覧は引き続きご覧いただけます。"
     },
     "cta": {
       "title": "私たちと一緒に台湾の未来を形作りましょう",

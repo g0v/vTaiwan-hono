@@ -116,7 +116,8 @@
     "warning": "警告",
     "info": "資訊",
     "profile": "個人資料",
-    "registerLogin": "註冊 / 登入"
+    "registerLogin": "註冊 / 登入",
+    "retry": "重試"
   },
   "underConstruction": {
     "title": "施工中",
@@ -265,6 +266,13 @@
           "description": "將公民共識轉化為具體政策建議，提交給相關政府部門參考與執行。"
         }
       }
+    },
+    "activeTopics": {
+      "eyebrow": "進行中的議題",
+      "title": "正在發生的公共討論",
+      "viewAll": "查看全部議題",
+      "empty": "目前沒有進行中的議題。",
+      "loadError": "暫時無法載入議題，您仍可前往議題列表查看。"
     },
     "cta": {
       "title": "加入我們，共同參與台灣的未來",
