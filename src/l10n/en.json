@@ -121,7 +121,8 @@
     "warning": "Warning",
     "info": "Info",
     "profile": "Profile",
-    "registerLogin": "Sign up / Log in"
+    "registerLogin": "Sign up / Log in",
+    "retry": "Try again"
   },
   "underConstruction": {
     "title": "Under Construction",
@@ -270,6 +271,13 @@
           "description": "Transform citizen consensus into concrete policy recommendations and submit them to relevant government departments for reference and implementation."
         }
       }
+    },
+    "activeTopics": {
+      "eyebrow": "Active topics",
+      "title": "Public discussions happening now",
+      "viewAll": "View all topics",
+      "empty": "There are no active topics right now.",
+      "loadError": "Topics could not be loaded right now. You can still visit the full topic list."
     },
     "cta": {
       "title": "Join us in shaping Taiwan's future together",

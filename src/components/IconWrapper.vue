@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, type Component } from 'vue'
 import {
+  ArrowRight,
   ArrowUpRight,
   Book,
   Bookmark,
@@ -33,6 +34,7 @@ import {
 
 // 只註冊實際用到的圖示（具名 import 才能被 tree-shake；勿用 import * 全量引入）
 const icons: Record<string, Component> = {
+  'arrow-right': ArrowRight,
   'arrow-up-right': ArrowUpRight,
   book: Book,
   bookmark: Bookmark,
