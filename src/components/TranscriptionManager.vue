@@ -97,6 +97,7 @@
       :allow-edit="canUpdateTranscriptions"
       @close="currentOutlineItem = null"
       @save="saveOutline"
+      @download="downloadOutline"
     />
   </div>
 </template>
@@ -264,6 +265,17 @@ function downloadTranscription(meetingId: string) {
       document.body.removeChild(link)
     })
     .catch(err => console.error('下載失敗:', err))
+}
+
+function downloadOutline() {
+  const item = currentOutlineItem.value
+  if (!item?.outline) return
+  const link = document.createElement('a')
+  link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(item.outline)
+  link.download = `outline-${formatMeetingId(item.meeting_id)}.txt`
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
 }
 
 // 資料抓取在 onMounted（SSR 不執行）

@@ -33,6 +33,9 @@
           </svg>
           <span>{{ t('transcriptions.outline.copy') }}</span>
         </button>
+        <button @click="emit('download')" class="flex items-center space-x-2 rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
+          <span>Download outline</span>
+        </button>
         <button v-if="showEdit" @click="toggleEdit" class="flex items-center space-x-2 rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700">
           <svg v-if="!editing" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -77,6 +80,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   close: []
   save: [outline: string]
+  download: []
 }>()
 
 const editing = ref(false)
