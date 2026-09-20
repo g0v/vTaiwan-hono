@@ -95,6 +95,7 @@
       :outline="currentOutlineItem.outline"
       :show-edit="canShowEdit"
       :allow-edit="canUpdateTranscriptions"
+      :saving="savingOutline"
       @close="currentOutlineItem = null"
       @save="saveOutline"
       @download="downloadOutline"
@@ -138,6 +139,7 @@ const selectedFile = ref<File | null>(null)
 const fileInput = ref<HTMLInputElement | null>(null)
 const search = ref('')
 const currentOutlineItem = ref<Transcription | null>(null)
+const savingOutline = ref(false)
 const versionsMeetingId = ref<string | null>(null)
 
 const filteredTranscriptions = computed(() => transcriptions.value.filter(item => matchesTranscriptionQuery(item, search.value)).sort((a, b) => a.meeting_id.localeCompare(b.meeting_id)))
@@ -223,6 +225,7 @@ async function saveOutline(outline: string) {
   const meetingId = currentOutlineItem.value?.meeting_id
   if (!meetingId) return
   try {
+    savingOutline.value = true
     const response = await fetch('/api/transcription/outline', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -239,6 +242,8 @@ async function saveOutline(outline: string) {
     }
   } catch (err) {
     console.error('更新大綱失敗:', err)
+  } finally {
+    savingOutline.value = false
   }
 }
 
@@ -267,15 +272,17 @@ function downloadTranscription(meetingId: string) {
     .catch(err => console.error('下載失敗:', err))
 }
 
-function downloadOutline() {
+function downloadOutline(outline: string) {
   const item = currentOutlineItem.value
-  if (!item?.outline) return
+  if (!item || !outline.trim() || savingOutline.value) return
+  const url = URL.createObjectURL(new Blob([outline], { type: 'text/plain;charset=utf-8' }))
   const link = document.createElement('a')
-  link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(item.outline)
+  link.href = url
   link.download = `outline-${formatMeetingId(item.meeting_id)}.txt`
   document.body.appendChild(link)
   link.click()
   document.body.removeChild(link)
+  URL.revokeObjectURL(url)
 }
 
 // 資料抓取在 onMounted（SSR 不執行）

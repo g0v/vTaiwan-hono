@@ -21,7 +21,7 @@
         <textarea v-else v-model="draft" class="h-full max-h-[60vh] min-h-[200px] w-full"></textarea>
       </div>
 
-      <div class="flex flex-wrap items-center justify-between border-t border-gray-200 p-3">
+      <div class="flex flex-wrap items-center justify-between gap-vt-2 border-t border-gray-200 p-3">
         <button @click="copyOutline" class="flex items-center space-x-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -33,8 +33,8 @@
           </svg>
           <span>{{ t('transcriptions.outline.copy') }}</span>
         </button>
-        <button @click="emit('download')" class="flex items-center space-x-2 rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700">
-          <span>Download outline</span>
+        <button class="vt-btn vt-btn-primary" :disabled="saving || !(editing ? draft : outline).trim()" @click="emit('download', editing ? draft : outline)">
+          <span>{{ t('transcriptions.outline.download') }}</span>
         </button>
         <button v-if="showEdit" @click="toggleEdit" class="flex items-center space-x-2 rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700">
           <svg v-if="!editing" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,12 +75,13 @@ const props = defineProps<{
   showEdit: boolean
   /** 是否真的允許編輯（管理員）；false 時按下會提示權限不足 */
   allowEdit: boolean
+  saving: boolean
 }>()
 
 const emit = defineEmits<{
   close: []
   save: [outline: string]
-  download: []
+  download: [outline: string]
 }>()
 
 const editing = ref(false)
