@@ -5,10 +5,14 @@
       <!-- 加入會議按鈕 -->
       <div v-if="!hasJoined" class="flex h-full items-center justify-center bg-gray-100">
         <div class="text-center">
-          <h2 class="mb-4 text-2xl font-bold text-gray-800">vTaiwan 視訊會議</h2>
-          <p class="mb-6 text-gray-600">準備加入會議室：{{ room }}</p>
-          <input v-model="joinMeetingName" class="mb-4 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-jade-green focus:outline-hidden" placeholder="請輸入您的名字" />
-          <button @click="joinMeeting" class="rounded-lg bg-jade-green px-6 py-3 text-white transition-colors hover:bg-jade-green/90">加入會議</button>
+          <h2 class="mb-4 text-2xl font-bold text-gray-800">{{ t('jitsi.title') }}</h2>
+          <p class="mb-6 text-gray-600">{{ t('jitsi.ready', { room }) }}</p>
+          <input
+            v-model="joinMeetingName"
+            class="mb-4 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-jade-green focus:outline-hidden"
+            :placeholder="t('jitsi.namePlaceholder')"
+          />
+          <button @click="joinMeeting" class="rounded-lg bg-jade-green px-6 py-3 text-white transition-colors hover:bg-jade-green/90">{{ t('jitsi.join') }}</button>
           <br />
           <template v-if="!authSession">
             <p class="text-sm text-gray-600">{{ t('jitsi.loginHint') }}</p>
@@ -546,7 +550,7 @@ export default {
         body: JSON.stringify({ room: this.room }),
       })
       if (!res.ok) {
-        window.alert('無法取得會議權杖')
+        window.alert(this.t('jitsi.tokenError'))
         return
       }
       const json = await res.json()

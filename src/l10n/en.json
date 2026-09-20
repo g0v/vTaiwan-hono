@@ -1040,6 +1040,11 @@
     "backToHome": "Back to Home"
   },
   "jitsi": {
+    "title": "vTaiwan Video Meeting",
+    "ready": "Ready to join room: {room}",
+    "namePlaceholder": "Enter your name",
+    "join": "Join meeting",
+    "tokenError": "Could not obtain a meeting token. Please try again later.",
     "loginHint": "Please log in to join the meeting and use the full transcript features.",
     "noPermission": "Your account cannot join meetings. Please contact an administrator.",
     "tipBanner": {

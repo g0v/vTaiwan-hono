@@ -1035,6 +1035,11 @@
     "backToHome": "返回首頁"
   },
   "jitsi": {
+    "title": "vTaiwan 視訊會議",
+    "ready": "準備加入會議室：{room}",
+    "namePlaceholder": "請輸入您的名字",
+    "join": "加入會議",
+    "tokenError": "無法取得會議權杖，請稍後再試",
     "loginHint": "如欲加入會議並啟用完整逐字稿功能，請先登入",
     "noPermission": "目前帳號無法加入會議，請聯絡管理員",
     "tipBanner": {
