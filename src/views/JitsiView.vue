@@ -10,7 +10,13 @@
           <input v-model="joinMeetingName" class="mb-4 w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-jade-green focus:outline-hidden" placeholder="請輸入您的名字" />
           <button @click="joinMeeting" class="rounded-lg bg-jade-green px-6 py-3 text-white transition-colors hover:bg-jade-green/90">加入會議</button>
           <br />
-          <p v-if="!authUserData.uid" class="text-sm text-gray-600">如欲加入會議並啟用完整逐字稿功能，請先登入</p>
+          <template v-if="!authSession">
+            <p class="text-sm text-gray-600">{{ t('jitsi.loginHint') }}</p>
+            <button type="button" class="mt-3 rounded-lg border border-jade-green px-5 py-2 text-jade-green transition-colors hover:bg-jade-green/10" @click="requestLogin">
+              {{ t('common.registerLogin') }}
+            </button>
+          </template>
+          <p v-else-if="!canUseMeetingFeatures" class="text-sm text-gray-600">{{ t('jitsi.noPermission') }}</p>
         </div>
       </div>
       <div v-show="hasJoined" ref="jitsiContainer" class="w-full" style="height: calc(100% - 50px)" :key="jitsiKey"></div>
@@ -272,7 +278,12 @@ export default {
 
   props: {
     authSession: { type: Object, required: false, default: null },
+    // session 是否已於瀏覽器端載入完成（App.vue 提供）；SSR 與首次 hydration 一律 false。
+    authReady: { type: Boolean, required: false, default: false },
   },
+
+  // show-login：請 App.vue 打開登入 modal（不跳轉頁面，OAuth 回跳後仍留在 /jitsi）
+  emits: ['show-login'],
 
   setup() {
     const { t, locale } = useI18n()
@@ -355,6 +366,8 @@ export default {
 
       // localStorage 的偏好在 hydration 後才讀取，確保首屏 DOM 與 SSR 一致。
       showJitsiTipBanner: true,
+      // 每次造訪只自動彈出一次登入 modal；使用者關掉後不再打擾（登出也不重彈）。
+      hasPromptedLogin: false,
     }
   },
 
@@ -463,6 +476,18 @@ export default {
   },
 
   watch: {
+    // 未登入者一進視訊頁就自動彈出登入 modal，不必自己點右上角登入鍵（issue #123）。
+    // 只看 authReady：SSR 與首次 hydration 時 authReady 為 false，不會在伺服器端觸發 emit，
+    // 避免 modal 進入 SSR HTML 造成 hydration mismatch。immediate 讓 client 端路由切換進來
+    //（session 早已載入完成）也會觸發。
+    authReady: {
+      immediate: true,
+      handler(ready) {
+        if (!ready || this.authSession || this.hasPromptedLogin) return
+        this.hasPromptedLogin = true
+        this.requestLogin()
+      },
+    },
     authSession: {
       handler() {
         this.isRecorder = this.meetingData.recorder == this.authUserData.uid
@@ -505,12 +530,13 @@ export default {
 
     async getJwt() {
       if (!this.canUseMeetingFeatures) {
-        window.alert('請先登入，方可加入會議')
+        if (!this.authSession) this.requestLogin()
+        else window.alert(this.t('jitsi.noPermission'))
         return
       }
       const user_id = this.authUserData.uid || 'Guest'
       if (user_id === 'Guest') {
-        window.alert('請先登入，方可加入會議')
+        this.requestLogin()
         return
       }
       // 身分與 moderator 權限由後端 Better Auth session 決定。
@@ -539,9 +565,15 @@ export default {
       })
     },
 
+    requestLogin() {
+      this.$emit('show-login')
+    },
+
     async joinMeeting() {
       if (!this.canUseMeetingFeatures) {
-        window.alert('請先登入，方可加入會議')
+        // 未登入：直接開登入 modal；已登入但無會議權限（例如停權）：提示而非要求再登入
+        if (!this.authSession) this.requestLogin()
+        else window.alert(this.t('jitsi.noPermission'))
         return
       }
       if (!this.jwt) await this.getJwt()

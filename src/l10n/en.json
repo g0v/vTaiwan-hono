@@ -1040,6 +1040,8 @@
     "backToHome": "Back to Home"
   },
   "jitsi": {
+    "loginHint": "Please log in to join the meeting and use the full transcript features.",
+    "noPermission": "Your account cannot join meetings. Please contact an administrator.",
     "tipBanner": {
       "message": "To enable mic/camera, click once on the black area, then press the mic/camera icons at the bottom-left.",
       "dismiss": "Got it"

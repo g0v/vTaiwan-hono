@@ -140,7 +140,16 @@ watch(
   <div class="flex min-h-screen flex-col font-serif">
     <NavBar :current="activeNavKey" :user="user" :is-admin="isAdmin" @show-login="showLoginModal = true" @logout="handleLogout" />
     <div class="flex-1">
-      <RouterView :user="user" :auth-session="authSession" :auth-ready="authReady" :is-admin="isAdmin" :in-app="isInApp" @logout="handleLogout" @profile-updated="handleProfileUpdated" />
+      <RouterView
+        :user="user"
+        :auth-session="authSession"
+        :auth-ready="authReady"
+        :is-admin="isAdmin"
+        :in-app="isInApp"
+        @show-login="showLoginModal = true"
+        @logout="handleLogout"
+        @profile-updated="handleProfileUpdated"
+      />
     </div>
     <Footer />
 
