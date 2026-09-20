@@ -1045,6 +1045,21 @@
     "namePlaceholder": "お名前を入力してください",
     "join": "会議に参加",
     "tokenError": "会議トークンを取得できませんでした。しばらくしてから再試行してください。",
+    "startRecording": "文字起こし録音を開始（もう一度押すと停止）",
+    "stopRecording": "文字起こし録音を停止（残り {seconds} 秒）",
+    "transcribingQueued": "文字起こし中、新しい音声は待機します",
+    "transcribing": "文字起こし中です。しばらくお待ちください...",
+    "recordingStatus": "{name} が録音中 · {seconds} 秒",
+    "queueStatus": "{count} 件の音声が待機中",
+    "transcriptionLanguage": "文字起こし言語：{lang}",
+    "unknownSpeaker": "不明な話者",
+    "micError": "録音を開始できません。マイクの権限を確認してください。",
+    "audioTestError": "音声テストに失敗しました。デバイスの権限を確認してください。",
+    "notify": {
+      "timeUp": { "title": "文字起こし区切り", "body": "60 秒の録音が完了しました。音声を処理し、次のラウンドを準備しています。" },
+      "autoMode": { "title": "自動連続文字起こしモードに切り替えました", "body": "このページに戻ると、自動ループは停止します。" },
+      "autoError": { "title": "文字起こしエラー", "body": "次の録音を自動開始できませんでした。手動で再開してください。" }
+    },
     "loginHint": "会議に参加して逐語記録の全機能を使うには、先にログインしてください。",
     "noPermission": "現在のアカウントでは会議に参加できません。管理者にお問い合わせください。",
     "tipBanner": {

@@ -1045,6 +1045,21 @@
     "namePlaceholder": "Enter your name",
     "join": "Join meeting",
     "tokenError": "Could not obtain a meeting token. Please try again later.",
+    "startRecording": "Start transcription recording (press to start, press again to stop)",
+    "stopRecording": "Stop transcription recording ({seconds}s remaining)",
+    "transcribingQueued": "transcribing, new audio will be queued",
+    "transcribing": "Transcribing, please wait...",
+    "recordingStatus": "{name} is recording · {seconds}s",
+    "queueStatus": "{count} audio files queued",
+    "transcriptionLanguage": "Transcription language: {lang}",
+    "unknownSpeaker": "Unknown speaker",
+    "micError": "Could not start recording. Please check microphone permissions.",
+    "audioTestError": "Audio test failed. Please check device permissions.",
+    "notify": {
+      "timeUp": { "title": "Transcription segment complete", "body": "60-second recording finished. Processing audio and preparing the next round." },
+      "autoMode": { "title": "Switched to continuous transcription mode", "body": "Automatic looping will stop when you return to this page." },
+      "autoError": { "title": "Transcription error", "body": "Failed to start the next recording automatically. Please restart manually." }
+    },
     "loginHint": "Please log in to join the meeting and use the full transcript features.",
     "noPermission": "Your account cannot join meetings. Please contact an administrator.",
     "tipBanner": {

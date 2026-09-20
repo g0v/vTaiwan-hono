@@ -1040,6 +1040,21 @@
     "namePlaceholder": "請輸入您的名字",
     "join": "加入會議",
     "tokenError": "無法取得會議權杖，請稍後再試",
+    "startRecording": "開始錄音轉錄（按下開始，再按一次停止）",
+    "stopRecording": "停止錄音轉錄（剩餘 {seconds} 秒）",
+    "transcribingQueued": "轉錄中，音檔將排隊處理",
+    "transcribing": "轉錄中，請稍候...",
+    "recordingStatus": "{name} 錄音中，已錄 {seconds} 秒",
+    "queueStatus": "{count} 個音檔排隊中",
+    "transcriptionLanguage": "轉錄語言：{lang}",
+    "unknownSpeaker": "未知說話者",
+    "micError": "無法開始錄音，請檢查麥克風權限",
+    "audioTestError": "音訊測試失敗，請檢查設備權限",
+    "notify": {
+      "timeUp": { "title": "轉錄時間到", "body": "60 秒錄音完成，正在處理音訊並準備下一輪轉錄" },
+      "autoMode": { "title": "已切換為自動持續轉錄模式", "body": "當您切換回此頁面時，轉錄將停止自動循環" },
+      "autoError": { "title": "轉錄錯誤", "body": "自動開始下一輪錄音失敗，請手動重新開始" }
+    },
     "loginHint": "如欲加入會議並啟用完整逐字稿功能，請先登入",
     "noPermission": "目前帳號無法加入會議，請聯絡管理員",
     "tipBanner": {
