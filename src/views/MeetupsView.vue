@@ -10,11 +10,11 @@
 
       <div class="flex justify-center gap-4">
         <RouterLink to="/jitsi" class="vt-btn vt-btn-primary inline-block rounded-md">
-          {{ t('meetups.jitsi') }}(Beta)
+          {{ t('meetups.jitsi') }}
           <br />
           <span class="text-sm text-black">(Wednesdays 19:00)</span>
         </RouterLink>
-        <RouterLink to="/transcriptions" class="vt-btn vt-btn-primary inline-block rounded-md"> {{ t('meetups.transcriptions') }}(Beta) </RouterLink>
+        <RouterLink to="/transcriptions" class="vt-btn vt-btn-primary inline-block rounded-md"> {{ t('meetups.transcriptions') }} </RouterLink>
       </div>
     </div>
   </section>
