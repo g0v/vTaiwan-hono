@@ -162,7 +162,7 @@ const rawCommunityContributors: Contributor[] = [
     contribution: 'contributors.contributions.backendDev',
     imgURL: 'https://ca.slack-edge.com/T02G2SXKM-U053N6CAQ-338c6ec3f9d7-512',
   },
-  { id: '20', name: 'Yi-Ting Lien', contribution: 'contributors.contributions.participation' },
+  { id: '20', name: 'Yi-Ting Lien', contribution: 'contributors.contributions.normal_participation' },
   {
     id: '21',
     name: 'Allison Ni',
