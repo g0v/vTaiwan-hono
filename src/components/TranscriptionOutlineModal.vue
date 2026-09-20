@@ -21,7 +21,7 @@
         <textarea v-else v-model="draft" class="h-full max-h-[60vh] min-h-[200px] w-full"></textarea>
       </div>
 
-      <div class="flex flex-wrap items-center justify-between border-t border-gray-200 p-3">
+      <div class="flex flex-wrap items-center justify-end gap-vt-2 border-t border-gray-200 p-3">
         <button @click="copyOutline" class="flex items-center space-x-2 rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700">
           <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
@@ -32,6 +32,13 @@
             />
           </svg>
           <span>{{ t('transcriptions.outline.copy') }}</span>
+        </button>
+        <button
+          class="vt-btn rounded-vt-md border border-vt-border text-vt-fg-2 hover:bg-vt-bg-2 disabled:cursor-not-allowed disabled:opacity-50"
+          :disabled="saving || !downloadTarget.trim()"
+          @click="emit('download', downloadTarget)"
+        >
+          <span>{{ t('transcriptions.outline.download') }}</span>
         </button>
         <button v-if="showEdit" @click="toggleEdit" class="flex items-center space-x-2 rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700">
           <svg v-if="!editing" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,17 +79,23 @@ const props = defineProps<{
   showEdit: boolean
   /** 是否真的允許編輯（管理員）；false 時按下會提示權限不足 */
   allowEdit: boolean
+  /** 大綱儲存中；此時停用下載，避免下載到尚未寫回的舊內容 */
+  saving: boolean
 }>()
 
 const emit = defineEmits<{
   close: []
   save: [outline: string]
+  download: [outline: string]
 }>()
 
 const editing = ref(false)
 const draft = ref('')
 
 const renderedOutline = computed(() => (props.outline ? renderMarkdown(props.outline) : ''))
+
+/** 下載內容：編輯中取編輯器裡的草稿，否則取已儲存的大綱；空白時按鈕停用 */
+const downloadTarget = computed(() => (editing.value ? draft.value : props.outline))
 
 // 以下互動皆只在瀏覽器端觸發（事件處理器），SSR 期間不執行
 async function copyOutline() {
