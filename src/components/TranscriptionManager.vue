@@ -107,6 +107,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { hasPermission, responseRequiresStepUp, type AuthSession } from '../client/auth-session'
+import { downloadBlob } from '../lib/download'
 import SearchInput from './SearchInput.vue'
 import TranscriptionCard from './TranscriptionCard.vue'
 import TranscriptionOutlineModal from './TranscriptionOutlineModal.vue'
@@ -256,33 +257,21 @@ function copyTranscriptionLink(meetingId: string) {
   alert(t('transcriptions.list.copyLinkSuccess'))
 }
 
-function downloadTranscription(meetingId: string) {
-  fetch(`/api/transcription/${meetingId}/text`, {
-    headers: { 'Content-Type': 'text/plain; charset=utf-8' },
-  })
-    .then(r => r.text())
-    .then(text => {
-      const link = document.createElement('a')
-      link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(text)
-      link.download = `transcript-${formatMeetingId(meetingId)}.txt`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
+async function downloadTranscription(meetingId: string) {
+  try {
+    const response = await fetch(`/api/transcription/${meetingId}/text`, {
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     })
-    .catch(err => console.error('下載失敗:', err))
+    downloadBlob(await response.blob(), `transcript-${formatMeetingId(meetingId)}.txt`)
+  } catch (err) {
+    console.error('下載失敗:', err)
+  }
 }
 
 function downloadOutline(outline: string) {
   const item = currentOutlineItem.value
   if (!item || !outline.trim() || savingOutline.value) return
-  const url = URL.createObjectURL(new Blob([outline], { type: 'text/plain;charset=utf-8' }))
-  const link = document.createElement('a')
-  link.href = url
-  link.download = `outline-${formatMeetingId(item.meeting_id)}.txt`
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
+  downloadBlob(new Blob([outline], { type: 'text/plain;charset=utf-8' }), `outline-${formatMeetingId(item.meeting_id)}.txt`)
 }
 
 // 資料抓取在 onMounted（SSR 不執行）

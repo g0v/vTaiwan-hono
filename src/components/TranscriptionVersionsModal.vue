@@ -69,6 +69,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { downloadBlob } from '../lib/download'
 import { formatMeetingId } from '../lib/transcription-format'
 import type { TranscriptionVersion } from '../lib/transcription-versions'
 
@@ -124,15 +125,7 @@ async function download(version: TranscriptionVersion) {
   try {
     const response = await fetch(`/api/transcription/${props.meetingId}/versions/${version.version_id}/text`)
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
-    const blob = await response.blob()
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `transcript-${formatMeetingId(props.meetingId)}-${version.version_id}.txt`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+    downloadBlob(await response.blob(), `transcript-${formatMeetingId(props.meetingId)}-${version.version_id}.txt`)
   } catch (err) {
     console.error('下載版本失敗:', err)
     alert(t('transcriptions.versions.downloadError'))
