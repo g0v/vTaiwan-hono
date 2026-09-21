@@ -1,9 +1,12 @@
 <template>
-  <div class="flex h-screen w-full">
+  <!-- 高度由 App.vue 的 fitViewport 外框（100svh 扣掉 NavBar 後的剩餘空間）決定，這裡一律 h-full 往下傳，
+       不再自行計算 100vh——Android 的 100vh 比可視區高，會把 Jitsi 工具列推到畫面外（#124）。 -->
+  <div class="flex h-full w-full">
     <!-- 視訊會議區域 -->
-    <div :class="['transition-all duration-300', showTranscript && !isMobile ? 'w-[62%]' : 'w-full']">
+    <div :class="['h-full min-w-0 transition-all duration-300', showTranscript && !isMobile ? 'w-[62%]' : 'w-full']">
       <!-- 加入會議按鈕 -->
-      <div v-if="!hasJoined" class="flex h-full items-center justify-center bg-gray-100">
+      <!-- overflow-y-auto：橫向手機等極矮畫面下，外框不捲動，由這一區自己捲 -->
+      <div v-if="!hasJoined" class="flex h-full items-center justify-center overflow-y-auto bg-gray-100 px-4">
         <div class="text-center">
           <h2 class="mb-4 text-2xl font-bold text-gray-800">{{ t('jitsi.title') }}</h2>
           <p class="mb-6 text-gray-600">{{ t('jitsi.ready', { room }) }}</p>
@@ -23,7 +26,7 @@
           <p v-else-if="!canUseMeetingFeatures" class="text-sm text-gray-600">{{ t('jitsi.noPermission') }}</p>
         </div>
       </div>
-      <div v-show="hasJoined" ref="jitsiContainer" class="w-full" style="height: calc(100% - 50px)" :key="jitsiKey"></div>
+      <div v-show="hasJoined" ref="jitsiContainer" class="h-full w-full" :key="jitsiKey"></div>
     </div>
 
     <!-- 寬螢幕逐字稿面板 -->
@@ -175,8 +178,8 @@
       </div>
     </div>
 
-    <!-- 浮動按鈕組 -->
-    <div class="fixed right-6 bottom-16 z-50 flex flex-col space-y-3">
+    <!-- 浮動按鈕組：bottom-28 讓三顆按鈕整組避開貼齊螢幕底部的 Jitsi 工具列（右側紅色掛斷鍵） -->
+    <div class="fixed right-6 bottom-28 z-50 flex flex-col space-y-3">
       <div class="relative">
         <button
           v-if="isMobile && canUseMeetingFeatures"
@@ -272,6 +275,30 @@
         </button>
       </div>
     </div>
+
+    <!-- 離開會議確認框：會議中按瀏覽器／Android 返回鍵時出現（#125） -->
+    <div
+      v-if="showLeaveConfirm"
+      class="fixed inset-0 z-[9999] flex items-center justify-center bg-vt-black/50 p-4"
+      role="alertdialog"
+      aria-modal="true"
+      aria-labelledby="jitsi-leave-confirm-title"
+      aria-describedby="jitsi-leave-confirm-message"
+      @click.self="stayInMeeting"
+    >
+      <div class="w-full max-w-sm rounded-vt-lg bg-vt-bg-1 p-6 shadow-vt-lg">
+        <h2 id="jitsi-leave-confirm-title" class="font-sans text-vt-xl font-bold">{{ t('jitsi.leaveConfirm.title') }}</h2>
+        <p id="jitsi-leave-confirm-message" class="mt-3 text-gray-600">{{ t('jitsi.leaveConfirm.message') }}</p>
+        <div class="mt-6 flex flex-col gap-3 sm:flex-row-reverse">
+          <button type="button" class="rounded-lg bg-jade-green px-6 py-3 text-white transition-colors hover:bg-jade-green/90" @click="stayInMeeting">
+            {{ t('jitsi.leaveConfirm.stay') }}
+          </button>
+          <button type="button" class="rounded-lg border border-democratic-red px-6 py-3 text-democratic-red transition-colors hover:bg-democratic-red/10" @click="confirmLeaveMeeting">
+            {{ t('jitsi.leaveConfirm.leave') }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -328,6 +355,13 @@ export default {
       jitsiApi: null,
       hasJoined: false,
       jitsiDomain: '8x8.vc',
+
+      // 返回鍵守衛（#125）：會議中 history 最上層是否墊著一筆哨兵 entry
+      backGuardArmed: false,
+      // 我們自己呼叫 history.back() 收掉哨兵時，略過隨後那一次 popstate
+      ignoreNextPop: false,
+      showLeaveConfirm: false,
+      leaveFallbackTimer: null,
 
       showTranscript: false,
       // SSR 安全：drawerWidth 初值用常數，mounted 後再讀 window
@@ -447,6 +481,7 @@ export default {
     }, 1000)
 
     window.addEventListener('resize', this.handleResize)
+    window.addEventListener('popstate', this.handlePopState)
 
     // 連線到會議資料流（今日 → WebSocket；歷史 → REST）
     this.connectToMeeting()
@@ -470,6 +505,7 @@ export default {
   },
 
   beforeUnmount() {
+    if (this.leaveFallbackTimer) clearTimeout(this.leaveFallbackTimer)
     if (this.jitsiApi) {
       this.jitsiApi.dispose()
       this.jitsiApi = null
@@ -489,6 +525,7 @@ export default {
     document.removeEventListener('touchmove', this.onDrag)
     document.removeEventListener('touchend', this.stopDragging)
     window.removeEventListener('resize', this.handleResize)
+    window.removeEventListener('popstate', this.handlePopState)
     navigator.mediaDevices.removeEventListener('devicechange', this.handleDeviceChange)
     document.removeEventListener('visibilitychange', this.handleVisibilityChange)
   },
@@ -599,6 +636,7 @@ export default {
       try {
         await this.loadJitsiExternalAPI()
         this.hasJoined = true
+        this.armBackGuard()
         this.$nextTick(() => this.initializeJitsiMeet())
       } catch (error) {
         console.error('Failed to join meeting:', error)
@@ -624,6 +662,8 @@ export default {
           startWithAudioMuted: true,
           startWithVideoMuted: true,
           prejoinPageEnabled: false,
+          // 工具列常駐：Jitsi 預設 4 秒自動隱藏，手機上得先點一下畫面才叫得出來（#124）
+          toolbarConfig: { alwaysVisible: true },
           analytics: { disabled: true },
           disableThirdPartyRequests: true,
           transcription: {
@@ -698,7 +738,7 @@ export default {
         this.jitsiApi.addEventListener('videoConferenceJoined', () => {
           console.log('✅ 已加入會議')
         })
-        // this.jitsiApi.addEventListener('videoConferenceLeft', this.handleMeetingLeft)
+        this.jitsiApi.addEventListener('videoConferenceLeft', this.handleMeetingLeft)
         this.jitsiApi.addEventListener('readyToClose', this.handleMeetingLeft)
       } catch (error) {
         console.error('Failed to initialize Jitsi Meet:', error)
@@ -707,6 +747,10 @@ export default {
     },
 
     handleMeetingLeft() {
+      if (this.leaveFallbackTimer) {
+        clearTimeout(this.leaveFallbackTimer)
+        this.leaveFallbackTimer = null
+      }
       if (this.jitsiApi) {
         this.jitsiApi.removeEventListener('videoConferenceLeft', this.handleMeetingLeft)
         this.jitsiApi.removeEventListener('readyToClose', this.handleMeetingLeft)
@@ -715,6 +759,65 @@ export default {
       }
       if (this.$refs.jitsiContainer) this.$refs.jitsiContainer.innerHTML = ''
       this.hasJoined = false
+      this.showLeaveConfirm = false
+      this.disarmBackGuard()
+    },
+
+    // ── 返回鍵守衛（#125）──────────────────────────────────────────────
+    // Jitsi 在 iframe 內開面板／選單時不會 pushState，history 裡沒有「可以退一步」的 entry，
+    // Android 返回鍵因此直接離開頁面、會議瞬間中斷。做法：加入會議時墊一筆同網址的哨兵 entry，
+    // 返回鍵消耗掉的是哨兵而不是頁面本身，我們趁機跳出確認框。
+    // 只在瀏覽器端被呼叫（joinMeeting／popstate／Jitsi 事件），SSR 不會執行到。
+    armBackGuard() {
+      if (this.backGuardArmed) return
+      // 展開既有 state：vue-router 把 position 等欄位存在 history.state，它的 popstate 處理
+      // 遇到空 state 會把該筆當外來 entry 整個 replace 掉。
+      window.history.pushState({ ...window.history.state, vtJitsiBackGuard: true }, '', window.location.href)
+      this.backGuardArmed = true
+    },
+
+    // 會議結束（掛斷／確認離開）時把哨兵收掉，否則之後要多按一次「沒反應」的返回鍵
+    disarmBackGuard() {
+      if (!this.backGuardArmed) return
+      this.backGuardArmed = false
+      if (window.history.state && window.history.state.vtJitsiBackGuard) {
+        this.ignoreNextPop = true
+        window.history.back()
+      }
+    },
+
+    handlePopState() {
+      if (this.ignoreNextPop) {
+        this.ignoreNextPop = false
+        return
+      }
+      if (!this.backGuardArmed || !this.hasJoined) return
+      // 哨兵剛被返回鍵消耗掉：立刻補回去（連按兩下也逃不出去），再問使用者
+      this.backGuardArmed = false
+      this.armBackGuard()
+      this.showLeaveConfirm = true
+    },
+
+    stayInMeeting() {
+      this.showLeaveConfirm = false
+    },
+
+    // 確認離開＝掛斷並回到加入畫面。Jitsi iframe 的離會事件可能未回傳，
+    // 因此保留短暫的本頁備援清理；不自行 history.go(-2)，避免直接開 /jitsi 時退不回去。
+    confirmLeaveMeeting() {
+      this.showLeaveConfirm = false
+      if (this.jitsiApi) {
+        try {
+          this.jitsiApi.executeCommand('hangup')
+          // 事件若同步抵達，handleMeetingLeft 已完成清理，不再排第二次清理。
+          if (this.jitsiApi) this.leaveFallbackTimer = setTimeout(() => this.handleMeetingLeft(), 1000)
+        } catch (error) {
+          console.error('Failed to hang up Jitsi meeting:', error)
+          this.handleMeetingLeft()
+        }
+      } else {
+        this.handleMeetingLeft()
+      }
     },
 
     toggleRecorder() {
@@ -1384,9 +1487,10 @@ export default {
 </script>
 
 <style scoped>
+/* Jitsi external API 會在 iframe 上寫 inline 寬高，需 !important 才能讓它填滿容器 */
 :deep(iframe) {
   width: 100% !important;
-  height: calc(100vh - 80px) !important;
+  height: 100% !important;
   border: none;
 }
 
