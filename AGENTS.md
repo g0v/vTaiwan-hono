@@ -110,7 +110,7 @@ vp run cf-typegen           # 由 wrangler 產生 Cloudflare 綁定型別
 ## 新增一個頁面（核心重複工作）
 
 1. `src/views/XxxView.vue` — 新頁面元件（`<script setup lang="ts">`）。
-2. `src/router/routes.server.ts` — 加一筆 route（**靜態 import 元件**，非 lazy——SSR 打包需要），設 `meta.status`；若原本在 `placeholderPaths` 要移除該筆。（`routes.ts` 只放 `statusForRoute`／`headForRoute` 等純邏輯，路由表在 `routes.server.ts`，經 `#routes-runtime` 別名注入。）
+2. `src/router/routes.server.ts` — 加一筆 route（**靜態 import 元件**，非 lazy——SSR 打包需要），設 `meta.status`；若原本在 `placeholderPaths` 要移除該筆。（`routes.ts` 只放 `statusForRoute`／`headForRoute` 等純邏輯，路由表在 `routes.server.ts`，經 `#routes-runtime` 別名注入。） 需要「剛好佔滿一個畫面、整頁不捲動、不出 Footer」的沉浸式頁面（目前只有 `/jitsi`）加 `meta.fitViewport: true`：`App.vue` 會把外框鎖成 `100svh` 並隱藏 Footer，頁面自身用 `h-full` 填滿即可——**不要在 view 內自行計算 `100vh`**（Android Chrome 的 `100vh` 以網址列收起計算，會比可視區高，見 #124）。
 3. `src/ssr/heads.ts` — 新增 `headForXxx(origin)`，並在 `routes.ts` 的 `headForRoute` switch 補上對應 `case`。
 4. `src/l10n/{zh-TW,en,ja}.json` — **三檔同步**補齊介面文字 key。
 5. 驗證：`vp check --no-fmt --no-lint` + `vp run build`，`vp run dev` 目視 SSR 與 hydration。
