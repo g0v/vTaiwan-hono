@@ -1055,6 +1055,7 @@
     "unknownSpeaker": "Unknown speaker",
     "micError": "Could not start recording. Please check microphone permissions.",
     "audioTestError": "Audio test failed. Please check device permissions.",
+    "leaveConfirm": { "title": "Leave the meeting?", "message": "Going back will disconnect you from the current video meeting.", "stay": "Stay in meeting", "leave": "Leave meeting" },
     "notify": {
       "timeUp": { "title": "Transcription segment complete", "body": "60-second recording finished. Processing audio and preparing the next round." },
       "autoMode": { "title": "Switched to continuous transcription mode", "body": "Automatic looping will stop when you return to this page." },

@@ -85,7 +85,9 @@ export const routes: RouteRecordRaw[] = [
     component: TranscriptionDetailView,
     meta: { status: 200 },
   },
-  { path: '/jitsi', name: 'jitsi', component: JitsiView, meta: { status: 200 } },
+  // fitViewport：App 外框鎖成剛好一個可視畫面（100svh）並隱藏 Footer，頁面本身不捲動——
+  // Jitsi 工具列貼齊螢幕底部，iframe 頂端也不會捲到 sticky NavBar 底下（#124／#125）。
+  { path: '/jitsi', name: 'jitsi', component: JitsiView, meta: { status: 200, fitViewport: true } },
   { path: '/auth/error', name: 'auth-error', component: AuthErrorView, meta: { status: 200 } },
   // 管理員後台樣稿（偽資料 + localStorage）。robots.txt 已 disallow /admin。
   { path: '/admin', name: 'admin', component: AdminView, meta: { status: 200 } },

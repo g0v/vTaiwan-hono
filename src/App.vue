@@ -103,6 +103,11 @@ function handleProfileUpdated(displayName: string, nameChangeCooldownDays: numbe
   }
 }
 
+// 沉浸式頁面（目前只有 /jitsi）：外框高度鎖 100svh、不出 Footer。用 svh 而非 vh——Android Chrome／
+// Custom Tab 的 100vh 以「網址列收起」計算，網址列顯示時會比可視區高出一條工具列（#124）。
+// route 在 SSR 與 client 首次渲染前都已解析完成，class 兩邊一致，不會造成 hydration mismatch。
+const fitViewport = computed(() => route.meta.fitViewport === true)
+
 const activeNavKey = computed(() => {
   const path = route.path
 
@@ -137,9 +142,10 @@ watch(
 </script>
 
 <template>
-  <div class="flex min-h-screen flex-col font-serif">
+  <div class="flex flex-col font-serif" :class="fitViewport ? 'h-svh overflow-hidden' : 'min-h-screen'">
     <NavBar :current="activeNavKey" :user="user" :is-admin="isAdmin" @show-login="showLoginModal = true" @logout="handleLogout" />
-    <div class="flex-1">
+    <!-- min-h-0：flex 子項預設 min-height:auto，不歸零的話內層 h-full 撐不進剩餘高度 -->
+    <div class="flex-1" :class="{ 'min-h-0': fitViewport }">
       <RouterView
         :user="user"
         :auth-session="authSession"
@@ -151,7 +157,7 @@ watch(
         @profile-updated="handleProfileUpdated"
       />
     </div>
-    <Footer />
+    <Footer v-if="!fitViewport" />
 
     <div
       v-if="showLoginModal"

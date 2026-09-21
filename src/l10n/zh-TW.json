@@ -1050,6 +1050,7 @@
     "unknownSpeaker": "未知說話者",
     "micError": "無法開始錄音，請檢查麥克風權限",
     "audioTestError": "音訊測試失敗，請檢查設備權限",
+    "leaveConfirm": { "title": "離開會議？", "message": "返回上一頁會中斷目前的視訊會議。", "stay": "留在會議", "leave": "離開會議" },
     "notify": {
       "timeUp": { "title": "轉錄時間到", "body": "60 秒錄音完成，正在處理音訊並準備下一輪轉錄" },
       "autoMode": { "title": "已切換為自動持續轉錄模式", "body": "當您切換回此頁面時，轉錄將停止自動循環" },
