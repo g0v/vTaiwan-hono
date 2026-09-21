@@ -361,6 +361,7 @@ export default {
       // 我們自己呼叫 history.back() 收掉哨兵時，略過隨後那一次 popstate
       ignoreNextPop: false,
       showLeaveConfirm: false,
+      leaveFallbackTimer: null,
 
       showTranscript: false,
       // SSR 安全：drawerWidth 初值用常數，mounted 後再讀 window
@@ -504,6 +505,7 @@ export default {
   },
 
   beforeUnmount() {
+    if (this.leaveFallbackTimer) clearTimeout(this.leaveFallbackTimer)
     if (this.jitsiApi) {
       this.jitsiApi.dispose()
       this.jitsiApi = null
@@ -736,7 +738,7 @@ export default {
         this.jitsiApi.addEventListener('videoConferenceJoined', () => {
           console.log('✅ 已加入會議')
         })
-        // this.jitsiApi.addEventListener('videoConferenceLeft', this.handleMeetingLeft)
+        this.jitsiApi.addEventListener('videoConferenceLeft', this.handleMeetingLeft)
         this.jitsiApi.addEventListener('readyToClose', this.handleMeetingLeft)
       } catch (error) {
         console.error('Failed to initialize Jitsi Meet:', error)
@@ -745,6 +747,10 @@ export default {
     },
 
     handleMeetingLeft() {
+      if (this.leaveFallbackTimer) {
+        clearTimeout(this.leaveFallbackTimer)
+        this.leaveFallbackTimer = null
+      }
       if (this.jitsiApi) {
         this.jitsiApi.removeEventListener('videoConferenceLeft', this.handleMeetingLeft)
         this.jitsiApi.removeEventListener('readyToClose', this.handleMeetingLeft)
@@ -796,13 +802,19 @@ export default {
       this.showLeaveConfirm = false
     },
 
-    // 確認離開＝掛斷並回到加入畫面（不自行 history.go(-2)：從 LINE 等 App 直接開 /jitsi 時
-    // 沒有上一頁可回）。哨兵在 handleMeetingLeft 收掉，之後再按返回鍵就是瀏覽器原生行為。
+    // 確認離開＝掛斷並回到加入畫面。Jitsi iframe 的離會事件可能未回傳，
+    // 因此保留短暫的本頁備援清理；不自行 history.go(-2)，避免直接開 /jitsi 時退不回去。
     confirmLeaveMeeting() {
       this.showLeaveConfirm = false
       if (this.jitsiApi) {
-        // hangup → Jitsi 發 readyToClose → handleMeetingLeft
-        this.jitsiApi.executeCommand('hangup')
+        try {
+          this.jitsiApi.executeCommand('hangup')
+          // 事件若同步抵達，handleMeetingLeft 已完成清理，不再排第二次清理。
+          if (this.jitsiApi) this.leaveFallbackTimer = setTimeout(() => this.handleMeetingLeft(), 1000)
+        } catch (error) {
+          console.error('Failed to hang up Jitsi meeting:', error)
+          this.handleMeetingLeft()
+        }
       } else {
         this.handleMeetingLeft()
       }
