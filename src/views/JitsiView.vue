@@ -193,7 +193,7 @@
             class="absolute top-10 -right-1 z-15 flex h-5 w-5 items-center justify-center rounded-full bg-white text-sm shadow-xs"
             :title="t('jitsi.transcriptionLanguage', { lang: transcriptionLanguage })"
           >
-            {{ transcriptionLanguageFlag }}
+            {{ transcriptionLanguageLabel }}
           </div>
         </button>
       </div>
@@ -246,7 +246,7 @@
             class="absolute top-4 -right-1 z-15 flex h-5 w-5 items-center justify-center rounded-full bg-white text-sm shadow-xs"
             :title="t('jitsi.transcriptionLanguage', { lang: transcriptionLanguage })"
           >
-            {{ transcriptionLanguageFlag }}
+            {{ transcriptionLanguageLabel }}
           </div>
         </button>
       </div>
@@ -441,6 +441,10 @@ export default {
     },
     fullRoomName() {
       return `${this.appId}/${this.room}`
+    },
+    transcriptionLanguageLabel() {
+      const found = supportedLocales.find(l => l.code === this.transcriptionLanguage)
+      return found ? `${(found.code || '').replace(/-.+$/, '').toUpperCase()}` : '🌐'
     },
     transcriptionLanguageFlag() {
       const found = supportedLocales.find(l => l.code === this.transcriptionLanguage)
