@@ -18,7 +18,7 @@
 
       <div v-else-if="error" class="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
         <p class="mb-4 text-red-700">{{ error }}</p>
-        <a :href="NEWSLETTER_HOME_URL" target="_blank" rel="noopener noreferrer" class="inline-block rounded-md bg-democratic-red px-4 py-2 text-white transition hover:opacity-90">
+        <a :href="NEWSLETTER_HOME_URL" target="_blank" rel="noopener noreferrer" class="vt-btn inline-block rounded-md bg-democratic-red px-4 py-2 text-white transition hover:opacity-90">
           {{ t('newsletter.visitSubstack') }}
         </a>
       </div>
