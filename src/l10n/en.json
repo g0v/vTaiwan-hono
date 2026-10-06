@@ -1052,7 +1052,10 @@
     "queueStatus": "{count} audio files queued",
     "transcriptionLanguage": "Transcription language: {lang}",
     "unknownSpeaker": "Unknown speaker",
-    "micError": "Could not start recording. Please check microphone permissions.",
+    "micError": "Could not start recording. Please try again later. If another app is using the microphone, stop its recording first.",
+    "micPermissionError": "Microphone access was denied. Allow this site to use the microphone in your browser or system settings.",
+    "micDeviceError": "The selected microphone is unavailable or its settings are no longer valid. Please select an audio input device again.",
+    "micFormatError": "Your browser cannot use an available recording format. Please update your browser or operating system and try again.",
     "audioTestError": "Audio test failed. Please check device permissions.",
     "leaveConfirm": { "title": "Leave the meeting?", "message": "Going back will disconnect you from the current video meeting.", "stay": "Stay in meeting", "leave": "Leave meeting" },
     "notify": {

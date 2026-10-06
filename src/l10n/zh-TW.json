@@ -1047,7 +1047,10 @@
     "queueStatus": "{count} 個音檔排隊中",
     "transcriptionLanguage": "轉錄語言：{lang}",
     "unknownSpeaker": "未知說話者",
-    "micError": "無法開始錄音，請檢查麥克風權限",
+    "micError": "無法開始錄音，請稍後再試；若麥克風正由其他程式使用，請先停止該程式的錄音",
+    "micPermissionError": "麥克風存取遭拒，請在瀏覽器或系統設定中允許本站使用麥克風",
+    "micDeviceError": "找不到選取的麥克風或裝置設定已失效，請重新選擇音訊輸入裝置",
+    "micFormatError": "目前瀏覽器無法使用可用的錄音格式，請更新瀏覽器或系統後再試",
     "audioTestError": "音訊測試失敗，請檢查設備權限",
     "leaveConfirm": { "title": "離開會議？", "message": "返回上一頁會中斷目前的視訊會議。", "stay": "留在會議", "leave": "離開會議" },
     "notify": {

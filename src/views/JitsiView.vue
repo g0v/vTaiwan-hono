@@ -202,6 +202,7 @@
         <button
           v-if="canUseMeetingFeatures"
           @click="toggleAudioRecording"
+          :disabled="isStartingAudio"
           :class="[
             'relative rounded-full p-4 shadow-lg transition-all duration-300',
             isRecordingAudio ? 'animate-pulse bg-red-500 text-white hover:bg-red-600' : 'bg-purple-500 text-white hover:bg-purple-600',
@@ -309,6 +310,7 @@ import TranscriptLanguageSwitcher from '../components/TranscriptLanguageSwitcher
 import { useI18n } from 'vue-i18n'
 import { supportedLocales } from '../i18n'
 import { hasPermission } from '../client/auth-session'
+import { createAudioRecorder, recordingErrorKey, recordingFilename } from '../lib/audio-recording'
 
 // SSR 保護：此模組頂層不存取瀏覽器 API
 export default {
@@ -381,6 +383,11 @@ export default {
       },
 
       isRecordingAudio: false,
+      isStartingAudio: false,
+      audioRecordingActive: false,
+      audioRecordingGeneration: 0,
+      audioRecordingFinished: null,
+      resolveAudioRecording: null,
       audioMediaRecorder: null,
       audioStream: null,
       audioChunks: [],
@@ -999,43 +1006,68 @@ export default {
     },
 
     async toggleAudioRecording() {
-      if (!this.canUseMeetingFeatures) return
-      if (this.isRecordingAudio) {
+      if (!this.canUseMeetingFeatures || this.isStartingAudio) return
+      if (this.audioRecordingActive) {
         await this.stopAudioRecording()
       } else {
-        await this.requestNotificationPermission()
+        // 通知授權不阻塞使用者按下麥克風後的錄音流程。
+        void this.requestNotificationPermission().catch(error => console.error('通知授權失敗:', error))
         await this.startAudioRecording()
       }
     },
 
     async startAudioRecording() {
-      if (!this.canUseMeetingFeatures) return
+      if (!this.canUseMeetingFeatures || this.isStartingAudio || this.audioMediaRecorder) return false
+      this.isStartingAudio = true
+      this.audioRecordingActive = true
+      const generation = this.audioRecordingGeneration
       try {
-        if (this.isRecordingAudio && this.audioMediaRecorder) {
-          if (this.audioMediaRecorder.state !== 'inactive') this.audioMediaRecorder.stop()
+        if (typeof MediaRecorder === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
+          throw new DOMException('Audio recording unavailable', 'NotSupportedError')
+        }
+        this.stopAudioTest()
+        if (!this.audioStream || !this.audioStream.getAudioTracks().some(track => track.readyState === 'live')) {
+          this.audioStream?.getTracks().forEach(track => track.stop())
+          const audioConstraints = { echoCancellation: true, noiseSuppression: true }
+          if (this.selectedAudioDeviceId) audioConstraints.deviceId = { exact: this.selectedAudioDeviceId }
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints, video: false })
+          // 等待權限期間可能離頁或登出，遲到的音源必須立即釋放。
+          if (generation !== this.audioRecordingGeneration || !this.canUseMeetingFeatures) {
+            stream.getTracks().forEach(track => track.stop())
+            return false
+          }
+          this.audioStream = stream
+        }
+        const chunks = []
+        const recorder = createAudioRecorder(this.audioStream, MediaRecorder)
+        this.audioMediaRecorder = recorder
+        this.audioChunks = chunks
+        let finish
+        this.audioRecordingFinished = new Promise(resolve => {
+          finish = resolve
+        })
+        this.resolveAudioRecording = finish
+        recorder.ondataavailable = event => {
+          if (event.data.size > 0) chunks.push(event.data)
+        }
+        recorder.onstop = () => {
+          if (generation !== this.audioRecordingGeneration) return
+          this.audioMediaRecorder = null
+          this.audioRecordingFinished = null
+          this.resolveAudioRecording = null
           this.isRecordingAudio = false
+          this.clearAudioRecordingTimers()
+          // 每輪捕捉自己的 chunks 與格式，避免清理或下一輪改掉最後一段音檔。
+          this.processRecordedAudio(chunks, recorder.mimeType)
+          finish()
+          if (this.audioRecordingActive) void this.startNextRecordingRound()
+          else this.cleanupAudioRecording()
         }
-        const audioConstraints = {
-          echoCancellation: true,
-          noiseSuppression: true,
-          sampleRate: 44100,
+        recorder.onerror = event => {
+          if (generation !== this.audioRecordingGeneration) return
+          this.handleAudioRecordingError(event.error)
         }
-        if (this.selectedAudioDeviceId) audioConstraints.deviceId = { exact: this.selectedAudioDeviceId }
-        this.audioStream = await navigator.mediaDevices.getUserMedia({
-          audio: audioConstraints,
-          video: false,
-        })
-        this.audioChunks = []
-        this.audioMediaRecorder = new MediaRecorder(this.audioStream, {
-          mimeType: 'audio/webm;codecs=opus',
-        })
-        this.audioMediaRecorder.ondataavailable = event => {
-          if (event.data.size > 0) this.audioChunks.push(event.data)
-        }
-        this.audioMediaRecorder.onstop = () => {
-          this.processRecordedAudio()
-        }
-        this.audioMediaRecorder.start()
+        recorder.start()
         this.isRecordingAudio = true
 
         const speakerName = this.authUserData.name || this.t('jitsi.unknownSpeaker')
@@ -1051,17 +1083,42 @@ export default {
           this.sendBrowserNotification(this.t('jitsi.notify.timeUp.title'), this.t('jitsi.notify.timeUp.body'))
           this.stopAudioRecordingForNextRound()
         }, this.maxRecordingTime)
+        return true
       } catch (error) {
-        console.error('❌ 無法開始音訊錄製:', error)
-        alert(this.t('jitsi.micError'))
+        if (generation === this.audioRecordingGeneration) this.handleAudioRecordingError(error)
+        return false
+      } finally {
+        if (generation === this.audioRecordingGeneration) this.isStartingAudio = false
       }
     },
 
+    handleAudioRecordingError(error) {
+      console.error('❌ 音訊錄製失敗:', error)
+      this.cleanupAudioRecording()
+      this.meetingData.recordingStartTime = null
+      this.meetingData.recordingSpeaker = null
+      this.syncRecordingStatus()
+      alert(this.t(recordingErrorKey(error)))
+    },
+
     async stopAudioRecording() {
+      this.audioRecordingActive = false
       this.meetingData.recordingStartTime = null
       this.meetingData.recordingSpeaker = null
       this.syncRecordingStatus()
       this.recordingTimer = 0
+      this.clearAudioRecordingTimers()
+      const finished = this.audioRecordingFinished
+      if (this.audioMediaRecorder) {
+        if (this.audioMediaRecorder.state !== 'inactive') this.audioMediaRecorder.stop()
+        // stop() 的 dataavailable / stop 事件非同步，最後一段收齊前不丟棄錄音。
+        await finished
+      } else {
+        this.cleanupAudioRecording()
+      }
+    },
+
+    clearAudioRecordingTimers() {
       if (this.audioRecordingTimer) {
         clearTimeout(this.audioRecordingTimer)
         this.audioRecordingTimer = null
@@ -1070,16 +1127,13 @@ export default {
         clearInterval(this.countdownInterval)
         this.countdownInterval = null
       }
-      if (this.audioMediaRecorder && this.audioMediaRecorder.state !== 'inactive') this.audioMediaRecorder.stop()
-      this.isRecordingAudio = false
       this.recordingTimeLeft = 0
-      this.cleanupAudioRecording()
     },
 
-    async processRecordedAudio() {
-      if (this.audioChunks.length === 0) return
-      const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' })
+    processRecordedAudio(chunks, mimeType) {
       this.audioChunks = []
+      if (chunks.length === 0) return
+      const audioBlob = new Blob(chunks, { type: mimeType || chunks[0].type })
       const audioItem = {
         id: Date.now(),
         blob: audioBlob,
@@ -1087,14 +1141,13 @@ export default {
         size: audioBlob.size,
       }
       this.audioQueue.push(audioItem)
-      if (this.meetingData.recordingSpeaker) this.startNextRecordingRound()
       this.startQueueProcessing()
     },
 
     async sendAudioToTranscription(audioBlob) {
       if (!this.canUseMeetingFeatures) return
       const formData = new FormData()
-      formData.append('file', audioBlob, 'recording.webm')
+      formData.append('file', audioBlob, recordingFilename(audioBlob.type))
       const transcriptionUrl = `${this.transcriptionApiUrl}${this.transcriptionLanguage}`
       const response = await fetch(transcriptionUrl, { method: 'POST', body: formData })
       if (!response.ok) {
@@ -1116,14 +1169,20 @@ export default {
     },
 
     cleanupAudioRecording() {
-      if (this.audioRecordingTimer) {
-        clearTimeout(this.audioRecordingTimer)
-        this.audioRecordingTimer = null
+      this.audioRecordingGeneration += 1
+      this.audioRecordingActive = false
+      this.isStartingAudio = false
+      this.clearAudioRecordingTimers()
+      if (this.audioMediaRecorder) {
+        // 離頁／登出／失敗時丟棄該輪，禁止遲到的事件重新錄音或送出音檔。
+        this.audioMediaRecorder.ondataavailable = null
+        this.audioMediaRecorder.onstop = null
+        this.audioMediaRecorder.onerror = null
+        if (this.audioMediaRecorder.state !== 'inactive') this.audioMediaRecorder.stop()
       }
-      if (this.countdownInterval) {
-        clearInterval(this.countdownInterval)
-        this.countdownInterval = null
-      }
+      this.resolveAudioRecording?.()
+      this.resolveAudioRecording = null
+      this.audioRecordingFinished = null
       if (this.audioStream) {
         this.audioStream.getTracks().forEach(t => t.stop())
         this.audioStream = null
@@ -1414,25 +1473,16 @@ export default {
     },
 
     async stopAudioRecordingForNextRound() {
-      if (this.audioRecordingTimer) {
-        clearTimeout(this.audioRecordingTimer)
-        this.audioRecordingTimer = null
-      }
-      if (this.countdownInterval) {
-        clearInterval(this.countdownInterval)
-        this.countdownInterval = null
-      }
+      this.clearAudioRecordingTimers()
       if (this.audioMediaRecorder && this.audioMediaRecorder.state !== 'inactive') this.audioMediaRecorder.stop()
       this.isRecordingAudio = false
       this.recordingTimeLeft = 0
     },
 
     async startNextRecordingRound() {
-      try {
-        this.audioChunks = []
-        await this.startAudioRecording()
-      } catch (error) {
-        console.error('❌ 自動開始下一輪錄音失敗:', error)
+      if (!this.audioRecordingActive || !this.canUseMeetingFeatures) return
+      const started = await this.startAudioRecording()
+      if (!started) {
         this.sendBrowserNotification(this.t('jitsi.notify.autoError.title'), this.t('jitsi.notify.autoError.body'))
       }
     },
