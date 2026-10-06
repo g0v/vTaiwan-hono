@@ -417,7 +417,6 @@
     "title": "Newsletters",
     "description": "Browse vTaiwan newsletters published on Substack to follow community updates, events, and ongoing discussions.",
     "loading": "Loading newsletters...",
-    "retry": "Retry",
     "readMore": "Read More",
     "backToList": "← Back to Newsletter List",
     "viewOriginal": "View Original on Substack",
