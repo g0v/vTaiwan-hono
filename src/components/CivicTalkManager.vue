@@ -714,7 +714,17 @@ onMounted(() => {
       <p v-else-if="abuseReports.length === 0" class="civic-empty">{{ t('admin.civicTalk.admin.reportsEmpty') }}</p>
       <p v-else-if="filteredReports.length === 0" class="civic-empty">{{ t('admin.civicTalk.admin.rptSearchEmpty') }}</p>
       <div v-else class="civic-table-wrap">
-        <table class="civic-table">
+        <table class="civic-table civic-report-table">
+          <colgroup>
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+            <col />
+          </colgroup>
           <thead>
             <tr>
               <th>{{ t('admin.civicTalk.admin.rptThId') }}</th>
@@ -731,8 +741,10 @@ onMounted(() => {
             <tr v-for="r in filteredReports" :key="r.id">
               <td :data-label="t('admin.civicTalk.admin.rptThId')">{{ r.id }}</td>
               <td :data-label="t('admin.civicTalk.admin.rptThReporter')">
-                <div>{{ r.reporter_name || t('admin.civicTalk.unknownAuthor') }}</div>
-                <div class="text-vt-xs text-vt-fg-3">{{ r.reporter_email }}</div>
+                <div>
+                  <div>{{ r.reporter_name || t('admin.civicTalk.unknownAuthor') }}</div>
+                  <div class="text-vt-xs text-vt-fg-3">{{ r.reporter_email }}</div>
+                </div>
               </td>
               <td :data-label="t('admin.civicTalk.admin.rptThTarget')">
                 <template v-if="r.target && reportTargetUrl(r)">
@@ -758,7 +770,9 @@ onMounted(() => {
               </td>
               <td :data-label="t('admin.civicTalk.admin.rptThReason')">{{ t(REASON_I18N[r.reason] ?? 'admin.civicTalk.admin.rptReasonOther') }}</td>
               <td :data-label="t('admin.civicTalk.admin.rptThDesc')">
-                <span v-if="r.description" class="text-vt-xs">{{ r.description }}</span>
+                <div v-if="r.description" class="civic-report-description text-vt-xs" tabindex="0" role="region" :aria-label="t('admin.civicTalk.admin.rptThDesc')">
+                  {{ r.description }}
+                </div>
                 <span v-else class="text-vt-xs text-vt-fg-3">—</span>
               </td>
               <td :data-label="t('admin.civicTalk.admin.rptThStatus')">
@@ -1075,6 +1089,70 @@ onMounted(() => {
 
 .civic-table tbody tr:last-child td {
   border-bottom: 0;
+}
+
+/* 審核表固定分配欄寬，長內容只在說明區內捲動，不撐開整張表。 */
+.civic-report-table {
+  table-layout: fixed;
+}
+
+.civic-report-table col:nth-child(1) {
+  width: 5%;
+}
+
+.civic-report-table col:nth-child(2) {
+  width: 15%;
+}
+
+.civic-report-table col:nth-child(3) {
+  width: 12%;
+}
+
+.civic-report-table col:nth-child(4),
+.civic-report-table col:nth-child(6) {
+  width: 9%;
+}
+
+.civic-report-table col:nth-child(5) {
+  width: 22%;
+}
+
+.civic-report-table col:nth-child(7) {
+  width: 10%;
+}
+
+.civic-report-table col:nth-child(8) {
+  width: 18%;
+}
+
+.civic-table.civic-report-table th,
+.civic-table.civic-report-table td {
+  padding: var(--spacing-vt-3) var(--spacing-vt-2);
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.civic-report-table .civic-report-target {
+  flex-wrap: wrap;
+  gap: var(--spacing-vt-1);
+}
+
+.civic-report-table .civic-link {
+  max-inline-size: 100%;
+  text-align: left;
+}
+
+.civic-report-description {
+  max-inline-size: 100%;
+  max-block-size: calc(var(--spacing-vt-16) * 3);
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.civic-report-description:focus-visible {
+  outline: 2px solid var(--color-vt-democratic-red);
+  outline-offset: var(--spacing-vt-0_5);
 }
 
 .civic-status {
@@ -1477,6 +1555,10 @@ onMounted(() => {
     display: none;
   }
 
+  .civic-report-table colgroup {
+    display: none;
+  }
+
   .civic-table tr {
     padding: var(--spacing-vt-3) 0;
     border-bottom: 1px solid var(--color-vt-border);
@@ -1494,6 +1576,10 @@ onMounted(() => {
     padding: var(--spacing-vt-2) 0;
     border-bottom: 0;
     overflow-wrap: anywhere;
+  }
+
+  .civic-table.civic-report-table td {
+    padding: var(--spacing-vt-2) 0;
   }
 
   .civic-table td::before {
