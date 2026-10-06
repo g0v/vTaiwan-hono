@@ -412,7 +412,6 @@
     "title": "電子報",
     "description": "瀏覽 vTaiwan 在 Substack 發佈的電子報，快速掌握社群近況、活動與討論脈絡。",
     "loading": "載入電子報中...",
-    "retry": "重新載入",
     "readMore": "閱讀全文",
     "backToList": "← 返回電子報列表",
     "viewOriginal": "到 Substack 查看原文",

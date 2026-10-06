@@ -417,7 +417,6 @@
     "title": "ニュースレター",
     "description": "Substack に掲載された vTaiwan のニュースレターを一覧し、コミュニティの近況、イベント、議論の流れを追えます。",
     "loading": "ニュースレターを読み込み中...",
-    "retry": "再試行",
     "readMore": "続きを読む",
     "backToList": "← ニュースレター一覧に戻る",
     "viewOriginal": "Substack で原文を見る",

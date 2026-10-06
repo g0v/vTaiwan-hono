@@ -1,6 +1,7 @@
 import { sanitizeUntrustedHtml } from './html-sanitizer'
 
-export const NEWSLETTER_FEED_URL = 'https://vtaiwantw.substack.com/feed'
+export const NEWSLETTER_HOME_URL = 'https://vtaiwantw.substack.com/'
+export const NEWSLETTER_FEED_URL = `${NEWSLETTER_HOME_URL}feed`
 
 export interface NewsletterItem {
   id: string

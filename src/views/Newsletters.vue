@@ -7,7 +7,7 @@
           <p class="text-gray-300">{{ t('newsletter.description') }}</p>
         </div>
 
-        <a :href="NEWSLETTER_FEED_URL.replace('/feed', '')" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-sm font-medium text-democratic-red hover:underline">
+        <a :href="NEWSLETTER_HOME_URL" target="_blank" rel="noopener noreferrer" class="inline-flex items-center text-sm font-medium text-democratic-red hover:underline">
           {{ t('newsletter.visitSubstack') }}
         </a>
       </div>
@@ -18,9 +18,9 @@
 
       <div v-else-if="error" class="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
         <p class="mb-4 text-red-700">{{ error }}</p>
-        <button @click="loadNewsletters(true)" class="rounded-md bg-democratic-red px-4 py-2 text-white transition hover:opacity-90">
-          {{ t('newsletter.retry') }}
-        </button>
+        <a :href="NEWSLETTER_HOME_URL" target="_blank" rel="noopener noreferrer" class="inline-block rounded-md bg-democratic-red px-4 py-2 text-white transition hover:opacity-90">
+          {{ t('newsletter.visitSubstack') }}
+        </a>
       </div>
 
       <div v-else-if="newsletters.length" class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
@@ -59,7 +59,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { getNewsletters, NEWSLETTER_FEED_URL, type NewsletterItem } from '../lib/newsletters'
+import { getNewsletters, NEWSLETTER_HOME_URL, type NewsletterItem } from '../lib/newsletters'
 
 const { locale, t } = useI18n()
 
