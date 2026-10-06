@@ -250,13 +250,20 @@ async function loadAbuseReports() {
   }
 }
 
-async function resolveReport(id: number, action: 'false_report' | 'confirmed_abuse') {
-  const confirmKey = action === 'false_report' ? 'admin.civicTalk.admin.rptConfirmFalse' : 'admin.civicTalk.admin.rptConfirmAbuse'
+async function resolveReport(id: number, action: 'false_report' | 'confirmed_abuse', banUser = true) {
+  const confirmKey =
+    action === 'false_report'
+      ? banUser
+        ? 'admin.civicTalk.admin.rptConfirmFalse'
+        : 'admin.civicTalk.admin.rptConfirmFalseNoBan'
+      : banUser
+        ? 'admin.civicTalk.admin.rptConfirmAbuse'
+        : 'admin.civicTalk.admin.rptConfirmAbuseNoBan'
   if (!window.confirm(t(confirmKey))) return
   try {
     const data = await requestJson<{ ok: boolean }>(`/api/admin/civic-talks/abuse-reports/${id}/resolve`, {
       method: 'PATCH',
-      body: JSON.stringify({ action }),
+      body: JSON.stringify({ action, banUser }),
     })
     if (!data) return
     await loadAbuseReports()
@@ -801,6 +808,24 @@ onMounted(() => {
                       @click="resolveReport(r.id, 'confirmed_abuse')"
                     >
                       {{ t('admin.civicTalk.admin.rptBtnAbuse') }}
+                    </button>
+                    <button
+                      type="button"
+                      class="civic-link"
+                      :disabled="props.authSession?.role !== 'super-admin'"
+                      :title="props.authSession?.role !== 'super-admin' ? t('admin.civicTalk.admin.rptNeedSuperAdmin') : undefined"
+                      @click="resolveReport(r.id, 'false_report', false)"
+                    >
+                      {{ t('admin.civicTalk.admin.rptBtnFalseNoBan') }}
+                    </button>
+                    <button
+                      type="button"
+                      class="civic-link civic-link--danger"
+                      :disabled="props.authSession?.role !== 'super-admin'"
+                      :title="props.authSession?.role !== 'super-admin' ? t('admin.civicTalk.admin.rptNeedSuperAdmin') : undefined"
+                      @click="resolveReport(r.id, 'confirmed_abuse', false)"
+                    >
+                      {{ t('admin.civicTalk.admin.rptBtnAbuseNoBan') }}
                     </button>
                     <span v-if="!r.target_author_id" class="text-vt-xs text-vt-fg-3">{{ t('admin.civicTalk.admin.rptNoAuthor') }}</span>
                   </div>

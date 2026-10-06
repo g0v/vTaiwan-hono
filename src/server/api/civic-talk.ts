@@ -163,7 +163,7 @@ app.patch('/abuse-reports/:id/resolve', async c => {
   const id = parsePositiveId(c.req.param('id'))
   if (!id) return c.json({ error: 'Invalid report id' }, 400)
 
-  let body: { action?: unknown }
+  let body: { action?: unknown; banUser?: unknown }
   try {
     body = await c.req.json()
   } catch {
@@ -171,6 +171,9 @@ app.patch('/abuse-reports/:id/resolve', async c => {
   }
   if (body.action !== 'false_report' && body.action !== 'confirmed_abuse') {
     return c.json({ error: 'action must be "false_report" or "confirmed_abuse"' }, 400)
+  }
+  if (body.banUser !== undefined && typeof body.banUser !== 'boolean') {
+    return c.json({ error: 'banUser must be a boolean' }, 400)
   }
 
   const report = await getCivicTalkAbuseReport(c.env.DB_CIVIC_TALKS, id)
@@ -182,7 +185,7 @@ app.patch('/abuse-reports/:id/resolve', async c => {
 
   // ban 先做——確保失敗時 review_status 保持 pending，前端拿到真實錯誤碼。
   // targetUserId 不存在時跳過 ban（目標已刪除）。
-  if (targetUserId) {
+  if (body.banUser !== false && targetUserId) {
     try {
       await createAuth(c.env).api.banUser({
         body: { userId: targetUserId, banReason },
