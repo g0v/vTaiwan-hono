@@ -386,6 +386,10 @@
   <text class="cj mono" x="830" y="2176">/api/transcription/:id/versions[/text]</text>
   <text class="cj" x="1180" y="2176">transcription.update（舊版本不隨公開逐字稿露出）</text>
 
+  <text class="cj mono" x="830" y="2202">/api/admin/civic-talks/abuse-reports/:id/resolve</text>
+  <text class="cj" x="1180" y="2224">super-admin ＋ fresh；banUser=false 只省略停權</text>
+  <text class="cj" x="830" y="2246">誤報解除內容標記；確認濫用標記違規；兩者皆結案，帳號既有停權不變。</text>
+
   <rect x="56" y="2262" width="1562" height="112" rx="8" class="bx-warn" />
   <text class="btitle red" x="76" y="2288">⚠ 已知死路：二次驗證時登入了「另一個」社群帳號</text>
   <text class="note" x="76" y="2312">若該社群帳號的 email 與管理員帳號不同，Better Auth 依 email 找不到既有使用者，會新建一個 role='user' 的帳號並簽發其 session —— 形同靜默換身分。</text>

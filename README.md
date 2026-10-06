@@ -56,6 +56,14 @@
 
 靜態檔（路徑含副檔名）交給 `ASSETS` 綁定 / Static files are served via the `ASSETS` binding.
 
+### Civic Talk 濫用回報裁判
+
+管理後台的 Civic Talk 濫用回報保留「誤報・停權回報者」與「確認濫用・停權張貼者」，另提供兩種不停權裁判，供輕微情節與測試項目使用。所有裁判仍需 super-admin 與有效二次驗證。
+
+審核表格採固定欄寬並允許長信箱、網址與操作文字換行，桌面可在視窗內查看全部欄位。說明欄保留全文與換行，最大高度由既有 spacing token 計算，超出部分在說明區內捲動；可用 Tab 聚焦後以鍵盤捲動。手機版維持逐筆堆疊排列。
+
+`PATCH /api/admin/civic-talks/abuse-reports/:id/resolve` 接受 `action: "false_report" | "confirmed_abuse"`，以及可選的布林欄位 `banUser`。未指定或為 `true` 時維持原本停權流程；明確傳入 `false` 時不變更任何帳號的停權狀態（也不解除既有停權）。誤報仍解除內容標記並結案為 `resolved_false`；確認濫用仍標記內容違規並結案為 `resolved_abuse`。已結案回報不可再次裁判（409）。
+
 ## Stack / 技術棧
 
 - [Hono](https://hono.dev) — Worker 與路由 / the worker & router
