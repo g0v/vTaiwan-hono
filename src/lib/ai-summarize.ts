@@ -4,6 +4,8 @@ import { extractGptOssText } from './transcribe'
 // gpt-oss-120b 使用 Responses API 格式，型別尚未登錄；回應由 extractGptOssText() 做 runtime 驗證
 type AiRunner = { run(model: string, input: Record<string, unknown>): Promise<unknown> }
 
+// 模型、prompt 與分段策略對齊 vtaiwan-transcription-worker/src/utils/ai_summarize.ts
+// （來源最後變更：01c2efe）；對齊契約由 ai-summarize.test.ts 驗證。
 // 智能分段函數：優先按段落分割，如果段落太大則按句子分割
 function splitTextIntoChunks(text: string, maxCharsPerChunk: number = 15000): string[] {
   const chunks: string[] = []
@@ -50,7 +52,10 @@ async function generateChunkSummary(chunk: string, env: AppBindings, chunkIndex:
       instructions: prompt,
       input: chunk,
     })
-    return extractGptOssText(response)
+    const summary = extractGptOssText(response)
+    // 原 worker 會拒絕空結果；也拒絕只有空白的結果，避免合併時靜默漏掉整段。
+    if (!summary.trim()) throw new Error('AI 模型返回了空的結果')
+    return summary
   } catch (error) {
     console.error(`Chunk ${chunkIndex + 1} AI處理失敗:`, error)
     return `第${chunkIndex + 1}段：AI處理失敗，原始內容長度 ${chunk.length} 字符`
