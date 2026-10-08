@@ -619,11 +619,9 @@
     },
     "sort": {
       "latest": "Latest",
-      "participants": "Participants",
       "views": "Views"
     },
     "metrics": {
-      "participants": "Participants",
       "posts": "Posts",
       "views": "Views",
       "lastActivity": "Last Activity"

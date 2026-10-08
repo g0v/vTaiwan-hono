@@ -629,11 +629,9 @@
     },
     "sort": {
       "latest": "最新",
-      "participants": "參與人數",
       "views": "瀏覽數"
     },
     "metrics": {
-      "participants": "參與者",
       "posts": "貼文",
       "views": "瀏覽",
       "lastActivity": "最後活動"

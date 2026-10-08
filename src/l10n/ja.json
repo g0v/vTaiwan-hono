@@ -619,11 +619,9 @@
     },
     "sort": {
       "latest": "最新",
-      "participants": "参加者数",
       "views": "閲覧数"
     },
     "metrics": {
-      "participants": "参加者",
       "posts": "投稿",
       "views": "閲覧",
       "lastActivity": "最終活動"
