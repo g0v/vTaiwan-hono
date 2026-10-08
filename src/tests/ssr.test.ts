@@ -8,7 +8,7 @@ import { titleForTopicDetail } from '../ssr/heads'
 // 涵蓋：renderToString 不丟例外（含誤觸瀏覽器 API 的 SSR 安全違規）、HTTP status 符合
 // meta.status、<title> 有內容、首屏非空殼。hydration mismatch 仍需真瀏覽器，不在此測。
 
-const origin = 'https://vtaiwan.tw'
+const origin = 'https://www.vtaiwan.tw'
 const cspNonce = 'ssr-test-nonce'
 
 // 動態 segment 的測試填值：新增帶參數的 route 時在此補一筆，缺漏會直接讓測試失敗提醒。

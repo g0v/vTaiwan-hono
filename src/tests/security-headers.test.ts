@@ -75,7 +75,7 @@ describe('安全標頭', () => {
       },
     } as unknown as AppBindings
 
-    const response = await app.request('https://vtaiwan.tw/styles.css', {}, bindings)
+    const response = await app.request('https://www.vtaiwan.tw/styles.css', {}, bindings)
 
     expect(response.status).toBe(302)
     expect(response.headers.get('location')).toBe(location)
@@ -84,8 +84,8 @@ describe('安全標頭', () => {
   })
 
   it('WebSocket 握手失敗的 HTTP 回應仍附加安全標頭', async () => {
-    const response = await app.request('https://vtaiwan.tw/api/meeting/ws/20260803', {
-      headers: { upgrade: 'websocket', origin: 'https://vtaiwan.tw' },
+    const response = await app.request('https://www.vtaiwan.tw/api/meeting/ws/20260803', {
+      headers: { upgrade: 'websocket', origin: 'https://www.vtaiwan.tw' },
     })
 
     expect(response.status).toBe(500)

@@ -11,7 +11,7 @@
 import { describe, expect, it } from 'vite-plus/test'
 import app from '../index'
 
-const ORIGIN = 'https://vtaiwan.tw'
+const ORIGIN = 'https://www.vtaiwan.tw'
 const SAME_ORIGIN = { origin: ORIGIN, 'sec-fetch-site': 'same-origin' }
 const DATE = '20260806'
 

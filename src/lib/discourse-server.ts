@@ -2,7 +2,7 @@
 import { formatTopicData, type DiscourseTopic, type FormattedTopicData } from './discourse-types'
 
 const DISCOURSE_BASE_URL = 'https://talk.vtaiwan.tw'
-const DISCOURSE_CACHE_KEY_ORIGIN = 'https://next.vtaiwan.tw'
+const DISCOURSE_CACHE_KEY_ORIGIN = 'https://www.vtaiwan.tw'
 
 interface TopicListResponse {
   topic_list?: {

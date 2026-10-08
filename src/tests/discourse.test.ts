@@ -41,6 +41,7 @@ describe('/api/discourse Cache API', () => {
       expect(firstResponse.status).toBe(200)
       await expect(firstResponse.json()).resolves.toEqual({ id: 42 })
       expect(fetchSpy).toHaveBeenCalledTimes(1)
+      expect(cache.put.mock.calls[0]?.[0]?.url).toBe('https://www.vtaiwan.tw/__cache/discourse/t/42.json?include_raw=1')
       expect(cache.put.mock.calls[0]?.[1]?.headers.get('Cache-Control')).toBe('public, max-age=86400')
       await expect(secondResponse.json()).resolves.toEqual({ id: 42 })
     } finally {

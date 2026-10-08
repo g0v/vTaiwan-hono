@@ -266,16 +266,16 @@ describe('變更日誌的「管理操作」回復指令', () => {
 // 已登入但非 super-admin（403）與 session 不新鮮（403 + SESSION_NOT_FRESH）留待實測（見 AGENTS.md）。
 describe('變更日誌端點的授權關卡', () => {
   it('未登入拿不到變更日誌', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/admin/audit-log', { headers: { origin: 'https://vtaiwan.tw' } })
+    const res = await app.request('https://www.vtaiwan.tw/api/admin/audit-log', { headers: { origin: 'https://www.vtaiwan.tw' } })
     expect(res.status).toBe(401)
   })
 })
 
 describe('回復／刪除端點的授權關卡', () => {
-  const headers = { origin: 'https://vtaiwan.tw', 'content-type': 'application/json' }
+  const headers = { origin: 'https://www.vtaiwan.tw', 'content-type': 'application/json' }
 
   it('未登入不得回復逐字稿', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/transcription/restore', {
+    const res = await app.request('https://www.vtaiwan.tw/api/transcription/restore', {
       method: 'POST',
       headers,
       body: JSON.stringify({ meeting_id: '20260803', target: 'transcription', version_id: '20260803T091500123Z' }),
@@ -284,7 +284,7 @@ describe('回復／刪除端點的授權關卡', () => {
   })
 
   it('未登入不得刪除逐字稿', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/transcription/delete', {
+    const res = await app.request('https://www.vtaiwan.tw/api/transcription/delete', {
       method: 'POST',
       headers,
       body: JSON.stringify({ meeting_id: '20260803' }),

@@ -105,8 +105,8 @@ describe('敏感操作二次驗證（step-up cookie）', () => {
   // 端點層級：未登入者連 Better Auth handler 都碰不到（測試環境無 D1 綁定，
   // 因此「有 session、但未二次驗證」的 403 分支留待實測）。
   it('未登入打管理端點回 401（不落到 Better Auth handler 的 500）', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/auth/admin/list-users', {
-      headers: { origin: 'https://vtaiwan.tw' },
+    const res = await app.request('https://www.vtaiwan.tw/api/auth/admin/list-users', {
+      headers: { origin: 'https://www.vtaiwan.tw' },
     })
     expect(res.status).toBe(401)
     expect(await res.json()).toEqual({ error: 'Unauthorized', code: 'UNAUTHORIZED' })
@@ -115,8 +115,8 @@ describe('敏感操作二次驗證（step-up cookie）', () => {
   it('/api/auth/me 優先於 Better Auth catch-all 路由', async () => {
     // 測試環境沒有 DB_AUTH，因此 getAuthContext 的系統錯誤應為 500；若被 Better Auth
     // catch-all 攔截則會回 404，代表 session 端點已失效。
-    const res = await app.request('https://vtaiwan.tw/api/auth/me', {
-      headers: { origin: 'https://vtaiwan.tw' },
+    const res = await app.request('https://www.vtaiwan.tw/api/auth/me', {
+      headers: { origin: 'https://www.vtaiwan.tw' },
     })
     expect(res.status).toBe(500)
   })

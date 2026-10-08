@@ -48,7 +48,7 @@
   },
   "routes": [
     {
-      "pattern": "next.vtaiwan.tw",
+      "pattern": "www.vtaiwan.tw",
       "custom_domain": true,
       "enabled": true,
       "previews_enabled": false,

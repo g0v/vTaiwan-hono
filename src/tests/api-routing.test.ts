@@ -36,8 +36,8 @@ describe('全域中介層的註冊順序', () => {
 })
 
 describe('動態路徑不得攔截同層的固定名稱端點', () => {
-  const SAME_ORIGIN = { origin: 'https://vtaiwan.tw', 'sec-fetch-site': 'same-origin', 'content-type': 'multipart/form-data; boundary=x' }
-  const post = (path: string) => app.request(`https://vtaiwan.tw${path}`, { method: 'POST', headers: SAME_ORIGIN, body: '--x--' })
+  const SAME_ORIGIN = { origin: 'https://www.vtaiwan.tw', 'sec-fetch-site': 'same-origin', 'content-type': 'multipart/form-data; boundary=x' }
+  const post = (path: string) => app.request(`https://www.vtaiwan.tw${path}`, { method: 'POST', headers: SAME_ORIGIN, body: '--x--' })
 
   // /api/transcription/:lang 與 /upload、/outline… 同層。:lang 收窄成 LANG_MAP 的精確清單後，
   // 「固定名稱必須先註冊」不再是正確性的前提；這裡驗證收窄本身沒有鬆掉。
@@ -58,7 +58,7 @@ describe('動態路徑不得攔截同層的固定名稱端點', () => {
   // /api/auth/* 是 Better Auth 的 catch-all，/api/auth/me 是本站自己的 session 端點；
   // 順序反了會被 Better Auth 接走並回 404，登入態就整站讀不到。
   it('/api/auth/me 優先於 Better Auth 的 catch-all', async () => {
-    const res = await app.request('https://vtaiwan.tw/api/auth/me', { headers: { origin: 'https://vtaiwan.tw' } })
+    const res = await app.request('https://www.vtaiwan.tw/api/auth/me', { headers: { origin: 'https://www.vtaiwan.tw' } })
     expect(res.status).not.toBe(404)
   })
 })
@@ -98,9 +98,9 @@ describe('寫入端點不對外宣告 CORS', () => {
 
   for (const { method, path } of WRITE_ENDPOINTS) {
     it(`${method} ${path} 不回 Access-Control-Allow-Origin`, async () => {
-      const res = await app.request(`https://vtaiwan.tw${path}`, {
+      const res = await app.request(`https://www.vtaiwan.tw${path}`, {
         method,
-        headers: { origin: 'https://vtaiwan.tw', 'sec-fetch-site': 'same-origin', 'content-type': 'multipart/form-data; boundary=x' },
+        headers: { origin: 'https://www.vtaiwan.tw', 'sec-fetch-site': 'same-origin', 'content-type': 'multipart/form-data; boundary=x' },
         body: '--x--',
       })
       // 先確認真的打到端點——404 會讓下面那條斷言變成恆真
@@ -117,7 +117,7 @@ describe('寫入端點不對外宣告 CORS', () => {
   // 期望值是 404（沒有任何 middleware／handler 接手），瀏覽器因此完不成跨來源寫入。
   for (const { method, path } of WRITE_ENDPOINTS) {
     it(`OPTIONS ${path}（${method} 的 preflight）不回 CORS 放行標頭`, async () => {
-      const res = await app.request(`https://next.vtaiwan.tw${path}`, {
+      const res = await app.request(`https://www.vtaiwan.tw${path}`, {
         method: 'OPTIONS',
         headers: { origin: 'https://vtaiwan.tw', 'access-control-request-method': method, 'access-control-request-headers': 'content-type' },
       })
@@ -130,8 +130,8 @@ describe('寫入端點不對外宣告 CORS', () => {
   // 舊版本可能含後續被修正／下架的內容，不該隨公開逐字稿一起露出。
   for (const path of ['/api/transcription/20260803/versions', '/api/transcription/20260803/versions/20260803T000000000Z/text']) {
     it(`${path} 不對外宣告 CORS（管理員專屬）`, async () => {
-      const res = await app.request(`https://next.vtaiwan.tw${path}`, {
-        headers: { origin: 'https://vtaiwan.tw', 'sec-fetch-site': 'cross-site' },
+      const res = await app.request(`https://www.vtaiwan.tw${path}`, {
+        headers: { origin: 'https://vtaiwan.tw', 'sec-fetch-site': 'same-site' },
       })
       expect(res.headers.get('access-control-allow-origin')).toBeNull()
     })
@@ -139,8 +139,8 @@ describe('寫入端點不對外宣告 CORS', () => {
 
   // 對照組：公開讀取的 GET 端點才該掛 corsFor，那裡的 CORS 是真的會生效的。
   it('公開讀取的 GET 端點仍對白名單來源宣告 CORS', async () => {
-    const res = await app.request('https://next.vtaiwan.tw/api/transcription/20260803/text', {
-      headers: { origin: 'https://vtaiwan.tw', 'sec-fetch-site': 'cross-site' },
+    const res = await app.request('https://www.vtaiwan.tw/api/transcription/20260803/text', {
+      headers: { origin: 'https://vtaiwan.tw', 'sec-fetch-site': 'same-site' },
     })
     expect(res.headers.get('access-control-allow-origin')).toBe('https://vtaiwan.tw')
   })

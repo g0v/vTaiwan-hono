@@ -257,8 +257,17 @@ while (condition) {
 
 ## Deploy / 部署
 
+正式站網域為 `https://www.vtaiwan.tw`，由 `wrangler.jsonc` 的 `routes` 設定 Custom Domain。
+
+部署前，將 Worker 環境變數 `BETTER_AUTH_URL` 設為 `https://www.vtaiwan.tw`，並在 OAuth 供應商後台設定正式站的 callback：
+
+- Google：`https://www.vtaiwan.tw/api/auth/callback/google`
+- GitHub：`https://www.vtaiwan.tw/api/auth/callback/github`
+
+`createAuth.ts` 以 `BETTER_AUTH_URL` 建立登入服務；`wrangler.jsonc` 啟用 `keep_vars`，部署會保留既有遠端變數，因此切換網域時須同步更新此值。`.dev.vars` 僅供本機開發，應使用本機 Worker 網址，不會自動上傳為正式站設定。
+
 ```bash
-npm run deploy       # 完整 build（含 hydration bundle）+ wrangler deploy
+vp run deploy       # 完整 build（含 hydration bundle）+ wrangler deploy
 ```
 
 ## Adding a page / 新增頁面

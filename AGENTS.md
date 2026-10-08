@@ -153,7 +153,7 @@ vp run cf-typegen           # 由 wrangler 產生 Cloudflare 綁定型別
 - `migrations/` — `DB`（`vtaiwan-transcriptions`）的 SQL migrations；`migrations/auth/` 為 `DB_AUTH` 專用（**由 Better Auth CLI 生成，勿手改**）。
 - `public/` — 靜態資產（由 `ASSETS` 綁定提供）。
 - `design/` — 架構示意圖等設計文件（SVG）。
-- `vite.config.mts`（server build）、`vite.client.config.mts`（client build）、`wrangler.jsonc`（Cloudflare 綁定與 `next.vtaiwan.tw` custom domain）。
+- `vite.config.mts`（server build）、`vite.client.config.mts`（client build）、`wrangler.jsonc`（Cloudflare 綁定與 `www.vtaiwan.tw` custom domain）。
 
 ## API 模組掛載規則
 

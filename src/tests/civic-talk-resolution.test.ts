@@ -69,7 +69,7 @@ afterEach(() => db.close())
 
 function resolve(body: object) {
   return app.request(
-    'https://vtaiwan.tw/abuse-reports/1/resolve',
+    'https://www.vtaiwan.tw/abuse-reports/1/resolve',
     {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
