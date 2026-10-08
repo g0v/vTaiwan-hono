@@ -61,6 +61,13 @@ const values = [
         <RouterLink to="/newsletters" class="font-medium text-democratic-red hover:underline">{{ t('about.newsletter.button') }}</RouterLink>
       </p>
 
+      <!-- 常見問題 -->
+      <h2 class="mb-4 text-2xl font-bold sm:text-3xl">{{ t('about.faq.title') }}</h2>
+      <p class="mb-14 text-lg leading-relaxed text-vt-gray-700">
+        {{ t('about.faq.description') }}
+        <RouterLink to="/faq" class="font-medium text-democratic-red hover:underline">{{ t('about.faq.button') }}</RouterLink>
+      </p>
+
       <!-- 聯絡我們 -->
       <h2 class="mb-4 text-2xl font-bold sm:text-3xl">{{ t('about.contact.title') }}</h2>
       <p class="mb-5 text-lg leading-relaxed text-vt-gray-700">

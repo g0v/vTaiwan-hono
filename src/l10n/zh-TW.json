@@ -169,6 +169,11 @@
       "description": "歡迎大家瀏覽 vTaiwan 電子報，掌握社群動態、活動與政策討論。",
       "button": "瀏覽電子報"
     },
+    "faq": {
+      "title": "常見問答",
+      "description": "想了解 vTaiwan 的運作方式與參與方法嗎？參考常見問題與解答，幫助您快速認識平台。",
+      "button": "瀏覽常見問答"
+    },
     "contact": {
       "title": "聯絡我們",
       "description": "如果您有任何問題或建議，歡迎與我們聯繫：",
