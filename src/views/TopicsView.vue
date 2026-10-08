@@ -15,7 +15,7 @@ const STEP_KEYS = ['即將開始', '意見徵集', '研擬草案', '送交院會
 const topics = ref<FormattedTopicData[]>([])
 const loading = ref(true)
 const searchQuery = ref('')
-const sortBy = ref<'latest' | 'participants' | 'views'>('latest')
+const sortBy = ref<'latest' | 'views'>('latest')
 const lastUpdated = ref('')
 
 const steps = ref(
@@ -78,9 +78,6 @@ const filteredTopics = computed(() => {
 
   const sorted = [...filtered]
   switch (sortBy.value) {
-    case 'participants':
-      sorted.sort((a, b) => (b.participant_count || 0) - (a.participant_count || 0))
-      break
     case 'views':
       sorted.sort((a, b) => (b.views || 0) - (a.views || 0))
       break
@@ -265,10 +262,6 @@ onUnmounted(() => {
             <div v-if="topic.cover" class="vt-topic-cover-slice relative mb-4" :style="{ backgroundImage: `url(${topic.cover})` }" />
 
             <div class="vt-topic-card-footer mt-auto flex-wrap">
-              <span class="vt-topic-pill text-xs">
-                <IconWrapper name="users" :size="14" />
-                <span>{{ topic.participant_count || 0 }}</span>
-              </span>
               <span class="vt-topic-stat">
                 <IconWrapper name="message-circle" :size="14" />
                 <span>{{ topic.posts_count || 0 }}</span>
@@ -313,12 +306,6 @@ onUnmounted(() => {
               @click="sortBy = 'latest'"
             >
               {{ t('topics.sort.latest') }}
-            </button>
-            <button
-              :class="['rounded-lg px-4 py-2 font-medium transition-colors', sortBy === 'participants' ? 'bg-black text-white' : 'bg-gray-100 text-black hover:bg-gray-200']"
-              @click="sortBy = 'participants'"
-            >
-              {{ t('topics.sort.participants') }}
             </button>
             <button :class="['rounded-lg px-4 py-2 font-medium transition-colors', sortBy === 'views' ? 'bg-black text-white' : 'bg-gray-100 text-black hover:bg-gray-200']" @click="sortBy = 'views'">
               {{ t('topics.sort.views') }}
@@ -403,10 +390,6 @@ onUnmounted(() => {
 
                 <div class="mb-4 grid grid-cols-3 gap-2 text-xs text-vt-fg-2 sm:flex sm:flex-wrap">
                   <span class="vt-topic-pill">
-                    <IconWrapper name="users" :size="14" />
-                    <span>{{ topic.participant_count || 0 }}</span>
-                  </span>
-                  <span class="vt-topic-pill">
                     <IconWrapper name="message-circle" :size="16" />
                     <span>{{ topic.posts_count || 0 }}</span>
                   </span>
@@ -463,10 +446,6 @@ onUnmounted(() => {
                 </p>
 
                 <div class="mb-4 flex flex-wrap items-center gap-2 text-xs text-vt-fg-2">
-                  <span class="vt-topic-pill">
-                    <IconWrapper name="users" :size="12" />
-                    <span>{{ topic.participant_count || 0 }}</span>
-                  </span>
                   <span class="vt-topic-pill">
                     <IconWrapper name="message-circle" :size="12" />
                     <span>{{ topic.posts_count || 0 }}</span>
