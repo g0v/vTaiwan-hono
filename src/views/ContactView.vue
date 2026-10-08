@@ -63,7 +63,7 @@
               <IconWrapper name="github" :size="32" color="#D82000" class="mx-auto mb-3" />
               <h3 class="mb-2 font-semibold text-gray-900">{{ t('contact.otherMethods.github.title') }}</h3>
               <p class="mb-3 text-sm text-gray-600">{{ t('contact.otherMethods.github.description') }}</p>
-              <a href="https://github.com/g0v" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-democratic-red hover:text-red-700">
+              <a href="https://github.com/orgs/g0v/projects/2" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-democratic-red hover:text-red-700">
                 {{ t('contact.otherMethods.github.link') }}
               </a>
             </div>
