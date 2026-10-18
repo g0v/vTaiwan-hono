@@ -40,16 +40,16 @@
 
 ## 工具鏈版本
 
-| 工具                 | 版本                     | 鎖定位置                                          |
-| -------------------- | ------------------------ | ------------------------------------------------- |
-| npm（套件管理）      | 12.0.1                   | `devEngines`（onFail: download，由 Vite+ 供裝）   |
-| Vite+（`vp`）        | 0.2.4（exact）           | `devDependencies` + `overrides`（vite 指向 core） |
-| LemmaScript（`lsc`） | ^0.5.13                  | `devDependencies`                                 |
-| TypeScript           | ^5.6                     | `devDependencies`                                 |
-| Tailwind CSS         | ^4.3（v4 CLI）           | `devDependencies`                                 |
-| Wrangler             | ^4.83                    | `devDependencies`                                 |
-| Vue / vue-i18n       | ^3.5 / ^11.4             | `dependencies`                                    |
-| Dafny（形式驗證）    | CI 固定 4.9.0；本機 >= 4 | `.github/workflows/ci.yml`（setup-dafny-action）  |
+| 工具                 | 版本                     | 鎖定位置                                             |
+| -------------------- | ------------------------ | ---------------------------------------------------- |
+| npm（套件管理）      | 12.0.2                   | `devEngines`（onFail: download，由 Vite+ 供裝）      |
+| Vite+（`vp`）        | 0.3.2（exact）           | `devDependencies` + `overrides`（vite 指向 core）    |
+| LemmaScript（`lsc`） | 0.5.13（exact）          | `devDependencies`（固定版本以維持既有 proof 相容性） |
+| TypeScript           | ^5.6                     | `devDependencies`                                    |
+| Tailwind CSS         | ^4.3（v4 CLI）           | `devDependencies`                                    |
+| Wrangler             | ^4.83                    | `devDependencies`                                    |
+| Vue / vue-i18n       | ^3.5 / ^11.4             | `dependencies`                                       |
+| Dafny（形式驗證）    | CI 固定 4.9.0；本機 >= 4 | `.github/workflows/ci.yml`（setup-dafny-action）     |
 
 > 升級 Vite+ / LemmaScript / Dafny 前先告知使用者——三者互相咬合（`vp` 供裝 `lsc`、`lsc` 生成的 Dafny 語法隨版本變化），升級後必跑 `vp run lemma:check` 確認 VCs 仍全數通過。
 
