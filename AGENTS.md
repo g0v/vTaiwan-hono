@@ -36,22 +36,24 @@
 - **樣式**：Tailwind CSS v4（CLI 建置到 `public/styles.css`）。
 - **登入／授權**：Better Auth（Google／GitHub OAuth + admin plugin），資料落在 D1 `DB_AUTH`；詳見「Admin 介面與 Better Auth」章節。
 - **資料**：D1（`DB` 逐字稿與審計表、`DB_AUTH` 認證）、R2（逐字稿與版本檔）、Workers AI（大綱生成）、Durable Object `MeetingRoom`（即時會議逐字稿，WebSocket）。
-- **建置工具**：VitePlus（`vp`）——本專案的 `vite` 指向 `@voidzero-dev/vite-plus-core`；`vp run dev` / `vp preview` 走 `vp` CLI，`vp run build` 走雙設定檔（`vite.config.mts` server build + `vite.client.config.mts` client build）。`vp` 同時提供 `lsc`（LemmaScript）形式驗證工具（見「LemmaScript 形式驗證」章節）。
+- **建置工具**：VitePlus（`vp`）——本專案的 `vite` 指向 `@voidzero-dev/vite-plus-core`；`vp run dev` / `vp preview` 走 `vp` CLI，`vp run build` 走雙設定檔（`vite.config.ts` server build + `vite.client.config.mts` client build）。`vp` 同時提供 `lsc`（LemmaScript）形式驗證工具（見「LemmaScript 形式驗證」章節）。
 
 ## 工具鏈版本
 
-| 工具                 | 版本                     | 鎖定位置                                             |
-| -------------------- | ------------------------ | ---------------------------------------------------- |
-| npm（套件管理）      | 12.0.2                   | `devEngines`（onFail: download，由 Vite+ 供裝）      |
-| Vite+（`vp`）        | 0.3.2（exact）           | `devDependencies` + `overrides`（vite 指向 core）    |
-| LemmaScript（`lsc`） | 0.5.13（exact）          | `devDependencies`（固定版本以維持既有 proof 相容性） |
-| TypeScript           | ^5.6                     | `devDependencies`                                    |
-| Tailwind CSS         | ^4.3（v4 CLI）           | `devDependencies`                                    |
-| Wrangler             | ^4.83                    | `devDependencies`                                    |
-| Vue / vue-i18n       | ^3.5 / ^11.4             | `dependencies`                                       |
-| Dafny（形式驗證）    | CI 固定 4.9.0；本機 >= 4 | `.github/workflows/ci.yml`（setup-dafny-action）     |
+| 工具                 | 版本                     | 鎖定位置                                                                              |
+| -------------------- | ------------------------ | ------------------------------------------------------------------------------------- |
+| npm（套件管理）      | 12.0.2                   | `devEngines`（onFail: download，由 Vite+ 供裝）                                       |
+| Vite+（`vp`）        | 1.1.0（exact）           | `devDependencies` + `overrides`（vite 指向同版 core；Vitest override 對齊內建 5.0.3） |
+| LemmaScript（`lsc`） | 0.5.13（exact）          | `devDependencies`（固定版本以維持既有 proof 相容性）                                  |
+| TypeScript           | ^5.6                     | `devDependencies`                                                                     |
+| Tailwind CSS         | ^4.3（v4 CLI）           | `devDependencies`                                                                     |
+| Wrangler             | ^4.83                    | `devDependencies`                                                                     |
+| Vue / vue-i18n       | ^3.5 / ^11.4             | `dependencies`                                                                        |
+| Dafny（形式驗證）    | CI 固定 4.9.0；本機 >= 4 | `.github/workflows/ci.yml`（setup-dafny-action）                                      |
 
 > 升級 Vite+ / LemmaScript / Dafny 前先告知使用者——三者互相咬合（`vp` 供裝 `lsc`、`lsc` 生成的 Dafny 語法隨版本變化），升級後必跑 `vp run lemma:check` 確認 VCs 仍全數通過。
+
+Vite+ 升級須同步 `vite-plus`、`vite` alias／override 與內建 Vitest 的 override；LemmaScript 維持獨立鎖定。伺服器設定使用 `vite.config.ts`：1.1.0 的 formatter 自動探索會漏掉 `.mts`，導致 `fmt` 區塊未生效，不要為此重排整個專案。
 
 ## 常用指令
 
@@ -153,7 +155,7 @@ vp run cf-typegen           # 由 wrangler 產生 Cloudflare 綁定型別
 - `migrations/` — `DB`（`vtaiwan-transcriptions`）的 SQL migrations；`migrations/auth/` 為 `DB_AUTH` 專用（**由 Better Auth CLI 生成，勿手改**）。
 - `public/` — 靜態資產（由 `ASSETS` 綁定提供）。
 - `design/` — 架構示意圖等設計文件（SVG）。
-- `vite.config.mts`（server build）、`vite.client.config.mts`（client build）、`wrangler.jsonc`（Cloudflare 綁定與 `www.vtaiwan.tw` custom domain）。
+- `vite.config.ts`（server build）、`vite.client.config.mts`（client build）、`wrangler.jsonc`（Cloudflare 綁定與 `www.vtaiwan.tw` custom domain）。
 
 ## API 模組掛載規則
 

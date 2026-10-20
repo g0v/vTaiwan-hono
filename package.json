@@ -44,7 +44,7 @@
     "oxfmt": "^0.67.0",
     "tailwindcss": "^4.3.0",
     "typescript": "^5.6.0",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.2",
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0",
     "vite-plus": "1.1.0",
     "wrangler": "^4.83.0"
   },
@@ -57,8 +57,8 @@
     "sharp": "^0.35.4",
     "undici": "^7.30.0",
     "uuid": "^11.1.1",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.3.2",
-    "vitest": "4.1.11"
+    "vite": "npm:@voidzero-dev/vite-plus-core@1.1.0",
+    "vitest": "5.0.3"
   },
   "devEngines": {
     "packageManager": {
