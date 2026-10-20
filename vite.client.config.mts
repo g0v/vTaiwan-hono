@@ -15,7 +15,7 @@ export default defineConfig({
       '#routes-runtime': path.resolve(root, 'src/router/routes.server.ts'),
     },
   },
-  // 對齊 vite.config.mts 的 vue-i18n feature flag（JIT、非 legacy）
+  // 對齊 vite.config.ts 的 vue-i18n feature flag（JIT、非 legacy）
   define: {
     __VUE_I18N_FULL_INSTALL__: true,
     __VUE_I18N_LEGACY_API__: false,

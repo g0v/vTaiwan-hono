@@ -120,7 +120,7 @@ src/
 ├── styles/
 │   └── app.css          # Tailwind v4 source — @theme design tokens / 樣式與 token 來源
 └── **/*.dfy             # LemmaScript / Dafny 驗證基底（見下方章節）
-vite.config.mts          # server build (Worker) + test / lint / fmt 設定
+vite.config.ts           # server build (Worker) + test / lint / fmt 設定
 vite.client.config.mts   # client build — hydration bundle only / 僅輸出 hydration bundle
 wrangler.jsonc           # Cloudflare Workers config / Cloudflare 設定
 pull-all.sh              # git pull this repo + sibling repos / 同步本專案與 sibling repo
@@ -174,6 +174,8 @@ vp test              # 連結完整性測試 / link-integrity tests
 vp check             # format + lint + typecheck 一次到位 / all three at once
 ```
 
+專案鎖定 Vite+／`@voidzero-dev/vite-plus-core` 為 `1.1.0`，Vitest override 為其內建的 `5.0.3`；升級時三者須同步，LemmaScript 保持 `0.5.13`。伺服器設定使用 `vite.config.ts`，避免這版 formatter 自動探索漏掉 `.mts` 而忽略既有 `fmt` 設定；client build 仍由命令明確指定 `vite.client.config.mts`。
+
 > **EN:** `vp run dev` rebuilds `public/styles.css` once on start. It uses local D1 simulation by default; use `vp run dev:remote` only when you need the remote D1 data. When you add or change Tailwind classes in `.vue` files during a session, run `vp run watch:css` in a second terminal so the stylesheet stays in sync.
 >
 > **中文：**`vp run dev` 啟動時會重新編譯一次 `public/styles.css`，預設使用本機 D1 模擬資料庫；需要遠端資料時才用 `vp run dev:remote`。開發過程中若在 `.vue` 增修 Tailwind class，請另開終端機跑 `vp run watch:css`，樣式才會即時更新。
@@ -187,7 +189,7 @@ vp check             # format + lint + typecheck 一次到位 / all three at onc
 
 ### Tests / 測試
 
-`src/tests/links.test.ts`（`vp test`，設定見 `vite.config.mts` 的 `test` 區塊）用真實路由表建 memory-history router，逐一 `router.resolve()`：
+`src/tests/links.test.ts`（`vp test`，設定見 `vite.config.ts` 的 `test` 區塊）用真實路由表建 memory-history router，逐一 `router.resolve()`：
 
 - `navLinks`（NavBar）與 `footerInternalLinks`（Footer）的每條站內連結都必須解析到已定義的 route（`name !== "not-found"`）——`/meetups` 這類 placeholder 回 404 但有具名 route，仍算有效連結。
 - NavBar 需涵蓋所有主要內容頁，Footer 需涵蓋 `/privacy`、`/terms`。
