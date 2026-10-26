@@ -53,7 +53,7 @@
 
 > 升級 Vite+ / LemmaScript / Dafny 前先告知使用者——三者互相咬合（`vp` 供裝 `lsc`、`lsc` 生成的 Dafny 語法隨版本變化），升級後必跑 `vp run lemma:check` 確認 VCs 仍全數通過。
 
-Vite+ 升級須同步 `vite-plus`、`vite` alias／override 與內建 Vitest 的 override；LemmaScript 維持獨立鎖定。伺服器設定使用 `vite.config.ts`：1.1.0 的 formatter 自動探索會漏掉 `.mts`（1.3.0 已無此問題，檔名維持 `.ts` 即可），不要為此重排整個專案。
+Vite+ 升級須同步 `vite-plus`、`vite` alias／override 與內建 Vitest 的 override；LemmaScript 維持獨立鎖定。伺服器設定使用 `vite.config.ts`：1.1.0 的 formatter 自動探索會漏掉 `.mts`，導致 `fmt` 區塊未生效，不要為此重排整個專案。
 
 ## 常用指令
 
