@@ -43,7 +43,7 @@
 | 工具                 | 版本                     | 鎖定位置                                                                              |
 | -------------------- | ------------------------ | ------------------------------------------------------------------------------------- |
 | npm（套件管理）      | 12.0.2                   | `devEngines`（onFail: download，由 Vite+ 供裝）                                       |
-| Vite+（`vp`）        | 1.1.0（exact）           | `devDependencies` + `overrides`（vite 指向同版 core；Vitest override 對齊內建 5.0.3） |
+| Vite+（`vp`）        | 1.3.0（exact）           | `devDependencies` + `overrides`（vite 指向同版 core；Vitest override 對齊內建 5.0.5） |
 | LemmaScript（`lsc`） | 0.5.13（exact）          | `devDependencies`（固定版本以維持既有 proof 相容性）                                  |
 | TypeScript           | ^5.6                     | `devDependencies`                                                                     |
 | Tailwind CSS         | ^4.3（v4 CLI）           | `devDependencies`                                                                     |
