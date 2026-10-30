@@ -110,6 +110,9 @@ watch(
   font-size: var(--text-vt-xs);
   font-weight: 700;
 }
+.step-label {
+  font-size: var(--text-vt-sm);
+}
 .step-number {
   position: relative;
   z-index: 1;
