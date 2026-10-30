@@ -100,28 +100,26 @@ watch(
 
 <template>
   <div class="topic-slide">
-    <div class="bg-gray-100 py-8">
-      <div class="mx-auto px-4">
-        <div class="mx-auto max-w-4xl">
-          <h3 class="mb-8 flex items-center justify-center text-center text-2xl font-bold">
-            <IconWrapper name="info" :size="24" class="mr-3" />
-            {{ t('topics.detail.introduction') }}
-          </h3>
+    <div class="px-vt-4">
+      <div class="mx-auto max-w-5xl">
+        <h2 class="mb-vt-4 flex items-center justify-center gap-vt-2 font-vt-serif text-vt-xl font-bold">
+          <IconWrapper name="info" :size="20" type="primary" />
+          {{ t('topics.detail.introduction') }}
+        </h2>
 
-          <div class="flex flex-col gap-8 lg:flex-row">
-            <div class="lg:flex-1">
-              <div v-if="sanitizedSlide.iframe" v-html="sanitizedSlide.iframe" class="iframe-container" />
-              <div v-else class="rounded-lg bg-white p-8 text-center text-gray-500">
-                {{ t('topics.detail.noSlide') }}
-              </div>
+        <div class="grid gap-vt-4 lg:grid-cols-2">
+          <div class="min-w-0 rounded-vt-2xl bg-vt-bg-1" :class="sanitizedSlide.iframe ? 'p-vt-4 shadow-vt-lg' : 'self-start p-vt-8 text-center text-vt-fg-3'">
+            <div v-if="sanitizedSlide.iframe" v-html="sanitizedSlide.iframe" class="iframe-container" />
+            <div v-else>
+              {{ t('topics.detail.noSlide') }}
             </div>
+          </div>
 
-            <div class="lg:flex-1 lg:pl-8">
-              <div class="h-full max-h-96 overflow-auto rounded-lg bg-white p-6">
-                <div v-if="sanitizedSlide.info" v-html="sanitizedSlide.info" class="topic-slide-prose max-w-none" />
-                <div v-else class="text-center text-gray-500">
-                  {{ t('topics.detail.noInfo') }}
-                </div>
+          <div class="min-w-0 rounded-vt-2xl bg-vt-bg-1 p-vt-6 shadow-vt-lg">
+            <div class="h-full max-h-96 overflow-auto text-vt-base leading-relaxed text-vt-fg-2">
+              <div v-if="sanitizedSlide.info" v-html="sanitizedSlide.info" class="topic-slide-prose max-w-none" />
+              <div v-else class="text-center text-vt-fg-3">
+                {{ t('topics.detail.noInfo') }}
               </div>
             </div>
           </div>
@@ -134,9 +132,9 @@ watch(
 <style scoped>
 .iframe-container :deep(iframe) {
   width: 100%;
-  min-height: 350px;
+  min-height: 260px;
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-vt-xl);
 }
 
 .topic-slide-prose :deep(h1) {

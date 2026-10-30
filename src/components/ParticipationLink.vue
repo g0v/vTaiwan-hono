@@ -122,10 +122,10 @@ watch(() => props.urllink, processLinks)
         target="_blank"
         rel="noopener noreferrer"
         :title="item.long"
-        class="inline-flex items-center rounded-sm bg-jade-green px-3 py-1 text-sm text-white transition-colors hover:bg-jade-green/80"
+        class="inline-flex size-vt-8 items-center justify-center rounded-vt-full border border-vt-jade-green/15 bg-vt-green-tint transition-colors hover:bg-vt-jade-green/20"
       >
-        <IconWrapper :name="item.icon" :size="14" class="mr-1 shrink-0" color="white" />
-        {{ item.text }}
+        <IconWrapper :name="item.icon" :size="16" type="teal" />
+        <span class="sr-only">{{ item.text }}</span>
       </a>
     </div>
     <div v-else class="text-xs text-gray-400">{{ t('topics.participation.noLinks') }}</div>

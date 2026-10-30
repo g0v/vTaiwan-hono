@@ -134,57 +134,60 @@ onMounted(() => {
     </div>
 
     <div v-else-if="timeline.length > 0">
-      <table class="w-full border-collapse border border-gray-200 bg-white">
+      <table class="w-full border-collapse bg-vt-bg-1">
         <thead>
-          <tr class="bg-gray-50 text-center">
-            <th v-for="title in timelineTitle" :key="title" class="border border-gray-200 p-4">
-              <h3 class="text-lg font-semibold text-gray-900">{{ title }}</h3>
+          <tr class="bg-vt-bg-2 text-left">
+            <th v-for="title in timelineTitle" :key="title" class="border-b border-vt-border px-vt-4 py-vt-3">
+              <h3 class="text-vt-sm font-bold text-vt-fg-2">{{ title }}</h3>
             </th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in timeline" :key="index" class="border-b border-gray-200">
-            <td class="border border-gray-200 p-4 text-center align-top">
-              <div class="text-lg leading-6">{{ item.start }}</div>
-              <i v-if="item.end" class="my-2 flex justify-center text-gray-400">
-                <IconWrapper name="chevron-down" :size="16" />
-              </i>
-              <div v-if="item.end" class="text-lg leading-6">{{ item.end }}</div>
+          <tr v-for="(item, index) in timeline" :key="index" class="border-b border-vt-border last:border-b-0">
+            <td class="px-vt-4 py-vt-6 align-top text-vt-base text-vt-fg-2">
+              <div class="flex flex-col items-center md:flex-row md:gap-6">
+                <span class="whitespace-nowrap">{{ item.start }}</span>
+                <span v-if="item.end" class="my-vt-2 self-center md:my-0 md:self-auto" aria-hidden="true">
+                  <IconWrapper name="chevron-down" :size="16" color="var(--color-vt-gray-400)" class="md:hidden" />
+                  <IconWrapper name="arrow-right" :size="16" color="var(--color-vt-gray-400)" class="hidden md:block" />
+                </span>
+                <span v-if="item.end" class="whitespace-nowrap">{{ item.end }}</span>
+              </div>
             </td>
 
-            <td class="border border-gray-200 p-4 align-top">
+            <td class="px-vt-4 py-vt-6 align-top">
               <div class="block md:hidden">
-                <span class="inline-block rounded-sm bg-gray-100 px-2 py-1 text-xs text-gray-800">
+                <span class="stage-label inline-block rounded-vt-full bg-vt-bg-2 px-vt-3 py-vt-1 text-vt-sm text-vt-fg-2">
                   {{ item.title }}
                 </span>
               </div>
               <div class="hidden md:block">
-                <span class="inline-block rounded-sm bg-gray-100 px-3 py-1 text-sm text-gray-800">
+                <span class="stage-label inline-block rounded-vt-full border border-vt-border bg-vt-bg-2 px-vt-3 py-vt-1 text-vt-sm text-vt-fg-2">
                   {{ item.title }}
                 </span>
               </div>
-              <h4 v-if="item.info" class="mt-2 text-base font-medium text-gray-900">
+              <h4 v-if="item.info" class="mt-vt-2 text-vt-base font-medium text-vt-fg-1">
                 {{ item.info }}
               </h4>
             </td>
 
-            <td class="border border-gray-200 p-4 align-top">
+            <td class="px-vt-4 py-vt-6 align-top">
               <ParticipationLink :urllink="item.link" />
             </td>
           </tr>
         </tbody>
       </table>
 
-      <div class="mt-8">
-        <h3 class="mb-4 text-lg font-semibold text-gray-900">
+      <div class="border-t border-vt-border px-vt-4 py-vt-6">
+        <h3 class="mb-vt-3 text-vt-sm font-bold text-vt-fg-2">
           {{ t('topics.timeline.externalLinksTitle') }}
         </h3>
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          <div v-for="link in plinkList" :key="link.title" class="flex items-start space-x-3 rounded-lg bg-gray-50 p-3">
-            <IconWrapper :name="link.icon" :size="20" class="mt-0.5 text-gray-600" />
+        <div class="grid grid-cols-1 gap-vt-2 md:grid-cols-2 lg:grid-cols-3">
+          <div v-for="link in plinkList" :key="link.title" class="flex items-start gap-vt-2 text-vt-sm">
+            <IconWrapper :name="link.icon" :size="18" type="teal" />
             <div>
-              <h5 class="font-medium text-gray-900">{{ link.title }}</h5>
-              <p class="text-sm text-gray-600">{{ link.desc }}</p>
+              <h5 class="inline font-bold text-vt-fg-1">{{ link.title }}</h5>
+              <p class="ml-vt-2 inline text-vt-fg-3">{{ link.desc }}</p>
             </div>
           </div>
         </div>
@@ -199,9 +202,29 @@ onMounted(() => {
 </template>
 
 <style scoped>
-@media (max-width: 767px) {
-  table {
-    font-size: 0.875rem;
+.stage-label {
+  white-space: nowrap;
+}
+
+@media (max-width: 47.999rem) {
+  .topic-timeline th:nth-child(2),
+  .topic-timeline td:nth-child(2) {
+    padding-inline: var(--spacing-vt-2);
+  }
+
+  .stage-label {
+    padding-inline: var(--spacing-vt-2);
+    padding-block: var(--spacing-vt-0_5);
+  }
+}
+
+@media (min-width: 48rem) {
+  .topic-timeline th:first-child,
+  .topic-timeline td:first-child,
+  .topic-timeline th:last-child,
+  .topic-timeline td:last-child {
+    width: 1%;
+    white-space: nowrap;
   }
 }
 </style>
