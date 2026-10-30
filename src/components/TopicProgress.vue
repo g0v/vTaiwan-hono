@@ -74,131 +74,85 @@ watch(
 </script>
 
 <template>
-  <div class="topic-progress py-6">
-    <div class="container px-4">
-      <div class="mx-auto max-w-4xl">
-        <div class="step-progress-bar">
-          <ul class="progress-bar">
-            <li
-              v-for="(step, index) in steps"
-              :key="index"
-              :class="{
-                active: step.active,
-                current: step.current,
-              }"
-            >
-              {{ t('topics.steps.' + step.title) }}
-            </li>
-          </ul>
-        </div>
+  <div class="topic-progress rounded-vt-2xl bg-vt-bg-1 px-vt-4 py-vt-8 shadow-vt-lg">
+    <div class="mx-auto max-w-2xl">
+      <div class="step-progress-bar">
+        <ol class="progress-bar">
+          <li
+            v-for="(step, index) in steps"
+            :key="index"
+            :class="{
+              active: step.active,
+              current: step.current,
+            }"
+          >
+            <span class="step-number">{{ index + 1 }}</span>
+            <span class="step-label">{{ t('topics.steps.' + step.title) }}</span>
+          </li>
+        </ol>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.step-progress-bar {
-  margin: 0 auto;
-  display: block;
-  padding: 10px 0;
-  width: 100%;
-  max-width: 600px;
-}
-
 .progress-bar {
-  counter-reset: step;
+  display: flex;
   padding: 0;
   margin: 0;
   list-style: none;
-  display: flex;
 }
-
 .progress-bar li {
-  color: #6b7280;
+  position: relative;
   width: 20%;
-  position: relative;
   text-align: center;
-  font-size: 1rem;
-  font-weight: 500;
+  color: var(--color-vt-gray-400);
+  font-size: var(--text-vt-xs);
+  font-weight: 700;
 }
-
-@media (min-width: 768px) {
-  .progress-bar li {
-    font-size: 1.125rem;
-  }
+.step-label {
+  font-size: var(--text-vt-sm);
 }
-
-.progress-bar li:before {
-  content: counter(step);
-  counter-increment: step;
-  width: 32px;
-  height: 32px;
-  border: 2px solid #6b7280;
-  border-radius: 50%;
-  display: block;
-  text-align: center;
-  line-height: 28px;
-  margin: 0 auto 10px auto;
-  z-index: 9;
-  background-color: white;
-  font-weight: 600;
+.step-number {
   position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--spacing-vt-8);
+  height: var(--spacing-vt-8);
+  margin: 0 auto var(--spacing-vt-2);
+  border: 2px solid var(--color-vt-gray-400);
+  border-radius: var(--radius-vt-full);
+  background: var(--color-vt-bg-1);
 }
-
-.progress-bar li:after {
+.progress-bar li::after {
   content: '';
-  width: 100%;
   position: absolute;
-  height: 2px;
-  background-color: #6b7280;
-  top: 16px;
+  top: calc(var(--spacing-vt-8) / 2);
   left: 50%;
-  z-index: -1;
+  width: 100%;
+  height: 1px;
+  background: var(--color-vt-border);
 }
-
-.progress-bar li:last-child:after {
-  content: none;
+.progress-bar li:last-child::after {
+  display: none;
 }
-
 .progress-bar li.active {
-  color: #10b981;
+  color: var(--color-vt-jade-green);
 }
-
-.progress-bar li.active:before {
-  border-color: #10b981;
+.progress-bar li.active .step-number {
+  border-color: var(--color-vt-jade-green);
 }
-
-.progress-bar li.active:after {
-  background-color: #10b981;
+.progress-bar li.active::after {
+  background: var(--color-vt-jade-green);
 }
-
 .progress-bar li.current {
-  color: #f59e0b;
+  color: var(--color-vt-wheat-yellow);
 }
-
-.progress-bar li.current:before {
-  border-color: #f59e0b;
-  background-color: #f59e0b;
-  color: white;
-}
-
-.progress-bar li.current:after {
-  background-color: #f59e0b;
-}
-
-@media (max-width: 767px) {
-  .progress-bar li {
-    font-size: 0.875rem;
-  }
-
-  .progress-bar li:before {
-    width: 28px;
-    height: 28px;
-    line-height: 24px;
-  }
-
-  .progress-bar li:after {
-    top: 14px;
-  }
+.progress-bar li.current .step-number {
+  border-color: var(--color-vt-wheat-yellow);
+  background: var(--color-vt-wheat-yellow);
+  color: var(--color-vt-white);
+  box-shadow: 0 0 0 var(--spacing-vt-1) var(--color-vt-yellow-tint);
 }
 </style>

@@ -93,79 +93,96 @@ watch(locale, syncTopicTitle)
 </script>
 
 <template>
-  <div v-if="topic">
-    <TopicProgress v-if="realTopicId" :topic-id="realTopicId" />
-
-    <section class="py-8">
-      <div class="mx-auto px-4">
-        <div class="mx-auto max-w-4xl text-center">
-          <h1 class="mb-4 text-4xl font-bold md:text-5xl">{{ topic.title }}</h1>
-        </div>
+  <div class="topic-detail-page vt-under-navbar">
+    <main v-if="topic" class="pb-vt-16">
+      <div class="mx-auto max-w-5xl px-vt-4">
+        <RouterLink to="/topics" class="mb-vt-4 inline-flex items-center gap-vt-2 text-vt-sm text-vt-fg-3 transition-colors hover:text-vt-democratic-red">
+          {{ t('topics.detail.backToList') }}
+        </RouterLink>
+        <TopicProgress v-if="realTopicId" :topic-id="realTopicId" />
       </div>
-    </section>
 
-    <TopicSlide v-if="realTopicId" :topic-id="realTopicId" :show-discussion-button="showDiscussionButton" />
-
-    <section class="py-16">
-      <div class="mx-auto px-4">
+      <section class="px-vt-4 pt-vt-12 pb-vt-8 text-center">
         <div class="mx-auto max-w-4xl">
-          <div class="mb-8 flex flex-wrap justify-center gap-4 border-b border-gray-200">
-            <button
-              :class="[
-                'flex items-center border-b-2 px-6 py-3 font-medium transition-colors',
-                activeTab === 'timeline' ? 'border-jade-green text-jade-green' : 'border-transparent text-gray-500 hover:text-gray-700',
-              ]"
-              @click="activeTab = 'timeline'"
-            >
-              <IconWrapper name="calendar" :size="16" class="mr-2" />
-              <span class="hidden md:inline">{{ t('topics.detail.timeline') }}</span>
-              <span class="md:hidden">{{ t('topics.detail.timelineShort') }}</span>
-            </button>
-            <button
-              v-if="showDiscussionTab"
-              :class="[
-                'flex items-center border-b-2 px-6 py-3 font-medium transition-colors',
-                activeTab === 'discussion' ? 'border-jade-green text-jade-green' : 'border-transparent text-gray-500 hover:text-gray-700',
-              ]"
-              @click="activeTab = 'discussion'"
-            >
-              <IconWrapper name="message-circle" :size="16" class="mr-2" />
-              <span class="hidden md:inline">{{ t('topics.detail.discussion') }}</span>
-              <span class="md:hidden">{{ t('topics.detail.discussionShort') }}</span>
-            </button>
-          </div>
+          <span v-if="topic.tags[0]" class="inline-flex rounded-vt-full border border-vt-democratic-red/20 bg-vt-red-tint px-vt-3 py-vt-1 text-vt-xs font-bold text-vt-democratic-red">{{
+            topic.tags[0]
+          }}</span>
+          <h1 class="mt-vt-4 font-vt-serif text-vt-4xl font-bold text-vt-fg-1 md:text-vt-5xl">{{ topic.title }}</h1>
+          <p v-if="topic.slogan" class="mx-auto mt-vt-4 max-w-2xl text-vt-base text-vt-fg-2">{{ topic.slogan }}</p>
+        </div>
+      </section>
 
-          <div class="tab-content min-h-[400px]">
-            <div v-if="activeTab === 'timeline' && realTopicId">
-              <TopicTimeline :topic-id="realTopicId" />
-            </div>
-            <div v-if="activeTab === 'discussion' && realTopicId && showDiscussionTab">
-              <TopicDiscussion :topic-id="realTopicId" />
-            </div>
-          </div>
+      <TopicSlide v-if="realTopicId" :topic-id="realTopicId" :show-discussion-button="showDiscussionButton" />
 
-          <div class="mt-12 text-center">
-            <RouterLink to="/topics" class="vt-btn vt-btn-outline !border-gray-300 !text-gray-900">
-              {{ t('topics.detail.backToList') }}
-            </RouterLink>
+      <section class="pt-vt-8">
+        <div class="mx-auto max-w-5xl px-vt-4">
+          <div>
+            <div class="mx-auto mb-vt-6 flex w-fit rounded-vt-full border border-vt-border bg-vt-gray-200/60 p-vt-1">
+              <button
+                :class="[
+                  'flex items-center justify-center rounded-vt-full px-vt-6 py-vt-2 text-vt-sm font-bold transition-colors',
+                  activeTab === 'timeline' ? 'bg-vt-bg-1 text-vt-democratic-red shadow-vt-sm' : 'text-vt-fg-2 hover:text-vt-fg-1',
+                ]"
+                @click="activeTab = 'timeline'"
+              >
+                <IconWrapper name="calendar" :size="16" class="mr-2" />
+                <span class="hidden md:inline">{{ t('topics.detail.timeline') }}</span>
+                <span class="md:hidden">{{ t('topics.detail.timelineShort') }}</span>
+              </button>
+              <button
+                v-if="showDiscussionTab"
+                :class="[
+                  'flex items-center justify-center rounded-vt-full px-vt-6 py-vt-2 text-vt-sm font-bold transition-colors',
+                  activeTab === 'discussion' ? 'bg-vt-bg-1 text-vt-democratic-red shadow-vt-sm' : 'text-vt-fg-2 hover:text-vt-fg-1',
+                ]"
+                @click="activeTab = 'discussion'"
+              >
+                <IconWrapper name="message-circle" :size="16" class="mr-2" />
+                <span class="hidden md:inline">{{ t('topics.detail.discussion') }}</span>
+                <span class="md:hidden">{{ t('topics.detail.discussionShort') }}</span>
+              </button>
+            </div>
+
+            <div class="tab-content overflow-hidden rounded-vt-2xl bg-vt-bg-1 shadow-vt-lg">
+              <div v-if="activeTab === 'timeline' && realTopicId">
+                <TopicTimeline :topic-id="realTopicId" />
+              </div>
+              <div v-if="activeTab === 'discussion' && realTopicId && showDiscussionTab">
+                <TopicDiscussion :topic-id="realTopicId" />
+              </div>
+            </div>
           </div>
         </div>
+      </section>
+    </main>
+
+    <div v-else-if="!loading" class="pb-vt-16">
+      <div class="mx-auto px-4 text-center">
+        <h1 class="mb-4 text-4xl font-bold">{{ t('topics.detail.notFound') }}</h1>
+        <p class="mb-8 text-lg text-gray-600">{{ t('topics.detail.notFound') }}</p>
+        <RouterLink to="/topics" class="vt-btn vt-btn-primary">{{ t('topics.detail.backToList') }}</RouterLink>
       </div>
-    </section>
-  </div>
-
-  <div v-else-if="!loading" class="py-16">
-    <div class="mx-auto px-4 text-center">
-      <h1 class="mb-4 text-4xl font-bold">{{ t('topics.detail.notFound') }}</h1>
-      <p class="mb-8 text-lg text-gray-600">{{ t('topics.detail.notFound') }}</p>
-      <RouterLink to="/topics" class="vt-btn vt-btn-primary">{{ t('topics.detail.backToList') }}</RouterLink>
     </div>
-  </div>
 
-  <div v-else class="py-16">
-    <div class="mx-auto px-4 text-center">
-      <div class="mx-auto h-16 w-16 animate-spin rounded-full border-b-2 border-jade-green" />
-      <p class="mt-4 text-gray-600">{{ t('topics.list.loading') }}</p>
+    <div v-else class="pb-vt-16">
+      <div class="mx-auto px-4 text-center">
+        <div class="mx-auto h-16 w-16 animate-spin rounded-full border-b-2 border-jade-green" />
+        <p class="mt-4 text-gray-600">{{ t('topics.list.loading') }}</p>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.topic-detail-page {
+  min-height: 100vh;
+  padding-top: calc(var(--spacing-vt-navbar-overlap) + var(--spacing-vt-16));
+  background: var(--color-vt-topic-bg);
+}
+
+@media (min-width: 40rem) {
+  .topic-detail-page {
+    padding-top: calc(var(--spacing-vt-navbar-overlap-sm) + var(--spacing-vt-16));
+  }
+}
+</style>

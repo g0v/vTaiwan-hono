@@ -333,6 +333,7 @@ vp run deploy       # 完整 build（含 hydration bundle）+ wrangler deploy
 - `npm run build:css` — 編譯並壓縮輸出到 `public/styles.css`。
 - `npm run watch:css` — 開發時監看 `.vue` 變更並即時重編。
 - **不要硬寫顏色 / 尺寸數值**，一律用 token；也不要手動修改自動產生的 `public/styles.css`。
+- 議題內頁 `TopicProgress.vue` 的階段文字使用 `--text-vt-sm`，數字圓圈維持原字級與尺寸。
 
 ## License / 授權
 

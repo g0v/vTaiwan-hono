@@ -45,6 +45,7 @@
   --color-vt-fg-inverse: var(--color-vt-white);
   --color-vt-bg-1: var(--color-vt-white);
   --color-vt-bg-2: var(--color-vt-gray-100);
+  --color-vt-topic-bg: #f3f4f6;
   --color-vt-bg-inverse: var(--color-vt-black);
   --color-vt-border: var(--color-vt-gray-200);
   --color-vt-border-strong: var(--color-vt-black);
