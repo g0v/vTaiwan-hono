@@ -174,11 +174,19 @@ vp test              # 連結完整性測試 / link-integrity tests
 vp check             # format + lint + typecheck 一次到位 / all three at once
 ```
 
-專案鎖定 Vite+／`@voidzero-dev/vite-plus-core` 為 `1.1.0`，Vitest override 為其內建的 `5.0.3`；升級時三者須同步，LemmaScript 保持 `0.5.13`。伺服器設定使用 `vite.config.ts`，避免這版 formatter 自動探索漏掉 `.mts` 而忽略既有 `fmt` 設定；client build 仍由命令明確指定 `vite.client.config.mts`。
+專案鎖定 Vite+／`@voidzero-dev/vite-plus-core` 為 `1.3.0`，Vitest override 為其內建的 `5.0.5`；升級時三者須同步，LemmaScript 保持 `0.5.13`。伺服器設定沿用 `vite.config.ts`（`1.1.0` 曾實測 formatter 自動探索漏掉 `.mts`；未驗證 `1.3.0` 是否修復），client build 仍由命令明確指定 `vite.client.config.mts`。
 
 > **EN:** `vp run dev` rebuilds `public/styles.css` once on start. It uses local D1 simulation by default; use `vp run dev:remote` only when you need the remote D1 data. When you add or change Tailwind classes in `.vue` files during a session, run `vp run watch:css` in a second terminal so the stylesheet stays in sync.
 >
 > **中文：**`vp run dev` 啟動時會重新編譯一次 `public/styles.css`，預設使用本機 D1 模擬資料庫；需要遠端資料時才用 `vp run dev:remote`。開發過程中若在 `.vue` 增修 Tailwind class，請另開終端機跑 `vp run watch:css`，樣式才會即時更新。
+
+### Dependency security / 相依套件安全
+
+- `better-auth` 最低版本為 `1.7.15`，配套 adapter 由套件相依同步更新，涵蓋 [OAuth state／Magic Link 帳號接管](https://github.com/advisories/GHSA-965c-763c-88jm)、[OAuth Proxy 帳號接管](https://github.com/advisories/GHSA-r4xp-prcw-77qf)、[裝置登入確認資訊不足](https://github.com/advisories/GHSA-q84f-53jg-9ppm)及 [PostgreSQL rate-limit 競態](https://github.com/advisories/GHSA-44jh-23m7-hpcf)修補。目前只啟用 Google／GitHub 社群登入與 admin plugin，未啟用 Magic Link、OAuth Proxy 或裝置登入，資料庫為 D1。
+- 從 `1.6` 直接升到本次版本，既有社群帳號不需新增 `issuer` 欄位；該要求已在 `1.7.3` 撤回，見 [1.7 升級指南](https://better-auth.com/docs/guides/1-7-upgrade-guide#account-identity-keeps-the-provider-key)。升級前已發起但尚未完成的 OAuth 登入須重新開始。
+- `@ts-morph/common` 專屬 override 將 `minimatch` 提高至 `^11.0.4`，修補 [glob pattern 放大造成的 DoS](https://github.com/advisories/GHSA-g3hv-75wg-m249)。此消費端只使用仍保留的 `minimatch()` API；不要為了 audit 建議將 LemmaScript 降至 `0.0.1`，也不要順帶升級既有 `0.5.13` proof 工具鏈。
+- `brace-expansion` 不再設全域 override：`minimatch 11` 要求 `^5.0.12` 的具名 `expand` API，舊 `^2.1.7` override 會讓 `*.{ts,js}` 在 CommonJS 呼叫時出現 `TypeError`，也不符合 ESM 匯入契約。讓 minimatch 自行選用相容版本，不以 audit 綠燈替代 API 相容性驗證。
+- 修改上述相依設定後，除了 `vp exec npm audit`、`vp run lemma:gen` 與 `vp run lemma:check`，還須實跑 minimatch 的 ESM／CommonJS 大括號 pattern，以及 ts-morph `Project.getSourceFiles()`／`Directory.getSourceFiles()` 的大括號篩選，包含匹配、不匹配、巢狀大括號與排除條件；一般 proof 輸入未必涵蓋 brace expansion。
 
 ### Verify / 驗證（改完必做）
 
