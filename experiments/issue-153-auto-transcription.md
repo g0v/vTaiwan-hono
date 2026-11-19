@@ -164,6 +164,57 @@ vTaiwan 開線上會議時，網頁的 `/jitsi` 頁面會做三件事：
 
 💡 **`vp check --fix`**：格式工具自動把縮排、換行排整齊。團隊共用同一套格式，diff 才不會被「我習慣兩格你習慣四格」淹沒。
 
+### 5.5 本機實測前的環境問題（2026-11-19 19:00–19:15）
+
+**做了什麼**：套本機 migration、開 `vp run dev`，請使用者在瀏覽器登入後按紫色麥克風。
+
+**卡住的地方與解法**，按發生順序：
+
+1. **「無法取得會議權杖」**：本機 `.dev.vars` 的 `JAAS_*` 三個值是範本佔位字，簽不出 8x8 的 JWT。真金鑰只有 g0v 維護者有。
+   → 不影響測試：紫色麥克風與逐字稿同步只看登入與 `meeting.join` 權限，不用進 Jitsi 會議。
+2. **轉錄請求 23 ms 就回應、資料庫沒新條目**：Whisper 不可能這麼快，代表還沒呼叫 AI 就失敗了。
+   用不需登入的 `POST /api/transcription/test-ai` 探測，伺服器 log 寫 `Binding AI needs to be run remotely`。
+   → 一般 `vp run dev` 不開 AI 綁定（Workers AI 只能在雲端跑）。專案的 `dev:remote` 會開，**但它同時把 D1 / R2 也切到正式站**，
+   而且這些資料庫在 g0v 的 Cloudflare 帳號下，使用者的帳號看不到，更不該拿正式資料庫做實驗。
+3. **解法：一份只給實驗用的設定，放在 scratchpad 不進 repo**：
+   - `wrangler.local.jsonc`：D1 / R2 拿掉 `remote: true`（留本機），`ai` 加 `remote: true`。
+   - `vite.local.config.mts`：指定上面的 configPath、`remoteBindings: true`、`persistState` 指回專案的 `.wrangler/state`（本機 D1 已套好 0004）。
+   - scratchpad 裡放 `node_modules` 與 `.dev.vars` 的符號連結，讓設定檔找得到套件與本機密鑰。
+   - 啟動：`npx vp dev -c <scratchpad>/vite.local.config.mts`，跑在 **http://localhost:5176**。
+   - 驗證：`test-ai` 端點回傳了 gpt-oss-120b 產生的大綱 → AI 綁定可用；`/api/meeting/20261119` 讀本機 D1 正常。
+4. 中途還撞到一次 `This package is ESM only but it was tried to load by require`：設定檔放在沒有 `package.json` 的目錄會被當 CommonJS，副檔名改 `.mts` 即可。
+
+💡 **綁定（binding）**：Worker 程式碼裡用 `env.DB`、`env.AI` 這些名字取用資源，名字和實際資源的對應寫在 wrangler 設定裡，這個對應就叫綁定。本機開發時每個綁定可以各自決定「用本機模擬」或「連雲端真的」。
+
+💡 **為什麼 Google 登入的 cookie 在 5176 也能用？** 瀏覽器的 cookie 只認主機名（localhost），不分埠號。所以在 5173 登入過，5176 也帶著同一個 session。
+
+💡 **教訓**：環境問題花的時間常常比寫程式多。先用最便宜的探測（這裡是一個不需登入的端點加 curl）把問題縮小到一句錯誤訊息，再決定要改什麼。
+
+### 5.6 實機測試：單機（2026-11-19 19:14）✅
+
+使用者在 http://localhost:5176/jitsi 登入後（未進 Jitsi 會議），按紫色麥克風講了兩段話，各按一次停止。
+
+**伺服器側證據**（本機 D1 `meeting_transcript_entries`，時間為台北時間）：
+
+| 條目 ts（開口時間） | 上傳請求抵達 | 差距          | speaker_uid             | source   | 文字              |
+| ------------------- | ------------ | ------------- | ----------------------- | -------- | ----------------- |
+| 19:14:11.640        | 19:14:17.524 | 開口早 5.9 秒 | `ag21…HjxT`（伺服器填） | `manual` | 測試測試測試測試  |
+| 19:14:20.899        | 19:14:25.137 | 開口早 4.2 秒 | 同上                    | `manual` | 再次測試 再次測試 |
+
+**判讀**：
+
+- 條目時間比上傳時間早好幾秒，證明 timestamp 已經是「開始錄」的時間，不是轉錄完成的時間。改之前這兩個數字會幾乎一樣（甚至條目時間更晚，因為還要等 Whisper）。
+- `speaker_uid` 是 Better Auth 的 user.id，由伺服器從 session 填入；`source = manual` 對應紫色麥克風。
+- `entry_id = audio_<開口時間>`，與 ts 一致。
+
+💡 **怎麼讀這張表？** 「上傳請求抵達」是伺服器 log 裡 `POST /api/transcription/zh-TW` 的時間，「條目 ts」是資料庫裡存的時間。兩者相減就是「錄音長度 + 上傳時間」。如果 bug 沒修，條目 ts 會比上傳請求還晚（要再加 Whisper 處理時間）。
+
+**編輯測試（19:20）✅**：使用者在面板上把兩條各加了幾個字後儲存。D1 查詢結果：仍是 2 筆、ts 不變、`speaker_uid` 與 `source` 保留、只有 `text` 變成「測試測試測試測試＋編輯測試」「再次測試 再次測試＋編輯」。伺服器無錯誤。證明「編輯走原地更新、不順延」與「編輯不會蓋掉伺服器填的 speaker_uid」兩條規則在實機成立。
+
+**還沒驗的**：
+
+- 雙機同時錄音的 ts 衝突順延：單元測試 `meeting-room.test.ts` 已覆蓋協定；實機要兩個帳號在同一毫秒開口才會觸發，機率極低，屬「理論正確、實機難重現」的那種。
+
 ### 6. 進度
 
 - [x] 開分支
@@ -176,7 +227,7 @@ vTaiwan 開線上會議時，網頁的 `/jitsi` 頁面會做三件事：
 - [x] 測試（transcript-entries / meeting-entries / meeting-room / audio-recording）
 - [x] `vp check` / `vp test` / `vp run build` / `vp run lemma:gen` 全綠
 - [ ] commit 到 `feat/transcript-timestamp-fix`、push 到 fork
-- [ ] 本機 `vp run dev` 目視：套 migration（`--local`）後按紫色麥克風，確認條目時間是開口時間
-- [ ] 實機測試（單機）
+- [x] 本機目視：套 migration（`--local`）後按紫色麥克風，確認條目時間是開口時間（見 5.6）
+- [x] 實機測試（單機：錄音 + 編輯）
 - [ ] 實機測試（雙機同時錄，驗證不互相覆蓋）
 - [ ] 回 issue #153 更新進度
