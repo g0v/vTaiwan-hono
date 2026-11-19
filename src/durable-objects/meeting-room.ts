@@ -1,4 +1,6 @@
 import { DurableObject } from 'cloudflare:workers'
+import { normalizeTranscriptSource, type TranscriptEntry, type TranscriptSource } from '../lib/transcript-entries'
+import { insertTranscriptEntry, updateTranscriptEntry } from '../server/lib/meeting-entries'
 
 /**
  * MeetingRoom Durable Object — 即時會議資料的單一來源（#81）
@@ -31,17 +33,14 @@ interface TranscriptEntryRow {
   entry_id: string | null
   speaker: string | null
   text: string
+  speaker_uid: string | null
+  source: string | null
 }
 
 // ─── 公開型別（JitsiView 的資料模型對映） ─────────────────────────────────────
 
-/** 逐字稿條目，對應 JitsiView.transcriptData 的 value 型別 */
-export interface TranscriptEntry {
-  id: string | null
-  timestamp: number
-  speaker: string
-  text: string
-}
+/** 逐字稿條目型別定義在前後端共用的 `src/lib/transcript-entries.ts`，這裡 re-export 給既有 import 使用 */
+export type { TranscriptEntry }
 
 /** 會議狀態，對應 JitsiView.meetingData 的欄位 */
 export interface MeetingSession {
@@ -54,7 +53,8 @@ export interface MeetingSession {
 
 /** 客戶端 → 伺服器的訊息（僅認證用戶） */
 type ClientMessage =
-  | { type: 'save_entry'; entry: TranscriptEntry }
+  /** `create: true` 表示新增（ts 被占用時順延）；省略或 false 表示編輯既有條目（原地更新）。舊版客戶端不帶此旗標。 */
+  | { type: 'save_entry'; entry: TranscriptEntry; create?: boolean }
   | { type: 'delete_entry'; timestamp: number }
   | { type: 'update_meeting'; recorder_uid: string | null }
   | { type: 'sync_recording'; recording_speaker: string | null; recording_start_time: number | null }
@@ -62,7 +62,8 @@ type ClientMessage =
 /** 伺服器 → 客戶端的訊息 */
 export type ServerMessage =
   | { type: 'init'; meeting: MeetingSession; transcripts: Record<string, TranscriptEntry> }
-  | { type: 'entry_saved'; entry: TranscriptEntry }
+  /** `replaces`：新增時客戶端原本要求的 ts；伺服器順延後客戶端據此移除樂觀更新留下的舊 key */
+  | { type: 'entry_saved'; entry: TranscriptEntry; replaces?: number }
   | { type: 'entry_deleted'; timestamp: number }
   | { type: 'meeting_updated'; recorder_uid: string | null }
   | { type: 'recording_synced'; recording_speaker: string | null; recording_start_time: number | null }
@@ -126,7 +127,12 @@ export class MeetingRoom extends DurableObject<MeetingRoomEnv> {
       return
     }
 
-    await this.handleClientMessage(msg, meta.date)
+    try {
+      await this.handleClientMessage(msg, meta.date, meta.userId, ws)
+    } catch (err) {
+      console.error('[MeetingRoom] handleClientMessage failed:', err)
+      ws.send(JSON.stringify({ type: 'error', message: '寫入會議資料失敗' } satisfies ServerMessage))
+    }
   }
 
   async webSocketClose(ws: WebSocket, code: number, reason: string): Promise<void> {
@@ -171,15 +177,25 @@ export class MeetingRoom extends DurableObject<MeetingRoomEnv> {
 
   // ─── 私有：業務邏輯 ──────────────────────────────────────────────────────────
 
-  private async handleClientMessage(msg: ClientMessage, date: string): Promise<void> {
+  private async handleClientMessage(msg: ClientMessage, date: string, userId: string | null, sender: WebSocket): Promise<void> {
     switch (msg.type) {
       case 'save_entry': {
         const { entry } = msg
         if (!entry || typeof entry.timestamp !== 'number' || !entry.text) return
-        await this.env.DB.prepare('INSERT OR REPLACE INTO meeting_transcript_entries (meeting_date, ts, entry_id, speaker, text) VALUES (?, ?, ?, ?, ?)')
-          .bind(date, entry.timestamp, entry.id ?? null, entry.speaker ?? null, entry.text)
-          .run()
-        this.broadcast({ type: 'entry_saved', entry })
+        // speaker_uid 一律取連線的認證身分，不信任客戶端送來的值；source 只收合法枚舉。
+        const provenance = { speakerUid: userId, source: normalizeTranscriptSource(entry.source) as TranscriptSource | null }
+        if (msg.create) {
+          // 新增：ts 被占用就順延，絕不覆蓋別人的條目。
+          const saved = await insertTranscriptEntry(this.env.DB, date, entry, provenance)
+          // ⚠️ `replaces` 只能回給送出請求的連線：它是「把你樂觀放在 requestedTs 的那筆換成 saved」。
+          // 若廣播給所有人，原本正當占用 requestedTs 的別人會把自己的條目刪掉（meeting-room.test.ts 釘住）。
+          this.broadcast({ type: 'entry_saved', entry: saved }, sender)
+          this.send(sender, { type: 'entry_saved', entry: saved, replaces: entry.timestamp })
+        } else {
+          // 編輯（或舊版客戶端的 upsert）：維持原 ts。
+          const saved = await updateTranscriptEntry(this.env.DB, date, entry, provenance)
+          this.broadcast({ type: 'entry_saved', entry: saved })
+        }
         break
       }
 
@@ -214,14 +230,24 @@ export class MeetingRoom extends DurableObject<MeetingRoomEnv> {
 
   // ─── 私有：廣播 ─────────────────────────────────────────────────────────────
 
-  private broadcast(message: ServerMessage): void {
+  /** 送給所有連線；`except` 指定的那條不送（它會另外收到帶 `replaces` 的版本）。 */
+  private broadcast(message: ServerMessage, except?: WebSocket): void {
     const payload = JSON.stringify(message)
     for (const ws of this.ctx.getWebSockets()) {
+      if (ws === except) continue
       try {
         ws.send(payload)
       } catch {
         // 忽略已關閉的連線
       }
+    }
+  }
+
+  private send(ws: WebSocket, message: ServerMessage): void {
+    try {
+      ws.send(JSON.stringify(message))
+    } catch {
+      // 忽略已關閉的連線
     }
   }
 
@@ -247,6 +273,8 @@ export class MeetingRoom extends DurableObject<MeetingRoomEnv> {
         timestamp: row.ts,
         speaker: row.speaker ?? '',
         text: row.text,
+        speakerUid: row.speaker_uid ?? null,
+        source: normalizeTranscriptSource(row.source),
       }
     }
 

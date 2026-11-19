@@ -15,6 +15,8 @@ import { Hono } from 'hono'
  */
 
 import { tryGetAuthContext, hasPermission } from '../lib/authorization'
+import { insertTranscriptEntry, updateTranscriptEntry } from '../lib/meeting-entries'
+import { normalizeTranscriptSource, type TranscriptEntry } from '../../lib/transcript-entries'
 import type { AppEnv } from './types'
 
 /** YYYYMMDD 格式驗證（八位數字） */
@@ -92,15 +94,17 @@ app.get('/:date', async c => {
 
   const entriesResult = await c.env.DB.prepare('SELECT * FROM meeting_transcript_entries WHERE meeting_date = ? ORDER BY ts ASC')
     .bind(date)
-    .all<{ ts: number; entry_id: string | null; speaker: string | null; text: string }>()
+    .all<{ ts: number; entry_id: string | null; speaker: string | null; text: string; speaker_uid: string | null; source: string | null }>()
 
-  const transcripts: Record<string, { id: string | null; timestamp: number; speaker: string; text: string }> = {}
+  const transcripts: Record<string, TranscriptEntry> = {}
   for (const row of entriesResult.results) {
     transcripts[String(row.ts)] = {
       id: row.entry_id,
       timestamp: row.ts,
       speaker: row.speaker ?? '',
       text: row.text,
+      speakerUid: row.speaker_uid ?? null,
+      source: normalizeTranscriptSource(row.source),
     }
   }
 
@@ -124,14 +128,17 @@ app.post('/:date/transcript', async c => {
   if (!authCtx) return c.text('Unauthorized', 401)
   if (!hasPermission(authCtx, 'meeting.join')) return c.text('Forbidden', 403)
 
-  const body = await c.req.json<{ id?: string | null; timestamp: number; speaker?: string; text: string }>()
+  // `create: true` 表示新增（ts 被占用時順延）；省略表示編輯既有條目（原地更新）。與 MeetingRoom DO 的 save_entry 同一套規則。
+  const body = await c.req.json<{ id?: string | null; timestamp: number; speaker?: string; text: string; source?: unknown; create?: boolean }>()
   if (typeof body.timestamp !== 'number' || !body.text) return c.text('Invalid body', 400)
 
-  await c.env.DB.prepare('INSERT OR REPLACE INTO meeting_transcript_entries (meeting_date, ts, entry_id, speaker, text) VALUES (?, ?, ?, ?, ?)')
-    .bind(date, body.timestamp, body.id ?? null, body.speaker ?? null, body.text)
-    .run()
+  const entry: TranscriptEntry = { id: body.id ?? null, timestamp: body.timestamp, speaker: body.speaker ?? '', text: body.text }
+  // speaker_uid 一律取 session 的身分，不信任客戶端送來的值。
+  const provenance = { speakerUid: authCtx.user.id, source: normalizeTranscriptSource(body.source) }
+  const saved = body.create ? await insertTranscriptEntry(c.env.DB, date, entry, provenance) : await updateTranscriptEntry(c.env.DB, date, entry, provenance)
 
-  return c.json({ ok: true })
+  // 回傳實際寫入的 ts；順延時與要求的不同，客戶端據此重新對 key。
+  return c.json({ ok: true, timestamp: saved.timestamp })
 })
 
 // ─── REST: 刪除逐字稿條目 ─────────────────────────────────────────────────
