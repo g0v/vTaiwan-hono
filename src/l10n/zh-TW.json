@@ -18,7 +18,7 @@
     },
     "privacy": {
       "title": "隱私政策 | vTaiwan",
-      "description": "vTaiwan 隱私政策 - 我們承諾保護您的個人資料，不會將您的個人資料傳遞給第三方。"
+      "description": "vTaiwan 隱私政策 - 說明個人資料的收集、使用與保護，以及帳號註冊日期的公開性。"
     },
     "terms": {
       "title": "使用條款 | vTaiwan",
@@ -921,7 +921,7 @@
   },
   "privacy": {
     "title": "隱私政策",
-    "metaDescription": "vTaiwan 隱私政策 - 我們承諾保護您的個人資料，不會將您的個人資料傳遞給第三方",
+    "metaDescription": "vTaiwan 隱私政策 - 說明個人資料的收集、使用與保護，以及帳號註冊日期的公開性。",
     "introduction": {
       "title": "引言",
       "content": "vTaiwan 致力於保護用戶的隱私權。本隱私政策說明我們如何收集、使用、儲存和保護您的個人資料。"
@@ -942,8 +942,9 @@
     },
     "dataSharing": {
       "title": "資料分享",
-      "content": "除了必要的分析記錄用途之外，我們承諾不會將您的瀏覽記錄與個人資料出售、出租或分享給第三方。",
-      "highlight": "重要：我們不會將您的個人資料傳遞給第三方"
+      "content": "除了下列公開資訊及必要的分析記錄用途之外，我們承諾不會將您的瀏覽記錄與個人資料出售、出租或分享給第三方。",
+      "publicInfo": "您註冊 vTaiwan 帳號的日期屬於公開資訊，任何人皆可查看。",
+      "highlight": "重要：除上述公開資訊外，我們不會將您的個人資料傳遞給第三方"
     },
     "dataSecurity": {
       "title": "資料安全",
@@ -965,7 +966,7 @@
     "updates": {
       "title": "政策更新",
       "content": "我們可能會不時更新本隱私政策。任何重大變更都會在網站上公佈。",
-      "lastUpdated": "最後更新：2025年9月"
+      "lastUpdated": "最後更新：2026年11月19日"
     },
     "backToHome": "返回首頁"
   },
