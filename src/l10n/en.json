@@ -18,7 +18,7 @@
     },
     "privacy": {
       "title": "Privacy Policy | vTaiwan",
-      "description": "vTaiwan Privacy Policy — we are committed to protecting your personal data and will not share it with third parties."
+      "description": "vTaiwan Privacy Policy — how we collect, use, and protect personal data, and how your account registration date is public information."
     },
     "terms": {
       "title": "Terms of Service | vTaiwan",
@@ -926,7 +926,7 @@
   },
   "privacy": {
     "title": "Privacy Policy",
-    "metaDescription": "vTaiwan Privacy Policy - We are committed to protecting your personal data and will not share your personal information with third parties",
+    "metaDescription": "vTaiwan Privacy Policy — how we collect, use, and protect personal data, and how your account registration date is public information.",
     "introduction": {
       "title": "Introduction",
       "content": "vTaiwan is committed to protecting user privacy. This privacy policy explains how we collect, use, store, and protect your personal data."
@@ -947,8 +947,9 @@
     },
     "dataSharing": {
       "title": "Data Sharing",
-      "content": "Except for necessary analytical and recording purposes, we promise not to sell, rent, or share your browsing history and personal data with third parties.",
-      "highlight": "Important: We will not share your personal data with third parties"
+      "content": "Except for the public information listed below and necessary analytical and recording purposes, we promise not to sell, rent, or share your browsing history and personal data with third parties.",
+      "publicInfo": "The date you registered your vTaiwan account is public information and can be viewed by anyone.",
+      "highlight": "Important: Apart from the public information above, we will not share your personal data with third parties"
     },
     "dataSecurity": {
       "title": "Data Security",
@@ -970,7 +971,7 @@
     "updates": {
       "title": "Policy Updates",
       "content": "We may update this privacy policy from time to time. Any significant changes will be announced on the website.",
-      "lastUpdated": "Last updated: September 2025"
+      "lastUpdated": "Last updated: November 19, 2026"
     },
     "backToHome": "Back to Home"
   },
