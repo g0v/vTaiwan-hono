@@ -256,8 +256,55 @@ vTaiwan 開線上會議時，網頁的 `/jitsi` 頁面會做三件事：
 - [x] JitsiView 改動
 - [x] 測試（transcript-entries / meeting-entries / meeting-room / audio-recording）
 - [x] `vp check` / `vp test` / `vp run build` / `vp run lemma:gen` 全綠
-- [ ] commit 到 `feat/transcript-timestamp-fix`、push 到 fork
+- [x] commit 到 `feat/transcript-timestamp-fix`、push 到 fork，開 draft PR #154
 - [x] 本機目視：套 migration（`--local`）後按紫色麥克風，確認條目時間是開口時間（見 5.6）
 - [x] 實機測試（單機：錄音 + 編輯）
-- [ ] 實機測試（雙機同時錄，驗證不互相覆蓋）
-- [ ] 回 issue #153 更新進度
+- [ ] ~~實機測試（雙機同時錄，驗證不互相覆蓋）~~ 已隨碰撞處理一併撤回（見下一節）
+- [x] 回 issue #153 更新進度
+
+---
+
+## 2026-11-20 步驟 1 縮減：只留時間戳修正，撤回 migration 與碰撞處理
+
+維護者 2026-11-19 晚上在 issue #153 回覆四點意見，其中兩點直接影響這個 PR：
+
+- **同意**「時間戳改為每輪錄音開始的時間」。
+- **暫不新增 `migrations/0004`**：依目前使用情境，同毫秒碰撞的機率極低，資料庫調整與處理成本超過效益，請以不新增 migration 的方式調整 PR。
+
+另外兩點（保留主動轉錄的 UX、顯示所有轉錄中的參與者）屬於後續步驟，與本 PR 無關；issue 方向的討論見 issue 留言。
+
+💡 **為什麼聽維護者的，而不是堅持「我已經寫好了」？** 開源專案的維護者要對整個系統的長期複雜度負責。一個功能寫好了不等於應該合進去——每多一張欄位、一條特殊路徑，之後每個人讀程式碼都要多理解一件事。這叫**維護成本**，而且是由維護者承擔，不是由貢獻者承擔。碰撞處理解的是「幾乎不會發生」的問題，撤回是合理的取捨。寫過的程式碼與測試留在 git 歷史（commit 149f2b1），將來真的需要時可以撿回來。
+
+### 1. 撤回的東西
+
+| 項目                                                                                                    | 處理                                                                                                             |
+| ------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `migrations/0004_add_transcript_entry_provenance.sql`（`speaker_uid`／`source` 欄位）                   | 刪除                                                                                                             |
+| `src/lib/transcript-entries.ts`（`TranscriptEntry`／`normalizeTranscriptSource`／`applyEntrySaved`）    | 刪除                                                                                                             |
+| `src/server/lib/meeting-entries.ts`（`insertTranscriptEntry` 找空位／`updateTranscriptEntry` 原地更新） | 刪除                                                                                                             |
+| `src/durable-objects/meeting-room.ts`                                                                   | 還原成 main：`save_entry` 回到 `INSERT OR REPLACE`，`entry_saved` 不帶 `replaces`，`broadcast()` 不再有 `except` |
+| `src/server/api/meeting.ts`                                                                             | 還原成 main：不收 `create`／`source`，回應不帶 `timestamp`                                                       |
+| `JitsiView.vue` 的 `create: true/false` 旗標、`source: 'manual'/'jitsi'`、`applyEntrySaved`             | 移除                                                                                                             |
+| 測試 `transcript-entries` / `meeting-entries` / `meeting-room` 與 `helpers/fake-d1.ts`                  | 刪除（測的對象已不存在）                                                                                         |
+
+### 2. 保留的東西（PR 的全部內容）
+
+- `JitsiView.vue`：每輪錄音開始時記 `roundStartedAt`，跟著音檔進 `audioQueue.startedAt`，轉錄完成後拿它當條目的 `timestamp` 與 `id`。`meetingData.recordingStartTime` 也改用同一個值。
+- `audio-recording.test.ts` 新增的兩個案例：音檔帶著開始時間進佇列、條目 timestamp 是開始時間而非轉錄完成時間。只拿掉對 `source: 'manual'` 的斷言。
+- 這份實驗日誌。
+
+### 3. 縮減後的驗收（2026-11-20 14:00）
+
+| 關卡                 | 結果                                                                        |
+| -------------------- | --------------------------------------------------------------------------- |
+| `vp check`           | ✅ 154 檔格式正確，137 檔無錯                                               |
+| `vp test`            | ✅ 29 個測試檔、291 個測試全過（比昨天少 3 檔 31 個，是刪掉的那三個測試檔） |
+| `vp run build`       | ✅                                                                          |
+| `vp run lemma:gen`   | ✅ 3/3                                                                      |
+| `vp run lemma:check` | ⏭ 本機沒裝 Dafny，交給 CI；本次未動帶 `//@` 標注的檔案                      |
+
+💡 **為什麼刪了程式碼還要全部重跑？** 刪東西比加東西更容易漏：某個檔案 import 了被刪的模組、某個測試還在斷言被拿掉的欄位，都只有跑過才知道。這次 `vp check` 的型別檢查就是抓「有沒有人還在 import 已刪除模組」的那道閘。
+
+### 4. 部署時要注意（更新）
+
+**不再需要套 migration。** 昨天寫的「先套 migration 再部署」已失效；縮減後的 PR 只改前端 `JitsiView.vue`，部署流程與平常一樣。本機 D1 若已套過 0004，多出來的兩欄不影響程式運作（`INSERT OR REPLACE` 沒列出的欄位會是 NULL），不必回滾。

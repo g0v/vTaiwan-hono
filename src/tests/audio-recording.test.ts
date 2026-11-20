@@ -296,6 +296,6 @@ describe('Jitsi 錄音生命週期', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('測試逐字稿')))
     const state = context()
     await state.sendAudioToTranscription(new Blob(['audio'], { type: 'audio/mp4' }), 1_700_000_000_000)
-    expect(state.addTranscriptData).toHaveBeenCalledWith(expect.objectContaining({ timestamp: 1_700_000_000_000, id: 'audio_1700000000000', source: 'manual' }))
+    expect(state.addTranscriptData).toHaveBeenCalledWith(expect.objectContaining({ timestamp: 1_700_000_000_000, id: 'audio_1700000000000' }))
   })
 })

@@ -311,7 +311,6 @@ import { useI18n } from 'vue-i18n'
 import { supportedLocales } from '../i18n'
 import { hasPermission } from '../client/auth-session'
 import { createAudioRecorder, recordingErrorKey, recordingFilename } from '../lib/audio-recording'
-import { applyEntrySaved } from '../lib/transcript-entries'
 
 // SSR 保護：此模組頂層不存取瀏覽器 API
 export default {
@@ -849,16 +848,14 @@ export default {
       this.showTranscript = false
     },
 
-    // 新增條目：先樂觀地放進本機，再請伺服器寫入（ts 被占用時伺服器會順延，見 entry_saved 的 replaces）。
     addTranscriptData(newEntry) {
       this.transcriptData[newEntry.timestamp] = newEntry
-      this.saveTranscriptEntry(newEntry, { create: true })
+      this.saveTranscriptEntry(newEntry)
     },
 
-    // 編輯既有條目：維持原 ts 原地更新。
     updateTranscriptData(updatedData) {
       this.transcriptData[updatedData.timestamp] = updatedData
-      this.saveTranscriptEntry(updatedData, { create: false })
+      this.saveTranscriptEntry(updatedData)
     },
 
     deleteTranscriptData(timestamp) {
@@ -881,24 +878,16 @@ export default {
       })
     },
 
-    saveTranscriptEntry(entry, { create }) {
+    saveTranscriptEntry(entry) {
       if (this.isHistoricalDate) {
         fetch(`/api/meeting/${this.today}/transcript`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...entry, create }),
-        })
-          .then(res => (res.ok ? res.json() : null))
-          .then(data => {
-            // 伺服器順延了 ts：把本機樂觀更新的舊 key 換成實際寫入的 ts。
-            if (data && typeof data.timestamp === 'number' && data.timestamp !== entry.timestamp) {
-              this.transcriptData = applyEntrySaved(this.transcriptData, { ...entry, timestamp: data.timestamp }, entry.timestamp)
-            }
-          })
-          .catch(err => console.error('saveTranscriptEntry (REST) failed:', err))
+          body: JSON.stringify(entry),
+        }).catch(err => console.error('saveTranscriptEntry (REST) failed:', err))
         return
       }
-      this.sendMeetingMessage({ type: 'save_entry', entry, create })
+      this.sendMeetingMessage({ type: 'save_entry', entry })
     },
 
     deleteTranscriptEntry(timestamp) {
@@ -1000,7 +989,6 @@ export default {
         timestamp: Date.now(),
         speaker: this.transcriptCache.currentSpeaker,
         text: this.transcriptCache.currentText.trim(),
-        source: 'jitsi',
       })
       this.clearTranscriptCache()
     },
@@ -1182,7 +1170,6 @@ export default {
           timestamp,
           speaker: this.authUserData.name || this.t('jitsi.unknownSpeaker'),
           text: result,
-          source: 'manual',
         })
       }
     },
@@ -1422,8 +1409,10 @@ export default {
           break
 
         case 'entry_saved':
-          // 伺服器可能把新增條目的 ts 順延；replaces 是原本要求的 ts，據此移除樂觀更新留下的舊 key。
-          this.transcriptData = applyEntrySaved(this.transcriptData, msg.entry, msg.replaces)
+          this.transcriptData = {
+            ...this.transcriptData,
+            [String(msg.entry.timestamp)]: msg.entry,
+          }
           break
 
         case 'entry_deleted':
