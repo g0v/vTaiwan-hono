@@ -58,7 +58,7 @@ function recordingState() {
     audioMediaRecorder: null as MediaRecorder | null,
     audioStream: null as MediaStream | null,
     audioChunks: [] as Blob[],
-    audioQueue: [] as { blob: Blob }[],
+    audioQueue: [] as { blob: Blob; startedAt: number }[],
     audioRecordingTimer: null as ReturnType<typeof setTimeout> | null,
     countdownInterval: null as ReturnType<typeof setInterval> | null,
     recordingTimeLeft: 0,
@@ -274,5 +274,28 @@ describe('Jitsi 錄音生命週期', () => {
     expect(file.type).toBe('audio/mp4;codecs=mp4a.40.2')
     expect(await file.text()).toBe('mp4 audio')
     expect(state.addTranscriptData).toHaveBeenCalledWith(expect.objectContaining({ text: '測試逐字稿' }))
+  })
+
+  it('每段音檔帶著「開始錄」的時間進佇列，跨輪各自獨立（#153）', async () => {
+    vi.setSystemTime(1_700_000_000_000)
+    const state = context()
+    await state.startAudioRecording()
+    await vi.advanceTimersByTimeAsync(30_010)
+    const stopped = state.stopAudioRecording()
+    await vi.advanceTimersByTimeAsync(0)
+    await stopped
+    const queue = state.audioQueue
+    expect(queue).toHaveLength(2)
+    expect(queue[0].startedAt).toBe(1_700_000_000_000)
+    // 第二輪在第一輪 stop 事件後才開始，開始時間晚於第一輪 30 秒以上
+    expect(queue[1].startedAt).toBeGreaterThanOrEqual(1_700_000_030_000)
+  })
+
+  it('轉錄完成後條目的 timestamp 是開始錄的時間，不是轉錄完成的時間（#153）', async () => {
+    vi.setSystemTime(1_700_000_099_000)
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('測試逐字稿')))
+    const state = context()
+    await state.sendAudioToTranscription(new Blob(['audio'], { type: 'audio/mp4' }), 1_700_000_000_000)
+    expect(state.addTranscriptData).toHaveBeenCalledWith(expect.objectContaining({ timestamp: 1_700_000_000_000, id: 'audio_1700000000000' }))
   })
 })
