@@ -133,6 +133,12 @@ const rawCommunityContributors: Contributor[] = [
     imgURL: 'https://ca.slack-edge.com/T02G2SXKM-U08U8MNTS0M-d68838168b5e-192',
   },
   {
+    id: '24',
+    name: '江左津',
+    contribution: 'contributors.contributions.frontendDev',
+    imgURL: 'https://ca.slack-edge.com/T02G2SXKM-U0ALW3F6Q4Q-df58faedfc18-512',
+  },
+  {
     id: '15',
     name: 'Lynn',
     contribution: 'contributors.contributions.frontendDev',
