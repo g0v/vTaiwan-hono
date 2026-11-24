@@ -44,6 +44,13 @@ export const coreTeam: Contributor[] = [
     description: 'contributors.descriptions.designer',
     imgURL: 'https://ca.slack-edge.com/T02G2SXKM-U2PUXG69E-f59903ccf61f-512',
   },
+  {
+    id: '6',
+    name: 'Terry Lin',
+    role: 'contributors.roles.fullStackDeveloper',
+    description: 'contributors.descriptions.fullStackDeveloper',
+    imgURL: 'https://www.gravatar.com/avatar/3be627a993a182ade60f7e3c9ed3ad2cf65f8263b7da57e10e5354d1ebab8110?s=320&r=g',
+  },
 ]
 
 // 原始資料
@@ -146,13 +153,13 @@ const rawCommunityContributors: Contributor[] = [
   },
   {
     id: '16',
-    name: 'Terry',
+    name: 'Terry Lin',
     contribution: 'contributors.contributions.frontendDev',
     imgURL: 'https://www.gravatar.com/avatar/3be627a993a182ade60f7e3c9ed3ad2cf65f8263b7da57e10e5354d1ebab8110?s=320&r=g',
   },
   {
     id: '17',
-    name: 'Terry',
+    name: 'Terry Lin',
     contribution: 'contributors.contributions.backendDev',
     imgURL: 'https://www.gravatar.com/avatar/3be627a993a182ade60f7e3c9ed3ad2cf65f8263b7da57e10e5354d1ebab8110?s=320&r=g',
   },

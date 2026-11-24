@@ -326,13 +326,15 @@
       "projectManager": "プロジェクトマネージャー",
       "techDirector": "技術ディレクター",
       "designer": "デザイナー",
-      "processDesigner": "プロセスデザイナー"
+      "processDesigner": "プロセスデザイナー",
+      "fullStackDeveloper": "フルスタックエンジニア"
     },
     "descriptions": {
       "projectManager": "プロジェクト全体の企画と調整を担当",
       "techDirector": "技術アーキテクチャとプラットフォーム開発を担当",
       "designer": "vTaiwanウェブサイトのデザインと体験設計を担当",
-      "processDesigner": "vTaiwanのプロセスとシステム設計を担当"
+      "processDesigner": "vTaiwanのプロセスとシステム設計を担当",
+      "fullStackDeveloper": "システムの開発と保守を担当"
     },
     "contributions": {
       "policyResearch": "政策リサーチ",

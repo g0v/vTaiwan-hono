@@ -321,13 +321,15 @@
       "projectManager": "專案負責人",
       "techDirector": "技術總監",
       "designer": "設計師",
-      "processDesigner": "流程設計師"
+      "processDesigner": "流程設計師",
+      "fullStackDeveloper": "全端工程師"
     },
     "descriptions": {
       "projectManager": "負責整體專案規劃與協調",
       "techDirector": "負責技術架構與平台開發",
       "designer": "負責 vTaiwan 網站設計與體驗設計",
-      "processDesigner": "負責 vTaiwan 流程與系統設計"
+      "processDesigner": "負責 vTaiwan 流程與系統設計",
+      "fullStackDeveloper": "負責系統開發與維護"
     },
     "contributions": {
       "policyResearch": "政策研究",
