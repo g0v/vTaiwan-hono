@@ -326,13 +326,15 @@
       "projectManager": "Project Manager",
       "techDirector": "Technical Director",
       "designer": "Designer",
-      "processDesigner": "Process Designer"
+      "processDesigner": "Process Designer",
+      "fullStackDeveloper": "Full-Stack Developer"
     },
     "descriptions": {
       "projectManager": "Responsible for overall project planning and coordination",
       "techDirector": "Responsible for technical architecture and platform development",
       "designer": "Responsible for vTaiwan website design and experience design",
-      "processDesigner": "Responsible for vTaiwan process and system design"
+      "processDesigner": "Responsible for vTaiwan process and system design",
+      "fullStackDeveloper": "Responsible for system development and maintenance"
     },
     "contributions": {
       "policyResearch": "Policy Research",
