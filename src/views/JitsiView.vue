@@ -1038,6 +1038,8 @@ export default {
           }
           this.audioStream = stream
         }
+        // 這一輪「開始說話」的時間：跟著音檔進佇列，轉錄完成後當條目的 timestamp（不是轉錄完成的時間）。
+        const roundStartedAt = Date.now()
         const chunks = []
         const recorder = createAudioRecorder(this.audioStream, MediaRecorder)
         this.audioMediaRecorder = recorder
@@ -1058,7 +1060,7 @@ export default {
           this.isRecordingAudio = false
           this.clearAudioRecordingTimers()
           // 每輪捕捉自己的 chunks 與格式，避免清理或下一輪改掉最後一段音檔。
-          this.processRecordedAudio(chunks, recorder.mimeType)
+          this.processRecordedAudio(chunks, recorder.mimeType, roundStartedAt)
           finish()
           if (this.audioRecordingActive) void this.startNextRecordingRound()
           else this.cleanupAudioRecording()
@@ -1071,7 +1073,7 @@ export default {
         this.isRecordingAudio = true
 
         const speakerName = this.authUserData.name || this.t('jitsi.unknownSpeaker')
-        this.meetingData.recordingStartTime = Date.now()
+        this.meetingData.recordingStartTime = roundStartedAt
         this.meetingData.recordingSpeaker = speakerName
         this.syncRecordingStatus()
 
@@ -1130,7 +1132,7 @@ export default {
       this.recordingTimeLeft = 0
     },
 
-    processRecordedAudio(chunks, mimeType) {
+    processRecordedAudio(chunks, mimeType, startedAt) {
       this.audioChunks = []
       if (chunks.length === 0) return
       const audioBlob = new Blob(chunks, { type: mimeType || chunks[0].type })
@@ -1138,13 +1140,15 @@ export default {
         id: Date.now(),
         blob: audioBlob,
         timestamp: new Date().toISOString(),
+        // 這段音檔開始錄的時間（Unix ms）；轉錄完成後當條目的 timestamp。
+        startedAt: typeof startedAt === 'number' ? startedAt : Date.now(),
         size: audioBlob.size,
       }
       this.audioQueue.push(audioItem)
       this.startQueueProcessing()
     },
 
-    async sendAudioToTranscription(audioBlob) {
+    async sendAudioToTranscription(audioBlob, startedAt) {
       if (!this.canUseMeetingFeatures) return
       const formData = new FormData()
       formData.append('file', audioBlob, recordingFilename(audioBlob.type))
@@ -1159,9 +1163,11 @@ export default {
       }
       const result = await response.text()
       if (result) {
+        // timestamp 用這段音檔「開始錄」的時間，不是轉錄完成的時間——音檔排隊再久，時間軸順序都不會亂。
+        const timestamp = typeof startedAt === 'number' ? startedAt : Date.now()
         this.addTranscriptData({
-          id: 'audio_' + Date.now(),
-          timestamp: Date.now(),
+          id: 'audio_' + timestamp,
+          timestamp,
           speaker: this.authUserData.name || this.t('jitsi.unknownSpeaker'),
           text: result,
         })
@@ -1501,7 +1507,7 @@ export default {
       const audioItem = this.audioQueue.shift()
       try {
         this.isTranscripting = true
-        await this.sendAudioToTranscription(audioItem.blob)
+        await this.sendAudioToTranscription(audioItem.blob, audioItem.startedAt)
         if (this.audioQueue.length > 0) {
           this.$nextTick(() => this.processNextAudioInQueue())
         } else {
