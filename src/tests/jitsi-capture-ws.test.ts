@@ -41,6 +41,9 @@ class FakeSocket {
     this.readyState = 3
     this.onclose?.()
   }
+  receive(message: Record<string, unknown>) {
+    this.onmessage?.({ data: JSON.stringify(message) })
+  }
   get captureMessages() {
     return this.sent.filter(m => m.type === 'capture_status')
   }
@@ -54,6 +57,9 @@ function wsState() {
     ws: null as FakeSocket | null,
     wsPendingMessages: [] as Array<Record<string, unknown>>,
     today: '20261125',
+    isHistoricalDate: false,
+    wsRetryTimer: null,
+    wsRetryAttempt: 0,
     capturers: [] as Array<{ userId: string; name: string }>,
     captureSyncLost: false,
     captureAnnounced: false,
@@ -76,13 +82,77 @@ function context(): WsContext {
 }
 
 beforeEach(() => {
+  vi.useFakeTimers()
   FakeSocket.instances = []
   vi.stubGlobal('WebSocket', FakeSocket)
   vi.stubGlobal('location', { protocol: 'https:', host: 'www.vtaiwan.tw' })
 })
 
 afterEach(() => {
+  vi.useRealTimers()
   vi.unstubAllGlobals()
+})
+
+describe('即時逐字稿斷線恢復（#158）', () => {
+  it('意外斷線後自動接回快照與差量，也補送斷線期間的逐字稿和目前錄音狀態', () => {
+    const state = context()
+    state.connectMeetingWs()
+    const first = FakeSocket.instances[0]
+    first.open()
+    first.receive({ type: 'init', meeting: {}, transcripts: {} })
+    state.announceCapture(true)
+    first.drop()
+
+    const pending = { timestamp: 2, text: '斷線期間在本機完成' }
+    const missed = { timestamp: 1, text: '斷線期間由他人寫入' }
+    const live = { timestamp: 3, text: '重連後由他人寫入' }
+    state.sendMeetingMessage({ type: 'save_entry', entry: pending })
+    vi.advanceTimersByTime(1000)
+
+    expect(FakeSocket.instances).toHaveLength(2)
+    const reconnected = FakeSocket.instances[1]
+    reconnected.open()
+    reconnected.receive({ type: 'init', meeting: {}, transcripts: { 1: missed } })
+    reconnected.receive({ type: 'entry_saved', entry: live })
+    expect(state.transcriptData).toEqual({ 1: missed, 3: live })
+    expect(reconnected.sent).toEqual([
+      { type: 'save_entry', entry: pending },
+      { type: 'capture_status', capturing: true },
+    ])
+  })
+
+  it('握手連續失敗會延長重試間隔，主動離開後不再建立連線', () => {
+    const state = context()
+    state.connectMeetingWs()
+    FakeSocket.instances[0].drop()
+    vi.advanceTimersByTime(1000)
+    expect(FakeSocket.instances).toHaveLength(2)
+    FakeSocket.instances[1].drop()
+    vi.advanceTimersByTime(1000)
+    expect(FakeSocket.instances).toHaveLength(2)
+    vi.advanceTimersByTime(1000)
+    expect(FakeSocket.instances).toHaveLength(3)
+
+    FakeSocket.instances[2].drop()
+    state.disconnectWs()
+    vi.advanceTimersByTime(60_000)
+    expect(FakeSocket.instances).toHaveLength(3)
+  })
+
+  it('被換掉的連線即使送出舊快照，也不會覆蓋新連線的逐字稿', () => {
+    const state = context()
+    const latest = { timestamp: 2, text: '目前逐字稿' }
+    state.connectMeetingWs()
+    const stale = FakeSocket.instances[0]
+    stale.open()
+    state.connectMeetingWs()
+    const active = FakeSocket.instances[1]
+    active.open()
+    active.receive({ type: 'init', meeting: {}, transcripts: { 2: latest } })
+
+    stale.receive({ type: 'init', meeting: {}, transcripts: {} })
+    expect(state.transcriptData).toEqual({ 2: latest })
+  })
 })
 
 describe('onopen：佇列沖出順序', () => {
@@ -113,6 +183,20 @@ describe('onopen：佇列沖出順序', () => {
     FakeSocket.instances[0].open()
 
     expect(FakeSocket.instances[0].captureMessages).toEqual([])
+  })
+
+  it('本機已停止，斷線期間排隊的舊版開始訊息不能把新連線列回名單', () => {
+    const state = context()
+    state.connectMeetingWs()
+    state.announceCapture(true)
+    const legacyStart = { type: 'sync_recording', recording_speaker: '我', recording_start_time: 1 }
+    state.sendMeetingMessage(legacyStart)
+    state.announceCapture(false)
+
+    const socket = FakeSocket.instances[0]
+    socket.open()
+
+    expect(socket.sent).toEqual([{ type: 'capture_status', capturing: false }, legacyStart])
   })
 
   it('連線中 announceCapture 會先排隊，open 後以最新狀態送出一次', () => {

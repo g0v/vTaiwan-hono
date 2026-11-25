@@ -230,6 +230,21 @@ describe('MeetingRoom 授權：未登入連線改不了名牌', () => {
 })
 
 describe('MeetingRoom 相容橋：舊版頁面只會送 sync_recording', () => {
+  it('同一連線已送新版停止狀態，較早但晚完成的舊訊息不會讓名字回到名單', async () => {
+    const ming = user('uid-ming', '小明')
+    const watcher = guest()
+    const db = new FakeD1()
+    const meeting = room([ming, watcher], db)
+
+    await send(meeting, ming, captureStatus(true))
+    const legacyWrite = send(meeting, ming, syncRecording('小明'))
+    await send(meeting, ming, captureStatus(false))
+    await legacyWrite
+
+    expect(watcher.lastCaptureList).toEqual([])
+    expect(db.sessions.get(DATE)?.recording_speaker).toBe('小明')
+  })
+
   it('舊訊息帶 recording_speaker：送出者自己進名單；帶 null：移除', async () => {
     const hua = user('uid-hua', '阿華')
     const ming = user('uid-ming', '小明')

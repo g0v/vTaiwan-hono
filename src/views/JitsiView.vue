@@ -342,6 +342,8 @@ export default {
       ws: null,
       // WS 尚未 open 時暫存的寫入訊息，open 後一次沖出
       wsPendingMessages: [],
+      wsRetryTimer: null,
+      wsRetryAttempt: 0,
       // 轉錄中名單（#153 步驟 2）：只以 DO 的 init／capture_list 為準，不從 recording_synced 反推
       capturers: [],
       // WebSocket 意外斷線：名單已失去即時性，畫面要明說「無法同步」，不能把最後一份快照當即時資訊
@@ -1372,17 +1374,24 @@ export default {
     },
 
     // 建立（或重建）WebSocket 連線到今日的 MeetingRoom DO
-    connectMeetingWs() {
+    connectMeetingWs(retrying = false) {
       this.disconnectWs()
+      if (retrying) this.captureSyncLost = true
+      else this.wsRetryAttempt = 0
       const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
       const ws = new WebSocket(`${protocol}//${location.host}/api/meeting/ws/${this.today}`)
       this.ws = ws
 
       ws.onopen = () => {
+        if (this.ws !== ws) return
         this.captureSyncLost = false
         // 沖出在連線期間暫存的寫入訊息。capture_status 是「狀態」不是「事件」：只有最新的一筆有意義，
         // 佇列裡的舊狀態一律丟掉，改在最後依當下有效狀態補送一次，避免過期的 false 蓋掉現在的 true。
         const pending = this.wsPendingMessages.splice(0).filter(msg => msg.type !== 'capture_status')
+        // 新連線預設沒在錄，但舊協定的暫存訊息可能宣告開始。先讓 DO 知道新版的停止狀態。
+        if (!this.captureAnnounced && pending.some(msg => msg.type === 'sync_recording')) {
+          ws.send(JSON.stringify({ type: 'capture_status', capturing: false }))
+        }
         for (const msg of pending) {
           ws.send(JSON.stringify(msg))
         }
@@ -1390,6 +1399,7 @@ export default {
       }
 
       ws.onmessage = event => {
+        if (this.ws !== ws) return
         try {
           this.handleWsMessage(JSON.parse(event.data))
         } catch (err) {
@@ -1400,10 +1410,17 @@ export default {
       ws.onclose = () => {
         if (this.ws !== ws) return
         this.ws = null
-        // 意外斷線（沒有自動重連）：名單失去即時性，清空並標示無法同步。
+        // 意外斷線：名單失去即時性，但本機錄音與待送逐字稿都要保留。
         // 注意：WebSocket 斷了不代表本機錄音停了，audioRecordingActive 與 captureAnnounced 都不動。
         this.capturers = []
         this.captureSyncLost = true
+        if (this.isHistoricalDate) return
+        const retryDelay = Math.min(30_000, 1000 * 2 ** Math.min(this.wsRetryAttempt, 5))
+        this.wsRetryAttempt += 1
+        this.wsRetryTimer = setTimeout(() => {
+          this.wsRetryTimer = null
+          if (!this.isHistoricalDate) this.connectMeetingWs(true)
+        }, retryDelay)
       }
 
       ws.onerror = err => {
@@ -1413,6 +1430,10 @@ export default {
 
     // 關閉現有的 WebSocket 連線（如有）
     disconnectWs() {
+      if (this.wsRetryTimer !== null) {
+        clearTimeout(this.wsRetryTimer)
+        this.wsRetryTimer = null
+      }
       if (this.ws) {
         this.ws.onclose = null // 防止觸發重連
         this.ws.close()
@@ -1428,6 +1449,7 @@ export default {
     handleWsMessage(msg) {
       switch (msg.type) {
         case 'init':
+          this.wsRetryAttempt = 0
           this.meetingData = {
             recorder: msg.meeting.recorderUid || '',
             recordingSpeaker: msg.meeting.recordingSpeaker || null,

@@ -86,6 +86,7 @@ interface ConnectionMeta {
   userId: string | null
   name: string | null
   capturing: boolean
+  usesCaptureStatus?: boolean
 }
 
 /** 實際存進 attachment 的形狀：ConnectionMeta 加上連線所屬日期 */
@@ -102,6 +103,7 @@ function readMeta(ws: WebSocket): StoredMeta {
     userId: raw?.userId ?? null,
     name: raw?.name ?? null,
     capturing: raw?.capturing === true,
+    usesCaptureStatus: raw?.usesCaptureStatus === true,
     date: raw?.date ?? '',
   }
 }
@@ -258,13 +260,13 @@ export class MeetingRoom extends DurableObject<MeetingRoomEnv> {
         })
         // 相容橋（#153 步驟 2）：舊版頁面只會送這則訊息。只更新「送出者自己」的名牌，
         // 不拿全房間的 recording_speaker 反推名單；新版名單只以 init／capture_list 為準。
-        if (this.setCapturing(ws, msg.recording_speaker !== null)) this.broadcastCaptureList()
+        if (this.setCapturing(ws, msg.recording_speaker !== null, 'legacy')) this.broadcastCaptureList()
         break
       }
 
       case 'capture_status': {
         if (typeof msg.capturing !== 'boolean') return
-        if (this.setCapturing(ws, msg.capturing)) this.broadcastCaptureList()
+        if (this.setCapturing(ws, msg.capturing, 'explicit')) this.broadcastCaptureList()
         break
       }
     }
@@ -276,16 +278,21 @@ export class MeetingRoom extends DurableObject<MeetingRoomEnv> {
    * 改這條連線名牌上的 capturing 並存回 attachment。
    * 回傳是否真的改了——沒變就不用廣播（每 30 秒換段重送的舊訊息不會造成名單抖動）。
    */
-  private setCapturing(ws: WebSocket, capturing: boolean): boolean {
+  private setCapturing(ws: WebSocket, capturing: boolean, source?: 'explicit' | 'legacy'): boolean {
     let meta: StoredMeta
     try {
       meta = readMeta(ws)
     } catch {
       return false // attachment 讀不到（連線已被回收）就當沒事
     }
-    if (meta.capturing === capturing) return false
-    ws.serializeAttachment({ ...meta, capturing } satisfies StoredMeta)
-    return true
+    // 新版與舊版訊息可能同時抵達；新版已回報過就不再讓等待 D1 的舊訊息覆蓋名單。
+    if (source === 'legacy' && meta.usesCaptureStatus) return false
+    const changed = meta.capturing !== capturing
+    const usesCaptureStatus = source === 'explicit' || meta.usesCaptureStatus
+    if (changed || usesCaptureStatus !== meta.usesCaptureStatus) {
+      ws.serializeAttachment({ ...meta, capturing, usesCaptureStatus } satisfies StoredMeta)
+    }
+    return changed
   }
 
   /** 從所有「仍開啟」連線的名牌算出目前名單 */
