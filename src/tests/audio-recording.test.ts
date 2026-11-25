@@ -301,3 +301,81 @@ describe('Jitsi 錄音生命週期', () => {
     expect(state.addTranscriptData).toHaveBeenCalledWith(expect.objectContaining({ timestamp: 1_700_000_000_000, id: 'audio_1700000000000' }))
   })
 })
+
+describe('轉錄中名單：capture_status 的送出時機（#153 步驟 2）', () => {
+  const captureMessages = (state: RecordingContext) => (state.sendMeetingMessage as ReturnType<typeof vi.fn>).mock.calls.map(c => c[0]).filter((m: { type: string }) => m.type === 'capture_status')
+
+  it('錄音器成功啟動後才送 true；按下按鈕或等待授權時不送', async () => {
+    let grant!: (value: MediaStream) => void
+    getUserMedia.mockReturnValue(
+      new Promise<MediaStream>(resolve => {
+        grant = resolve
+      })
+    )
+    const state = context()
+    const pending = state.startAudioRecording()
+    // 還在等麥克風授權：audioRecordingActive 已是 true，但不能對外宣告
+    expect(state.audioRecordingActive).toBe(true)
+    expect(captureMessages(state)).toEqual([])
+    grant(stream)
+    await pending
+    expect(captureMessages(state)).toEqual([{ type: 'capture_status', capturing: true }])
+    state.cleanupAudioRecording()
+  })
+
+  it('拒絕麥克風權限：從頭到尾不送 true，也不會多送一個 false', async () => {
+    getUserMedia.mockRejectedValueOnce(new DOMException('denied', 'NotAllowedError'))
+    const state = context()
+    await state.startAudioRecording()
+    expect(captureMessages(state)).toEqual([])
+    expect(state.captureAnnounced).toBe(false)
+  })
+
+  it('錄音器啟動失敗（start 擲錯）：不列入名單', async () => {
+    FakeRecorder.startError = new DOMException('unsupported', 'NotSupportedError')
+    const state = context()
+    await state.startAudioRecording()
+    expect(captureMessages(state)).toEqual([])
+  })
+
+  it('每 30 秒換段：跨三輪只送一次 true、沒有 false（名單不閃）；手動停止才送 false', async () => {
+    const state = context()
+    await state.startAudioRecording()
+    await vi.advanceTimersByTimeAsync(60_010)
+    expect(FakeRecorder.instances).toHaveLength(3)
+    expect(captureMessages(state)).toEqual([{ type: 'capture_status', capturing: true }])
+
+    const stopped = state.stopAudioRecording()
+    await vi.advanceTimersByTimeAsync(0)
+    await stopped
+    expect(captureMessages(state)).toEqual([
+      { type: 'capture_status', capturing: true },
+      { type: 'capture_status', capturing: false },
+    ])
+  })
+
+  it('失去權限直接走 cleanupAudioRecording（authSession watcher 路徑）：會送 false', async () => {
+    const state = context()
+    await state.startAudioRecording()
+    state.cleanupAudioRecording()
+    expect(captureMessages(state).at(-1)).toEqual({ type: 'capture_status', capturing: false })
+    expect(state.captureAnnounced).toBe(false)
+  })
+
+  it('錄音中的非同步錯誤：會送 false', async () => {
+    const state = context()
+    await state.startAudioRecording()
+    FakeRecorder.instances[0].onerror?.({ error: new DOMException('busy', 'NotReadableError') })
+    expect(captureMessages(state).at(-1)).toEqual({ type: 'capture_status', capturing: false })
+  })
+
+  it('停止後 false 只送一次：stopAudioRecording 與後續 cleanup 不重複', async () => {
+    const state = context()
+    await state.startAudioRecording()
+    const stopped = state.stopAudioRecording()
+    await vi.advanceTimersByTimeAsync(0)
+    await stopped
+    state.cleanupAudioRecording()
+    expect(captureMessages(state).filter(m => m.capturing === false)).toHaveLength(1)
+  })
+})
