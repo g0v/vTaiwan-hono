@@ -43,6 +43,7 @@ const methodNames = [
   'cleanupAudioRecording',
   'clearAudioRecordingTimers',
   'handleAudioRecordingError',
+  'announceCapture',
 ] as const
 type MethodName = (typeof methodNames)[number]
 
@@ -62,7 +63,7 @@ function recordingState() {
     audioRecordingTimer: null as ReturnType<typeof setTimeout> | null,
     countdownInterval: null as ReturnType<typeof setInterval> | null,
     recordingTimeLeft: 0,
-    recordingTimer: 0,
+    captureAnnounced: false,
     maxRecordingTime: 30_000,
     selectedAudioDeviceId: '',
     transcriptionLanguage: 'zh-TW',
@@ -71,6 +72,7 @@ function recordingState() {
     meetingData: { recordingStartTime: null, recordingSpeaker: null },
     t: vi.fn((key: string) => key),
     syncRecordingStatus: vi.fn(),
+    sendMeetingMessage: vi.fn(),
     stopAudioTest: vi.fn(),
     startQueueProcessing: vi.fn(),
     sendBrowserNotification: vi.fn(),

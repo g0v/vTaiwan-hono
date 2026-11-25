@@ -221,18 +221,23 @@
           </div>
         </button>
 
-        <div
-          v-if="meetingData.recordingSpeaker && !isTranscripting"
-          class="absolute -right-10 -bottom-2 flex h-6 w-48 items-center justify-center rounded-full border-2 border-red-500 bg-white text-xs font-bold text-red-500"
-        >
-          {{ t('jitsi.recordingStatus', { name: meetingData.recordingSpeaker, seconds: recordingDuration }) }}
-        </div>
-
-        <div
-          v-if="audioQueue.length > 0 && !meetingData.recordingSpeaker"
-          class="absolute -right-10 -bottom-2 flex items-center justify-center rounded-full border-2 border-blue-500 bg-blue-500 px-3 py-1 text-xs font-bold text-white"
-        >
-          📋 {{ t('jitsi.queueStatus', { count: audioQueue.length }) }}
+        <!--
+          轉錄中名單與待處理音檔數是兩種獨立資訊，各自顯示、互不遮蔽（#153 步驟 2）。
+          放在按鈕左側而非底部：多人或長名字可換行，不會蓋到按鈕本身，手機也讀得到。
+        -->
+        <div class="pointer-events-none absolute top-1/2 right-full mr-3 flex w-max max-w-[min(18rem,60vw)] -translate-y-1/2 flex-col items-end gap-1">
+          <div
+            v-if="captureListText"
+            :class="[
+              'rounded-2xl border-2 bg-white px-3 py-1 text-right text-xs font-bold break-words whitespace-normal',
+              captureSyncLost ? 'border-gray-400 text-gray-500' : 'border-red-500 text-red-500',
+            ]"
+          >
+            {{ captureListText }}
+          </div>
+          <div v-if="audioQueue.length > 0" class="rounded-full border-2 border-blue-500 bg-blue-500 px-3 py-1 text-xs font-bold whitespace-nowrap text-white">
+            📋 {{ t('jitsi.queueStatus', { count: audioQueue.length }) }}
+          </div>
         </div>
 
         <button
@@ -337,6 +342,13 @@ export default {
       ws: null,
       // WS 尚未 open 時暫存的寫入訊息，open 後一次沖出
       wsPendingMessages: [],
+      // 轉錄中名單（#153 步驟 2）：只以 DO 的 init／capture_list 為準，不從 recording_synced 反推
+      capturers: [],
+      // WebSocket 意外斷線：名單已失去即時性，畫面要明說「無法同步」，不能把最後一份快照當即時資訊
+      captureSyncLost: false,
+      // 本機是否已向 DO 宣告「我在錄」。session 層級：第一輪成功啟動後設 true、真正停止才設 false，
+      // 每 30 秒換段不動它，名單才不會每 30 秒閃一下
+      captureAnnounced: false,
       // 今日日期（created 設定後固定不變），用於判斷是否為歷史日期
       realToday: '',
 
@@ -412,8 +424,6 @@ export default {
       audioContext: null,
       audioSource: null,
       levelUpdateInterval: null,
-      recordingTimerInterval: null,
-      recordingTimer: 0,
 
       transcriptionLanguage: 'zh-TW',
 
@@ -457,10 +467,12 @@ export default {
       const found = supportedLocales.find(l => l.code === this.transcriptionLanguage)
       return found ? found.flag : '🌐'
     },
-    recordingDuration() {
-      if (!this.meetingData.recordingStartTime) return 0
-      void this.recordingTimer // 讓 computed 依賴此響應變數，每秒觸發更新
-      return Math.floor((Date.now() - this.meetingData.recordingStartTime) / 1000)
+    // 名單文字：斷線時顯示「無法同步」；沒人在錄回空字串（不渲染）。名字缺失以「未知說話者」補
+    captureListText() {
+      if (this.captureSyncLost) return this.t('jitsi.captureUnavailable')
+      if (this.capturers.length === 0) return ''
+      const names = this.capturers.map(c => c.name || this.t('jitsi.unknownSpeaker')).join(this.t('jitsi.capturingListSeparator'))
+      return this.t('jitsi.capturingList', { names })
     },
     // 判斷是否正在查看歷史日期（非今日）
     isHistoricalDate() {
@@ -485,11 +497,6 @@ export default {
     this.updateViewportState()
     this.loadJitsiTipBanner()
     this.joinMeetingName = this.authUserData.name || 'Guest'
-
-    // 錄音計時器，每秒觸發 recordingDuration 重新計算
-    this.recordingTimerInterval = setInterval(() => {
-      this.recordingTimer = Date.now()
-    }, 1000)
 
     window.addEventListener('resize', this.handleResize)
     window.addEventListener('popstate', this.handlePopState)
@@ -526,10 +533,6 @@ export default {
     this.cleanupAudioRecording()
     this.stopQueueProcessing()
     this.clearAudioQueue()
-    if (this.recordingTimerInterval) {
-      clearInterval(this.recordingTimerInterval)
-      this.recordingTimerInterval = null
-    }
     this.stopAudioTest()
     document.removeEventListener('mousemove', this.onDrag)
     document.removeEventListener('mouseup', this.stopDragging)
@@ -878,6 +881,16 @@ export default {
       })
     },
 
+    /**
+     * 向 DO 宣告本連線的錄音狀態（#153 步驟 2）。只在狀態真的改變時送：
+     * 換段重啟錄音器時 captureAnnounced 已是 true，不會重送，名單不閃。
+     */
+    announceCapture(capturing) {
+      if (this.captureAnnounced === capturing) return
+      this.captureAnnounced = capturing
+      this.sendMeetingMessage({ type: 'capture_status', capturing })
+    },
+
     saveTranscriptEntry(entry) {
       if (this.isHistoricalDate) {
         fetch(`/api/meeting/${this.today}/transcript`, {
@@ -1071,6 +1084,8 @@ export default {
         }
         recorder.start()
         this.isRecordingAudio = true
+        // 錄音器真的啟動了才向 DO 宣告（不是按下按鈕或等待麥克風授權時）；第二輪起 announceCapture 會略過
+        this.announceCapture(true)
 
         const speakerName = this.authUserData.name || this.t('jitsi.unknownSpeaker')
         this.meetingData.recordingStartTime = roundStartedAt
@@ -1105,10 +1120,10 @@ export default {
 
     async stopAudioRecording() {
       this.audioRecordingActive = false
+      this.announceCapture(false)
       this.meetingData.recordingStartTime = null
       this.meetingData.recordingSpeaker = null
       this.syncRecordingStatus()
-      this.recordingTimer = 0
       this.clearAudioRecordingTimers()
       const finished = this.audioRecordingFinished
       if (this.audioMediaRecorder) {
@@ -1177,6 +1192,8 @@ export default {
     cleanupAudioRecording() {
       this.audioRecordingGeneration += 1
       this.audioRecordingActive = false
+      // 離頁／登出（失去 meeting.join）／錄音錯誤都走這裡：一律向 DO 宣告停止，遠端名單才不會殘留
+      this.announceCapture(false)
       this.isStartingAudio = false
       this.clearAudioRecordingTimers()
       if (this.audioMediaRecorder) {
@@ -1362,11 +1379,14 @@ export default {
       this.ws = ws
 
       ws.onopen = () => {
-        // 沖出在連線期間暫存的寫入訊息
-        const pending = this.wsPendingMessages.splice(0)
+        this.captureSyncLost = false
+        // 沖出在連線期間暫存的寫入訊息。capture_status 是「狀態」不是「事件」：只有最新的一筆有意義，
+        // 佇列裡的舊狀態一律丟掉，改在最後依當下有效狀態補送一次，避免過期的 false 蓋掉現在的 true。
+        const pending = this.wsPendingMessages.splice(0).filter(msg => msg.type !== 'capture_status')
         for (const msg of pending) {
           ws.send(JSON.stringify(msg))
         }
+        if (this.captureAnnounced) ws.send(JSON.stringify({ type: 'capture_status', capturing: true }))
       }
 
       ws.onmessage = event => {
@@ -1378,7 +1398,12 @@ export default {
       }
 
       ws.onclose = () => {
-        if (this.ws === ws) this.ws = null
+        if (this.ws !== ws) return
+        this.ws = null
+        // 意外斷線（沒有自動重連）：名單失去即時性，清空並標示無法同步。
+        // 注意：WebSocket 斷了不代表本機錄音停了，audioRecordingActive 與 captureAnnounced 都不動。
+        this.capturers = []
+        this.captureSyncLost = true
       }
 
       ws.onerror = err => {
@@ -1393,6 +1418,10 @@ export default {
         this.ws.close()
         this.ws = null
       }
+      // 主動斷線（切歷史日期／離頁）：onclose 已被拔掉不會跑，清空名單要在這裡做；
+      // 這是刻意斷的，不是「無法同步」
+      this.capturers = []
+      this.captureSyncLost = false
     },
 
     // 處理來自 DO 的 WebSocket 訊息（差量更新 or 初始快照）
@@ -1406,6 +1435,11 @@ export default {
           }
           this.transcriptData = msg.transcripts || {}
           this.isRecorder = this.meetingData.recorder === this.authUserData.uid
+          this.capturers = msg.capturers || []
+          break
+
+        case 'capture_list':
+          this.capturers = msg.capturers || []
           break
 
         case 'entry_saved':
