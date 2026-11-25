@@ -2,10 +2,10 @@
 
 function isSupportedLocaleCode(value: string): bool
 {
-  (((value == "zh-TW") || (value == "en")) || (value == "ja"))
+  ((((value == "zh-TW") || (value == "en")) || (value == "ja")) || (value == "de"))
 }
 
 lemma isSupportedLocaleCode_ensures(value: string)
-  ensures (isSupportedLocaleCode(value) == (((value == "zh-TW") || (value == "en")) || (value == "ja")))
+  ensures (isSupportedLocaleCode(value) == ((((value == "zh-TW") || (value == "en")) || (value == "ja")) || (value == "de")))
 {
 }

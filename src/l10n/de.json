@@ -1,0 +1,1428 @@
+{
+  "head": {
+    "home": {
+      "title": "vTaiwan – Offene Zusammenarbeit für öffentliche Politik",
+      "description": "vTaiwan ist Taiwans Plattform für offene Zusammenarbeit in der öffentlichen Politik. Sie fördert den Dialog zwischen Regierung und Bevölkerung und ermöglicht allen, an der Gestaltung öffentlicher Politik mitzuwirken."
+    },
+    "about": {
+      "title": "Über uns {'|'} vTaiwan",
+      "description": "Lernen Sie die Ideen, die Geschichte und die offene Zusammenarbeit für öffentliche Politik bei vTaiwan kennen."
+    },
+    "word": {
+      "title": "{word} {'|'} vTaiwan",
+      "description": "Entdecken Sie Inhalte zu „{word}“ und zur offenen Zusammenarbeit für öffentliche Politik."
+    },
+    "hundred": {
+      "title": "Hundertertafel {'|'} vTaiwan",
+      "description": "Eine interaktive Hundertertafel von vTaiwan."
+    },
+    "privacy": {
+      "title": "Datenschutzerklärung {'|'} vTaiwan",
+      "description": "Die Datenschutzerklärung von vTaiwan erläutert, wie personenbezogene Daten erhoben, verwendet und geschützt werden und warum das Registrierungsdatum Ihres Kontos öffentlich ist."
+    },
+    "terms": {
+      "title": "Nutzungsbedingungen {'|'} vTaiwan",
+      "description": "Die Nutzungsbedingungen von vTaiwan: Die Nutzung unserer Video- und Transkriptionsdienste setzt ein registriertes Konto und die Zustimmung zur CC-BY-SA-Lizenz voraus."
+    },
+    "topics": {
+      "title": "Themen {'|'} vTaiwan",
+      "description": "Beteiligen Sie sich an den Themendiskussionen von vTaiwan und wirken Sie an der Politikgestaltung mit."
+    },
+    "topicDetail": {
+      "title": "Themendetails",
+      "description": "Erfahren Sie, wie eine politische Diskussion bei vTaiwan voranschreitet und wie Sie sich beteiligen können."
+    },
+    "polis": {
+      "title": "Vorschläge diskutieren {'|'} vTaiwan",
+      "description": "Entscheiden Sie mit Polis gemeinsam, worum es in der nächsten Polis-Diskussion gehen soll."
+    },
+    "profile": {
+      "title": "Profil {'|'} vTaiwan",
+      "description": "Verwalten Sie Ihr vTaiwan-Profil."
+    },
+    "notFound": {
+      "title": "404 Im Aufbau {'|'} vTaiwan",
+      "description": "Diese Seite befindet sich derzeit im Aufbau. Freuen Sie sich auf eine noch umfassendere vTaiwan-Plattform für digitale Demokratie."
+    },
+    "blogs": {
+      "title": "Medium-Artikel {'|'} vTaiwan",
+      "description": "Artikel und Perspektiven, die vTaiwan auf Medium veröffentlicht."
+    },
+    "mastodon": {
+      "title": "Gemeinschaftsbeiträge {'|'} vTaiwan",
+      "description": "Beiträge aus der Gemeinschaft mit dem Schlagwort vTaiwan auf g0v.social."
+    },
+    "newsletters": {
+      "title": "Rundbriefe {'|'} vTaiwan",
+      "description": "Die Rundbriefe von vTaiwan auf Substack informieren über Neuigkeiten aus der Gemeinschaft."
+    },
+    "newsletterDetail": {
+      "title": "Rundbrief {'|'} vTaiwan",
+      "description": "Details zum vTaiwan-Rundbrief."
+    },
+    "contributors": {
+      "title": "Mitwirkende {'|'} vTaiwan",
+      "description": "Wir danken dem Kernteam und allen aus der Gemeinschaft, die an der offenen Zusammenarbeit für öffentliche Politik bei vTaiwan mitwirken."
+    },
+    "faq": {
+      "title": "Häufige Fragen {'|'} vTaiwan",
+      "description": "Häufige Fragen und Antworten zur vTaiwan-Plattform."
+    },
+    "meetups": {
+      "title": "Treffen {'|'} vTaiwan",
+      "description": "vTaiwan veranstaltet regelmäßig Online- und Präsenztreffen, um Projektfortschritte und Themen der öffentlichen Politik zu besprechen. Alle sind willkommen!"
+    },
+    "transcriptions": {
+      "title": "Transkriptverwaltung {'|'} vTaiwan",
+      "description": "Verwalten Sie die Transkripte der vTaiwan-Treffen: suchen, herunterladen und hochladen."
+    },
+    "transcriptionDetail": {
+      "title": "Transkriptdetails {'|'} vTaiwan",
+      "description": "Lesen Sie das vollständige Transkript eines vTaiwan-Treffens."
+    },
+    "jitsi": {
+      "title": "Live-Treffen {'|'} vTaiwan",
+      "description": "vTaiwan veranstaltet regelmäßig Online- und Präsenztreffen, um Projektfortschritte und Themen der öffentlichen Politik zu besprechen. Alle sind willkommen!"
+    },
+    "contact": {
+      "title": "Kontakt {'|'} vTaiwan",
+      "description": "Schließen Sie sich der vTaiwan-Gemeinschaft an und fördern Sie mit uns die digitale Demokratie."
+    },
+    "propose": {
+      "title": "Projekt vorschlagen {'|'} vTaiwan",
+      "description": "Haben Sie ein Thema der öffentlichen Politik, das diskutiert werden sollte? Schlagen Sie uns ein Projekt vor."
+    },
+    "admin": {
+      "title": "Verwaltungsbereich",
+      "description": "Der Verwaltungsbereich von vTaiwan für Mitgliederrollen und Transkripte."
+    },
+    "authError": {
+      "title": "Anmeldefehler",
+      "description": "Bei der Anmeldung ist ein Fehler aufgetreten. Versuchen Sie es erneut oder wenden Sie sich an das vTaiwan-Team."
+    }
+  },
+  "即將開始": "Demnächst",
+  "意見徵集": "Meinungen sammeln",
+  "研擬草案": "Entwurf erarbeiten",
+  "送交院會": "Dem Parlament vorlegen",
+  "歷史案件": "Archiviert",
+  "common": {
+    "login": "Anmelden",
+    "logout": "Abmelden",
+    "cancel": "Abbrechen",
+    "confirm": "Bestätigen",
+    "save": "Speichern",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "search": "Suchen",
+    "loading": "Wird geladen...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "warning": "Warnung",
+    "info": "Information",
+    "profile": "Profil",
+    "registerLogin": "Registrieren / Anmelden",
+    "retry": "Erneut versuchen"
+  },
+  "underConstruction": {
+    "title": "Im Aufbau",
+    "message": "Willkommen bei vTaiwan! Unsere Plattform befindet sich derzeit im Aufbau. Bitte reichen Sie Funktionsvorschläge und Fehlermeldungen über GitHub Issues ein.",
+    "messageEn": "Willkommen bei vTaiwan! Unsere Plattform befindet sich derzeit im Aufbau. Bitte reichen Sie Funktionsvorschläge und Fehlermeldungen über GitHub Issues ein.",
+    "githubIssues": "GitHub Issues"
+  },
+  "header": {
+    "home": "Start",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "profile": "Profil",
+    "projects": "Projekte",
+    "topics": "Themen",
+    "meetups": "Treffen",
+    "blogs": "Artikel",
+    "newsletters": "Rundbriefe",
+    "mastodon": "Beiträge",
+    "transcriptions": "Transkripte",
+    "faq": "Fragen",
+    "contributors": "Mitwirkende",
+    "admin": "Verwaltung",
+    "openMenu": "Menü öffnen",
+    "openAccountMenu": "Kontomenü öffnen"
+  },
+  "about": {
+    "title": "Über uns",
+    "mission": {
+      "title": "Die Mission von vTaiwan",
+      "description": "vTaiwan ist Taiwans Plattform für offene Zusammenarbeit in der öffentlichen Politik. Sie fördert den Dialog zwischen Regierung und Bevölkerung und ermöglicht allen, an der Gestaltung öffentlicher Politik mitzuwirken. Wir glauben, dass wir durch Offenheit, Zusammenarbeit und gemeinsames Gestalten bessere Lösungen für Taiwans Zukunft finden können."
+    },
+    "values": {
+      "title": "Unsere Werte",
+      "open": {
+        "title": "Offenheit",
+        "description": "Transparente Informationen, offene Abläufe"
+      },
+      "collaborate": {
+        "title": "Zusammenarbeit",
+        "description": "Vielfältige Beteiligung, gemeinsame Diskussion"
+      },
+      "coCreate": {
+        "title": "Gemeinsames Gestalten",
+        "description": "Innovativ denken, Probleme lösen"
+      }
+    },
+    "newsletter": {
+      "title": "Rundbriefe",
+      "description": "Lesen Sie die Rundbriefe von vTaiwan und erfahren Sie mehr über Neuigkeiten aus der Gemeinschaft, Veranstaltungen und politische Diskussionen.",
+      "button": "Rundbriefe ansehen"
+    },
+    "faq": {
+      "title": "Häufige Fragen",
+      "description": "Möchten Sie erfahren, wie vTaiwan funktioniert und wie Sie sich beteiligen können? Unsere häufigen Fragen und Antworten helfen Ihnen, die Plattform kennenzulernen.",
+      "button": "Häufige Fragen ansehen"
+    },
+    "contact": {
+      "title": "Kontakt",
+      "description": "Bei Fragen oder Anregungen können Sie sich gerne an uns wenden:",
+      "contactUs": "Kontakt aufnehmen",
+      "facebook": "Facebook"
+    }
+  },
+  "auth": {
+    "loginTitle": "Anmelden",
+    "loginWithGoogle": "Mit Google anmelden",
+    "loginWithGithub": "Mit GitHub anmelden",
+    "loggingIn": "Anmeldung läuft...",
+    "loginFailed": "Die Anmeldung ist fehlgeschlagen. Bitte versuchen Sie es erneut.",
+    "logoutConfirm": "Möchten Sie sich wirklich abmelden?",
+    "loginError": "Bei der Anmeldung ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "logoutError": "Bei der Abmeldung ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "inAppBrowserNotSupported": "Dieses System unterstützt keine integrierten Browser in Apps wie Facebook oder Line. Bitte öffnen Sie die Seite zur Anmeldung in einem regulären Browser. Vielen Dank."
+  },
+  "authError": {
+    "eyebrow": "Ein Fehler ist aufgetreten",
+    "title": "Anmeldung fehlgeschlagen",
+    "description": "Ihre Anmeldung ist fehlgeschlagen. Nachfolgend finden Sie die Fehlerursache und den Fehlercode.",
+    "reasonLabel": "Fehlerursache",
+    "descriptionFallback": "Keine Fehlerursache angegeben",
+    "codeLabel": "Fehlercode",
+    "retryLogin": "Erneut anmelden",
+    "goHome": "Zur Startseite",
+    "helpTitle": "Können Sie sich weiterhin nicht anmelden?",
+    "helpDescription": "Bewahren Sie den Fehlercode auf und teilen Sie uns mit, welche Anmeldemethode und welche Browserumgebung Sie verwendet haben.",
+    "contact": "Kontakt aufnehmen",
+    "reasons": {
+      "BANNED_USER": "Dieses Konto wurde gesperrt und kann sich nicht anmelden.",
+      "UNKNOWN": "Das System hat keinen erkennbaren Fehlercode bereitgestellt.",
+      "account_already_linked_to_different_user": "Dieses Konto eines sozialen Netzwerks ist bereits mit einem anderen Benutzerkonto verknüpft.",
+      "email_doesn't_match": "Die E-Mail-Adresse des Kontos im sozialen Netzwerk stimmt nicht mit der des aktuell angemeldeten Kontos überein.",
+      "email_not_found": "Das Konto im sozialen Netzwerk hat keine E-Mail-Adresse bereitgestellt. Die Anmeldung konnte deshalb nicht abgeschlossen werden.",
+      "invalid_callback_request": "Die Rückrufanfrage zur Anmeldung ist ungültig. Bitte melden Sie sich erneut an.",
+      "invalid_code": "Der Autorisierungscode ist ungültig oder abgelaufen. Bitte melden Sie sich erneut an.",
+      "no_callback_url": "Im Anmeldeablauf fehlt die Rückruf-URL. Bitte melden Sie sich erneut an.",
+      "no_code": "Der Anmeldeanbieter hat keinen Autorisierungscode zurückgegeben. Bitte melden Sie sich erneut an.",
+      "oauth_provider_not_found": "Der angegebene Anmeldeanbieter wurde nicht gefunden.",
+      "state_generation_error": "Der Prüfstatus für die Anmeldung konnte nicht erstellt werden. Bitte versuchen Sie es später erneut.",
+      "state_invalid": "Der Prüfstatus für die Anmeldung ist ungültig. Bitte melden Sie sich erneut an.",
+      "state_mismatch": "Der Prüfstatus für die Anmeldung stimmt nicht überein. Bitte melden Sie sich erneut an.",
+      "state_not_found": "Der Prüfstatus für die Anmeldung fehlt. Bitte melden Sie sich erneut an.",
+      "unable_to_get_user_info": "Die Benutzerdaten konnten nicht vom Anmeldeanbieter abgerufen werden.",
+      "unable_to_link_account": "Dieses Konto eines sozialen Netzwerks konnte nicht verknüpft werden."
+    }
+  },
+  "footer": {
+    "description": "Plattform für offene Zusammenarbeit in der öffentlichen Politik",
+    "community": "Gemeinschaft",
+    "contact": "Kontakt",
+    "copyright": "© {year} vTaiwan. Veröffentlicht unter der Creative-Commons-Lizenz CC-BY-SA",
+    "sourceCode": "Quellcode",
+    "privacyPolicy": "Datenschutzerklärung",
+    "termsOfService": "Nutzungsbedingungen",
+    "brandDescription": "Eine Plattform für offene Zusammenarbeit in der öffentlichen Politik – damit alle Taiwans Zukunft mitgestalten können.",
+    "connectTitle": "Gemeinschaftsnetzwerke",
+    "contactTitle": "Kontakt",
+    "joinNextMeeting": "Am nächsten Treffen teilnehmen",
+    "proposeTopic": "Neues Thema vorschlagen"
+  },
+  "home": {
+    "title": "vTaiwan – Offene Zusammenarbeit für öffentliche Politik",
+    "welcome": "Willkommen bei vTaiwan",
+    "description": "Innovative Plattform für Taiwans digitale Regierungsführung",
+    "hero": {
+      "title": {
+        "open": "Offenheit",
+        "collaborate": "Zusammenarbeit",
+        "coCreate": "Gemeinsam gestalten",
+        "taiwanFuture": "Taiwans Zukunft"
+      },
+      "subtitle": "vTaiwan ist eine Plattform für offene Zusammenarbeit, die den Dialog zwischen Regierung und Bevölkerung fördert und allen ermöglicht, an der Gestaltung öffentlicher Politik mitzuwirken.",
+      "buttons": {
+        "browseTopics": "Themen ansehen",
+        "learnMore": "Mehr erfahren"
+      },
+      "eyebrow": "Plattform für offene Zusammenarbeit in der öffentlichen Politik"
+    },
+    "features": {
+      "title": "So funktioniert es",
+      "items": {
+        "propose": {
+          "title": "Themen vorschlagen",
+          "description": "Alle können Themen der öffentlichen Politik vorschlagen, die diskutiert werden sollten. Nach einer ersten Prüfung gehen sie in die Diskussionsphase über."
+        },
+        "discuss": {
+          "title": "Offen diskutieren",
+          "description": "In Online-Diskussionen und Präsenztreffen sammeln wir die Meinungen aller Beteiligten und erarbeiten konkrete politische Empfehlungen."
+        },
+        "policy": {
+          "title": "Politik gestalten",
+          "description": "Wir überführen den gesellschaftlichen Konsens in konkrete politische Empfehlungen und legen sie den zuständigen Regierungsstellen zur Prüfung und Umsetzung vor."
+        }
+      }
+    },
+    "activeTopics": {
+      "eyebrow": "Aktuelle Themen",
+      "title": "Öffentliche Diskussionen, die gerade stattfinden",
+      "viewAll": "Alle Themen ansehen",
+      "empty": "Derzeit gibt es keine laufenden Themen.",
+      "loadError": "Die Themen können derzeit nicht geladen werden. Sie können weiterhin die vollständige Themenliste aufrufen."
+    },
+    "cta": {
+      "title": "Gestalten Sie mit uns Taiwans Zukunft",
+      "description": "Ob als Bürgerin oder Bürger, Fachperson, Regierungsmitglied oder einfach als jemand, dem öffentliche Angelegenheiten wichtig sind: Sie sind herzlich eingeladen, sich bei vTaiwan einzubringen und Ihre Ideen beizutragen.",
+      "buttons": {
+        "browseProjects": "Projekte ansehen",
+        "browseTopics": "Themen ansehen",
+        "learnMore": "Mehr erfahren"
+      },
+      "make": {
+        "descriptionLine1": "Fördern Sie breit angelegtes Zuhören in Ihrer Gemeinschaft",
+        "descriptionLine2": "Schaffen Sie Konsens und vertiefen Sie den Austausch",
+        "reference": "Siehe",
+        "linkText": "Sensemaker"
+      }
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "name": "Name",
+    "email": "E-Mail",
+    "role": "Rolle",
+    "createdAt": "Erstellt am",
+    "lastLogin": "Letzte Anmeldung",
+    "loginRequired": "Bitte melden Sie sich an, um Ihr Profil anzusehen und zu bearbeiten.",
+    "notSet": "Nicht festgelegt",
+    "avatarAlt": "Profilbild",
+    "updateFailed": "Das Profil konnte nicht aktualisiert werden. Bitte versuchen Sie es erneut.",
+    "nameChangeCooldown": "Ihr Name kann nur einmal innerhalb von 30 Tagen geändert werden.",
+    "nameChangeCooldownRemaining": "Sie können Ihren Namen in {days} Tagen erneut ändern.",
+    "nameChangeConfirm": "Nach der Änderung können Sie Ihren Namen {days} Tage lang nicht erneut ändern. Möchten Sie die Namensänderung bestätigen?"
+  },
+  "contributors": {
+    "title": "Mitwirkende",
+    "coreTeam": "Kernteam",
+    "communityContributors": "Mitwirkende aus der Gemeinschaft",
+    "joinUs": "Mitmachen",
+    "joinUsDescription": "Ob als Bürgerin oder Bürger, Fachperson, Regierungsmitglied oder einfach als jemand, dem öffentliche Angelegenheiten wichtig sind: Sie sind herzlich eingeladen, sich bei vTaiwan einzubringen.",
+    "learnMore": "Mehr erfahren",
+    "roles": {
+      "projectManager": "Projektleitung",
+      "techDirector": "Technische Leitung",
+      "designer": "Design",
+      "processDesigner": "Prozessgestaltung",
+      "fullStackDeveloper": "Full-Stack-Entwicklung"
+    },
+    "descriptions": {
+      "projectManager": "Verantwortlich für die Gesamtplanung und Koordination des Projekts",
+      "techDirector": "Verantwortlich für die technische Architektur und die Plattformentwicklung",
+      "designer": "Verantwortlich für das Webdesign und die Gestaltung der Nutzungserfahrung bei vTaiwan",
+      "processDesigner": "Verantwortlich für die Prozess- und Systemgestaltung bei vTaiwan",
+      "fullStackDeveloper": "Verantwortlich für die Systementwicklung und Wartung"
+    },
+    "contributions": {
+      "policyResearch": "Politikforschung",
+      "uiuxDesign": "UI/UX-Gestaltung",
+      "frontendDev": "Frontend-Entwicklung",
+      "contentEditor": "Redaktion",
+      "dataAnalysis": "Datenanalyse",
+      "translationSupport": "Übersetzungsunterstützung",
+      "backendDev": "Backend-Entwicklung",
+      "eventPlanning": "Veranstaltungsplanung",
+      "contentManager": "Inhaltsverwaltung",
+      "processDesign": "Prozessgestaltung",
+      "participation": "Mitwirkung an den Beratungsveranstaltungen und wöchentlichen Treffen von vTaiwan",
+      "normal_participation": "Teilnehmende"
+    }
+  },
+  "blog": {
+    "loading": "Wird geladen...",
+    "notFound": "Artikel nicht gefunden",
+    "backToList": "Zurück zur Artikelliste",
+    "editArticle": "Artikel bearbeiten",
+    "deleteArticle": "Artikel löschen",
+    "saving": "Wird gespeichert...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "title": "Titel",
+    "author": "Verfasst von",
+    "publishDate": "Veröffentlichungsdatum",
+    "tags": "Schlagwörter (durch Kommas getrennt)",
+    "tagsPlaceholder": "z. B. vTaiwan, digitale Demokratie, offene Regierung",
+    "summary": "Zusammenfassung",
+    "content": "Inhalt (Markdown)",
+    "contentPlaceholder": "Geben Sie hier Inhalte im Markdown-Format ein...",
+    "preview": "Vorschau",
+    "deleteConfirmTitle": "Löschen bestätigen",
+    "deleteConfirmMessage": "Möchten Sie diesen Artikel wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "deleting": "Wird gelöscht...",
+    "confirmDelete": "Löschen bestätigen",
+    "saveError": "Beim Speichern ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "deleteError": "Beim Löschen ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "loginRequired": "Bitte melden Sie sich an, um einen Artikel zu veröffentlichen.",
+    "postNewArticle": "Neuen Artikel veröffentlichen",
+    "publisher": "Veröffentlicht von",
+    "posting": "Wird veröffentlicht...",
+    "postArticle": "Artikel veröffentlichen",
+    "postError": "Beim Veröffentlichen des Artikels ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "language": "Sprache",
+    "languageAll": "Alle Sprachen",
+    "languageZhTW": "Traditionelles Chinesisch",
+    "languageEn": "Englisch",
+    "languageJa": "Japanisch",
+    "languageSelect": "Anzeigesprache auswählen",
+    "isPrototype": "Dies ist ein Entwurf",
+    "prototype": "Entwurf",
+    "fetchError": "Beim Abrufen der Beiträge ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "noPosts": "Für die aktuelle Sprache sind keine Beiträge verfügbar.",
+    "viewOriginal": "Originalbeitrag ansehen",
+    "allLanguages": "Alle Sprachen",
+    "currentLanguage": "Aktuelle Sprache",
+    "sourceDescription": "Artikelquelle: Beiträge mit dem Schlagwort vTaiwan auf g0v.social. Es werden nur Zusammenfassungen angezeigt."
+  },
+  "medium": {
+    "title": "Medium-Artikel",
+    "sourceDescription": "Artikelquelle: ",
+    "configTitle": "Medium-Konto einrichten",
+    "usernameLabel": "Medium-Benutzername oder URL",
+    "usernamePlaceholder": "z. B. vtaiwan oder https://medium.com/{'@'}vtaiwan",
+    "usernameHint": "Sie können den Benutzernamen direkt eingeben oder die vollständige Medium-URL einfügen.",
+    "usernameRequired": "Bitte geben Sie einen Medium-Benutzernamen ein.",
+    "invalidUsername": "Aus der Eingabe konnte kein Benutzername ermittelt werden. Bitte prüfen Sie das Format.",
+    "loadArticles": "Artikel laden",
+    "loading": "Wird geladen...",
+    "retry": "Erneut versuchen",
+    "readMore": "Weiterlesen",
+    "noArticles": "Derzeit sind keine Artikel verfügbar.",
+    "noArticlesFound": "Keine Artikel gefunden. Bitte prüfen Sie den Benutzernamen.",
+    "fetchError": "Beim Abrufen der Artikel ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "corsError": "Die Verbindung zum RSS-Feed von Medium konnte nicht hergestellt werden, möglicherweise aufgrund von CORS-Einschränkungen. Weitere Informationen finden Sie in der Browserkonsole.",
+    "userNotFound": "Für diesen Benutzernamen wurde kein RSS-Feed von Medium gefunden. Bitte prüfen Sie den Benutzernamen.",
+    "configHint": "Geben Sie oben einen Medium-Benutzernamen ein und klicken Sie auf „Artikel laden“.",
+    "howToFind": "Wie finden Sie Ihren Medium-Benutzernamen?",
+    "step1": "Öffnen Sie Ihre Medium-Profilseite (z. B. https://medium.com/{'@'}your-username).",
+    "step2": "Oder prüfen Sie die URL Ihrer veröffentlichten Artikel. Sie hat meist das Format https://medium.com/{'@'}username/article-title.",
+    "step3": "Der Benutzername ist der Teil nach dem {'@'}-Zeichen (ohne das {'@'}-Zeichen)."
+  },
+  "newsletter": {
+    "title": "Rundbriefe",
+    "description": "Lesen Sie die Rundbriefe von vTaiwan auf Substack und informieren Sie sich über Neuigkeiten aus der Gemeinschaft, Veranstaltungen und laufende Diskussionen.",
+    "loading": "Rundbriefe werden geladen...",
+    "readMore": "Weiterlesen",
+    "backToList": "← Zurück zur Rundbriefliste",
+    "viewOriginal": "Original auf Substack ansehen",
+    "visitSubstack": "Substack besuchen",
+    "fetchError": "Beim Abrufen der Rundbriefe ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.",
+    "empty": "Derzeit sind keine Rundbriefe verfügbar.",
+    "notFound": "Rundbrief nicht gefunden"
+  },
+  "transcript": {
+    "title": "Live-Transkript",
+    "subtitle": "Transkription und Korrektur des Treffens in Echtzeit",
+    "selectDate": "Datum auswählen",
+    "toggleTranscript": "Transkript ein- oder ausblenden",
+    "hideTranscript": "Transkript ausblenden",
+    "showTranscript": "Transkript anzeigen",
+    "noContent": "Noch kein Transkriptinhalt vorhanden",
+    "connecting": "Verbindung wird hergestellt...",
+    "disconnected": "Verbindung unterbrochen",
+    "edit": "Bearbeiten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "editing": "Bearbeitungsmodus",
+    "timestamp": "Zeitstempel",
+    "speaker": "Sprechende Person",
+    "content": "Inhalt",
+    "addEntry": "Eintrag hinzufügen",
+    "deleteEntry": "Eintrag löschen",
+    "exportTranscript": "Transkript exportieren",
+    "clearAll": "Alles löschen",
+    "confirmClear": "Möchten Sie dieses Transkript wirklich leeren?",
+    "autoScroll": "Automatisch scrollen",
+    "fontSize": "Schriftgröße",
+    "fontSizeSmall": "Klein",
+    "fontSizeMedium": "Mittel",
+    "fontSizeLarge": "Groß",
+    "iAmRecorder": "Ich führe das Protokoll",
+    "manualTranscript": "Manuelles Transkript",
+    "addManualTranscript": "Manuelles Transkript hinzufügen",
+    "audioSettings": "Audioeinstellungen",
+    "selectAudioSource": "Audioquelle auswählen",
+    "selectTranscriptionLanguage": "Transkriptionssprache auswählen",
+    "loadingAudioDevices": "Audiogeräte werden geladen...",
+    "unknownDevice": "Unbekanntes Gerät",
+    "testAudioDevice": "Audiogerät testen",
+    "testingAudio": "Test läuft...",
+    "audioLevel": "Audiopegel",
+    "speakToTest": "Sprechen Sie in das Mikrofon, um die Lautstärke zu testen.",
+    "stopTest": "Test beenden",
+    "editEntry": "Transkripteintrag bearbeiten",
+    "close": "Schließen",
+    "speakerPlaceholder": "Namen der sprechenden Person eingeben",
+    "contentPlaceholder": "Transkriptinhalt eingeben..."
+  },
+  "projects": {
+    "title": "Projektliste",
+    "description": "Alle Projekte zur Zusammenarbeit in der öffentlichen Politik auf der vTaiwan-Plattform. Jedes Projekt durchläuft die Phasen Vorschlag, Diskussion, Konsensbildung und politische Empfehlungen.",
+    "filters": {
+      "status": "Status",
+      "category": "Kategorie",
+      "search": "Suche",
+      "searchPlaceholder": "Projekte suchen..."
+    },
+    "status": {
+      "all": "Alle",
+      "active": "Laufend",
+      "completed": "Abgeschlossen"
+    },
+    "categories": {
+      "all": "Alle Kategorien"
+    },
+    "participants": "Teilnehmende",
+    "created": "Erstellt am",
+    "cta": {
+      "title": "Möchten Sie ein neues Projekt vorschlagen?",
+      "description": "Haben Sie ein Thema der öffentlichen Politik, das diskutiert werden sollte? Schlagen Sie uns ein Projekt vor.",
+      "button": "Projekt vorschlagen"
+    }
+  },
+  "projectDetail": {
+    "objectives": "Projektziele",
+    "howToParticipate": "So können Sie mitmachen",
+    "discuss": "An der Diskussion teilnehmen",
+    "discussDesc": "Teilen Sie Ihre Ideen und Vorschläge im Diskussionsbereich des Projekts und tauschen Sie sich mit anderen Teilnehmenden aus.",
+    "contribute": "Inhalte beitragen",
+    "contributeDesc": "Bringen Sie Fachwissen, Forschungsdaten oder praktische Erfahrungen ein, um das Projekt voranzubringen.",
+    "share": "Informationen teilen",
+    "shareDesc": "Teilen Sie die Projektinformationen mit weiteren Menschen, denen dieses Thema wichtig ist, und vergrößern Sie so die Reichweite.",
+    "join": "Dem Team beitreten",
+    "joinDesc": "Werden Sie Mitglied des Projektkernteams und wirken Sie an Entscheidungen und deren Umsetzung mit.",
+    "relatedLinks": "Weiterführende Links",
+    "githubRepo": "GitHub-Repository",
+    "documentation": "Projektdokumentation",
+    "discussion": "Diskussionsforum",
+    "backToProjects": "Zurück zur Projektliste",
+    "joinProject": "Am Projekt teilnehmen",
+    "notFound": "Projekt nicht gefunden",
+    "notFoundDesc": "Das gesuchte Projekt existiert nicht oder wurde entfernt."
+  },
+  "meetups": {
+    "title": "Treffen",
+    "description": "vTaiwan veranstaltet regelmäßig Online- und Präsenztreffen, um Projektfortschritte und Themen der öffentlichen Politik zu besprechen. Alle sind herzlich eingeladen!",
+    "search": {
+      "placeholder": "Treffen oder Themen suchen...",
+      "noResults": "Keine Treffen zu „{query}“ gefunden",
+      "resultsFor": "Suchergebnisse für: „{query}“",
+      "clearSearch": "Suche zurücksetzen"
+    },
+    "upcoming": {
+      "title": "Bevorstehende Treffen",
+      "empty": "Derzeit sind keine bevorstehenden Treffen geplant."
+    },
+    "past": {
+      "title": "Vergangene Treffen",
+      "empty": "Derzeit sind keine Aufzeichnungen vergangener Treffen vorhanden."
+    },
+    "calendar": {
+      "title": "Treffenkalender",
+      "description": "Abonnieren Sie unseren Treffenkalender, damit Sie kein wichtiges Treffen verpassen.",
+      "googleCalendar": "Google Calendar",
+      "icalFile": "iCal-Datei"
+    },
+    "relatedProject": "Zugehöriges Projekt",
+    "register": "Jetzt anmelden",
+    "details": "Einzelheiten",
+    "watchRecording": "Aufzeichnung ansehen",
+    "meetingRecord": "Sitzungsprotokoll",
+    "viewMorePast": "Weitere vergangene Treffen ansehen",
+    "host": {
+      "title": "Möchten Sie ein Treffen veranstalten?",
+      "description": "Wenn Sie eine Diskussion zu einem bestimmten Projekt oder einem Thema der öffentlichen Politik veranstalten möchten, wenden Sie sich gerne an uns.",
+      "contactUs": "Kontakt aufnehmen"
+    },
+    "jitsi": "Jitsi Meet",
+    "transcriptions": "Transkripte ansehen"
+  },
+  "meetupDetail": {
+    "upcoming": "Bevorstehend",
+    "past": "Beendet",
+    "details": "Treffendetails",
+    "date": "Datum",
+    "time": "Uhrzeit",
+    "location": "Ort",
+    "relatedProject": "Zugehöriges Projekt",
+    "tags": "Schlagwörter",
+    "relatedLinks": "Weiterführende Links",
+    "registration": "Anmeldelink",
+    "recording": "Link zur Aufzeichnung",
+    "summary": "Sitzungsprotokoll",
+    "hackmd": "Gemeinsame Notizen auf HackMD",
+    "kktix": "Anmeldung über KKTIX",
+    "googleForm": "Google-Formular",
+    "backToMeetups": "Zurück zur Treffenliste",
+    "register": "Jetzt anmelden",
+    "notFound": "Treffen nicht gefunden",
+    "notFoundDesc": "Das gesuchte Treffen existiert nicht oder wurde entfernt.",
+    "share": {
+      "title": "Dieses Thema teilen",
+      "facebook": "Auf Facebook teilen",
+      "line": "Auf Line teilen",
+      "twitter": "Auf X (Twitter) teilen"
+    }
+  },
+  "polis": {
+    "title": "Vorschläge diskutieren",
+    "subtitle": "Entscheiden Sie mit Polis gemeinsam, worum es in der nächsten Polis-Diskussion gehen soll",
+    "intro": {
+      "p1": "Willkommen bei MetaPolis 🌀",
+      "p2": "Dies ist eine vielleicht etwas selbstbezügliche Meinungsumfrage von vTaiwan:",
+      "p3": "Wir möchten mit Polis alle fragen, worüber die nächste Polis-Diskussion geführt werden sollte. (Schmunzelnd.)",
+      "p4": "Schließlich gibt es in Taiwan sehr viele Themen, die laufend diskutiert werden. vTaiwan wünscht sich deshalb einen Mechanismus, der der Öffentlichkeit die Möglichkeit gibt, selbst neue Themen einzubringen. Die Entscheidung darüber, welche Themen aufgegriffen werden, sollte nicht allein aus internen Diskussionen der vTaiwan-Gemeinschaft hervorgehen!"
+    },
+    "reportLabel": "Berichtsseite:",
+    "civicPlatform": {
+      "title": "Möchten Sie über öffentliche Themen mitdiskutieren?",
+      "description": "Besuchen Sie die Diskussionsplattform für öffentliche Themen, entdecken Sie laufende Diskussionen und beteiligen Sie sich.",
+      "linkLabel": "Zur Diskussionsplattform für öffentliche Themen"
+    }
+  },
+  "topics": {
+    "title": "Themen",
+    "description": "Das Themenforum von vTaiwan: Beteiligen Sie sich an der Politikgestaltung.",
+    "tryPolisLink": "Hier sofort ausprobieren",
+    "list": {
+      "title": "Themenliste",
+      "empty": "Derzeit sind keine Themen verfügbar.",
+      "loading": "Wird geladen...",
+      "found": "{count} Themen gefunden",
+      "lastUpdated": "Zuletzt aktualisiert"
+    },
+    "search": {
+      "placeholder": "Themen suchen...",
+      "results": "{count} Ergebnisse für „{query}“ gefunden",
+      "noResults": "Keine passenden Themen gefunden",
+      "clearSearch": "Suche zurücksetzen"
+    },
+    "sort": {
+      "latest": "Neueste",
+      "views": "Aufrufe"
+    },
+    "metrics": {
+      "posts": "Beiträge",
+      "views": "Aufrufe",
+      "lastActivity": "Letzte Aktivität"
+    },
+    "actions": {
+      "share": "Thema teilen",
+      "shareCopied": "Themenlink in die Zwischenablage kopiert",
+      "shareCopyFailed": "Der Themenlink konnte nicht kopiert werden. Bitte versuchen Sie es später erneut.",
+      "bookmark": "Lesezeichen hinzufügen",
+      "removeBookmark": "Lesezeichen entfernen"
+    },
+    "bookmarks": {
+      "myBookmarks": "Lesezeichen"
+    },
+    "detail": {
+      "title": "Themendetails",
+      "discussion": "Kommentare und Diskussion",
+      "discussionShort": "Kommentare",
+      "timeline": "Themenfortschritt",
+      "timelineShort": "Fortschritt",
+      "introduction": "Themenüberblick",
+      "notFound": "Thema nicht gefunden",
+      "comments": "Kommentare",
+      "participate": "An der Diskussion teilnehmen",
+      "noSlide": "Keine Einführungsmaterialien verfügbar",
+      "noInfo": "Keine ausführlichen Informationen verfügbar",
+      "enterDiscussion": "Zur Diskussion",
+      "backToList": "← Zurück zur Themenliste",
+      "noDiscussion": "Derzeit sind keine Diskussionsinhalte verfügbar.",
+      "noTimeline": "Derzeit sind keine Daten zum zeitlichen Verlauf verfügbar.",
+      "loading": "Wird geladen..."
+    },
+    "status": {
+      "preparing": "In Vorbereitung",
+      "discussion": "In Diskussion",
+      "voting": "In Abstimmung",
+      "completed": "Abgeschlossen",
+      "draft": "Entwurf erarbeiten",
+      "collection": "Meinungen sammeln"
+    },
+    "recentTitle": "Themen der letzten drei Monate",
+    "recentDesc": "Diese Themen wurden in den letzten drei Monaten aktualisiert. Sie geben neuen Interessierten einen Überblick darüber, welche politischen Themen vTaiwan derzeit beschäftigen.",
+    "steps": {
+      "all": "Alle",
+      "即將開始": "Demnächst",
+      "意見徵集": "Meinungen sammeln",
+      "研擬草案": "Entwurf erarbeiten",
+      "送交院會": "Dem Parlament vorlegen",
+      "歷史案件": "Archiviert"
+    },
+    "noRecent": "Derzeit gibt es keine aktuellen Themen.",
+    "timeline": {
+      "loading": "Zeitlicher Verlauf wird geladen...",
+      "externalLinksTitle": "Erläuterung externer Links*",
+      "columns": {
+        "time": "Zeitpunkt",
+        "stage": "Themenphase",
+        "links": "Weiterführende Links"
+      },
+      "linkTypes": {
+        "related": "Weiterführend",
+        "relatedDesc": "Links zum Thema",
+        "hackpad": "Notizen",
+        "hackpadDesc": "Gemeinsame Sitzungsnotizen",
+        "record": "Protokoll",
+        "recordDesc": "Zusammenfassung der wichtigsten Punkte aus den gemeinsamen Sitzungsnotizen",
+        "live": "Liveübertragung",
+        "liveDesc": "Liveübertragung des Treffens",
+        "discuss": "Diskussion",
+        "discussDesc": "Zur Diskussion",
+        "comment": "Kommentare",
+        "commentDesc": "Zu den Kommentaren"
+      }
+    },
+    "participation": {
+      "noLinks": "Keine weiterführenden Links",
+      "types": {
+        "hackpad": "Notizen",
+        "hackpadLong": "Gemeinsame Sitzungsnotizen",
+        "sayit": "Protokoll",
+        "sayitLong": "Zusammenfassung der wichtigsten Punkte aus den gemeinsamen Sitzungsnotizen",
+        "youtube": "Liveübertragung",
+        "youtubeLong": "Liveübertragung des Treffens auf YouTube",
+        "livehouse": "Liveübertragung",
+        "livehouseLong": "Liveübertragung des Treffens auf Livehouse",
+        "polis": "Diskussion",
+        "polisLong": "Zur Diskussion",
+        "discourse": "Kommentare",
+        "discourseLong": "Zu den Kommentaren",
+        "slido": "Fragen",
+        "slidoLong": "Gemeinsame Sitzungsnotizen",
+        "pdf": "PDF",
+        "pdfLong": "Gemeinsame Sitzungsnotizen",
+        "gitbook": "GitBook",
+        "gitbookLong": "Gemeinsame Sitzungsnotizen",
+        "related": "Weiterführend",
+        "relatedLong": "Links zum Thema"
+      }
+    }
+  },
+  "topicDetail": {
+    "discussion": "Diskussion",
+    "admin": "Administrator",
+    "moderator": "Moderator",
+    "showAllPosts": "Alle {count} Beiträge anzeigen",
+    "showLess": "Weniger anzeigen",
+    "commentsCount": "{count} Kommentare",
+    "viewsCount": "{count} Aufrufe",
+    "participantsCount": "{count} Teilnehmende",
+    "postComment": "Kommentar schreiben",
+    "firstComment": "Schreiben Sie den ersten Kommentar",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "daysAgo": "Vor {count} Tagen"
+  },
+  "contact": {
+    "title": "Kontakt",
+    "subtitle": "Werden Sie Teil der vTaiwan-Community und fördern Sie mit uns die digitale Demokratie",
+    "workingGroup": {
+      "title": "vTaiwan-Arbeitsgruppe",
+      "description": "Die vTaiwan-Arbeitsgruppe ist eine wichtige Plattform zur Förderung der digitalen Demokratie. Hier diskutieren wir über Politik, tauschen Ideen aus und arbeiten gemeinsam an verschiedenen Projekten.",
+      "button": "Dokumentation der Arbeitsgruppe ansehen"
+    },
+    "slack": {
+      "title": "g0v-Slack-Kanal",
+      "description": "Treten Sie dem Slack-Arbeitsbereich von g0v bei, tauschen Sie sich im Kanal #vtaiwan in Echtzeit mit der Community aus und beteiligen Sie sich an Diskussionen und gemeinsamen Projekten.",
+      "channel": "#vtaiwan",
+      "channelDesc": "Zentraler Kanal für politische Diskussionen, gemeinsame Projekte und den Austausch innerhalb der Community",
+      "button": "g0v auf Slack beitreten"
+    },
+    "otherMethods": {
+      "title": "Weitere Kontaktmöglichkeiten",
+      "github": {
+        "title": "GitHub",
+        "description": "Entdecken Sie unsere Open-Source-Projekte",
+        "link": "Zu GitHub →"
+      },
+      "email": {
+        "title": "E-Mail",
+        "description": "Kontaktieren Sie uns per E-Mail",
+        "link": "E-Mail senden →"
+      },
+      "meetups": {
+        "title": "Treffen vor Ort",
+        "description": "Nehmen Sie an unseren regelmäßigen Treffen teil",
+        "link": "Treffen ansehen →"
+      }
+    },
+    "cta": {
+      "title": "Möchten Sie mitmachen?",
+      "description": "Ob Sie in Entwicklung, Design oder Politik tätig sind oder sich einfach für digitale Demokratie interessieren: Sie sind in der vTaiwan-Community herzlich willkommen!",
+      "workingGroup": "Arbeitsgruppe ansehen",
+      "slack": "Slack beitreten"
+    }
+  },
+  "transcriptions": {
+    "title": "Transkriptverwaltung",
+    "description": "Durchsuchen Sie Sitzungstranskripte, lesen Sie Zusammenfassungen und laden Sie den vollständigen Text herunter (Upload und Bearbeitung von Zusammenfassungen sind in der Verwaltungskonsole verfügbar)",
+    "search": {
+      "label": "Stichwortsuche",
+      "placeholder": "Sitzungs-ID oder Zusammenfassung durchsuchen…",
+      "clearSearch": "Suche zurücksetzen",
+      "noResults": "Keine Transkripte für „{query}“ gefunden"
+    },
+    "upload": {
+      "title": "Transkript hochladen",
+      "description": "Mit dem Upload stimmen Sie der Veröffentlichung unter der Creative-Commons-Lizenz CC-BY-SA sowie der Erstellung einer KI-Zusammenfassung zu. Die Zusammenfassung wird unter CC0 veröffentlicht.",
+      "selectFile": "Datei auswählen (.txt)",
+      "uploading": "Upload läuft… Die KI erstellt eine Zusammenfassung. Bitte warten Sie etwa 60 Sekunden.",
+      "uploadButton": "Transkript hochladen",
+      "loginRequired": "Bitte melden Sie sich an, um Transkriptdateien hochzuladen"
+    },
+    "list": {
+      "title": "Transkriptliste",
+      "prototypeBadge": "Muster",
+      "meetingId": "Sitzungs-ID",
+      "fileName": "Dateiname",
+      "viewOutline": "Zusammenfassung ansehen",
+      "viewDetail": "Details ansehen",
+      "download": "Vollständigen Text herunterladen",
+      "empty": "Noch keine Transkripte vorhanden",
+      "copyLink": "Transkriptlink kopieren",
+      "copyLinkSuccess": "Transkriptlink in die Zwischenablage kopiert",
+      "copyLinkError": "Kopieren fehlgeschlagen. Bitte versuchen Sie es später erneut."
+    },
+    "versions": {
+      "button": "Versionen",
+      "title": "Transkriptversionen",
+      "hint": "Jeder Upload wird als eigene Version gespeichert. Laden Sie eine beliebige Version herunter und anschließend erneut hoch, um sie wiederherzustellen.",
+      "loading": "Versionen werden geladen…",
+      "empty": "Noch keine Versionen vorhanden (dieses Transkript wurde vor Einführung der Versionierung hochgeladen)",
+      "loadError": "Versionen konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
+      "download": "Herunterladen",
+      "downloading": "Download läuft…",
+      "downloadError": "Diese Version konnte nicht heruntergeladen werden. Bitte versuchen Sie es später erneut.",
+      "close": "Schließen",
+      "latest": "Neueste",
+      "truncated": "Zu viele Versionen; nur die ältesten {n} werden angezeigt",
+      "col": {
+        "uploadedAt": "Uploadzeitpunkt",
+        "uploadedBy": "Hochgeladen von",
+        "size": "Größe",
+        "action": "Aktion"
+      }
+    },
+    "outline": {
+      "title": "Sitzungszusammenfassung",
+      "close": "Schließen",
+      "copy": "Zusammenfassung kopieren",
+      "download": "Zusammenfassung herunterladen",
+      "edit": "Zusammenfassung bearbeiten",
+      "saveAndEndEdit": "Speichern und Bearbeitung beenden",
+      "cancel": "Bearbeitung abbrechen",
+      "copySuccess": "Zusammenfassung in die Zwischenablage kopiert",
+      "copyError": "Kopieren fehlgeschlagen. Bitte versuchen Sie es später erneut.",
+      "editRequireAdmin": "Zum Bearbeiten der Zusammenfassung sind Administratorrechte erforderlich"
+    },
+    "messages": {
+      "selectFileFirst": "Bitte wählen Sie eine Datei aus",
+      "invalidFileName": "Ungültiges Dateinamenformat. Bitte verwenden Sie das Format transcript-YYYY-MM-DD.txt.",
+      "existsRequireAdmin": "Für diese Sitzung existiert bereits ein Transkript. Zum Aktualisieren sind Administratorrechte erforderlich.",
+      "confirmUpdate": "Für die Sitzung {meetingId} existiert bereits ein Transkript. Möchten Sie es wirklich aktualisieren?",
+      "uploadSuccess": "Transkript erfolgreich hochgeladen!",
+      "uploadError": "Upload fehlgeschlagen. Bitte versuchen Sie es später erneut.",
+      "loadError": "Transkriptliste konnte nicht geladen werden. Bitte versuchen Sie es später erneut."
+    }
+  },
+  "transcriptionDetail": {
+    "title": "Transkriptdetails",
+    "description": "Lesen Sie das vollständige Sitzungstranskript",
+    "backToList": "Zurück zur Liste",
+    "speaker": "Sprechende Person",
+    "noContent": "Kein Transkriptinhalt vorhanden",
+    "loadError": "Transkript konnte nicht geladen werden. Bitte versuchen Sie es später erneut.",
+    "photoAlt": "Profilbild",
+    "loading": "Wird geladen…",
+    "error": "Laden fehlgeschlagen"
+  },
+  "faq": {
+    "title": "Häufig gestellte Fragen",
+    "description": "Hier finden Sie häufig gestellte Fragen und Antworten zur vTaiwan-Plattform. Bei weiteren Fragen können Sie sich gerne an uns wenden.",
+    "contact": {
+      "title": "Haben Sie weitere Fragen?",
+      "description": "Wenn Sie weitere Fragen haben oder Unterstützung benötigen, erreichen Sie uns auf folgenden Wegen:",
+      "email": {
+        "title": "E-Mail"
+      },
+      "social": {
+        "title": "Soziale Medien"
+      }
+    }
+  },
+  "propose": {
+    "title": "Projekt vorschlagen",
+    "description": "Haben Sie ein Thema zur öffentlichen Politik, das eine Diskussion verdient? Dann schlagen Sie gerne ein Projekt vor. Bitte informieren Sie sich vorher über die Voraussetzungen für die Teilnahme.",
+    "requirements": {
+      "title": "Voraussetzungen für die Teilnahme",
+      "meeting": {
+        "title": "An Online-Treffen von vTaiwan teilnehmen",
+        "description": "Bevor Sie einen Vorschlag einreichen, nehmen Sie bitte an Online-Treffen von vTaiwan teil, um die Arbeitsweise der Community und die Diskussionsatmosphäre kennenzulernen.",
+        "bullet1": "An mindestens einem Online-Treffen von vTaiwan teilnehmen",
+        "bullet2": "Die besprochenen Themen und Abläufe kennenlernen",
+        "bullet3": "Kontakte zu Mitgliedern der Community knüpfen"
+      },
+      "admin": {
+        "title": "Verantwortung für die Inhaltsverwaltung übernehmen",
+        "description": "Ein Vorschlag braucht jemanden, der ihn betreut und voranbringt. Übernehmen Sie deshalb die Verantwortung für die Inhaltsverwaltung Ihres Vorschlags.",
+        "bullet1": "Die Inhalte des Vorschlags verwalten und aktualisieren",
+        "bullet2": "Diskussionen koordinieren und Meinungen sammeln",
+        "bullet3": "Den Vorschlag voranbringen und seine Umsetzung fördern"
+      }
+    },
+    "process": {
+      "title": "Ablauf eines Vorschlags",
+      "step1": {
+        "title": "An Treffen teilnehmen",
+        "description": "Nehmen Sie an Online-Treffen von vTaiwan teil und lernen Sie die Arbeitsweise der Community kennen"
+      },
+      "step2": {
+        "title": "Ideen vorstellen",
+        "description": "Stellen Sie Ihre Idee bei einem Treffen vor und gewinnen Sie die Unterstützung der Community"
+      },
+      "step3": {
+        "title": "Verwaltung übernehmen",
+        "description": "Übernehmen Sie die Inhaltsverwaltung und bringen Sie Ihren Vorschlag voran"
+      }
+    },
+    "contact": {
+      "title": "Mitmachen",
+      "description": "Möchten Sie Ihr Projekt vorschlagen? Nehmen Sie zunächst an unseren Treffen teil oder kontaktieren Sie die Community.",
+      "meeting": {
+        "title": "An Online-Treffen teilnehmen",
+        "description": "Nehmen Sie an unseren Online-Treffen teil, lernen Sie die Arbeitsweise von vTaiwan kennen und tauschen Sie sich mit der Community aus.",
+        "button": "Am Treffen teilnehmen"
+      },
+      "community": {
+        "title": "Community kontaktieren",
+        "description": "Bei Fragen oder wenn Sie Unterstützung benötigen, können Sie die vTaiwan-Community über verschiedene Kanäle erreichen.",
+        "button": "Kontakt aufnehmen"
+      }
+    }
+  },
+  "privacy": {
+    "title": "Datenschutzerklärung",
+    "metaDescription": "Datenschutzerklärung von vTaiwan – wie wir personenbezogene Daten erheben, verwenden und schützen und warum das Registrierungsdatum Ihres Kontos öffentlich ist.",
+    "introduction": {
+      "title": "Einleitung",
+      "content": "vTaiwan setzt sich für den Schutz Ihrer Privatsphäre ein. Diese Datenschutzerklärung erläutert, wie wir Ihre personenbezogenen Daten erheben, verwenden, speichern und schützen."
+    },
+    "dataCollection": {
+      "title": "Datenerhebung",
+      "content": "Wir können folgende Arten von Daten erheben:",
+      "item1": "Kontoinformationen: Angaben wie Name und E-Mail-Adresse, die Sie bei der Registrierung machen",
+      "item2": "Nutzungsdaten: Aufzeichnungen Ihrer Aktivitäten und Einstellungen bei der Nutzung unserer Dienste",
+      "item3": "Technische Daten: IP-Adresse, Browsertyp, Betriebssystem und weitere technische Informationen"
+    },
+    "dataUsage": {
+      "title": "Datenverwendung",
+      "content": "Wir verwenden die erhobenen Daten für folgende Zwecke:",
+      "item1": "Bereitstellung und Verbesserung unserer Dienste",
+      "item2": "Kommunikation mit Ihnen und Bereitstellung von Unterstützung",
+      "item3": "Gewährleistung der Plattformsicherheit und Verhinderung von Missbrauch"
+    },
+    "dataSharing": {
+      "title": "Datenweitergabe",
+      "content": "Mit Ausnahme der nachfolgend genannten öffentlichen Informationen und notwendiger Analyse- und Protokollierungszwecke verpflichten wir uns, Ihren Browserverlauf und Ihre personenbezogenen Daten weder zu verkaufen noch zu vermieten oder an Dritte weiterzugeben.",
+      "publicInfo": "Das Datum, an dem Sie Ihr vTaiwan-Konto registriert haben, ist öffentlich und kann von allen eingesehen werden.",
+      "highlight": "Wichtig: Abgesehen von den oben genannten öffentlichen Informationen geben wir Ihre personenbezogenen Daten nicht an Dritte weiter"
+    },
+    "dataSecurity": {
+      "title": "Datensicherheit",
+      "content": "Wir ergreifen geeignete technische und organisatorische Maßnahmen, um Ihre personenbezogenen Daten vor unbefugtem Zugriff, unbefugter Nutzung und Offenlegung zu schützen."
+    },
+    "userRights": {
+      "title": "Ihre Rechte",
+      "content": "In Bezug auf Ihre personenbezogenen Daten haben Sie folgende Rechte:",
+      "item1": "Auskunftsrecht: Sie können Einsicht in die personenbezogenen Daten verlangen, die wir über Sie gespeichert haben",
+      "item2": "Recht auf Berichtigung: Sie können die Korrektur unrichtiger personenbezogener Daten verlangen",
+      "item3": "Recht auf Löschung: Sie können die Löschung Ihrer personenbezogenen Daten verlangen"
+    },
+    "contact": {
+      "title": "Kontakt",
+      "content": "Wenn Sie Fragen zu dieser Datenschutzerklärung haben oder Ihre Rechte ausüben möchten, kontaktieren Sie uns über:",
+      "email": "E-Mail",
+      "github": "GitHub"
+    },
+    "updates": {
+      "title": "Aktualisierungen der Datenschutzerklärung",
+      "content": "Wir können diese Datenschutzerklärung von Zeit zu Zeit aktualisieren. Wesentliche Änderungen werden auf der Website bekannt gegeben.",
+      "lastUpdated": "Zuletzt aktualisiert: 19. November 2026"
+    },
+    "backToHome": "Zur Startseite"
+  },
+  "terms": {
+    "title": "Nutzungsbedingungen",
+    "metaDescription": "Nutzungsbedingungen von vTaiwan – zur Nutzung unserer Video- und Transkriptionsdienste sind ein registriertes Konto und die Zustimmung zur CC-BY-SA-Lizenz erforderlich",
+    "introduction": {
+      "title": "Einleitung",
+      "content": "Willkommen auf der vTaiwan-Plattform. Diese Nutzungsbedingungen regeln die Nutzung unserer Dienste."
+    },
+    "acceptance": {
+      "title": "Zustimmung zu den Bedingungen",
+      "content": "Mit der Nutzung unserer Dienste stimmen Sie diesen Nutzungsbedingungen zu. Wenn Sie diesen Bedingungen nicht zustimmen, nutzen Sie unsere Dienste bitte nicht."
+    },
+    "account": {
+      "title": "Voraussetzungen für ein Konto",
+      "content": "Für bestimmte Funktionen müssen Sie ein Konto registrieren:",
+      "highlight": "Wichtig: Für die Nutzung der Video- und Transkriptionsdienste ist ein registriertes Konto erforderlich",
+      "item1": "Sie müssen wahrheitsgemäße und zutreffende Angaben machen",
+      "item2": "Sie sind für die Sicherheit Ihres Kontos verantwortlich",
+      "item3": "Sie müssen mindestens 18 Jahre alt sein oder die Zustimmung Ihrer erziehungsberechtigten Person haben"
+    },
+    "videoService": {
+      "title": "Videodienst",
+      "content": "Unser Videokonferenzdienst ermöglicht Diskussionen und Zusammenarbeit im Internet.",
+      "highlight": "Für die Nutzung des Videodienstes sind ein registriertes Konto und die Zustimmung zu den entsprechenden Bedingungen erforderlich"
+    },
+    "transcriptionService": {
+      "title": "Transkriptionsdienst",
+      "content": "Wir bieten einen Transkriptionsdienst für Sitzungen an, um Diskussionsinhalte festzuhalten und aufzubereiten. Für die Nutzung dieses Dienstes müssen Sie:",
+      "highlight": "Die Transkriptinhalte werden unter der CC-BY-SA-Lizenz veröffentlicht",
+      "item1": "Ein Konto registrieren und sich anmelden",
+      "item2": "Den Lizenzbedingungen für die Transkriptinhalte zustimmen",
+      "item3": "Die Community-Regeln und einen respektvollen Diskussionsstil einhalten"
+    },
+    "contentLicense": {
+      "title": "Inhaltslizenz",
+      "content": "Mit der Nutzung unseres Transkriptionsdienstes stimmen Sie Folgendem zu:",
+      "highlight": "Alle Transkriptinhalte werden unter der Creative-Commons-Lizenz CC-BY-SA veröffentlicht",
+      "details": "Die CC-BY-SA-Lizenz erlaubt anderen, Ihre Inhalte frei zu nutzen, zu verändern und weiterzugeben. Dabei müssen die ursprünglichen Urheber genannt und abgeleitete Werke unter derselben Lizenz veröffentlicht werden."
+    },
+    "userConduct": {
+      "title": "Verhaltensregeln",
+      "content": "Bei der Nutzung unserer Dienste verpflichten Sie sich:",
+      "item1": "Andere Nutzende zu respektieren und konstruktiv zu diskutieren",
+      "item2": "Keine rechtswidrigen, schädlichen oder beleidigenden Inhalte zu veröffentlichen",
+      "item3": "Das System nicht zu missbrauchen und keine böswilligen Handlungen vorzunehmen",
+      "item4": "Alle geltenden Gesetze und Vorschriften einzuhalten"
+    },
+    "disclaimer": {
+      "title": "Haftungsausschluss",
+      "content": "Unsere Dienste werden im bestehenden Zustand ohne ausdrückliche oder stillschweigende Garantien bereitgestellt. Wir übernehmen keine Haftung für unmittelbare oder mittelbare Schäden, die durch die Nutzung der Dienste entstehen."
+    },
+    "modifications": {
+      "title": "Änderungen der Nutzungsbedingungen",
+      "content": "Wir behalten uns vor, diese Nutzungsbedingungen jederzeit zu ändern. Geänderte Bedingungen werden auf der Website veröffentlicht. Die weitere Nutzung der Dienste gilt als Zustimmung zu den geänderten Bedingungen."
+    },
+    "contact": {
+      "title": "Kontakt",
+      "content": "Wenn Sie Fragen zu diesen Nutzungsbedingungen haben, kontaktieren Sie uns über:",
+      "email": "E-Mail",
+      "github": "GitHub"
+    },
+    "effectiveDate": {
+      "title": "Inkrafttreten",
+      "content": "Diese Nutzungsbedingungen treten am Tag ihrer Veröffentlichung in Kraft.",
+      "lastUpdated": "Zuletzt aktualisiert: September 2025"
+    },
+    "backToHome": "Zur Startseite"
+  },
+  "jitsi": {
+    "title": "vTaiwan-Videokonferenz",
+    "ready": "Bereit, dem Raum {room} beizutreten",
+    "namePlaceholder": "Geben Sie Ihren Namen ein",
+    "join": "An der Sitzung teilnehmen",
+    "tokenError": "Das Sitzungstoken konnte nicht abgerufen werden. Bitte versuchen Sie es später erneut.",
+    "startRecording": "Aufnahme zur Transkription starten (zum Starten drücken, zum Stoppen erneut drücken)",
+    "stopRecording": "Aufnahme zur Transkription stoppen (noch {seconds} Sekunden)",
+    "transcribingQueued": "Transkription läuft, weitere Audiodateien werden in die Warteschlange aufgenommen",
+    "transcribing": "Transkription läuft, bitte warten…",
+    "recordingStatus": "{name} nimmt auf · {seconds} Sekunden",
+    "queueStatus": "{count} Audiodateien in der Warteschlange",
+    "transcriptionLanguage": "Transkriptionssprache: {lang}",
+    "unknownSpeaker": "Unbekannte sprechende Person",
+    "micError": "Die Aufnahme konnte nicht gestartet werden. Bitte versuchen Sie es später erneut. Falls eine andere Anwendung das Mikrofon verwendet, beenden Sie zuerst deren Aufnahme.",
+    "micPermissionError": "Der Mikrofonzugriff wurde verweigert. Erlauben Sie dieser Website in den Browser- oder Systemeinstellungen den Zugriff auf das Mikrofon.",
+    "micDeviceError": "Das ausgewählte Mikrofon ist nicht verfügbar oder seine Einstellungen sind nicht mehr gültig. Bitte wählen Sie erneut ein Audioeingabegerät aus.",
+    "micFormatError": "Ihr Browser kann keines der verfügbaren Aufnahmeformate verwenden. Bitte aktualisieren Sie Ihren Browser oder Ihr Betriebssystem und versuchen Sie es erneut.",
+    "audioTestError": "Audiotest fehlgeschlagen. Bitte überprüfen Sie die Geräteberechtigungen.",
+    "leaveConfirm": {
+      "title": "Sitzung verlassen?",
+      "message": "Wenn Sie zurückgehen, wird die Verbindung zur aktuellen Videokonferenz getrennt.",
+      "stay": "In der Sitzung bleiben",
+      "leave": "Sitzung verlassen"
+    },
+    "notify": {
+      "timeUp": {
+        "title": "Transkriptionsabschnitt abgeschlossen",
+        "body": "Die 60-sekündige Aufnahme ist abgeschlossen. Die Audiodaten werden verarbeitet und die nächste Runde wird vorbereitet."
+      },
+      "autoMode": {
+        "title": "Fortlaufende automatische Transkription aktiviert",
+        "body": "Wenn Sie zu dieser Seite zurückkehren, endet die automatische Wiederholung."
+      },
+      "autoError": {
+        "title": "Transkriptionsfehler",
+        "body": "Die nächste Aufnahme konnte nicht automatisch gestartet werden. Bitte starten Sie sie manuell erneut."
+      }
+    },
+    "loginHint": "Bitte melden Sie sich an, um an der Sitzung teilzunehmen und alle Transkriptfunktionen zu nutzen.",
+    "noPermission": "Ihr Konto kann nicht an Sitzungen teilnehmen. Bitte wenden Sie sich an die Administration.",
+    "tipBanner": {
+      "message": "Um Mikrofon oder Kamera zu aktivieren, klicken Sie zuerst einmal in den schwarzen Bereich und anschließend unten links auf die Mikrofon- oder Kamerasymbole.",
+      "dismiss": "Verstanden"
+    }
+  },
+  "notFound": {
+    "title": "Seite nicht gefunden",
+    "description": "Die gesuchte Seite existiert leider nicht oder wurde entfernt.",
+    "suggestion": "Bitte überprüfen Sie die URL oder nutzen Sie die Schaltflächen unten, um zur Website zurückzukehren.",
+    "buttons": {
+      "backToHome": "Zur Startseite",
+      "browseTopics": "Themen entdecken",
+      "contactUs": "Kontakt aufnehmen"
+    },
+    "help": {
+      "title": "Benötigen Sie Hilfe?",
+      "checkUrl": "• Bitte überprüfen Sie, ob die URL korrekt ist",
+      "useNavigation": "• Nutzen Sie das Navigationsmenü oben, um die Website zu erkunden",
+      "contactSupport": "• Bei Fragen kontaktieren Sie uns bitte"
+    }
+  },
+  "admin": {
+    "guard": {
+      "checking": "Berechtigungen werden geprüft…",
+      "forbiddenTitle": "Zugriff verweigert",
+      "forbiddenDesc": "Diese Seite ist nur für Administratoren zugänglich. Wenn Sie dies für einen Fehler halten, wenden Sie sich bitte an die Website-Administration.",
+      "wrongAccountAlert": "Sie sind jetzt mit einem anderen Konto ({email}) angemeldet, das keine Administratorrechte hat. Wenn die E-Mail-Adresse des gerade verwendeten sozialen Kontos von der Ihres Administratorkontos abweicht, wird es als neues Konto behandelt. Bitte melden Sie sich ab und mit der E-Mail-Adresse Ihres Administratorkontos erneut an. Sie werden zur Startseite weitergeleitet.",
+      "backHome": "Zur Startseite",
+      "reauthTitle": "Erneute Identitätsprüfung erforderlich",
+      "reauthDesc": "Der Zugriff auf die Verwaltungskonsole ist eine sensible Aktion. Auch wenn Sie bereits angemeldet sind, müssen Sie Ihre Identität erneut über Google oder GitHub bestätigen. Danach erhalten Sie für begrenzte Zeit Zugriff.",
+      "sessionRemaining": "Verbleibende Zeit dieser Sitzung: {time}",
+      "sessionRemainingAria": "Verbleibende Zeit für den erweiterten Zugriff"
+    },
+    "title": "Verwaltungskonsole",
+    "subtitle": "Die Verwaltung von Mitgliedern, Transkripten und Civic Talk verwendet echte Daten.",
+    "search": {
+      "label": "Stichwortsuche",
+      "clear": "Suche zurücksetzen",
+      "empty": "Keine Ergebnisse für „{q}“ gefunden",
+      "placeholder": {
+        "members": "Nach Name, E-Mail, Rolle oder Status suchen…",
+        "logs": "Nach Zeitpunkt, ausführender Person oder Aktion suchen…"
+      }
+    },
+    "tabs": {
+      "members": "Mitglieder und Berechtigungen",
+      "logs": "Änderungsprotokoll",
+      "transcripts": "Transkripte",
+      "civicTalks": "Civic Talk"
+    },
+    "members": {
+      "listTitle": "Mitgliederliste",
+      "count": "{n} Mitglieder",
+      "countFiltered": "{n} von {total} Mitgliedern werden angezeigt",
+      "showDetails": "Alle Details zu {name} ansehen",
+      "detailsTitle": "Mitgliedsdaten von {name}",
+      "loading": "Mitglieder werden geladen…",
+      "empty": "Noch keine Mitglieder vorhanden",
+      "loadFailed": "Mitglieder konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
+      "roleUpdateFailed": "Rolle konnte nicht aktualisiert werden. Bitte versuchen Sie es später erneut.",
+      "banFailed": "Das Mitglied konnte nicht gesperrt werden. Bitte versuchen Sie es später erneut.",
+      "unbanFailed": "Die Sperre des Mitglieds konnte nicht aufgehoben werden. Bitte versuchen Sie es später erneut.",
+      "needSuperAdmin": "Nur Superadministratoren können die Mitgliederliste einsehen und Rollen ändern. Andere Administratoren können weiterhin die Registerkarte für Transkripte verwenden.",
+      "col": {
+        "name": "Name",
+        "email": "E-Mail",
+        "role": "Rolle",
+        "joinedAt": "Beitrittsdatum",
+        "status": "Status",
+        "actions": "Aktionen"
+      }
+    },
+    "status": {
+      "active": "Aktiv",
+      "banned": "Gesperrt"
+    },
+    "roles": {
+      "superAdmin": "Superadministrator",
+      "admin": "Administrator",
+      "user": "Benutzer",
+      "confirm": "Möchten Sie die Rolle von {member} in „{role}“ ändern?"
+    },
+    "perms": {
+      "title": "Übersicht der Rollenberechtigungen",
+      "hint": "Diese Übersicht der Rollenberechtigungen ist schreibgeschützt. Nur Superadministratoren können Mitgliederrollen und Berechtigungen verwalten.",
+      "col": {
+        "member": "Rolle"
+      },
+      "meeting": {
+        "join": "An Sitzungen teilnehmen",
+        "moderate": "Sitzungen moderieren"
+      },
+      "transcription": {
+        "update": "Transkripte aktualisieren"
+      },
+      "permission": {
+        "manage": "Berechtigungen verwalten"
+      }
+    },
+    "ban": {
+      "button": "Sperren",
+      "title": "Mitglied {name} sperren",
+      "reasonLabel": "Sperrgrund (Pflichtfeld)",
+      "reasonPlaceholder": "Bitte geben Sie den Grund für die Sperre an…",
+      "reasonRequired": "Ein Sperrgrund ist erforderlich.",
+      "submit": "Mitglied sperren"
+    },
+    "unban": {
+      "button": "Sperre aufheben",
+      "confirm": "Möchten Sie die Sperre von {name} wirklich aufheben? Das Mitglied kann sich danach wieder anmelden."
+    },
+    "logs": {
+      "title": "Änderungsprotokoll",
+      "hint": "Änderungen in der Verwaltung: Rollenänderungen und Sperren von Mitgliedern, Uploads und Überschreibungen von Transkripten sowie Bearbeitungen von Zusammenfassungen. Es werden nur die neuesten {n} Einträge angezeigt.",
+      "needSuperAdmin": "Das Änderungsprotokoll ist nur für Superadministratoren sichtbar.",
+      "refresh": "Aktualisieren",
+      "loading": "Änderungsprotokoll wird geladen…",
+      "loadFailed": "Änderungsprotokoll konnte nicht geladen werden. Bitte versuchen Sie es später erneut.",
+      "empty": "Noch keine Änderungen protokolliert",
+      "col": {
+        "time": "Zeitpunkt",
+        "actor": "Ausführende Person",
+        "action": "Aktion",
+        "manage": "Verwaltungsaktionen"
+      },
+      "action": {
+        "userCreate": "Mitglied {target} erstellt (Rolle: {to})",
+        "userRoleSet": "Rolle von {target} von {from} in {to} geändert",
+        "userBan": "Mitglied {target} gesperrt",
+        "userBanWithReason": "Mitglied {target} gesperrt, Grund: {reason}",
+        "userUnban": "Sperre von Mitglied {target} aufgehoben",
+        "userRemove": "Mitglied {target} entfernt",
+        "userUpdate": "Kontodaten von Mitglied {target} aktualisiert",
+        "userImpersonate": "Als Mitglied {target} angemeldet",
+        "userPasswordSet": "Passwort von Mitglied {target} zurückgesetzt",
+        "userSessionRevokeSingle": "Eine Sitzung von Mitglied {target} beendet",
+        "userSessionsRevoke": "Alle Sitzungen von Mitglied {target} beendet",
+        "transcriptionCreate": "Transkript für {target} hinzugefügt (Version {version})",
+        "transcriptionReplace": "Transkript für {target} überschrieben (Version {version})",
+        "transcriptionDelete": "Transkript für {target} gelöscht",
+        "transcriptionRestore": "Transkript für {target} auf Version {version} zurückgesetzt",
+        "transcriptionOutlineUpdate": "Transkriptzusammenfassung für {target} bearbeitet",
+        "transcriptionOutlineRestore": "Zusammenfassung für {target} auf Version {version} zurückgesetzt",
+        "unknown": "Unbekanntes Änderungsereignis"
+      },
+      "restore": "Version vor der Änderung wiederherstellen",
+      "restoring": "Wird verarbeitet…",
+      "restoreConfirm": "Möchten Sie {target} auf die Version vor dieser Änderung ({time}) zurücksetzen? Der aktuelle Inhalt wird überschrieben, bleibt aber als Version erhalten.",
+      "restoreSuccess": "Die Version vor der Änderung wurde wiederhergestellt.",
+      "restoreFailed": "Die Aktion ist fehlgeschlagen. Bitte versuchen Sie es später erneut.",
+      "restoreUnavailable": "Für diese Änderung gibt es keine vorherige Version zum Wiederherstellen",
+      "deleteButton": "Dieses Transkript löschen",
+      "deleteConfirm": "Diese Änderung hat ein Transkript hinzugefügt. Die Rückkehr zum vorherigen Zustand bedeutet daher, das Transkript für {target} zu löschen. Die Versionen bleiben erhalten und können später über dieses Protokoll wiederhergestellt werden. Möchten Sie es löschen?",
+      "deleteSuccess": "Transkript gelöscht (Versionen bleiben erhalten)."
+    },
+    "transcripts": {
+      "title": "Transkriptverwaltung",
+      "hint": "Diese Registerkarte verwendet echte Daten: Nach der Anmeldung können Sie Transkripte hochladen. Zum Überschreiben vorhandener Transkripte oder Bearbeiten von KI-Zusammenfassungen sind Administratorrechte erforderlich."
+    },
+    "civicTalk": {
+      "title": "Civic-Talk-Verwaltung",
+      "hint": "Verwalten Sie Themen, Materialien und Meinungen in vtaiwan-civic-talks. Die Daten werden erst nach erneuter Identitätsprüfung für den erweiterten Zugriff geladen.",
+      "refresh": "Aktualisieren",
+      "loading": "Daten werden geladen…",
+      "loadFailed": "Civic-Talk-Daten konnten nicht geladen werden. Bitte versuchen Sie es später erneut.",
+      "saveFailed": "Die Änderung konnte nicht gespeichert werden. Bitte versuchen Sie es später erneut.",
+      "save": "Speichern",
+      "saving": "Wird gespeichert…",
+      "edit": "Bearbeiten",
+      "manageMaterials": "Materialien verwalten",
+      "manageOpinions": "Meinungen verwalten",
+      "delete": "Löschen",
+      "backToIssues": "Zurück zur Themenverwaltung",
+      "switcher": {
+        "ariaLabel": "Bereichsauswahl der Civic-Talk-Verwaltung",
+        "agenda": "Agendaverwaltung"
+      },
+      "tabs": {
+        "ariaLabel": "Registerkarten der Civic-Talk-Verwaltung",
+        "agenda": "Agenda",
+        "events": "Ereignisprotokoll",
+        "reports": "Missbrauchsmeldungen"
+      },
+      "events": {
+        "button": "Ereignisprotokoll",
+        "title": "Civic-Talk-Ereignisprotokoll",
+        "hint": "Neueste Erstellungsvorgänge zuerst, {n} pro Seite.",
+        "loadFailed": "Civic-Talk-Ereignisprotokoll konnte nicht geladen werden. Bitte versuchen Sie es später erneut.",
+        "empty": "Noch keine Erstellungsvorgänge vorhanden.",
+        "search": {
+          "label": "Ereignisse suchen",
+          "placeholder": "Nach Thementiteln oder Ereignisinhalten suchen",
+          "submit": "Suchen",
+          "clear": "Suche zurücksetzen",
+          "empty": "Keine Ereignisse für „{q}“ gefunden."
+        },
+        "columns": {
+          "time": "Zeitpunkt",
+          "action": "Aktion"
+        },
+        "action": {
+          "on": "{actor} hat in",
+          "created": "Folgendes erstellt:"
+        },
+        "type": {
+          "material": "Material",
+          "briefing": "Werkzeug für Freiwillige",
+          "opinion": "Meinung aus der Öffentlichkeit"
+        },
+        "pagination": {
+          "ariaLabel": "Seitennavigation des Ereignisprotokolls",
+          "previous": "Zurück",
+          "next": "Weiter",
+          "status": "Seite {page} von {total}"
+        },
+        "preview": {
+          "title": "Vorschau: {type}",
+          "createdBy": "Erstellt von {author} · {time}",
+          "sourceName": "Quellenname",
+          "stance": "Haltung",
+          "verifiedCount": "Anzahl der Überprüfungen",
+          "version": "Version {version}",
+          "consensus": "Konsens",
+          "disputes": "Streitpunkte",
+          "positions": "Positionen",
+          "narrative": "Darstellung",
+          "opinionPrompt": "Frage zur Meinungsbildung"
+        }
+      },
+      "selectIssue": "Thema auswählen",
+      "selectPlaceholder": "Wählen Sie ein Thema aus…",
+      "selectRequired": "Bitte wählen Sie zuerst ein Thema aus.",
+      "unknownAuthor": "Unbekannte beitragende Person",
+      "unknownSource": "Unbekannte Quelle",
+      "author": "Beitrag von: {name}",
+      "stats": {
+        "ariaLabel": "Civic-Talk-Datenstatistik",
+        "issues": "Themen",
+        "materials": "Materialien",
+        "opinions": "Meinungen"
+      },
+      "sections": {
+        "issues": "Themen",
+        "materials": "Materialien",
+        "opinions": "Meinungen"
+      },
+      "columns": {
+        "title": "Titel",
+        "status": "Status",
+        "materials": "Materialien",
+        "opinions": "Meinungen",
+        "author": "Verfasst von",
+        "createdAt": "Erstellt am",
+        "actions": "Aktionen"
+      },
+      "status": {
+        "collecting": "Materialsammlung",
+        "summarizing": "In Aufbereitung",
+        "published": "Veröffentlicht"
+      },
+      "stance": {
+        "pro": "Dafür",
+        "con": "Dagegen",
+        "neutral": "Neutral",
+        "unknown": "Nicht angegeben"
+      },
+      "issue": {
+        "title": "Themenverwaltung",
+        "hint": "Bearbeiten oder löschen Sie Civic-Talk-Themen. Beim Löschen eines Themas werden auch die zugehörigen Materialien, Meinungen und Zusammenstellungen entfernt.",
+        "empty": "Noch keine Themen vorhanden.",
+        "search": {
+          "label": "Themen suchen",
+          "placeholder": "Thementitel eingeben",
+          "empty": "Keine passenden Themen gefunden."
+        },
+        "editTitle": "Civic-Talk-Thema bearbeiten",
+        "titleRequired": "Bitte geben Sie einen Thementitel ein.",
+        "confirmDelete": "Möchten Sie „{title}“ löschen? Zugehörige Materialien, Meinungen und Zusammenstellungen werden ebenfalls entfernt.",
+        "fields": {
+          "title": "Titel",
+          "description": "Beschreibung",
+          "status": "Status",
+          "polisEnabled": "Polis-Diskussion aktivieren"
+        }
+      },
+      "material": {
+        "title": "Materialverwaltung",
+        "hint": "Prüfen Sie Materialien und beitragende Personen zu jedem Thema und entfernen Sie ungeeignete Inhalte.",
+        "empty": "Zu diesem Thema sind noch keine Materialien vorhanden.",
+        "confirmDelete": "Möchten Sie dieses Material löschen?"
+      },
+      "opinion": {
+        "title": "Meinungsverwaltung",
+        "hint": "Prüfen Sie Meinungen und beitragende Personen zu jedem Thema und entfernen Sie ungeeignete Inhalte.",
+        "empty": "Zu diesem Thema sind noch keine Meinungen vorhanden.",
+        "confirmDelete": "Möchten Sie diese Meinung löschen?"
+      },
+      "admin": {
+        "reportsTab": "Missbrauchsmeldungen",
+        "reportsEmpty": "Keine Missbrauchsmeldungen zur Prüfung vorhanden",
+        "rptSearchLabel": "Missbrauchsmeldungen suchen",
+        "rptSearchPlaceholder": "Nach ID, meldender Person oder Beschreibung suchen",
+        "rptSearchEmpty": "Keine passenden Missbrauchsmeldungen gefunden.",
+        "rptThId": "#",
+        "rptThReporter": "Meldende Person",
+        "rptThTarget": "Gemeldeter Inhalt",
+        "rptThReason": "Grund",
+        "rptThDesc": "Beschreibung",
+        "rptThStatus": "Prüfstatus",
+        "rptThCreated": "Erstellt am",
+        "rptStatusPending": "Prüfung ausstehend",
+        "rptStatusFalse": "Falschmeldung",
+        "rptStatusAbuse": "Bestätigter Missbrauch",
+        "rptBtnFalse": "Falschmeldung bestätigen und meldende Person sperren",
+        "rptBtnAbuse": "Missbrauch bestätigen und veröffentlichende Person sperren",
+        "rptBtnFalseNoBan": "Falschmeldung ohne Sperre der meldenden Person bestätigen",
+        "rptBtnAbuseNoBan": "Missbrauch ohne Sperre der veröffentlichenden Person bestätigen",
+        "rptNeedSuperAdmin": "Superadministratorrechte erforderlich",
+        "rptCannotBanSelf": "Sie können sich nicht selbst sperren",
+        "rptToastResolved": "Prüfung abgeschlossen",
+        "rptToastFail": "Aktion fehlgeschlagen",
+        "rptTargetMaterial": "Material #",
+        "rptTargetOpinion": "Meinung #",
+        "rptTargetBriefing": "Übersichtsseite #",
+        "rptTargetDeleted": "(Gemeldeter Inhalt gelöscht)",
+        "rptPreviewTitle": "Gemeldeter Inhalt",
+        "rptOpenTarget": "Gemeldeten Inhalt in einem neuen Tab öffnen",
+        "rptNoAuthor": "(Veröffentlichende Person nicht gefunden; Sperre nicht möglich)",
+        "rptConfirmFalse": "Möchten Sie dies als Falschmeldung markieren und die meldende Person sperren?",
+        "rptConfirmAbuse": "Möchten Sie den Missbrauch bestätigen und die veröffentlichende Person sperren?",
+        "rptConfirmFalseNoBan": "Möchten Sie dies als Falschmeldung markieren und die Kennzeichnung des Inhalts aufheben, ohne die meldende Person zu sperren?",
+        "rptConfirmAbuseNoBan": "Möchten Sie den Missbrauch bestätigen und den Inhalt als regelwidrig kennzeichnen, ohne die veröffentlichende Person zu sperren?",
+        "rptReasonSpam": "Spam",
+        "rptReasonHate": "Hassrede",
+        "rptReasonDefame": "Verleumdung",
+        "rptReasonMisinfo": "Falschinformationen",
+        "rptReasonOther": "Sonstiges"
+      }
+    }
+  }
+}

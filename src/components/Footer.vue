@@ -116,7 +116,7 @@ function contactIcon(item: FooterContactItem): FooterIconName {
             </template>
           </div>
         </div>
-        <span class="inline-flex items-center gap-2.5">
+        <span class="inline-flex flex-wrap items-center justify-center gap-2.5">
           <template v-for="(loc, i) in supportedLocales" :key="loc.code">
             <button
               type="button"
@@ -125,7 +125,7 @@ function contactIcon(item: FooterContactItem): FooterIconName {
               :aria-pressed="currentCode === loc.code"
               @click="switchLocale(loc.code)"
             >
-              {{ loc.name }}
+              {{ loc.flag }} {{ loc.name }}
             </button>
             <span v-if="i < supportedLocales.length - 1" class="opacity-30">·</span>
           </template>

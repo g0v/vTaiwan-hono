@@ -40,7 +40,6 @@ const profilePhotoUrl = computed(() => props.user?.photoURL)
 const { locale } = useI18n()
 const isJapanese = computed(() => locale.value === 'ja')
 const isChinese = computed(() => locale.value.includes('zh'))
-const isEnglish = computed(() => locale.value.includes('en'))
 
 watch(
   () => route.fullPath,
@@ -86,7 +85,7 @@ function showLogin() {
       </RouterLink>
 
       <!-- 桌面導覽 -->
-      <nav class="hidden items-center gap-0.5 xl:flex" :class="{ 'text-xs': isJapanese, 'text-md': isChinese, 'text-sm': isEnglish }">
+      <nav class="hidden items-center gap-0.5 xl:flex" :class="isJapanese ? 'text-xs' : isChinese ? 'text-md' : 'text-sm'">
         <RouterLink
           v-for="l in links"
           :key="l.key"

@@ -60,7 +60,7 @@ onMounted(() => void loadActiveTopics())
         {{ t('home.hero.eyebrow') }}
       </div>
 
-      <h1 class="mb-9 text-[clamp(2.75rem,7vw,4.75rem)] leading-[1.1] font-bold tracking-[-0.02em]">
+      <h1 class="mb-9 text-[clamp(2.75rem,7vw,4.75rem)] leading-[1.1] font-bold tracking-[-0.02em] wrap-break-word hyphens-auto">
         <span class="text-democratic-red">{{ t('home.hero.title.open') }}</span
         >、<span class="text-jade-green">{{ t('home.hero.title.collaborate') }}</span
         >、<span class="text-wheat-yellow">{{ t('home.hero.title.coCreate') }}</span>
