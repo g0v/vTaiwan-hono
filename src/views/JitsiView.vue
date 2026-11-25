@@ -340,8 +340,10 @@ export default {
     return {
       // WebSocket 連線（瀏覽器端 mounted 後才建立）
       ws: null,
-      // WS 尚未 open 時暫存的寫入訊息，open 後一次沖出
+      // 初始快照尚未同步時暫存的寫入訊息，收到 init 後一次送出
       wsPendingMessages: [],
+      wsReady: false,
+      wsInitTimer: null,
       wsRetryTimer: null,
       wsRetryAttempt: 0,
       // 轉錄中名單（#153 步驟 2）：只以 DO 的 init／capture_list 為準，不從 recording_synced 反推
@@ -913,9 +915,9 @@ export default {
       this.sendMeetingMessage({ type: 'delete_entry', timestamp })
     },
 
-    // 送出 WebSocket 訊息；若連線尚未就緒則排入暫存佇列（mounted 後 open 時沖出）
+    // 送出 WebSocket 訊息；若尚未取得快照則排入暫存佇列。
     sendMeetingMessage(msg) {
-      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+      if (this.wsReady && this.ws && this.ws.readyState === WebSocket.OPEN) {
         this.ws.send(JSON.stringify(msg))
       } else {
         this.wsPendingMessages.push(msg)
@@ -1381,27 +1383,36 @@ export default {
       const protocol = location.protocol === 'https:' ? 'wss:' : 'ws:'
       const ws = new WebSocket(`${protocol}//${location.host}/api/meeting/ws/${this.today}`)
       this.ws = ws
-
-      ws.onopen = () => {
-        if (this.ws !== ws) return
-        this.captureSyncLost = false
-        // 沖出在連線期間暫存的寫入訊息。capture_status 是「狀態」不是「事件」：只有最新的一筆有意義，
-        // 佇列裡的舊狀態一律丟掉，改在最後依當下有效狀態補送一次，避免過期的 false 蓋掉現在的 true。
-        const pending = this.wsPendingMessages.splice(0).filter(msg => msg.type !== 'capture_status')
-        // 新連線預設沒在錄，但舊協定的暫存訊息可能宣告開始。先讓 DO 知道新版的停止狀態。
-        if (!this.captureAnnounced && pending.some(msg => msg.type === 'sync_recording')) {
-          ws.send(JSON.stringify({ type: 'capture_status', capturing: false }))
-        }
-        for (const msg of pending) {
-          ws.send(JSON.stringify(msg))
-        }
-        if (this.captureAnnounced) ws.send(JSON.stringify({ type: 'capture_status', capturing: true }))
-      }
+      const transcriptDeltas = []
+      // 握手成功但沒收到 init（例如 D1 讀取失敗）時，仍應重試且不送出佇列。
+      this.wsInitTimer = setTimeout(() => {
+        if (this.ws === ws && !this.wsReady) ws.close(4000, 'Meeting snapshot timeout')
+      }, 15_000)
 
       ws.onmessage = event => {
         if (this.ws !== ws) return
         try {
-          this.handleWsMessage(JSON.parse(event.data))
+          const msg = JSON.parse(event.data)
+          // DO 已經接受連線、仍在讀 D1 時可能先送來逐字稿差量。
+          if (!this.wsReady && (msg.type === 'entry_saved' || msg.type === 'entry_deleted')) {
+            transcriptDeltas.push(msg)
+            return
+          }
+          this.handleWsMessage(msg)
+          if (msg.type !== 'init' || this.wsReady) return
+          for (const delta of transcriptDeltas.splice(0)) this.handleWsMessage(delta)
+          clearTimeout(this.wsInitTimer)
+          this.wsInitTimer = null
+          this.wsReady = true
+          this.captureSyncLost = false
+          this.wsRetryAttempt = 0
+          // capture_status 只送當下狀態；已停止時先聲明 false，再補送可能仍含舊開始狀態的訊息。
+          const pending = this.wsPendingMessages.splice(0).filter(msg => msg.type !== 'capture_status')
+          if (!this.captureAnnounced && pending.some(msg => msg.type === 'sync_recording')) {
+            ws.send(JSON.stringify({ type: 'capture_status', capturing: false }))
+          }
+          for (const pendingMessage of pending) ws.send(JSON.stringify(pendingMessage))
+          if (this.captureAnnounced) ws.send(JSON.stringify({ type: 'capture_status', capturing: true }))
         } catch (err) {
           console.error('[WS] 解析訊息失敗:', err)
         }
@@ -1409,6 +1420,9 @@ export default {
 
       ws.onclose = () => {
         if (this.ws !== ws) return
+        clearTimeout(this.wsInitTimer)
+        this.wsInitTimer = null
+        this.wsReady = false
         this.ws = null
         // 意外斷線：名單失去即時性，但本機錄音與待送逐字稿都要保留。
         // 注意：WebSocket 斷了不代表本機錄音停了，audioRecordingActive 與 captureAnnounced 都不動。
@@ -1430,6 +1444,9 @@ export default {
 
     // 關閉現有的 WebSocket 連線（如有）
     disconnectWs() {
+      clearTimeout(this.wsInitTimer)
+      this.wsInitTimer = null
+      this.wsReady = false
       if (this.wsRetryTimer !== null) {
         clearTimeout(this.wsRetryTimer)
         this.wsRetryTimer = null
@@ -1449,7 +1466,6 @@ export default {
     handleWsMessage(msg) {
       switch (msg.type) {
         case 'init':
-          this.wsRetryAttempt = 0
           this.meetingData = {
             recorder: msg.meeting.recorderUid || '',
             recordingSpeaker: msg.meeting.recordingSpeaker || null,

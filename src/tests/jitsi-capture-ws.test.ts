@@ -2,7 +2,7 @@
  * JitsiView 的轉錄中名單：WebSocket 這一側（#153 步驟 2）
  *
  * 用假的 global WebSocket 直接呼叫 JitsiView 的 connectMeetingWs／disconnectWs／handleWsMessage，釘住：
- *   - onopen 沖出佇列時丟掉過期的 capture_status，最後依當下狀態補送一次（過期的 false 不能蓋掉現在的 true）
+ *   - init 送出佇列時丟掉過期的 capture_status，最後依當下狀態補送一次（過期的 false 不能蓋掉現在的 true）
  *   - 意外斷線：清空名單並標示「無法同步」，但不動本機錄音狀態
  *   - 主動斷線（切歷史日期／離頁）：onclose 不會跑，清空名單要在 disconnectWs 做
  *   - 名單只以 init／capture_list 為準；captureListText 的三種顯示
@@ -16,7 +16,6 @@ class FakeSocket {
   static OPEN = 1
   readyState = 0
   sent: Array<Record<string, unknown>> = []
-  onopen: (() => void) | null = null
   onmessage: ((event: { data: string }) => void) | null = null
   onclose: (() => void) | null = null
   onerror: ((err: unknown) => void) | null = null
@@ -30,11 +29,15 @@ class FakeSocket {
   close() {
     this.closed = true
     this.readyState = 3
+    this.onclose?.()
   }
   /** 模擬伺服器端完成握手 */
   open() {
     this.readyState = 1
-    this.onopen?.()
+  }
+  openWithInit() {
+    this.open()
+    this.receive({ type: 'init', meeting: {}, transcripts: {} })
   }
   /** 模擬網路意外中斷 */
   drop() {
@@ -56,6 +59,8 @@ function wsState() {
   return {
     ws: null as FakeSocket | null,
     wsPendingMessages: [] as Array<Record<string, unknown>>,
+    wsReady: false,
+    wsInitTimer: null,
     today: '20261125',
     isHistoricalDate: false,
     wsRetryTimer: null,
@@ -153,9 +158,44 @@ describe('即時逐字稿斷線恢復（#158）', () => {
     stale.receive({ type: 'init', meeting: {}, transcripts: {} })
     expect(state.transcriptData).toEqual({ 2: latest })
   })
+
+  it('重連時先收到的新增與刪除差量不會被較舊的 init 蓋掉', () => {
+    const state = context()
+    state.connectMeetingWs()
+    const socket = FakeSocket.instances[0]
+    socket.open()
+    const saved = { timestamp: 2, text: '快照讀取期間新增' }
+    socket.receive({ type: 'entry_saved', entry: saved })
+    socket.receive({ type: 'entry_deleted', timestamp: 1 })
+    socket.receive({ type: 'init', meeting: {}, transcripts: { 1: { timestamp: 1, text: '已刪除' } } })
+
+    expect(state.transcriptData).toEqual({ 2: saved })
+  })
+
+  it('握手成功但沒收到有效 init 時仍顯示不同步、保留寫入並繼續退避重試', () => {
+    const state = context()
+    state.connectMeetingWs()
+    FakeSocket.instances[0].drop()
+    const pending = { type: 'save_entry', entry: { timestamp: 1, text: '等待同步' } }
+    state.sendMeetingMessage(pending)
+    vi.advanceTimersByTime(1000)
+    const uninitialized = FakeSocket.instances[1]
+    uninitialized.open()
+    uninitialized.receive({ type: 'error', message: '載入會議資料失敗' })
+
+    expect(state.captureSyncLost).toBe(true)
+    expect(uninitialized.sent).toEqual([])
+    vi.advanceTimersByTime(15_000 + 2000)
+    expect(FakeSocket.instances).toHaveLength(3)
+    const healthy = FakeSocket.instances[2]
+    healthy.open()
+    healthy.receive({ type: 'init', meeting: {}, transcripts: {} })
+    expect(healthy.sent).toEqual([pending])
+    expect(state.captureSyncLost).toBe(false)
+  })
 })
 
-describe('onopen：佇列沖出順序', () => {
+describe('init：待送佇列的順序', () => {
   it('過期的 capture_status 全部丟掉，其他訊息照送，最後依當下狀態補送一次 true', () => {
     const state = context()
     state.captureAnnounced = true
@@ -167,6 +207,8 @@ describe('onopen：佇列沖出順序', () => {
     state.connectMeetingWs()
     const socket = FakeSocket.instances[0]
     socket.open()
+    expect(socket.sent).toEqual([])
+    socket.receive({ type: 'init', meeting: {}, transcripts: {} })
 
     expect(socket.sent).toEqual([
       { type: 'save_entry', entry: { timestamp: 1, text: 'hi' } },
@@ -180,7 +222,7 @@ describe('onopen：佇列沖出順序', () => {
     state.captureAnnounced = false
     state.wsPendingMessages = [{ type: 'capture_status', capturing: true }]
     state.connectMeetingWs()
-    FakeSocket.instances[0].open()
+    FakeSocket.instances[0].openWithInit()
 
     expect(FakeSocket.instances[0].captureMessages).toEqual([])
   })
@@ -194,12 +236,12 @@ describe('onopen：佇列沖出順序', () => {
     state.announceCapture(false)
 
     const socket = FakeSocket.instances[0]
-    socket.open()
+    socket.openWithInit()
 
     expect(socket.sent).toEqual([{ type: 'capture_status', capturing: false }, legacyStart])
   })
 
-  it('連線中 announceCapture 會先排隊，open 後以最新狀態送出一次', () => {
+  it('連線中 announceCapture 會先排隊，init 後以最新狀態送出一次', () => {
     const state = context()
     state.connectMeetingWs()
     state.announceCapture(true)
@@ -207,7 +249,7 @@ describe('onopen：佇列沖出順序', () => {
     state.announceCapture(true)
     expect(state.wsPendingMessages).toHaveLength(3)
 
-    FakeSocket.instances[0].open()
+    FakeSocket.instances[0].openWithInit()
     expect(FakeSocket.instances[0].captureMessages).toEqual([{ type: 'capture_status', capturing: true }])
   })
 
@@ -215,7 +257,7 @@ describe('onopen：佇列沖出順序', () => {
     const state = context()
     state.connectMeetingWs()
     const socket = FakeSocket.instances[0]
-    socket.open()
+    socket.openWithInit()
     state.announceCapture(true)
     state.announceCapture(true)
     state.announceCapture(false)
@@ -245,17 +287,19 @@ describe('斷線時的名單顯示', () => {
     expect(state.captureAnnounced).toBe(true)
   })
 
-  it('重新連上：無法同步的標示解除，等 init 填回名單', () => {
+  it('重新連上後等 init 填回名單，才解除無法同步的標示', () => {
     const state = context()
     state.connectMeetingWs()
-    FakeSocket.instances[0].open()
+    FakeSocket.instances[0].openWithInit()
     FakeSocket.instances[0].drop()
     expect(state.captureSyncLost).toBe(true)
 
-    state.connectMeetingWs()
-    FakeSocket.instances[1].open()
+    vi.advanceTimersByTime(1000)
+    const socket = FakeSocket.instances[1]
+    socket.open()
+    expect(state.captureSyncLost).toBe(true)
+    socket.receive({ type: 'init', meeting: {}, transcripts: {}, capturers: [{ userId: 'uid-hua', name: '阿華' }] })
     expect(state.captureSyncLost).toBe(false)
-    state.handleWsMessage({ type: 'init', meeting: {}, transcripts: {}, capturers: [{ userId: 'uid-hua', name: '阿華' }] })
     expect(state.capturers).toEqual([{ userId: 'uid-hua', name: '阿華' }])
   })
 
