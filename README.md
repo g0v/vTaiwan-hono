@@ -4,9 +4,9 @@
 
 視覺設計來自：https://github.com/Tofuswang/vtaiwan-design-system
 
-**EN:** SSR re-implementation of the vTaiwan website. It **parallel-migrates the pages and features of the existing [`vue.vTaiwan-neo`](https://github.com/g0v/vue.vTaiwan-neo) site** onto a **Hono + Vue 3 SSR + Cloudflare Workers** stack, applying the new **[vtaiwan-design-system](https://github.com/Tofuswang/vtaiwan-design-system)** visual language. Hono handles API / entry routing; the site UI is server-rendered per request and hydrated client-side with vue-router. Multilingual (zh-TW / en / ja) via vue-i18n.
+**EN:** SSR re-implementation of the vTaiwan website. It **parallel-migrates the pages and features of the existing [`vue.vTaiwan-neo`](https://github.com/g0v/vue.vTaiwan-neo) site** onto a **Hono + Vue 3 SSR + Cloudflare Workers** stack, applying the new **[vtaiwan-design-system](https://github.com/Tofuswang/vtaiwan-design-system)** visual language. Hono handles API / entry routing; the site UI is server-rendered per request and hydrated client-side with vue-router. Multilingual (zh-TW / en / ja / de) via vue-i18n.
 
-**中文：**vTaiwan 官網的 SSR 版本。以 **Hono + Vue 3 SSR + Cloudflare Workers** 技術棧，**平行搬移現有 [`vue.vTaiwan-neo`](https://github.com/g0v/vue.vTaiwan-neo) 官網的頁面與功能**，並套用 [vtaiwan-design-system](https://github.com/Tofuswang/vtaiwan-design-system) 的新視覺設計。API／入口路由用 Hono；畫面每個請求都在伺服端渲染，再由瀏覽器端 vue-router hydration 接管。支援多語（zh-TW / en / ja，vue-i18n）。
+**中文：**vTaiwan 官網的 SSR 版本。以 **Hono + Vue 3 SSR + Cloudflare Workers** 技術棧，**平行搬移現有 [`vue.vTaiwan-neo`](https://github.com/g0v/vue.vTaiwan-neo) 官網的頁面與功能**，並套用 [vtaiwan-design-system](https://github.com/Tofuswang/vtaiwan-design-system) 的新視覺設計。API／入口路由用 Hono；畫面每個請求都在伺服端渲染，再由瀏覽器端 vue-router hydration 接管。支援多語（zh-TW / en / ja / de，vue-i18n）。
 
 ## Project goals / 專案目的
 
@@ -68,7 +68,7 @@
 
 - [Hono](https://hono.dev) — Worker 與路由 / the worker & router
 - [Vue 3](https://vuejs.org) + `@vue/server-renderer` + [Vue Router](https://router.vuejs.org) — SSR + hydration 後的 SPA 路由
-- [vue-i18n](https://vue-i18n.intlify.dev) — 多語（zh-TW / en / ja）/ i18n
+- [vue-i18n](https://vue-i18n.intlify.dev) — 多語（zh-TW / en / ja / de）/ i18n
 - [VitePlus](https://viteplus.dev)（`vp`）+ `@vitejs/plugin-vue` + `@cloudflare/vite-plugin` — 建置、開發、測試、format/lint / build, dev, test, fmt & lint。本專案的 `vite` 指向 `@voidzero-dev/vite-plus-core`。
 - [Tailwind CSS v4](https://tailwindcss.com) — 樣式，以獨立 CLI 編譯輸出到 `public/styles.css` / styling via standalone CLI
 - [Firebase](https://firebase.google.com) — Google 登入（僅瀏覽器端）/ Google sign-in, client-side only
@@ -97,7 +97,7 @@ src/
 │   └── Word.vue、HundredChart.vue、Privacy.vue、Terms.vue、NotFound.vue
 ├── components/
 │   ├── NavBar.vue           # 毛玻璃導覽列（RouterLink + mobile state）/ glass header
-│   ├── LanguageSwitcher.vue # 語言切換（zh-TW / en / ja）/ locale switcher
+│   ├── LanguageSwitcher.vue # 語言切換（zh-TW / en / ja / de）/ locale switcher
 │   ├── Footer.vue、FooterNavLink.vue、FooterLinkIcon.vue  # 深色頁尾 / dark footer
 │   ├── GoogleLogin.vue      # Firebase Google 登入按鈕 / sign-in button
 │   ├── TopicProgress.vue、TopicTimeline.vue、TopicSlide.vue
@@ -111,8 +111,8 @@ src/
 │   ├── faqs.ts、contributors.ts  # 靜態內容 / static content
 ├── i18n/
 │   └── index.ts         # createAppI18n + locale 偵測/持久化（僅瀏覽器端）/ i18n factory
-├── l10n/                # 翻譯 JSON（三檔同步）/ translation JSON (keep in sync)
-│   ├── zh-TW.json、en.json、ja.json
+├── l10n/                # 翻譯 JSON（四檔同步）/ translation JSON (keep in sync)
+│   ├── zh-TW.json、en.json、ja.json、de.json
 ├── tests/
 │   └── links.test.ts    # 連結完整性測試（`npm run test`）/ link-integrity tests
 ├── client/
@@ -134,9 +134,11 @@ public/                  # static assets, served via ASSETS binding / 靜態資�
 
 ## i18n / 多語系
 
-**EN:** Three locales — `zh-TW` (default), `en`, `ja` — served through vue-i18n. UI strings must go through translations (`$t('key')` in templates; `const { t } = useI18n()` in `<script setup>`); don't hard-code display text. **When you add any UI string, add the same key to all three files** `src/l10n/{zh-TW,en,ja}.json`. A per-request i18n instance is created in `createAppI18n` (see `src/i18n/index.ts`) to avoid SSR cross-request state leakage; locale detection / persistence (`localStorage`, `navigator`) runs **only in the browser**. Users switch locale via `LanguageSwitcher.vue`.
+**EN:** Four locales — `zh-TW` (default), `en`, `ja`, `de` — served through vue-i18n. UI strings must go through translations (`$t('key')` in templates; `const { t } = useI18n()` in `<script setup>`); don't hard-code display text. **When you add any UI string, add the same key to all four files** `src/l10n/{zh-TW,en,ja,de}.json`. A per-request i18n instance is created in `createAppI18n` (see `src/i18n/index.ts`) to avoid SSR cross-request state leakage; locale detection / persistence (`localStorage`, `navigator`) runs **only in the browser**. Users switch locale via `LanguageSwitcher.vue`.
 
-**中文：**三種語言 — `zh-TW`（預設）、`en`、`ja`，走 vue-i18n。介面文字一律用翻譯（模板 `$t('key')`；`<script setup>` 內 `const { t } = useI18n()`），不要寫死。**新增任何介面文字時，`src/l10n/{zh-TW,en,ja}.json` 三個檔都要加上相同 key**，值各自翻譯。i18n 於 `createAppI18n`（見 `src/i18n/index.ts`）每請求新建實例，避免 SSR 跨請求狀態污染；語言偵測與持久化（`localStorage`、`navigator`）只在瀏覽器端執行。使用者透過 `LanguageSwitcher.vue` 切換語言。
+**中文：**四種語言 — `zh-TW`（預設）、`en`、`ja`、`de`，走 vue-i18n。介面文字一律用翻譯（模板 `$t('key')`；`<script setup>` 內 `const { t } = useI18n()`），不要寫死。**新增任何介面文字時，`src/l10n/{zh-TW,en,ja,de}.json` 四個檔都要加上相同 key**，值各自翻譯。i18n 於 `createAppI18n`（見 `src/i18n/index.ts`）每請求新建實例，避免 SSR 跨請求狀態污染；語言偵測與持久化（`localStorage`、`navigator`）只在瀏覽器端執行。使用者透過 `LanguageSwitcher.vue` 切換語言。
+
+德文由 AI 初譯，供德語場合簡報使用，後續可依母語者回饋校對。桌面／手機導覽、頁尾及會議轉錄選單皆提供 `🇩🇪 deutsch`；瀏覽器 `de-*` 偏好與已儲存的 `de` 均可自動套用。FAQ 靜態內容也須在 `src/data/faqs.ts` 同步翻譯。SSR 仍使用預設繁體中文，於 hydration 後切換，不新增語系路由。會議德文轉錄沿用現有 Workers AI 流程，德文原文附自動繁中翻譯。
 
 ## Generated assets / 自動產生的靜態檔
 
@@ -219,7 +221,7 @@ Key pure functions are annotated with [LemmaScript](https://viteplus.dev/) `//@ 
 | 檔案 / File            | 不變量 / Invariants                                                                                                                      |
 | ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
 | `src/ssr/heads.ts`     | `buildOg` → 恆輸出 10 個 MetaEntry；`headFor*` → title 非空、`meta.length === 10`；`renderHeadTags` → output 含 charset、title、viewport |
-| `src/i18n/index.ts`    | `isSupportedLocale` ↔ value ∈ `{"zh-TW","en","ja"}`；`detectPreferredLocale` → 回傳值恆為合法 locale                                     |
+| `src/i18n/index.ts`    | `isSupportedLocaleCode` ↔ value ∈ `{"zh-TW","en","ja","de"}`（1 VC）；瀏覽器偏好偵測不作形式標注                                         |
 | `src/router/routes.ts` | `statusForRoute` → 回傳 meta.status 或 200；`headForRoute` → 恆回傳合法 HeadConfig                                                       |
 | `src/lib/discourse.ts` | `getJson` → path 非空、in-flight 去重；`getAllCategoryTopics` → categoryUri 非空                                                         |
 
@@ -299,7 +301,7 @@ vp run deploy       # 完整 build（含 hydration bundle）+ wrangler deploy
 
 4. Add a `case` for the route name in `headForRoute(...)` in `src/router/routes.ts`.
 5. If the page belongs in the nav or footer, add the link to `src/router/nav-links.ts` — `npm run test` then covers it.
-6. Add the page's UI strings to all three `src/l10n/{zh-TW,en,ja}.json` files.
+6. Add the page's UI strings to all four `src/l10n/{zh-TW,en,ja,de}.json` files.
 7. Use `<RouterLink>` for internal links so navigation stays inside the hydrated app.
 
 **中文**
@@ -309,7 +311,7 @@ vp run deploy       # 完整 build（含 hydration bundle）+ wrangler deploy
 3. 在 `src/router/routes.server.ts` 新增 route（元件用**靜態 import**、非 lazy，SSR 打包與 hydration 一致需要），設 `meta.status`，若原本在 `placeholderPaths` 就移除。
 4. 在 `src/router/routes.ts` 的 `headForRoute(...)` 補上對應 `case`。
 5. 若要出現在導覽列／頁尾，把連結加進 `src/router/nav-links.ts`——`npm run test` 就會自動涵蓋。
-6. 把頁面的介面文字補進 `src/l10n/{zh-TW,en,ja}.json` 三個檔。
+6. 把頁面的介面文字補進 `src/l10n/{zh-TW,en,ja,de}.json` 四個檔。
 7. 站內連結使用 `<RouterLink>`，導覽才會留在 hydrated app 裡。
 
 ## Hydration + vue-router / 全站 hydration

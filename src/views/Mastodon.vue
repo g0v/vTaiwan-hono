@@ -151,9 +151,7 @@ const filteredPosts = computed(() => {
   return posts.value.filter(post => {
     if (!post.language) return true
     if ((post.language === 'zh-TW' || post.language === 'zh') && lang === 'zh-TW') return true
-    if (post.language === 'en' && lang === 'en') return true
-    if (post.language === 'ja' && lang === 'ja') return true
-    return false
+    return post.language === lang
   })
 })
 

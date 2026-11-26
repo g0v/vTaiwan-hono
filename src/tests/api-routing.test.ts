@@ -42,7 +42,7 @@ describe('動態路徑不得攔截同層的固定名稱端點', () => {
   // /api/transcription/:lang 與 /upload、/outline… 同層。:lang 收窄成 LANG_MAP 的精確清單後，
   // 「固定名稱必須先註冊」不再是正確性的前提；這裡驗證收窄本身沒有鬆掉。
   it('/api/transcription/:lang 只接受 LANG_MAP 列出的語言碼', async () => {
-    for (const lang of ['zh-TW', 'en', 'ja']) {
+    for (const lang of ['zh-TW', 'en', 'ja', 'de']) {
       expect((await post(`/api/transcription/${lang}`)).status, lang).not.toBe(404)
     }
     // 固定端點名稱不在清單裡，因此不會落進 :lang
@@ -50,7 +50,7 @@ describe('動態路徑不得攔截同層的固定名稱端點', () => {
       expect((await post(`/api/transcription/${name}`)).status, name).not.toBe(404)
     }
     // 清單外的字串一律找不到路由（而不是被當成語音辨識的語言碼直接送出去）
-    for (const unknown of ['zh-CN', 'fr', 'not-a-language-code']) {
+    for (const unknown of ['zh-CN', 'fr', 'not-a-language-code', 'de-DE', 'code', 'deutsch', 'x-de', 'de-x', 'prefix-en', 'en-suffix', 'japanese']) {
       expect((await post(`/api/transcription/${unknown}`)).status, unknown).toBe(404)
     }
   })
@@ -76,7 +76,7 @@ describe('寫入端點不對外宣告 CORS', () => {
     { routePath: '/api/transcription/delete', method: 'POST', path: '/api/transcription/delete' },
     { routePath: '/api/transcription/create-table', method: 'POST', path: '/api/transcription/create-table' },
     { routePath: '/api/transcription/test-ai', method: 'POST', path: '/api/transcription/test-ai' },
-    { routePath: '/api/transcription/:lang{zh-TW|en|ja}', method: 'POST', path: '/api/transcription/zh-TW' },
+    { routePath: '/api/transcription/:lang{(?:zh-TW|en|ja|de)}', method: 'POST', path: '/api/transcription/de' },
     { routePath: '/api/admin/civic-talks/issues/:id', method: 'PUT', path: '/api/admin/civic-talks/issues/1' },
     { routePath: '/api/admin/civic-talks/issues/:id', method: 'DELETE', path: '/api/admin/civic-talks/issues/1' },
     { routePath: '/api/admin/civic-talks/materials/:id', method: 'DELETE', path: '/api/admin/civic-talks/materials/1' },

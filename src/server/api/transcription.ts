@@ -29,6 +29,7 @@ const LANG_MAP: Record<string, string> = {
   'zh-TW': 'zh',
   en: 'en',
   ja: 'ja',
+  de: 'de',
 }
 
 // 轉錄端點的語言碼路徑：**直接由 LANG_MAP 的 key 生成**，兩者永遠不會走鐘。
@@ -39,7 +40,8 @@ const LANG_MAP: Record<string, string> = {
 //  2. 端點只給本站自己用（見下方 app.post 的說明），沒有「支援未知語言碼」的需求；
 //     `LANG_MAP[x] ?? x` 原本會把任何字串直接送進語音辨識當語言碼。
 // ⚠️ LANG_MAP 的 key 必須是單純的語言碼（`[A-Za-z-]`）——含 regex 特殊字元會破壞這個樣式。
-const LANG_PATH = `/:lang{${Object.keys(LANG_MAP).join('|')}}`
+// 非捕獲群組確保 TrieRouter 加上的 ^/$ 約束每個語言，而非只有首尾分支。
+const LANG_PATH = `/:lang{(?:${Object.keys(LANG_MAP).join('|')})}`
 
 /**
  * 逐字稿版本的核心不變量：**最新的版本永遠等於現行內容**。

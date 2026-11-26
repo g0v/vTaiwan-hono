@@ -3,12 +3,14 @@ import type { InjectionKey, WritableComputedRef } from 'vue'
 import zhTW from '../l10n/zh-TW.json'
 import en from '../l10n/en.json'
 import ja from '../l10n/ja.json'
+import de from '../l10n/de.json'
 
-// 支援的語言列表（對齊 vue.vTaiwan-neo 舊專案）
+// 支援的介面與轉錄語言列表。
 export const supportedLocales = [
   { code: 'zh-TW', name: '繁體中文', flag: '🇹🇼' },
   { code: 'en', name: 'English', flag: '🇺🇸' },
   { code: 'ja', name: '日本語', flag: '🇯🇵' },
+  { code: 'de', name: 'deutsch', flag: '🇩🇪' },
 ] as const
 
 // 支援的語言代碼類型
@@ -24,8 +26,8 @@ const STORAGE_KEY = 'locale'
 // 新增語言時：supportedLocales、此函式、detectPreferredLocale 三處同步。
 export function isSupportedLocaleCode(value: string): boolean {
   //@ verify
-  //@ ensures \result === (value === "zh-TW" || value === "en" || value === "ja")
-  return value === 'zh-TW' || value === 'en' || value === 'ja'
+  //@ ensures \result === (value === "zh-TW" || value === "en" || value === "ja" || value === "de")
+  return value === 'zh-TW' || value === 'en' || value === 'ja' || value === 'de'
 }
 
 export function isSupportedLocale(value: string | null | undefined): value is SupportedLocale {
@@ -43,6 +45,7 @@ export function createAppI18n(locale: SupportedLocale = defaultLocale) {
       'zh-TW': zhTW,
       en,
       ja,
+      de,
     },
     globalInjection: true, // 全域注入 $t 函數
     silentTranslationWarn: true,
@@ -62,6 +65,7 @@ export function detectPreferredLocale(): SupportedLocale {
   if (browserLocale.startsWith('zh')) return 'zh-TW'
   if (browserLocale.startsWith('en')) return 'en'
   if (browserLocale.startsWith('ja')) return 'ja'
+  if (browserLocale.startsWith('de')) return 'de'
 
   return defaultLocale
 }
