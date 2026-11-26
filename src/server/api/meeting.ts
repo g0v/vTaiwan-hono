@@ -14,7 +14,9 @@ import { Hono } from 'hono'
  *   PATCH  /api/meeting/:date               → 更新會議 session 欄位（需 meeting.join）
  */
 
+import { encodeUserName } from '../../lib/capture-list'
 import { tryGetAuthContext, hasPermission } from '../lib/authorization'
+import type { AuthContext } from '../lib/authorization'
 import type { AppEnv } from './types'
 
 /** YYYYMMDD 格式驗證（八位數字） */
@@ -29,6 +31,23 @@ function isValidDate(date: string): boolean {
 function hasAllowedWebSocketOrigin(request: Request): boolean {
   const origin = request.headers.get('Origin')
   return origin === null || origin === new URL(request.url).origin
+}
+
+/**
+ * 組出轉送給 MeetingRoom DO 的標頭。
+ *
+ * 三個身分標頭一律由 Worker 依 session 覆寫——外部請求自帶的同名標頭絕不能穿透到 DO，
+ * 否則任何人都能在握手時自稱別人（#153 步驟 2 的名單會直接顯示這個名字）。
+ * `X-User-Name` 先經 encodeUserName：標頭值不能放中文。
+ */
+export function buildForwardHeaders(incoming: Headers, authCtx: AuthContext | null): Headers {
+  // isAuthenticated = 有效 session 且擁有 meeting.join（停權帳號 permissions=[]，視為未授權）
+  const isAuthenticated = authCtx !== null && hasPermission(authCtx, 'meeting.join')
+  const headers = new Headers(incoming)
+  headers.set('X-Authenticated', isAuthenticated ? 'true' : 'false')
+  headers.set('X-User-Id', authCtx?.user.id ?? '')
+  headers.set('X-User-Name', authCtx ? encodeUserName(authCtx.user.name) : '')
+  return headers
 }
 
 const app = new Hono<AppEnv>()
@@ -56,10 +75,7 @@ app.get('/ws/:date', async c => {
   if (!hasAllowedWebSocketOrigin(c.req.raw)) return c.text('Forbidden', 403)
 
   // 解析認證（非強制；失敗視為未登入）
-  // isAuthenticated = 有效 session 且擁有 meeting.join（停權帳號 permissions=[]，視為未授權）
   const authCtx = await tryGetAuthContext(c.env, c.req.raw.headers)
-  const isAuthenticated = authCtx !== null && hasPermission(authCtx, 'meeting.join')
-  const userId = authCtx?.user.id ?? ''
 
   // 建立指向該日期 DO 實例的 stub
   if (!c.env.MEETING_ROOM) return c.text('DO binding not available', 500)
@@ -67,11 +83,7 @@ app.get('/ws/:date', async c => {
   const stub = c.env.MEETING_ROOM.get(doId)
 
   // 轉發請求，帶上認證標頭（WebSocket 升級為 GET，無 body）
-  const forwardHeaders = new Headers(c.req.raw.headers)
-  forwardHeaders.set('X-Authenticated', isAuthenticated ? 'true' : 'false')
-  forwardHeaders.set('X-User-Id', userId)
-
-  return stub.fetch(new Request(c.req.raw.url, { headers: forwardHeaders }))
+  return stub.fetch(new Request(c.req.raw.url, { headers: buildForwardHeaders(c.req.raw.headers, authCtx) }))
 })
 
 // ─── REST: 讀取快照 ────────────────────────────────────────────────────────
