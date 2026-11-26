@@ -2,9 +2,10 @@ import { describe, it, expect } from 'vite-plus/test'
 import zhTW from '../l10n/zh-TW.json'
 import en from '../l10n/en.json'
 import ja from '../l10n/ja.json'
+import de from '../l10n/de.json'
 
-// i18n 三檔同步測試：AGENTS.md 的硬性規定「新增介面文字時 zh-TW / en / ja 三檔都要有相同 key」。
-// 以 zh-TW 為基準，斷言另外兩檔的 key 集合完全一致，並且所有 leaf 值皆為非空字串。
+// i18n 四檔同步：新增介面文字時 zh-TW / en / ja / de 都要有相同 key。
+// 以 zh-TW 為基準，斷言其他語系的 key 集合完全一致，所有 leaf 值皆為非空字串。
 
 type Messages = Record<string, unknown>
 
@@ -26,9 +27,10 @@ const locales: Array<[string, Messages]> = [
   ['zh-TW', zhTW],
   ['en', en],
   ['ja', ja],
+  ['de', de],
 ]
 
-describe('l10n 三檔同步', () => {
+describe('l10n 四檔同步', () => {
   for (const [name, messages] of locales.slice(1)) {
     it(`${name}.json 的 key 集合與 zh-TW.json 完全一致`, () => {
       const keys = new Set(flattenKeys(messages))

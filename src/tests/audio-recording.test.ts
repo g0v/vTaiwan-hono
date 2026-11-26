@@ -263,13 +263,14 @@ describe('Jitsi 錄音生命週期', () => {
     state.cleanupAudioRecording()
   })
 
-  it('MP4 上傳保持實際檔案型別與副檔名', async () => {
+  it.each(['zh-TW', 'de'])('MP4 上傳保持實際檔案型別與副檔名，並使用選定語言 %s', async language => {
     const fetchMock = vi.fn().mockResolvedValue(new Response('測試逐字稿'))
     vi.stubGlobal('fetch', fetchMock)
     const state = context()
+    state.transcriptionLanguage = language
     await state.sendAudioToTranscription(new Blob(['mp4 audio'], { type: 'audio/mp4;codecs=mp4a.40.2' }))
     const [url, request] = fetchMock.mock.calls[0] as [string, { method: string; body: FormData }]
-    expect(url).toBe('/api/transcription/zh-TW')
+    expect(url).toBe(`/api/transcription/${language}`)
     expect(request.method).toBe('POST')
     const file = request.body.get('file') as File
     expect(file.name).toBe('recording.mp4')

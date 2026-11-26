@@ -146,6 +146,12 @@ const rawCommunityContributors: Contributor[] = [
     imgURL: 'https://ca.slack-edge.com/T02G2SXKM-U0ALW3F6Q4Q-df58faedfc18-512',
   },
   {
+    id: '25',
+    name: 'Sunny',
+    contribution: 'contributors.contributions.frontendDev',
+    imgURL: 'https://avatars.githubusercontent.com/u/59366221?v=4',
+  },
+  {
     id: '15',
     name: 'Lynn',
     contribution: 'contributors.contributions.frontendDev',
