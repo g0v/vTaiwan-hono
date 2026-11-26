@@ -97,6 +97,7 @@
   --spacing-vt-8: 32px;
   --spacing-vt-12: 48px;
   --spacing-vt-16: 64px;
+  --spacing-vt-capture-list-max: min(18rem, 60vw);
   --spacing-vt-navbar-overlap: 86px;
   --spacing-vt-navbar-overlap-sm: 90px;
 

@@ -225,7 +225,7 @@
           轉錄中名單與待處理音檔數是兩種獨立資訊，各自顯示、互不遮蔽（#153 步驟 2）。
           放在按鈕左側而非底部：多人或長名字可換行，不會蓋到按鈕本身，手機也讀得到。
         -->
-        <div class="pointer-events-none absolute top-1/2 right-full mr-3 flex w-max max-w-[min(18rem,60vw)] -translate-y-1/2 flex-col items-end gap-1">
+        <div class="pointer-events-none absolute top-1/2 right-full mr-3 flex w-max max-w-vt-capture-list-max -translate-y-1/2 flex-col items-end gap-1">
           <div
             v-if="captureListText"
             :class="[
